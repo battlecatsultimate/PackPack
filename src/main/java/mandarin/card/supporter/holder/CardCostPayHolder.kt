@@ -11,6 +11,7 @@ import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -34,7 +35,7 @@ class CardCostPayHolder(
     private var message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message.id), MessageUpdater {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val cards = ArrayList<Card>(inventory.cards.keys)
 
@@ -212,14 +213,16 @@ class CardCostPayHolder(
         }
     }
 
+    override fun onMessageUpdated(message: Message) {
+        this.message = message
+    }
+
     override fun onConnected(event: GenericComponentInteractionCreateEvent) {
         filterCards()
         applyResult(event)
     }
 
     private fun applyResult() {
-        message = updateMessageStatus(message)
-
         var builder = message.editMessage(getContent())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())

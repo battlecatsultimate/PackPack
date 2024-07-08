@@ -4,6 +4,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
+import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -17,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class SkinSelectHolder(author: Message, channelID: String, private var message: Message, private val card: Card) : ComponentHolder(author, channelID, message) {
+class SkinSelectHolder(author: Message, channelID: String, private var message: Message, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
     private val skins = CardData.skins.filter { s -> s.card == card }.toMutableList()
 
     private var page = 0
@@ -53,7 +54,7 @@ class SkinSelectHolder(author: Message, channelID: String, private var message: 
                 connectTo(event, SkinModifyHolder(authorMessage, channelID, message, skins[index], false))
             }
             "add" -> {
-                connectTo(event, SkinFileHolder(authorMessage, channelID, message, card, true))
+                connectTo(event, SkinFileHolder(authorMessage, channelID, message, card))
             }
             "back" -> {
                 goBack(event)
@@ -69,6 +70,10 @@ class SkinSelectHolder(author: Message, channelID: String, private var message: 
                 expired = true
             }
         }
+    }
+
+    override fun onMessageUpdated(message: Message) {
+        this.message = message
     }
 
     override fun clean() {
@@ -100,8 +105,6 @@ class SkinSelectHolder(author: Message, channelID: String, private var message: 
     }
 
     private fun applyResult() {
-        message = updateMessageStatus(message)
-
         var builder = message.editMessage(getContents())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())

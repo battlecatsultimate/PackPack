@@ -472,30 +472,4 @@ public abstract class Holder {
                 )
                 .queue();
     }
-
-    public Message updateMessageStatus(@NotNull Message message) {
-        AtomicReference<Message> newMessage = new AtomicReference<>(message);
-
-        CountDownLatch countdown = new CountDownLatch(1);
-
-        try {
-            message.getChannel().retrieveMessageById(message.getIdLong()).queue(msg -> {
-                newMessage.set(msg);
-
-                countdown.countDown();
-            }, e -> {
-                StaticStore.logger.uploadErrorLog(e, "E/Holder::updateMessageStatus - Failed to retrieve message");
-
-                countdown.countDown();
-            });
-
-            countdown.await();
-        } catch (InterruptedException e) {
-            StaticStore.logger.uploadErrorLog(e, "E/Holder::updateMessageStatus - Failed to perform updating message status");
-
-            countdown.countDown();
-        }
-
-        return newMessage.get();
-    }
 }

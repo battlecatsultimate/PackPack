@@ -21,21 +21,31 @@ import java.nio.file.Files
 class SkinFileHolder : ComponentHolder, MessageDetector {
     private val message: Message
     private val card: Card
-    private val new: Boolean
+    private val skin: Skin?
 
     private var downloading = false
 
-    constructor(author: Message, channelID: String, message: Message, card: Card, new: Boolean) : super(author, channelID, message) {
+    constructor(author: Message, channelID: String, message: Message, card: Card) : super(author, channelID, message) {
         this.message = message
+        this.skin = null
         this.card = card
+    }
 
-        this.new = new
+    constructor(author: Message, channelID: String, message: Message, card: Card, skin: Skin) : super(author, channelID, message) {
+        this.message = message
+        this.skin = skin
+        this.card = card
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "back" -> {
-                registerPopUp(event, "Are you sure you want to stop creating new skin?", LangID.EN)
+                registerPopUp(event,
+                    if (skin == null)
+                        "Are you sure you want to stop creating new skin?"
+                    else
+                        "Are you sure you want to cancel replacing skin file?"
+                    , LangID.EN)
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     goBack(e)
@@ -148,10 +158,14 @@ class SkinFileHolder : ComponentHolder, MessageDetector {
 
         msg.delete().queue()
 
-        val skin = Skin(card, downloader.target)
+        if (skin == null) {
+            val skin = Skin(card, downloader.target)
 
-        if (new) {
-            connectTo(SkinModifyHolder(authorMessage, channelID, message, skin, new))
+            connectTo(SkinModifyHolder(authorMessage, channelID, message, skin, true))
+        } else {
+            skin.updateFile(downloader.target, authorMessage.jda, skin in CardData.skins)
+
+            goBack()
         }
     }
 
@@ -173,16 +187,22 @@ class SkinFileHolder : ComponentHolder, MessageDetector {
     }
 
     private fun getContents() : String {
-        return "Please upload the file\n### Supported File Type : PNG, JPG, GIF, MP4"
+        return "Please upload the file\n### Supported File Type : ${CardData.supportedFileFormat.map { s -> s.uppercase() }.joinToString(", ")}"
     }
 
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(
-            Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(downloading),
-            Button.danger("close", "Close").withEmoji(EmojiStore.CROSS).withDisabled(downloading)
-        ))
+        if (skin == null) {
+            result.add(ActionRow.of(
+                Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(downloading),
+                Button.danger("close", "Close").withEmoji(EmojiStore.CROSS).withDisabled(downloading)
+            ))
+        } else {
+            result.add(ActionRow.of(
+                Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(downloading)
+            ))
+        }
 
         return result
     }

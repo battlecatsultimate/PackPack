@@ -60,6 +60,7 @@ class Skin {
     val skinID: Int
     var name: String
     var file: File
+        private set
 
     var messageID = -1L
     private lateinit var message: Message
@@ -255,6 +256,36 @@ class Skin {
         } else {
             null
         }
+    }
+
+    fun updateFile(file: File, client: JDA, replace: Boolean) : File {
+        if (this.file.exists() && !Files.deleteIfExists(this.file.toPath())) {
+            throw IllegalStateException("E/Skin::updateFile - Failed to replace skin file")
+        }
+
+        val folder = File("./data/cards/Skin/")
+
+        val newFile = File(folder, "$skinID.${file.extension}")
+
+        if (newFile.exists() && !Files.deleteIfExists(newFile.toPath())) {
+            throw IllegalStateException("E/Skin::updateFile - Failed to replace skin file")
+        }
+
+        Files.move(file.toPath(), newFile.toPath())
+
+        cache(client, false)
+
+        if (this::message.isInitialized) {
+            message.delete().queue()
+        }
+
+        this.file = newFile
+
+        if (replace) {
+            cache(client, true)
+        }
+
+        return newFile
     }
 
     fun asJson() : JsonObject {

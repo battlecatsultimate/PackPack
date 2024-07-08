@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
+import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -31,9 +32,12 @@ class SkinModifyHolder(
     private var message: Message,
     private val skin: Skin,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message), MessageUpdater {
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
+            "file" -> {
+                connectTo(event, SkinFileHolder(authorMessage, channelID, message, skin.card, skin))
+            }
             "creator" -> {
                 if (event !is EntitySelectInteractionEvent)
                     return
@@ -73,6 +77,8 @@ class SkinModifyHolder(
             }
             "create" -> {
                 CardData.skins.add(skin)
+
+                skin.cache(event.jda, true)
 
                 CardBot.saveCardData()
 
@@ -154,6 +160,10 @@ class SkinModifyHolder(
         }
     }
 
+    override fun onMessageUpdated(message: Message) {
+        this.message = message
+    }
+
     override fun clean() {
 
     }
@@ -179,8 +189,6 @@ class SkinModifyHolder(
     }
 
     private fun applyResult() {
-        message = updateMessageStatus(message)
-
         var builder =  message.editMessage(getContents())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
@@ -205,8 +213,6 @@ class SkinModifyHolder(
         }
 
         builder.queue()
-
-        message = updateMessageStatus(message)
     }
 
     private fun getContents() : String {
@@ -229,7 +235,10 @@ class SkinModifyHolder(
 
         result.add(ActionRow.of(creatorBuilder.build()))
 
-        result.add(ActionRow.of(Button.secondary("name", "Change Name").withEmoji(Emoji.fromUnicode("🏷️"))))
+        result.add(ActionRow.of(
+            Button.secondary("name", "Change Name").withEmoji(Emoji.fromUnicode("🏷️")),
+            Button.secondary("file", "Change File").withEmoji(EmojiStore.PNG)
+        ))
 
         val publicSwitch = if (skin.public) {
             EmojiStore.SWITCHON

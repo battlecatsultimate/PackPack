@@ -10,6 +10,7 @@ import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
+import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class SkinCostManageHolder(author: Message, channelID: String, private var message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message.id) {
+class SkinCostManageHolder(author: Message, channelID: String, private var message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message.id), MessageUpdater {
     override fun clean() {
 
     }
@@ -117,6 +118,10 @@ class SkinCostManageHolder(author: Message, channelID: String, private var messa
         }
     }
 
+    override fun onMessageUpdated(message: Message) {
+        this.message = message
+    }
+
     override fun onConnected(event: GenericComponentInteractionCreateEvent) {
         applyResult(event)
     }
@@ -140,8 +145,6 @@ class SkinCostManageHolder(author: Message, channelID: String, private var messa
     }
 
     private fun applyResult() {
-        message = updateMessageStatus(message)
-
         var builder = message.editMessage(getCostManager())
             .setComponents(getCostManagerComponents())
             .setAllowedMentions(ArrayList())

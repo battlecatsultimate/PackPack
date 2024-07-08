@@ -5,6 +5,7 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
+import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class SkinPurchaseSelectHolder(author: Message, channelID: String, private var message: Message, private val card: Card) : ComponentHolder(author, channelID, message) {
+class SkinPurchaseSelectHolder(author: Message, channelID: String, private var message: Message, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private val skins = CardData.skins.filter { skin -> skin.card == card && skin !in inventory.skins }.toMutableList()
@@ -63,6 +64,10 @@ class SkinPurchaseSelectHolder(author: Message, channelID: String, private var m
         }
     }
 
+    override fun onMessageUpdated(message: Message) {
+        this.message = message
+    }
+
     override fun clean() {
 
     }
@@ -92,8 +97,6 @@ class SkinPurchaseSelectHolder(author: Message, channelID: String, private var m
     }
 
     private fun applyResult() {
-        message = updateMessageStatus(message)
-
         var builder = message.editMessage(getContents())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
