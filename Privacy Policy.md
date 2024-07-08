@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Updated - 2022, April 22nd
+Updated - 2024, July 6th
 
 PackPack is a Discord Bot whose interface adapts to Users, Channels, and Servers according to their (voluntarily specified) needs. To provide customised services, it needs to collect some of its Users' data, if they want to use specific features. This is not a legally binding contract, simply a description of PackPack's data collection practices. These policies are subject to change, and will be updated if there is any such change.
 
@@ -30,9 +30,15 @@ Besides, these four categories of data, the bot will never store any data. Role 
 
 Servers may use Moderation Features mentioned above, or they may not use them. Users can opt out of data collection at any time with `p!optout`. After this, the bot will not monitor any message from the User. However, bot won't recognize you once command is called. The Developer takes responsibility to ensure that a User's preferences are not collected after they opt out, and they will be removed from the database immediately.
 
-## Underage Users
+## Discord Terms of Service
+
+### Underaged Users
 
 This Application and Bot follow [Discord's Terms of Service](https://discord.com/terms) and laws regarding Privacy strictly. If the Developer is informed with definitive evidence that a User is underage, they will remove all information stored about the User. Additionally, the User will be prohibited from using any of PackPack's services.
+
+### Servers
+
+As this Application strictly follows Discord's Terms of Service, the Server must follow same. If the Server, or the owner of were found out to violate Discord Terms of Service, the Bot may leave alledged Servers to prevent any problems regarding to such places, and deny any further invitation to there.
 
 ## Contact
 
