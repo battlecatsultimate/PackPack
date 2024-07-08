@@ -150,7 +150,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
             Command.sendMessageWithFile(ch, LangID.getStringByID("asset_file", lang).replace("_", file.getName()), f, file.getName());
 
-            msg.delete().queue();
+            message.delete().queue();
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AssetBrowserHolder::onSelected - Failed to perform interaction");
         }

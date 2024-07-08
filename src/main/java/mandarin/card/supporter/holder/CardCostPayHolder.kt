@@ -32,7 +32,7 @@ import kotlin.math.min
 class CardCostPayHolder(
     author: Message,
     channelID: String,
-    private var message: Message,
+    message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
 ) : ComponentHolder(author, channelID, message), MessageUpdater {

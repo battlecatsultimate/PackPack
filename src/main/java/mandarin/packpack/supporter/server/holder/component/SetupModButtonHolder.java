@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetupModButtonHolder extends ComponentHolder {
-    private final Message msg;
     private final String channelID;
     private final String memberID;
     private final int lang;
@@ -28,8 +27,7 @@ public class SetupModButtonHolder extends ComponentHolder {
 
     public SetupModButtonHolder(Message author, Message msg, String channelID, IDHolder holder, int lang) {
         super(author, channelID, msg);
-
-        this.msg = msg;
+        
         this.channelID = channelID;
         this.memberID = author.getAuthor().getId();
         this.lang = lang;
@@ -50,7 +48,7 @@ public class SetupModButtonHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = msg.getChannel();
+        MessageChannel ch = message.getChannel();
 
         switch (event.getComponentId()) {
             case "role" -> {
@@ -67,7 +65,7 @@ public class SetupModButtonHolder extends ComponentHolder {
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
             }
-            case "confirm" -> Command.replyToMessageSafely(ch, LangID.getStringByID("setup_mem", lang), msg, a -> a.setComponents(
+            case "confirm" -> Command.replyToMessageSafely(ch, LangID.getStringByID("setup_mem", lang), message, a -> a.setComponents(
                     ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()),
                     ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
             ), m -> {
@@ -104,7 +102,7 @@ public class SetupModButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("setup_expire", lang))
+        message.editMessage(LangID.getStringByID("setup_expire", lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();

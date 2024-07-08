@@ -32,7 +32,7 @@ import kotlin.math.min
 
 class SlotMachineCurrencyRewardHolder(
     author: Message, messageID: String,
-    private val message: Message,
+    message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCurrencyContent,
     private val new: Boolean

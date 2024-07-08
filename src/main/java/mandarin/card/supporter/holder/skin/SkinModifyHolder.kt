@@ -29,7 +29,7 @@ import java.nio.file.Files
 class SkinModifyHolder(
     author: Message,
     channelID: String,
-    private var message: Message,
+    message: Message,
     private val skin: Skin,
     private val new: Boolean
 ) : ComponentHolder(author, channelID, message), MessageUpdater {
@@ -162,6 +162,8 @@ class SkinModifyHolder(
 
     override fun onMessageUpdated(message: Message) {
         this.message = message
+
+        println(message.attachments)
     }
 
     override fun clean() {
@@ -189,10 +191,12 @@ class SkinModifyHolder(
     }
 
     private fun applyResult() {
-        var builder =  message.editMessage(getContents())
+        var builder = message.editMessage(getContents())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
+
+        println("APPLY : " + message.attachments)
 
         if (message.attachments.isEmpty()) {
             builder = builder.setFiles(FileUpload.fromData(skin.file))
@@ -207,6 +211,8 @@ class SkinModifyHolder(
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
+
+        println("APPLY : " + message.attachments)
 
         if (event.message.attachments.isEmpty()) {
             builder = builder.setFiles(FileUpload.fromData(skin.file))

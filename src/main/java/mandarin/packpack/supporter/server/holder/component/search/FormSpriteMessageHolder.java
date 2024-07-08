@@ -60,7 +60,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
             StaticStore.logger.uploadErrorLog(e, "E/FormSpriteMessageHolder::onSelected - Failed to upload form sprite/icon");
         }
 
-        msg.delete().queue();
+        message.delete().queue();
     }
 
     @Override

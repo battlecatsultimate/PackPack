@@ -20,7 +20,6 @@ import java.util.Map;
 
 public class StageInfoMessageHolder extends SearchHolder {
     private final List<Stage> stage;
-    private final Message author;
 
     private final boolean isFrame;
     private final boolean isExtra;
@@ -32,7 +31,6 @@ public class StageInfoMessageHolder extends SearchHolder {
         super(author, msg, channelID, lang);
 
         this.stage = stage;
-        this.author = author;
 
         this.star = star;
         this.treasure = treasure;
@@ -106,23 +104,21 @@ public class StageInfoMessageHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
-        msg.delete().queue();
+        message.delete().queue();
 
-        String mid = author.getAuthor().getId();
-
-        if(StaticStore.timeLimit.containsKey(mid)) {
-            StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+        if(StaticStore.timeLimit.containsKey(userID)) {
+            StaticStore.timeLimit.get(userID).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
         } else {
             Map<String, Long> memberLimit = new HashMap<>();
 
             memberLimit.put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
 
-            StaticStore.timeLimit.put(mid, memberLimit);
+            StaticStore.timeLimit.put(userID, memberLimit);
         }
 
         try {
             EntityHandler.showStageEmb(stage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, msg ->
-                StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stage.get(id), author, msg, channelID, isCompact))
+                StaticStore.putHolder(userID, new StageInfoButtonHolder(stage.get(id), getAuthorMessage(), msg, channelID, isCompact))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/StageInfoMessageHolder::onSelected - Failed to upload stage embed");

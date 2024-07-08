@@ -83,7 +83,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
             if(EnemyGif.forbidden.contains(e.id.id)) {
                 ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
 
-                msg.delete().queue();
+                message.delete().queue();
 
                 return;
             }
@@ -170,7 +170,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
             StaticStore.logger.uploadErrorLog(e, "E/EnemyAnimMessageHolder::onSelected - Failed to handle enemy image/animation holder");
         }
 
-        msg.delete().queue();
+        message.delete().queue();
     }
 
     @Override

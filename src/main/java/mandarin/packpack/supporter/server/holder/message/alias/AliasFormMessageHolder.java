@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 public class AliasFormMessageHolder extends MessageHolder {
     private final ArrayList<Form> form;
-    private final Message msg;
     private final String channelID;
     private final AliasHolder.MODE mode;
     private final String aliasName;
@@ -34,7 +33,6 @@ public class AliasFormMessageHolder extends MessageHolder {
         super(author, channelID, msg);
 
         this.form = form;
-        this.msg = msg;
         this.channelID = channelID;
         this.mode = mode;
         this.aliasName = aliasName;
@@ -49,7 +47,7 @@ public class AliasFormMessageHolder extends MessageHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), AliasFormMessageHolder.this);
 
-            msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+            message.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
         });
     }
 
@@ -92,7 +90,7 @@ public class AliasFormMessageHolder extends MessageHolder {
             if(id < 0 || id >= form.size())
                 return STATUS.WAIT;
 
-            msg.delete().queue();
+            message.delete().queue();
 
             String fname = StaticStore.safeMultiLangGet(form.get(id), lang);
 
@@ -172,7 +170,7 @@ public class AliasFormMessageHolder extends MessageHolder {
 
             return STATUS.FINISH;
         } else if(content.equals("c")) {
-            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+            message.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
 
             expired = true;
 
@@ -224,7 +222,7 @@ public class AliasFormMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("formst_expire", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -269,6 +267,6 @@ public class AliasFormMessageHolder extends MessageHolder {
         sb.append(LangID.getStringByID("formst_can", lang));
         sb.append("```");
 
-        msg.editMessage(sb.toString()).queue();
+        message.editMessage(sb.toString()).queue();
     }
 }

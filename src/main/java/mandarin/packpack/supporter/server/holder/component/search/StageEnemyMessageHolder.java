@@ -104,11 +104,11 @@ public class StageEnemyMessageHolder extends SearchHolder {
             ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate, monthly);
 
             if(stages.isEmpty()) {
-                msg.delete().queue();
+                message.delete().queue();
 
                 ch.sendMessage(LangID.getStringByID("fstage_nost", lang)).queue();
             } else if(stages.size() == 1) {
-                msg.delete().queue();
+                message.delete().queue();
 
                 EntityHandler.showStageEmb(stages.getFirst(), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
@@ -147,7 +147,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang))
                 );
 
-                msg.delete().queue();
+                message.delete().queue();
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/StageEnemyMessageHolder::onSelected - Failed to upload stage selecting message");

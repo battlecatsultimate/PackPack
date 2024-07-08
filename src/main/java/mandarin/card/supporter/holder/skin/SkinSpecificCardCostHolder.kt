@@ -30,7 +30,7 @@ import kotlin.math.min
 class SkinSpecificCardCostHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    message: Message,
     private val skin: Skin,
     private val cost: SpecificCardCost,
     private val new: Boolean

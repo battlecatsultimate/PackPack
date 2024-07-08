@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 class CardPackContentHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    message: Message,
     private val pack: CardPack
 ) : ComponentHolder(author, channelID, message) {
     override fun clean() {

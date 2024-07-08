@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ResetCooldownHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+class ResetCooldownHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {

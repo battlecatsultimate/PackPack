@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
 class PackContentAdjustHolder(author: Message, channelID: String,
-    private val message: Message,
+    message: Message,
     private val pack: CardPack,
     private val cardChancePairList: CardChancePairList,
     private val new: Boolean

@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 
-class SlotMachineManageHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, channelID, message) {
+class SlotMachineManageHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {

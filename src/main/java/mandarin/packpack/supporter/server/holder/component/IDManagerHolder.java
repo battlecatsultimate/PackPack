@@ -33,7 +33,6 @@ import java.util.List;
 public class IDManagerHolder extends ComponentHolder implements Conflictable {
     private static final int PAGE_SIZE = 8;
 
-    private final Message msg;
     private final IDHolder holder;
     private final Guild g;
 
@@ -42,7 +41,6 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     public IDManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message msg, @NotNull IDHolder holder, @NotNull Guild g) {
         super(author, channelID, msg);
 
-        this.msg = msg;
         this.holder = holder;
         this.g = g;
     }
@@ -54,7 +52,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
     @Override
     public void onExpire(String id) {
-        msg.editMessage(LangID.getStringByID("idset_expire", holder.config.lang))
+        message.editMessage(LangID.getStringByID("idset_expire", holder.config.lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -87,7 +85,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                     .queue();
                         }
 
-                        msg.editMessage(generateIDData())
+                        message.editMessage(generateIDData())
                                 .setComponents(registerComponent())
                                 .mentionRepliedUser(false)
                                 .setAllowedMentions(new ArrayList<>())
@@ -125,7 +123,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                 .queue();
                     }
 
-                    msg.editMessage(generateIDData())
+                    message.editMessage(generateIDData())
                             .setComponents(registerComponent())
                             .mentionRepliedUser(false)
                             .setAllowedMentions(new ArrayList<>())
@@ -162,7 +160,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                 .queue();
                     }
 
-                    msg.editMessage(generateIDData())
+                    message.editMessage(generateIDData())
                             .setComponents(registerComponent())
                             .mentionRepliedUser(false)
                             .setAllowedMentions(new ArrayList<>())
@@ -179,7 +177,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
                 expired = true;
 
-                StaticStore.putHolder(userID, new CustomIDManagerHolder(getAuthorMessage(), channelID, msg, holder, g));
+                StaticStore.putHolder(userID, new CustomIDManagerHolder(getAuthorMessage(), channelID, message, holder, g));
             }
             case "announce" -> {
                 if (event instanceof EntitySelectInteractionEvent e) {
@@ -198,7 +196,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                         .setContent(String.format(LangID.getStringByID("idset_annset", lang), m.getId(), m.getAsMention()))
                                         .queue();
 
-                                msg.editMessage(generateIDData())
+                                message.editMessage(generateIDData())
                                         .setComponents(registerComponent())
                                         .mentionRepliedUser(false)
                                         .setAllowedMentions(new ArrayList<>())
@@ -212,7 +210,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                 .setContent(LangID.getStringByID("idset_annrem", lang))
                                 .queue();
 
-                        msg.editMessage(generateIDData())
+                        message.editMessage(generateIDData())
                                 .setComponents(registerComponent())
                                 .mentionRepliedUser(false)
                                 .setAllowedMentions(new ArrayList<>())
@@ -242,7 +240,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                         .setContent(String.format(LangID.getStringByID("idset_logset", lang), m.getId(), m.getAsMention()))
                                         .queue();
 
-                                msg.editMessage(generateIDData())
+                                message.editMessage(generateIDData())
                                         .setComponents(registerComponent())
                                         .mentionRepliedUser(false)
                                         .setAllowedMentions(new ArrayList<>())
@@ -256,7 +254,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                 .setContent(LangID.getStringByID("idset_logrem", lang))
                                 .queue();
 
-                        msg.editMessage(generateIDData())
+                        message.editMessage(generateIDData())
                                 .setComponents(registerComponent())
                                 .mentionRepliedUser(false)
                                 .setAllowedMentions(new ArrayList<>())

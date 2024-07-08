@@ -72,7 +72,7 @@ public class ComboFormMessageHolder extends SearchHolder {
             ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(f, cName);
 
             if(combos.isEmpty()) {
-                msg.delete().queue();
+                message.delete().queue();
 
                 createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(fName, cName, lang))));
             } else if(combos.size() == 1) {
@@ -88,7 +88,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                     StaticStore.timeLimit.put(u.getId(), memberLimit);
                 }
 
-                msg.delete().queue();
+                message.delete().queue();
 
                 try {
                     EntityHandler.showComboEmbed(ch, getAuthorMessage(), combos.getFirst(), lang);
@@ -124,12 +124,12 @@ public class ComboFormMessageHolder extends SearchHolder {
                     if(formName.isBlank())
                         formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
 
-                    msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
+                    message.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
 
                     if(res != null) {
                         User u = event.getUser();
 
-                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, msg, ch.getId(), lang));
+                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, message, ch.getId(), lang));
                     }
                 });
             }

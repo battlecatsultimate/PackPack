@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class SkinSelectHolder(author: Message, channelID: String, private var message: Message, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
+class SkinSelectHolder(author: Message, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
     private val skins = CardData.skins.filter { s -> s.card == card }.toMutableList()
 
     private var page = 0

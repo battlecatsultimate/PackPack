@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 public class AliasEnemyMessageHolder extends MessageHolder {
     private final ArrayList<Enemy> enemy;
-    private final Message msg;
     private final String channelID;
     private final AliasHolder.MODE mode;
     private final String aliasName;
@@ -34,7 +33,6 @@ public class AliasEnemyMessageHolder extends MessageHolder {
         super(author, channelID, msg);
 
         this.enemy = enemy;
-        this.msg = msg;
         this.mode = mode;
         this.channelID = channelID;
         this.aliasName = aliasName;
@@ -82,7 +80,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
             if(id < 0 || id >= enemy.size())
                 return STATUS.WAIT;
 
-            msg.delete().queue();
+            message.delete().queue();
 
             String eName = StaticStore.safeMultiLangGet(enemy.get(id), lang);
 
@@ -163,7 +161,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
 
             return STATUS.FINISH;
         } else if(content.equals("c")) {
-            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+            message.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
 
             expired = true;
 
@@ -215,7 +213,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("formst_expire", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -260,6 +258,6 @@ public class AliasEnemyMessageHolder extends MessageHolder {
         sb.append(LangID.getStringByID("formst_can", lang));
         sb.append("```");
 
-        msg.editMessage(sb.toString()).queue();
+        message.editMessage(sb.toString()).queue();
     }
 }

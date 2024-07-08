@@ -20,20 +20,17 @@ import java.io.File
 import java.nio.file.Files
 
 class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
-    private var message: Message
     private val card: Card
     private val skin: Skin?
 
     private var downloading = false
 
     constructor(author: Message, channelID: String, message: Message, card: Card) : super(author, channelID, message) {
-        this.message = message
         this.skin = null
         this.card = card
     }
 
     constructor(author: Message, channelID: String, message: Message, card: Card, skin: Skin) : super(author, channelID, message) {
-        this.message = message
         this.skin = skin
         this.card = card
     }
@@ -169,6 +166,8 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
             connectTo(SkinModifyHolder(authorMessage, channelID, message, skin, true))
         } else {
             skin.updateFile(downloader.target, authorMessage.jda, skin in CardData.skins)
+
+            println("PREPARE : " + message.attachments)
 
             goBack()
         }

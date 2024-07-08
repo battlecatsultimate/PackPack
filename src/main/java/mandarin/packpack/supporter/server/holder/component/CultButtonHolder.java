@@ -7,14 +7,10 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import org.jetbrains.annotations.NotNull;
 
 public class CultButtonHolder extends ComponentHolder {
-    private final Message msg;
-
     private final int lang;
 
     public CultButtonHolder(Message author, Message msg, String channelID, String memberID, int lang) {
         super(author, channelID, msg);
-
-        this.msg = msg;
 
         this.lang = lang;
 
@@ -39,7 +35,7 @@ public class CultButtonHolder extends ComponentHolder {
             case "yes" -> {
                 StaticStore.cultist.add(userID);
 
-                msg.editMessage(LangID.getStringByID("hi_sp_0_0", lang))
+                message.editMessage(LangID.getStringByID("hi_sp_0_0", lang))
                         .setComponents()
                         .mentionRepliedUser(false)
                         .queue();
@@ -49,7 +45,7 @@ public class CultButtonHolder extends ComponentHolder {
                 StaticStore.removeHolder(userID, this);
             }
             case "no" -> {
-                msg.editMessage(LangID.getStringByID("hi_sp_0_1", lang))
+                message.editMessage(LangID.getStringByID("hi_sp_0_1", lang))
                         .setComponents()
                         .mentionRepliedUser(false)
                         .queue();
@@ -70,7 +66,7 @@ public class CultButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
+        message.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();

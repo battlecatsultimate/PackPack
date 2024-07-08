@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class SalvageCostHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+class SalvageCostHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
     private val size = 2
 
     private var page = 0

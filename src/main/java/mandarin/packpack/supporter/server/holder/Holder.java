@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Holder {
@@ -102,7 +103,7 @@ public abstract class Holder {
     @Nonnull
     public final String channelID;
     @Nonnull
-    public final Message message;
+    public Message message;
     @Nonnull
     public final String userID;
 
@@ -296,7 +297,13 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            parent.onBack(this);
+            if (parent instanceof MessageUpdater updater) {
+                System.out.println("BACK : " + message.getAttachments());
+
+                updater.onMessageUpdated(message);
+            }
+
+            Objects.requireNonNull(parent).onBack(this);
         }
     }
 
@@ -310,7 +317,11 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            parent.onBack(event, this);
+            if (parent instanceof MessageUpdater updater) {
+                updater.onMessageUpdated(message);
+            }
+
+            Objects.requireNonNull(parent).onBack(event, this);
         }
     }
 
@@ -324,7 +335,11 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            parent.onBack(event, this);
+            if (parent instanceof MessageUpdater updater) {
+                updater.onMessageUpdated(message);
+            }
+
+            Objects.requireNonNull(parent).onBack(event, this);
         }
     }
 

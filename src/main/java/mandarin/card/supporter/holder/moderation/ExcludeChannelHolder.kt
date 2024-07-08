@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.max
 import kotlin.math.min
 
-class ExcludeChannelHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+class ExcludeChannelHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {

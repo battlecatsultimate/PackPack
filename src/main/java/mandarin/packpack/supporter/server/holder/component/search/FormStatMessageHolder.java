@@ -83,7 +83,7 @@ public class FormStatMessageHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
-        msg.delete().queue();
+        message.delete().queue();
 
         try {
             Form f = form.get(id);

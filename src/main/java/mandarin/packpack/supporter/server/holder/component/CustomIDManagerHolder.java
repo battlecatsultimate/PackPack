@@ -30,7 +30,6 @@ import java.util.List;
 
 public class CustomIDManagerHolder extends ComponentHolder {
     private final IDHolder holder;
-    private final Message msg;
     private final Guild g;
 
     private int page;
@@ -39,7 +38,6 @@ public class CustomIDManagerHolder extends ComponentHolder {
         super(author, channelID, msg);
 
         this.holder = holder;
-        this.msg = msg;
         this.g = g;
     }
 
@@ -50,7 +48,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
     @Override
     public void onExpire(String id) {
-        msg.editMessage(LangID.getStringByID("idset_expire", holder.config.lang))
+        message.editMessage(LangID.getStringByID("idset_expire", holder.config.lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -82,7 +80,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new CustomRoleAssignHolder(getAuthorMessage(), channelID, message, () -> msg.editMessage(getManagerText())
+                StaticStore.putHolder(userID, new CustomRoleAssignHolder(getAuthorMessage(), channelID, message, () -> message.editMessage(getManagerText())
                         .setComponents(getManagerComponents())
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
@@ -105,7 +103,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
                     page = Math.min(Math.max(0, page), totalPage - 1);
 
-                    msg.editMessage(getManagerText())
+                    message.editMessage(getManagerText())
                             .setComponents(getManagerComponents())
                             .mentionRepliedUser(false)
                             .setAllowedMentions(new ArrayList<>())
@@ -122,7 +120,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
 
-                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new IDManagerHolder(getAuthorMessage(), channelID, msg, holder, g));
+                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new IDManagerHolder(getAuthorMessage(), channelID, message, holder, g));
             }
             case "prev10" -> {
                 page -= 10;

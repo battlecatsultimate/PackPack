@@ -64,7 +64,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
-        msg.delete().queue();
+        message.delete().queue();
 
         try {
             EntityHandler.showEnemyEmb(enemy.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, magnification, treasure, lang);

@@ -121,7 +121,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
-        msg.delete().queue();
+        message.delete().queue();
 
         String mid = getAuthorMessage().getId();
 

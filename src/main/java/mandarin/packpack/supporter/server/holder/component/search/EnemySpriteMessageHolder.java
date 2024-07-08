@@ -61,7 +61,7 @@ public class EnemySpriteMessageHolder extends SearchHolder {
             StaticStore.logger.uploadErrorLog(e, "E/EnemySpriteMessageHolder::onSelected - Failed to upload enemy sprite/icon");
         }
 
-        msg.delete().queue();
+        message.delete().queue();
     }
 
     @Override

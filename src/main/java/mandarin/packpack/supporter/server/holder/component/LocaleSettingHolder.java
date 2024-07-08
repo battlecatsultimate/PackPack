@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocaleSettingHolder extends ComponentHolder {
-    private final Message message;
-
     private final ConfigHolder config;
     private final boolean forServer;
 
@@ -30,8 +28,6 @@ public class LocaleSettingHolder extends ComponentHolder {
 
     public LocaleSettingHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull ConfigHolder config, @Nullable IDHolder holder, boolean forServer) {
         super(author, channelID, message);
-
-        this.message = message;
 
         this.config = config;
         this.forServer = forServer;

@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardFavoriteHolder(author: Message, channelID: String, private var message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
+class CardFavoriteHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
     private val skins = inventory.skins.filter { s -> s.card == card }
 
     private var page = 0

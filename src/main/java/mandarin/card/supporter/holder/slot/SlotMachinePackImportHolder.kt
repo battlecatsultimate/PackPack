@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachinePackImportHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine, private val content: SlotCardContent) : ComponentHolder(author, channelID, message) {
+class SlotMachinePackImportHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val content: SlotCardContent) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {

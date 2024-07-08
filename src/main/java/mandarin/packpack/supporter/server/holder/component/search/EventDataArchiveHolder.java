@@ -52,7 +52,7 @@ public class EventDataArchiveHolder extends SearchHolder {
                 .addFiles(FileUpload.fromData(f, f.getName().replace(".txt", "").replaceAll(";", "-") + "_" + fileName + ".txt"))
                 .queue();
 
-        msg.delete().queue();
+        message.delete().queue();
     }
 
     @Override

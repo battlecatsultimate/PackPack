@@ -18,7 +18,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 public class FormButtonHolder extends ComponentHolder {
-    private final Message embed;
     private final ConfigHolder config;
     private final int lang;
     private final Form f;
@@ -34,7 +33,6 @@ public class FormButtonHolder extends ComponentHolder {
     public FormButtonHolder(Form f, @Nonnull Message author,@Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, boolean treasure, TreasureHolder t, Level lv, int lang, @Nonnull String channelID) {
         super(author, channelID, msg);
 
-        this.embed = msg;
         this.config = config;
         this.lang = lang;
         this.f = f;
@@ -61,7 +59,7 @@ public class FormButtonHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        embed.delete().queue();
+        message.delete().queue();
 
         MessageChannel ch = event.getMessageChannel();
 
@@ -120,7 +118,7 @@ public class FormButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         ArrayList<Button> buttons = new ArrayList<>();
 
-        for(Button button : embed.getButtons()) {
+        for(Button button : message.getButtons()) {
             if(button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
                 buttons.add(button);
             } else if(!compact) {
@@ -129,9 +127,9 @@ public class FormButtonHolder extends ComponentHolder {
         }
 
         if(buttons.isEmpty()) {
-            embed.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
         } else {
-            embed.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
         }
 
         expired = true;

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class NotificationConfigHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+class NotificationConfigHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
     private var tested = false
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {

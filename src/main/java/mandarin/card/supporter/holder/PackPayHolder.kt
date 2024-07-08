@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 class PackPayHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    message: Message,
     private val member: Member,
     private val pack: CardPack,
     private val noImage: Boolean

@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 class SlotMachineCardChancePairListHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCardContent,
     private val cardChancePairList: CardChancePairList,

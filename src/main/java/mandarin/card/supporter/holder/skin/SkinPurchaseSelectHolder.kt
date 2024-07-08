@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class SkinPurchaseSelectHolder(author: Message, channelID: String, private var message: Message, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
+class SkinPurchaseSelectHolder(author: Message, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private val skins = CardData.skins.filter { skin -> skin.card == card && skin !in inventory.skins }.toMutableList()

@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class StageInfoButtonHolder extends ComponentHolder {
-    private final Message embed;
     private final Stage st;
     private final boolean compact;
 
@@ -27,7 +26,6 @@ public class StageInfoButtonHolder extends ComponentHolder {
         super(author, channelID, msg);
 
         this.st = st;
-        embed = msg;
         this.compact = compact;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
@@ -121,17 +119,17 @@ public class StageInfoButtonHolder extends ComponentHolder {
     @Override
     public void onExpire(String id) {
         if(compact) {
-            embed.editMessageComponents()
+            message.editMessageComponents()
                     .mentionRepliedUser(false)
                     .queue();
         } else {
             ArrayList<Button> buttons = new ArrayList<>();
 
-            for(Button b : embed.getButtons()) {
+            for(Button b : message.getButtons()) {
                 buttons.add(b.asDisabled());
             }
 
-            embed.editMessageComponents(ActionRow.of(buttons))
+            message.editMessageComponents(ActionRow.of(buttons))
                     .mentionRepliedUser(false)
                     .queue();
         }

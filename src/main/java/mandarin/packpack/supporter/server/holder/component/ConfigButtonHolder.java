@@ -30,8 +30,7 @@ import java.util.List;
 
 public class ConfigButtonHolder extends ComponentHolder {
     private static final int TOTAL_CONFIG = 7;
-
-    private final Message msg;
+    
     private final ConfigHolder config;
     private final ConfigHolder backup;
     private final IDHolder holder;
@@ -40,8 +39,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
     public ConfigButtonHolder(Message author, Message msg, ConfigHolder config, IDHolder holder, String channelID) {
         super(author, channelID, msg);
-
-        this.msg = msg;
+        
         this.config = config;
         this.backup = config.clone();
         this.holder = holder;
@@ -85,7 +83,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), msg, channelID, config, e -> e.deferEdit()
+                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), message, channelID, config, e -> e.deferEdit()
                         .setContent(parseMessage())
                         .setComponents(parseComponents())
                         .mentionRepliedUser(false)
@@ -184,7 +182,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                     }
                 }
 
-                msg.editMessage(parseMessage())
+                message.editMessage(parseMessage())
                         .setComponents(parseComponents())
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
@@ -247,7 +245,7 @@ public class ConfigButtonHolder extends ComponentHolder {
             StaticStore.config.put(id, backup);
         }
 
-        msg.editMessage(LangID.getStringByID("config_expire", config.lang))
+        message.editMessage(LangID.getStringByID("config_expire", config.lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();

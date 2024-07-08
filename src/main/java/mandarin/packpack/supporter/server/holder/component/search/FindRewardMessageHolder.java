@@ -82,7 +82,7 @@ public class FindRewardMessageHolder extends SearchHolder {
         try {
             int id = parseDataToInt(event);
 
-            msg.delete().queue();
+            message.delete().queue();
 
             List<Stage> stages = EntityFilter.findStageByReward(rewards.get(id), chance, amount);
 

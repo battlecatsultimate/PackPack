@@ -16,7 +16,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 public class EnemyButtonHolder extends ComponentHolder {
-    private final Message embed;
     private final int lang;
     private final Enemy e;
 
@@ -27,7 +26,6 @@ public class EnemyButtonHolder extends ComponentHolder {
     public EnemyButtonHolder(Enemy e, @Nonnull Message author, @Nonnull Message msg, TreasureHolder t, int[] magnification, boolean compact, int lang, @Nonnull String channelID) {
         super(author, channelID, msg);
 
-        this.embed = msg;
         this.lang = lang;
         this.e = e;
 
@@ -49,7 +47,7 @@ public class EnemyButtonHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        embed.delete().queue();
+        message.delete().queue();
 
         MessageChannel ch = event.getMessageChannel();
 
@@ -71,7 +69,7 @@ public class EnemyButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         ArrayList<Button> buttons = new ArrayList<>();
 
-        for(Button button : embed.getButtons()) {
+        for(Button button : message.getButtons()) {
             if(button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
                 buttons.add(button);
             } else if(!compact) {
@@ -80,9 +78,9 @@ public class EnemyButtonHolder extends ComponentHolder {
         }
 
         if(buttons.isEmpty()) {
-            embed.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
         } else {
-            embed.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
         }
 
         expired = true;

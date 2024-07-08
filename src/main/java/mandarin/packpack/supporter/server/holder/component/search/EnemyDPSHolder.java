@@ -56,7 +56,7 @@ public class EnemyDPSHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
-        msg.delete().queue();
+        message.delete().queue();
 
         try {
             Enemy f = form.get(id);

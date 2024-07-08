@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.FileUpload
 
-class SkinPurchasePayHolder(author: Message, channelID: String, private var message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message), MessageUpdater {
+class SkinPurchasePayHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message), MessageUpdater {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     private val containers = Array(skin.cost.cardsCosts.size) {

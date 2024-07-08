@@ -43,7 +43,7 @@ public class MedalMessageHolder extends SearchHolder {
 
         int i = parseDataToInt(event);
 
-        msg.delete().queue();
+        message.delete().queue();
 
         try {
             EntityHandler.showMedalEmbed(id.get(i), ch, getAuthorMessage(), lang);

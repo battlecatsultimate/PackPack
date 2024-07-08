@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class CardInventoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, channelID, message) {
+class CardInventoryHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, channelID, message) {
     private val cards = ArrayList<Card>(inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator()))
 
     private var page = 0

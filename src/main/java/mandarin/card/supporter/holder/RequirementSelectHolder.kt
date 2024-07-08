@@ -17,14 +17,12 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.function.Consumer
 
 class RequirementSelectHolder : ComponentHolder {
-    private val message: Message
     private val product: Product
     private val inventory: Inventory
     private val role: CardData.Role
     private val reward: Consumer<GenericComponentInteractionCreateEvent>
 
     constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, channelID, message) {
-        this.message = message
         this.product = product
         this.inventory = inventory
         this.role = role
@@ -33,7 +31,6 @@ class RequirementSelectHolder : ComponentHolder {
     }
 
     constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message) {
-        this.message = message
         this.product = product
         this.inventory = inventory
         this.reward = reward

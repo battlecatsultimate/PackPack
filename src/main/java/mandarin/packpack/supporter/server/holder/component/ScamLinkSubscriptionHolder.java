@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScamLinkSubscriptionHolder extends ComponentHolder {
-    private final Message msg;
     private final int lang;
 
     private final String targetChannel;
@@ -31,8 +30,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
 
     public ScamLinkSubscriptionHolder(Message author, Message msg, String channelID, int lang, String targetChannel, String mute) {
         super(author, channelID, msg);
-
-        this.msg = msg;
+        
         this.lang = lang;
 
         this.targetChannel = targetChannel;
@@ -41,8 +39,8 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = msg.getChannel();
-        Guild g = msg.getGuild();
+        MessageChannel ch = message.getChannel();
+        Guild g = message.getGuild();
 
         switch (event.getComponentId()) {
             case "action" -> {
@@ -85,7 +83,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
 
                     StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
 
-                    Command.replyToMessageSafely(ch, LangID.getStringByID("subscam_done", lang).replace("_", targetChannel), msg, a -> a);
+                    Command.replyToMessageSafely(ch, LangID.getStringByID("subscam_done", lang).replace("_", targetChannel), message, a -> a);
 
                     event.deferEdit()
                             .setContent(parseMessage())
@@ -118,7 +116,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("subscam_expire", lang)).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
+        message.editMessage(LangID.getStringByID("subscam_expire", lang)).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
     }
 
     private String parseMessage() {

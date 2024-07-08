@@ -25,7 +25,6 @@ import java.util.function.Consumer
 import kotlin.math.min
 
 class FilterProcessHolder : ComponentHolder {
-    private val message: Message
     private val product: Product
     private val filters: List<Filter>
     private val inventory: Inventory
@@ -43,7 +42,6 @@ class FilterProcessHolder : ComponentHolder {
     private var banner = intArrayOf(-1, -1)
 
     constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, role: CardData.Role) : super(author, channelID, message) {
-        this.message = message
         this.product = product
         this.filters = filters
         this.inventory = inventory
@@ -59,7 +57,6 @@ class FilterProcessHolder : ComponentHolder {
     }
 
     constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message) {
-        this.message = message
         this.product = product
         this.filters = filters
         this.inventory = inventory

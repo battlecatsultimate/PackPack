@@ -23,7 +23,6 @@ import java.util.Map;
 
 public class AliasStageMessageHolder extends MessageHolder {
     private final ArrayList<Stage> stage;
-    private final Message msg;
     private final String channelID;
     private final AliasHolder.MODE mode;
     private final String aliasName;
@@ -38,7 +37,6 @@ public class AliasStageMessageHolder extends MessageHolder {
         super(author, channelID, msg);
 
         this.stage = stage;
-        this.msg = msg;
         this.channelID = channelID;
         this.mode = mode;
         this.aliasName = aliasName;
@@ -87,7 +85,7 @@ public class AliasStageMessageHolder extends MessageHolder {
             if(id < 0 || id >= stage.size())
                 return STATUS.WAIT;
 
-            msg.delete().queue();
+            message.delete().queue();
 
             User u = event.getAuthor();
 
@@ -184,7 +182,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
             return STATUS.WAIT;
         } else if(content.equals("c")) {
-            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+            message.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
 
             expired = true;
 
@@ -236,7 +234,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("formst_expire", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -330,6 +328,6 @@ public class AliasStageMessageHolder extends MessageHolder {
         sb.append(LangID.getStringByID("formst_can", lang));
         sb.append("```");
 
-        msg.editMessage(sb.toString()).queue();
+        message.editMessage(sb.toString()).queue();
     }
 }

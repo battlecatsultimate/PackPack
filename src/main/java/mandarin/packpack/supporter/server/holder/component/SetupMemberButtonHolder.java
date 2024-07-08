@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetupMemberButtonHolder extends ComponentHolder {
-    private final Message msg;
-
     private final IDHolder holder;
     private final String modID;
     private final int lang;
@@ -29,8 +27,6 @@ public class SetupMemberButtonHolder extends ComponentHolder {
     public SetupMemberButtonHolder(Message msg, Message author, String channelID, IDHolder holder, String modID, int lang) {
         super(author, channelID, msg);
 
-        this.msg = msg;
-
         this.holder = holder;
         this.modID = modID;
         this.lang = lang;
@@ -38,9 +34,9 @@ public class SetupMemberButtonHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = msg.getChannel();
+        MessageChannel ch = message.getChannel();
         
-        Guild g = msg.getGuild();
+        Guild g = message.getGuild();
 
         switch (event.getComponentId()) {
             case "role" -> {
@@ -77,7 +73,7 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                 
                 StaticStore.idHolder.put(g.getId(), holder);
                 
-                Command.replyToMessageSafely(ch, LangID.getStringByID("setup_done", lang).replace("_MOD_", modID).replace("_MEM_", roleID), msg, a -> a);
+                Command.replyToMessageSafely(ch, LangID.getStringByID("setup_done", lang).replace("_MOD_", modID).replace("_MEM_", roleID), message, a -> a);
                 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", roleID))
@@ -106,7 +102,7 @@ public class SetupMemberButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("setup_expire", lang))
+        message.editMessage(LangID.getStringByID("setup_expire", lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();

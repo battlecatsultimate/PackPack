@@ -26,7 +26,7 @@ import org.jcodec.api.UnsupportedFormatException
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineContentSortHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+class SlotMachineContentSortHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {

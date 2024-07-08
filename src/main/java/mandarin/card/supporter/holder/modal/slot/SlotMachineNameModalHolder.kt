@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 class SlotMachineNameModalHolder : ModalHolder {
-    private val message: Message
-
     private val slotMachine: SlotMachine?
 
     constructor(author: Message, channelID: String, message: Message) : super(author, channelID, message) {
@@ -18,7 +16,6 @@ class SlotMachineNameModalHolder : ModalHolder {
     }
 
     constructor(author: Message, channelID: String, message: Message, slotMachine: SlotMachine) : super(author, channelID, message) {
-        this.message = message
         this.slotMachine = slotMachine
     }
 

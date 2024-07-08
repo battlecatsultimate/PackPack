@@ -147,7 +147,7 @@ public class SolutionHolder extends SearchHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessageComponents(new ArrayList<>())
+        message.editMessageComponents(new ArrayList<>())
                 .setAllowedMentions(new ArrayList<>())
                 .queue();
     }

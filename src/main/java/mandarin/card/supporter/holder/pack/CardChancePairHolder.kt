@@ -29,7 +29,7 @@ import kotlin.math.min
 
 class CardChancePairHolder(
     author: Message, channelID: String,
-    private val message: Message,
+    message: Message,
     private val pack: CardPack,
     private val cardChancePairList: CardChancePairList,
     private val pair: CardChancePair,

@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineSelectHolder(author: Message, channelID: String, private val message: Message, private val skip: Boolean) : ComponentHolder(author, channelID, message) {
+class SlotMachineSelectHolder(author: Message, channelID: String, message: Message, private val skip: Boolean) : ComponentHolder(author, channelID, message) {
     private val roles = author.member?.roles?.map { r -> r.idLong } ?: ArrayList()
     private val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate && (s.roles.isEmpty() || s.roles.any { r -> r in roles }) }
 

@@ -21,7 +21,7 @@ import java.math.RoundingMode
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineContentHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+class SlotMachineContentHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {

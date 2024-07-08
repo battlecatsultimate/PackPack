@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AnimMessageHolder extends MessageHolder {
     private final AnimMixer mixer;
-    private final Message msg;
     private final int lang;
     private final File container;
 
@@ -45,7 +44,6 @@ public class AnimMessageHolder extends MessageHolder {
     public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
         super(author, channelID, target);
 
-        this.msg = target;
         this.lang = lang;
         this.container = container;
 
@@ -489,7 +487,7 @@ public class AnimMessageHolder extends MessageHolder {
                     return STATUS.FINISH;
                 }
             } else if(m.getContentRaw().equals("c")) {
-                msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
+                message.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
@@ -516,7 +514,7 @@ public class AnimMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("formst_expire", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -531,7 +529,7 @@ public class AnimMessageHolder extends MessageHolder {
                 content.append("\n");
         }
 
-        msg.editMessage(content.toString()).queue();
+        message.editMessage(content.toString()).queue();
     }
 
     private int getLastIndex() {

@@ -19,8 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 public class TreasureButtonHolder extends ComponentHolder {
-    private final Message msg;
-
     private final TreasureHolder treasure;
     private final TreasureHolder backup;
 
@@ -28,8 +26,6 @@ public class TreasureButtonHolder extends ComponentHolder {
 
     public TreasureButtonHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @NotNull TreasureHolder treasure, int lang) {
         super(author, channelID, msg);
-
-        this.msg = msg;
 
         this.treasure = treasure;
         backup = this.treasure.copy();
@@ -157,7 +153,7 @@ public class TreasureButtonHolder extends ComponentHolder {
         if(!expired) {
             expired = true;
 
-            msg.editMessage(LangID.getStringByID("treasure_expire", lang))
+            message.editMessage(LangID.getStringByID("treasure_expire", lang))
                     .setAllowedMentions(new ArrayList<>())
                     .mentionRepliedUser(false)
                     .setComponents()
@@ -181,7 +177,7 @@ public class TreasureButtonHolder extends ComponentHolder {
     }
 
     private void applyResult() {
-        attachUIComponents(msg.editMessage(generateText(treasure))).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
+        attachUIComponents(message.editMessage(generateText(treasure))).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
     }
 
     private String generateText(TreasureHolder treasure) {

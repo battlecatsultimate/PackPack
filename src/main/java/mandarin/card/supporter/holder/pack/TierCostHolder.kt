@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class TierCostHolder(author: Message, channelID: String, private val message: Message, private val pack: CardPack, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message) {
+class TierCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }

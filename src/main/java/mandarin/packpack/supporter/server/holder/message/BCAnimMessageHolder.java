@@ -43,7 +43,6 @@ public class BCAnimMessageHolder extends MessageHolder {
     }
 
     private final AnimMixer mixer;
-    private final Message msg;
     private final boolean performance;
     private final int lang;
     private final File container;
@@ -59,8 +58,7 @@ public class BCAnimMessageHolder extends MessageHolder {
 
     public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, boolean performance, int lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
         super(author, channelID, target);
-
-        this.msg = target;
+        
         this.performance = performance;
         this.lang = lang;
         this.container = container;
@@ -200,7 +198,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                     return STATUS.FINISH;
                 }
             } else if(m.getContentRaw().equals("c")) {
-                msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
+                message.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
@@ -229,7 +227,7 @@ public class BCAnimMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("formst_expire", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -278,7 +276,7 @@ public class BCAnimMessageHolder extends MessageHolder {
             }
         }
 
-        msg.editMessage(content.toString()).queue();
+        message.editMessage(content.toString()).queue();
     }
 
     private boolean validFile(FILE fileType, File file) throws Exception {

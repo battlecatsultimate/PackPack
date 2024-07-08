@@ -37,7 +37,7 @@ import kotlin.math.min
 class SlotMachineCardRewardHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCardContent,
     private val new: Boolean) : ComponentHolder(author, channelID, message) {

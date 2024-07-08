@@ -16,12 +16,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class EventGrabberHolder extends ComponentHolder {
-    private final Message msg;
-
     public EventGrabberHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message) {
         super(author, channelID, message);
-
-        msg = message;
     }
 
     @Override
@@ -31,7 +27,7 @@ public class EventGrabberHolder extends ComponentHolder {
 
     @Override
     public void onExpire(String id) {
-        msg.editMessage("Event file grabbing config expired")
+        message.editMessage("Event file grabbing config expired")
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .setComponents()

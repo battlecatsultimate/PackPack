@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 class CardPackAdjustHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    message: Message,
     private val pack: CardPack,
     private val new: Boolean
 ) : ComponentHolder(author, channelID, message) {

@@ -74,7 +74,7 @@ public class ComboMessageHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
-        msg.delete().queue();
+        message.delete().queue();
 
         if(fMsg != null)
             fMsg.delete().queue();

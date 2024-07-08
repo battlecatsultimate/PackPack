@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class SkinCostTypeHolder(author: Message, channelID: String, private val message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message) {
+class SkinCostTypeHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }

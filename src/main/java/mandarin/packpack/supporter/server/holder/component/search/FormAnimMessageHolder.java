@@ -83,7 +83,7 @@ public class FormAnimMessageHolder extends SearchHolder {
             Form f = form.get(id);
 
             if(FormGif.forbidden.contains(f.unit.id.id)) {
-                msg.delete().queue();
+                message.delete().queue();
 
                 ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
 
@@ -169,7 +169,7 @@ public class FormAnimMessageHolder extends SearchHolder {
             StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to handle form image/animation");
         }
 
-        msg.delete().queue();
+        message.delete().queue();
     }
 
     @Override

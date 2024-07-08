@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.min
 
-class EquipHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory) : ComponentHolder(author, channelID, message) {
+class EquipHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {

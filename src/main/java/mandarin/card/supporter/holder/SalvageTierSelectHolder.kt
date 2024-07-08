@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class SalvageTierSelectHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+class SalvageTierSelectHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     override fun clean() {

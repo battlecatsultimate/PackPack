@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HasRolePageHolder extends ComponentHolder {
-    private final Message message;
-
     private final List<Member> members;
     private final Role role;
 
@@ -29,8 +27,6 @@ public class HasRolePageHolder extends ComponentHolder {
 
     public HasRolePageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull List<Member> members, @NotNull Role role, int lang) {
         super(author, channelID, message);
-
-        this.message = message;
 
         this.members = members;
         this.role = role;

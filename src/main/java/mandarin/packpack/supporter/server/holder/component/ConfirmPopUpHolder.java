@@ -16,8 +16,6 @@ public class ConfirmPopUpHolder extends ComponentHolder {
 
     private final int lang;
 
-    private final Message msg;
-
     public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @NotNull Consumer<GenericComponentInteractionCreateEvent> onCancel, int lang) {
         super(author, channelID, msg);
 
@@ -25,8 +23,6 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         this.onCancel = onCancel;
 
         this.lang = lang;
-
-        this.msg = msg;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)
@@ -47,8 +43,6 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         this.onCancel = null;
 
         this.lang = lang;
-
-        this.msg = msg;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)
@@ -89,7 +83,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("confirm_expired", lang))
+        message.editMessage(LangID.getStringByID("confirm_expired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();

@@ -30,7 +30,7 @@ import kotlin.math.min
 class SuggestInventoryHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    message: Message,
     private val targetMember: Member,
     private val suggestionMessage: Message,
     private val session: TradingSession,

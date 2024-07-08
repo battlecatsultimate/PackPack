@@ -21,7 +21,6 @@ import java.util.List;
 public abstract class SearchHolder extends ComponentHolder {
     public static final int PAGE_CHUNK = 20;
 
-    protected final Message msg;
     protected final int lang;
 
     protected int page = 0;
@@ -29,7 +28,6 @@ public abstract class SearchHolder extends ComponentHolder {
     public SearchHolder(@Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, int lang) {
         super(author, channelID, msg);
 
-        this.msg = msg;
         this.lang = lang;
     }
 
@@ -42,7 +40,7 @@ public abstract class SearchHolder extends ComponentHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("formst_expire", lang))
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .setComponents()

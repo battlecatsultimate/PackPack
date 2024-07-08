@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class AuctionCardSelectHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory?, private val onSelected: (Card, Int) -> Unit) : ComponentHolder(author, channelID, message) {
+class AuctionCardSelectHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory?, private val onSelected: (Card, Int) -> Unit) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     private val cards = ArrayList<Card>()
