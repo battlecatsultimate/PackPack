@@ -27,7 +27,7 @@ public class TreasureButtonHolder extends ComponentHolder {
     private final int lang;
 
     public TreasureButtonHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @NotNull TreasureHolder treasure, int lang) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.msg = msg;
 
@@ -55,7 +55,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, messageID, treasure, lang, TreasureModalHolder.TREASURE.BASIC, this::applyResult));
+                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, message, treasure, lang, TreasureModalHolder.TREASURE.BASIC, this::applyResult));
             }
             case "eoc" -> {
                 TextInput research = buildTextInput("research", "data_tresearchs", "treasure_tresearchpl", true, 0, TreasureHolder.eocMax[TreasureHolder.T_RESEARCH], String.valueOf(treasure.eoc[TreasureHolder.T_RESEARCH]));
@@ -74,7 +74,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, messageID, treasure, lang, TreasureModalHolder.TREASURE.EOC, this::applyResult));
+                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, message, treasure, lang, TreasureModalHolder.TREASURE.EOC, this::applyResult));
             }
             case "itf" -> {
                 TextInput crystal = buildTextInput("crystal", "data_citf", "treasure_citfpl", true, 0, TreasureHolder.itfMax[TreasureHolder.T_ITF_CRYSTAL], String.valueOf(treasure.itf[TreasureHolder.T_ITF_CRYSTAL]));
@@ -93,7 +93,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, messageID, treasure, lang, TreasureModalHolder.TREASURE.ITF, this::applyResult));
+                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, message, treasure, lang, TreasureModalHolder.TREASURE.ITF, this::applyResult));
             }
             case "cotc" -> {
                 TextInput crystal = buildTextInput("crystal", "data_ccotc", "treasure_ccotcpl", true, 0, TreasureHolder.cotcMax[TreasureHolder.T_COTC_CRYSTAL], String.valueOf(treasure.cotc[TreasureHolder.T_COTC_CRYSTAL]));
@@ -112,7 +112,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, messageID, treasure, lang, TreasureModalHolder.TREASURE.COTC, this::applyResult));
+                StaticStore.putHolder(userID, new TreasureModalHolder(getAuthorMessage(), channelID, message, treasure, lang, TreasureModalHolder.TREASURE.COTC, this::applyResult));
             }
             case "confirm" -> {
                 event.editMessage(LangID.getStringByID("treasure_done", lang))

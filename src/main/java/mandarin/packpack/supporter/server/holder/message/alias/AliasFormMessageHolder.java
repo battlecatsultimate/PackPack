@@ -31,7 +31,7 @@ public class AliasFormMessageHolder extends MessageHolder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public AliasFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.form = form;
         this.msg = msg;

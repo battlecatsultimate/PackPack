@@ -31,7 +31,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public AliasEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.enemy = enemy;
         this.msg = msg;

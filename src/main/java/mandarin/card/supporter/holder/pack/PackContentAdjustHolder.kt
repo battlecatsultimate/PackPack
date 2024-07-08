@@ -29,7 +29,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
     private val pack: CardPack,
     private val cardChancePairList: CardChancePairList,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }
@@ -52,7 +52,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardChancePairAmountHolder(authorMessage, channelID, message.id, cardChancePairList))
+                connectTo(CardChancePairAmountHolder(authorMessage, channelID, message, cardChancePairList))
             }
             "pair" -> {
                 if (event !is StringSelectInteractionEvent)

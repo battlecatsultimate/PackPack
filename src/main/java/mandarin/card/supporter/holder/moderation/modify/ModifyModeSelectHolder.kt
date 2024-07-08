@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class ModifyModeSelectHolder(author: Message, channelID: String, private val message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
+class ModifyModeSelectHolder(author: Message, channelID: String, private val message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }
@@ -72,7 +72,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
 
                         event.replyModal(modal).queue()
 
-                        connectTo(CatFoodModifyHolder(authorMessage, channelID, message.id, inventory, isAdd, targetMember.id))
+                        connectTo(CatFoodModifyHolder(authorMessage, channelID, message, inventory, isAdd, targetMember.id))
                     }
                     CardData.ModifyCategory.SHARD -> {
                         val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
@@ -85,7 +85,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
 
                         event.replyModal(modal).queue()
 
-                        connectTo(PlatinumShardModifyHolder(authorMessage, channelID, message.id, inventory, isAdd, targetMember.id))
+                        connectTo(PlatinumShardModifyHolder(authorMessage, channelID, message, inventory, isAdd, targetMember.id))
                     }
                 }
             }

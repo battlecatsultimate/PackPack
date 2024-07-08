@@ -20,7 +20,7 @@ class CardPackContentHolder(
     channelID: String,
     private val message: Message,
     private val pack: CardPack
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }

@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.function.Consumer
 
-class BuyHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
+class BuyHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 

@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class SkinTierCostHolder(author: Message, channelID: String, private val message: Message, private val skin: Skin, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message.id) {
+class SkinTierCostHolder(author: Message, channelID: String, private val message: Message, private val skin: Skin, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }

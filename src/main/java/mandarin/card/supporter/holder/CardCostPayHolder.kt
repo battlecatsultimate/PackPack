@@ -35,7 +35,7 @@ class CardCostPayHolder(
     private var message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
-) : ComponentHolder(author, channelID, message.id), MessageUpdater {
+) : ComponentHolder(author, channelID, message), MessageUpdater {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val cards = ArrayList<Card>(inventory.cards.keys)
 
@@ -102,7 +102,7 @@ class CardCostPayHolder(
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
                         val filteredAmount = min(min(amount, realAmount - 1).toLong(), container.cost.amount - container.pickedCards.size)
 
                         repeat(filteredAmount.toInt()) {

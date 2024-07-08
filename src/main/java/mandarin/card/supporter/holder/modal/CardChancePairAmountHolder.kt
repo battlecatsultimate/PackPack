@@ -6,7 +6,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CardChancePairAmountHolder(author: Message, channelID: String, messageID: String, private val cardChancePairList: CardChancePairList) : ModalHolder(author, channelID, messageID) {
+class CardChancePairAmountHolder(author: Message, channelID: String, message: Message, private val cardChancePairList: CardChancePairList) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

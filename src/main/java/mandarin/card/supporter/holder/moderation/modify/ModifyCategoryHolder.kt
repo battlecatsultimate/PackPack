@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class ModifyCategoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
+class ModifyCategoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }

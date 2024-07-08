@@ -7,19 +7,17 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jcodec.api.NotSupportedException;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class Holder {
     public enum STATUS {
@@ -104,7 +102,7 @@ public abstract class Holder {
     @Nonnull
     public final String channelID;
     @Nonnull
-    public final String messageID;
+    public final Message message;
     @Nonnull
     public final String userID;
 
@@ -113,28 +111,27 @@ public abstract class Holder {
 
     public boolean expired = false;
 
-    public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull String messageID) {
-        this.author = author;
-
-        this.channelID = channelID;
-        this.messageID = messageID;
-        userID = author.getAuthor().getId();
-    }
-
     public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
         this.author = author;
 
         this.channelID = channelID;
-        this.messageID = message.getId();
+        this.message = message;
         userID = author.getAuthor().getId();
     }
 
-    public Holder(@Nonnull String channelID, @Nonnull String messageID, @Nonnull String userID) {
-        author = null;
+    public Holder(@Nonnull GenericCommandInteractionEvent event, @Nonnull Message message) {
+        this.author = null;
+
+        String channelID = event.getChannelId();
+
+        if (channelID == null) {
+            throw new NullPointerException("E/Holder::init - Failed to get channel data from slash command");
+        }
 
         this.channelID = channelID;
-        this.messageID = messageID;
-        this.userID = userID;
+        this.message = message;
+
+        userID = event.getUser().getId();
     }
 
     public abstract STATUS handleEvent(Event event);

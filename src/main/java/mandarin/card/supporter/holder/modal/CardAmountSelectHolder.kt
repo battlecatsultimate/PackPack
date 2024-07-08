@@ -5,7 +5,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CardAmountSelectHolder(author: Message, channelID: String, messageID: String, private val onSelect: (Int) -> Unit) : ModalHolder(author, channelID, messageID) {
+class CardAmountSelectHolder(author: Message, channelID: String, message: Message, private val onSelect: (Int) -> Unit) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

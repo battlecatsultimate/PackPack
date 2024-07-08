@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.math.max
 import kotlin.math.min
 
-class PlatinumShardModifyHolder(author: Message, channelID: String, messageID: String, private val inventory: Inventory, private val isAdd: Boolean, private val targetMember: String) : ModalHolder(author, channelID, messageID) {
+class PlatinumShardModifyHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val isAdd: Boolean, private val targetMember: String) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

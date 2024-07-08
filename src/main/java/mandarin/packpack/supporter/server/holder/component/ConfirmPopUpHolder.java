@@ -19,7 +19,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     private final Message msg;
 
     public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @NotNull Consumer<GenericComponentInteractionCreateEvent> onCancel, int lang) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.onConfirm = onConfirm;
         this.onCancel = onCancel;

@@ -34,7 +34,7 @@ class CardChancePairHolder(
     private val cardChancePairList: CardChancePairList,
     private val pair: CardChancePair,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {
@@ -59,7 +59,7 @@ class CardChancePairHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardChanceHolder(authorMessage, channelID, message.id, pack, pair))
+                connectTo(CardChanceHolder(authorMessage, channelID, message, pack, pair))
             }
             "tier" -> {
                 if (event !is StringSelectInteractionEvent)

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.text.toDouble
 
-class SlotMachineCardChanceHolder(author: Message, channelID: String, messageID: String, private val slotMachine: SlotMachine, private val cardChancePair: CardChancePair) : ModalHolder(author, channelID, messageID) {
+class SlotMachineCardChanceHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val cardChancePair: CardChancePair) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

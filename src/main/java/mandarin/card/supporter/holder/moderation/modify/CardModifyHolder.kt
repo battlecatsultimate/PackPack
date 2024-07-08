@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class CardModifyHolder(author: Message, channelID: String, private val message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
+class CardModifyHolder(author: Message, channelID: String, private val message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message) {
     private val cards = ArrayList<Card>(
         if (isAdd) {
             CardData.cards.sortedWith(CardComparator())
@@ -119,7 +119,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
                         selectedCards[card] = amount
 
                         filterCards()
@@ -144,7 +144,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
                         event.replyModal(modal).queue()
 
-                        connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                        connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
                             val filteredAmount = min(amount, realAmount)
 
                             selectedCards[card] = filteredAmount

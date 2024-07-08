@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class CatFoodRateConfigHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
+class CatFoodRateConfigHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }
@@ -48,7 +48,7 @@ class CatFoodRateConfigHolder(author: Message, channelID: String, private val me
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CatFoodRateHolder(authorMessage, channelID, message.id, this::applyResult))
+                StaticStore.putHolder(authorMessage.author.id, CatFoodRateHolder(authorMessage, channelID, message, this::applyResult))
             }
             "cooldown" -> {
                 val cooldown = TextInput.create("cooldown", "Cooldown (In Seconds)", TextInputStyle.SHORT)
@@ -63,7 +63,7 @@ class CatFoodRateConfigHolder(author: Message, channelID: String, private val me
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CooldownRateHolder(authorMessage, channelID, message.id, this::applyResult))
+                StaticStore.putHolder(authorMessage.author.id, CooldownRateHolder(authorMessage, channelID, message, this::applyResult))
             }
             "confirm" -> {
                 CardBot.saveCardData()

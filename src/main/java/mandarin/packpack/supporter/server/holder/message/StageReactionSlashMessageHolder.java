@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
@@ -26,16 +27,12 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
     private final int lang;
     private final Stage st;
 
-    private final Message m;
-
-    public StageReactionSlashMessageHolder(Message m, Stage st, String channelID, String memberID, IDHolder holder, int lang) {
-        super(channelID, m.getId(), memberID);
+    public StageReactionSlashMessageHolder(GenericCommandInteractionEvent event, Message message, Stage st, IDHolder holder, int lang) {
+        super(event, message);
 
         this.holder = holder;
         this.lang = lang;
         this.st = st;
-
-        this.m = m;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)
@@ -43,10 +40,10 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
 
             expired = true;
 
-            StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
+            StaticStore.removeHolder(userID, StageReactionSlashMessageHolder.this);
 
-            if(!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                m.clearReactions().queue();
+            if(!(message.getChannel() instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                message.clearReactions().queue();
             }
         });
     }
@@ -124,8 +121,8 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
         }
 
         if(emojiClicked) {
-            if(!(ch instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                m.clearReactions().queue();
+            if(!(ch instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                message.clearReactions().queue();
             }
 
             expired = true;
@@ -148,10 +145,10 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(userID, StageReactionSlashMessageHolder.this);
 
-        MessageChannel ch = m.getChannel();
+        MessageChannel ch = message.getChannel();
 
-        if(!(ch instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_MANAGE)) {
-            m.clearReactions().queue();
+        if(!(ch instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_MANAGE)) {
+            message.clearReactions().queue();
         }
     }
 }

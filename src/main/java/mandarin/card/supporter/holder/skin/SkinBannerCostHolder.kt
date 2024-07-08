@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SkinBannerCostHolder(author: Message, channelID: String, private val message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message.id) {
+class SkinBannerCostHolder(author: Message, channelID: String, private val message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message) {
 
     private var page = 0
 

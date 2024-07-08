@@ -27,7 +27,7 @@ public class SetupModButtonHolder extends ComponentHolder {
     private String roleID;
 
     public SetupModButtonHolder(Message author, Message msg, String channelID, IDHolder holder, int lang) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.msg = msg;
         this.channelID = channelID;

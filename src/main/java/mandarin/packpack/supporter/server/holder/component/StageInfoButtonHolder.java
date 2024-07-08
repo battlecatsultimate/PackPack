@@ -24,7 +24,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
     private final boolean compact;
 
     public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID, boolean compact) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.st = st;
         embed = msg;

@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class CardPackNameHolder(author: Message, channelID: String, private val message: Message, private val new: Boolean, private val pack: CardPack?) : ModalHolder(author, channelID, message.id) {
+class CardPackNameHolder(author: Message, channelID: String, private val message: Message, private val new: Boolean, private val pack: CardPack?) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

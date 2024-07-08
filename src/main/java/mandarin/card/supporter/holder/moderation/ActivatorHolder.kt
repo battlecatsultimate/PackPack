@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.min
 
-class ActivatorHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message.id) {
+class ActivatorHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
     private val activators = Activator.entries.toTypedArray()
 
     private var page = 0

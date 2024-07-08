@@ -6,7 +6,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CatFoodCostHolder(author: Message, channelID: String, message: Message, private val cost: PackCost) : ModalHolder(author, channelID, message.id) {
+class CatFoodCostHolder(author: Message, channelID: String, message: Message, private val cost: PackCost) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

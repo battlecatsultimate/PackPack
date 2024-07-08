@@ -35,7 +35,7 @@ class SuggestInventoryHolder(
     private val suggestionMessage: Message,
     private val session: TradingSession,
     private val inventory: Inventory
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     private val index = session.member.indexOf(author.author.idLong)
     private val suggestion = session.suggestion[index]
     private val backup = suggestion.copy()
@@ -223,7 +223,7 @@ class SuggestInventoryHolder(
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
                         val filteredAmount = min(CardData.MAX_CARD_TYPE - backup.cards.size, min(amount, realAmount))
 
                         backup.cards[card] = (backup.cards[card] ?: 0) + filteredAmount

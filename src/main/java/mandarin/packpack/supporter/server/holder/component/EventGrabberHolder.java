@@ -19,7 +19,7 @@ public class EventGrabberHolder extends ComponentHolder {
     private final Message msg;
 
     public EventGrabberHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message) {
-        super(author, channelID, message.getId());
+        super(author, channelID, message);
 
         msg = message;
     }

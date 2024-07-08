@@ -58,7 +58,7 @@ public class BCAnimMessageHolder extends MessageHolder {
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
     public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, boolean performance, int lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
-        super(author, channelID, target.getId());
+        super(author, channelID, target);
 
         this.msg = target;
         this.performance = performance;

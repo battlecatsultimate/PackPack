@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class CardCostTypeHolder(author: Message, channelID: String, private val message: Message, private val pack: CardPack) : ComponentHolder(author, channelID, message.id) {
+class CardCostTypeHolder(author: Message, channelID: String, private val message: Message, private val pack: CardPack) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }

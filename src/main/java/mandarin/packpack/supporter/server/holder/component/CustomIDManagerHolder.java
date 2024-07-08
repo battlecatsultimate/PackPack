@@ -36,7 +36,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
     private int page;
 
     public CustomIDManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message msg, @NotNull IDHolder holder, @NotNull Guild g) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.holder = holder;
         this.msg = msg;
@@ -82,7 +82,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new CustomRoleAssignHolder(getAuthorMessage(), channelID, messageID, () -> msg.editMessage(getManagerText())
+                StaticStore.putHolder(userID, new CustomRoleAssignHolder(getAuthorMessage(), channelID, message, () -> msg.editMessage(getManagerText())
                         .setComponents(getManagerComponents())
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())

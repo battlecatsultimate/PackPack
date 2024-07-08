@@ -57,7 +57,7 @@ class SlotMachineCardChancePairListHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardChancePairAmountHolder(authorMessage, channelID, message.id, cardChancePairList))
+                connectTo(CardChancePairAmountHolder(authorMessage, channelID, message, cardChancePairList))
             }
             "pair" -> {
                 if (event !is StringSelectInteractionEvent)

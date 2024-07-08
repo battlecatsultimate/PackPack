@@ -12,7 +12,7 @@ public class CultButtonHolder extends ComponentHolder {
     private final int lang;
 
     public CultButtonHolder(Message author, Message msg, String channelID, String memberID, int lang) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.msg = msg;
 

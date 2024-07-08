@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.MessageDetector
+import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -18,8 +19,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.io.File
 import java.nio.file.Files
 
-class SkinFileHolder : ComponentHolder, MessageDetector {
-    private val message: Message
+class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
+    private var message: Message
     private val card: Card
     private val skin: Skin?
 
@@ -66,6 +67,10 @@ class SkinFileHolder : ComponentHolder, MessageDetector {
                 }, LangID.EN))
             }
         }
+    }
+
+    override fun onMessageUpdated(message: Message) {
+        this.message = message
     }
 
     override fun clean() {
@@ -178,12 +183,17 @@ class SkinFileHolder : ComponentHolder, MessageDetector {
     }
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
-        event.deferEdit()
+        var builder = event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
-            .queue()
+
+        if (event.message.attachments.isNotEmpty()) {
+            builder = builder.setFiles()
+        }
+
+        builder.queue()
     }
 
     private fun getContents() : String {

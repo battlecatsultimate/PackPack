@@ -32,7 +32,7 @@ public class FormButtonHolder extends ComponentHolder {
     private final TreasureHolder t;
 
     public FormButtonHolder(Form f, @Nonnull Message author,@Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, boolean treasure, TreasureHolder t, Level lv, int lang, @Nonnull String channelID) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.embed = msg;
         this.config = config;

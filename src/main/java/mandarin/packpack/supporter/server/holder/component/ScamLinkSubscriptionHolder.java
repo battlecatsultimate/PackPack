@@ -30,7 +30,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
     private boolean noticeAll = false;
 
     public ScamLinkSubscriptionHolder(Message author, Message msg, String channelID, int lang, String targetChannel, String mute) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.msg = msg;
         this.lang = lang;

@@ -32,7 +32,7 @@ class PackPayHolder(
     private val member: Member,
     private val pack: CardPack,
     private val noImage: Boolean
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     private val containers = Array(pack.cost.cardsCosts.size) {
         CardPayContainer(pack.cost.cardsCosts[it])
     }

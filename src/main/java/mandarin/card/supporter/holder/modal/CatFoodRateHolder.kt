@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.math.max
 import kotlin.math.min
 
-class CatFoodRateHolder(author: Message, channelID: String, messageID: String, private val editor: Runnable) : ModalHolder(author, channelID, messageID) {
+class CatFoodRateHolder(author: Message, channelID: String, message: Message, private val editor: Runnable) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

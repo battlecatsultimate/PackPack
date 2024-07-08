@@ -19,8 +19,8 @@ public class CustomRoleAssignHolder extends ModalHolder {
     private final IDHolder holder;
     private final Guild g;
 
-    public CustomRoleAssignHolder(@NotNull Message author, @NotNull String channelID, @NotNull String messageID, @NotNull Runnable editor, @NotNull IDHolder holder, @NotNull Guild g) {
-        super(author, channelID, messageID);
+    public CustomRoleAssignHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull Runnable editor, @NotNull IDHolder holder, @NotNull Guild g) {
+        super(author, channelID, message);
 
         this.editor = editor;
         this.holder = holder;

@@ -25,7 +25,7 @@ class CardPackAdjustHolder(
     private val message: Message,
     private val pack: CardPack,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }
@@ -68,7 +68,7 @@ class CardPackAdjustHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardPackCooldownHolder(authorMessage, channelID, message.id, pack))
+                connectTo(CardPackCooldownHolder(authorMessage, channelID, message, pack))
             }
             "activate" -> {
                 if (!pack.activated && pack.isInvalid()) {

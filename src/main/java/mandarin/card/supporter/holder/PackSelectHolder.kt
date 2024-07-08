@@ -24,7 +24,7 @@ class PackSelectHolder(
     private val member: Member,
     private val message: Message,
     private val noImage: Boolean
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     private val packList = CardData.cardPacks.filter { pack -> pack.activated && !pack.isInvalid() && (pack.cost.roles.isEmpty() || pack.cost.roles.any { id -> id in member.roles.map { role -> role.id } }) }
 
     private var page = 0

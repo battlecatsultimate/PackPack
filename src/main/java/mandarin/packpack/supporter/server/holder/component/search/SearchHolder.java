@@ -27,7 +27,7 @@ public abstract class SearchHolder extends ComponentHolder {
     protected int page = 0;
 
     public SearchHolder(@Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, int lang) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.msg = msg;
         this.lang = lang;

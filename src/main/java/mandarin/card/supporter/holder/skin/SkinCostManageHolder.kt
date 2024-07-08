@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class SkinCostManageHolder(author: Message, channelID: String, private var message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message.id), MessageUpdater {
+class SkinCostManageHolder(author: Message, channelID: String, private var message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message), MessageUpdater {
     override fun clean() {
 
     }

@@ -282,6 +282,8 @@ class Skin {
         this.file = newFile
 
         if (replace) {
+            println("I'm here")
+
             cache(client, true)
         }
 

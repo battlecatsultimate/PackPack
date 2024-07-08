@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CraftCostModifyHolder(author: Message, channelID: String, messageID: String, private val mode: CardData.CraftMode, private val editor: Runnable) : ModalHolder(author, channelID, messageID) {
+class CraftCostModifyHolder(author: Message, channelID: String, message: Message, private val mode: CardData.CraftMode, private val editor: Runnable) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

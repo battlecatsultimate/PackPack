@@ -39,7 +39,7 @@ public class ConfigButtonHolder extends ComponentHolder {
     private int page = 0;
 
     public ConfigButtonHolder(Message author, Message msg, ConfigHolder config, IDHolder holder, String channelID) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.msg = msg;
         this.config = config;

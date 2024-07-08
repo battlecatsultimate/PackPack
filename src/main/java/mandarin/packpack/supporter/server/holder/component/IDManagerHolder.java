@@ -40,7 +40,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     private int page;
 
     public IDManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message msg, @NotNull IDHolder holder, @NotNull Guild g) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.msg = msg;
         this.holder = holder;

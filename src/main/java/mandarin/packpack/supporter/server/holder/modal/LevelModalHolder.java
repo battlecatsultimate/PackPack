@@ -14,7 +14,7 @@ public class LevelModalHolder extends ModalHolder {
     private final Consumer<ModalInteractionEvent> editor;
 
     public LevelModalHolder(Message author, Message msg, String channelID, ConfigHolder config, Consumer<ModalInteractionEvent> editor) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.config = config;
         this.editor = editor;

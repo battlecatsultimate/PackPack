@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CooldownRateHolder(author: Message, channelID: String, messageID: String, private val editor: Runnable) : ModalHolder(author, channelID, messageID) {
+class CooldownRateHolder(author: Message, channelID: String, message: Message, private val editor: Runnable) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }

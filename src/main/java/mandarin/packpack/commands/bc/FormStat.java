@@ -104,7 +104,7 @@ public class FormStat extends ConstraintCommand {
                 if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                     StaticStore.putHolder(
                             u.getId(),
-                            new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, treasure, t, finalLang)
+                            new FormReactionSlashMessageHolder(event, m, f, config, frame && config.useFrame, talent, extra || config.extra, lv, treasure, t, finalLang)
                     );
                 }
             });

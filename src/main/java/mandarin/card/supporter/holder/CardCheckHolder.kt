@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.min
 
-class CardCheckHolder(author: Message, channelID: String, message: Message, private val members: List<Member>, private val tier: CardData.Tier) : ComponentHolder(author, channelID, message.id) {
+class CardCheckHolder(author: Message, channelID: String, message: Message, private val members: List<Member>, private val tier: CardData.Tier) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {

@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ManualRollSelectHolder(author: Message, channelID: String, private val message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message.id) {
+class ManualRollSelectHolder(author: Message, channelID: String, private val message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {
@@ -48,7 +48,7 @@ class ManualRollSelectHolder(author: Message, channelID: String, private val mes
                     return
                 }
 
-                connectTo(event, ManualRollConfirmHolder(authorMessage, channelID, message.id, member, pack, users))
+                connectTo(event, ManualRollConfirmHolder(authorMessage, channelID, message, member, pack, users))
             }
             "close" -> {
                 event.deferEdit()

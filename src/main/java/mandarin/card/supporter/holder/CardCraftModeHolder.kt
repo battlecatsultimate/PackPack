@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class CardCraftModeHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
+class CardCraftModeHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     override fun clean() {

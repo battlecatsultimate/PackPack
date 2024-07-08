@@ -35,7 +35,7 @@ public class AliasStageMessageHolder extends MessageHolder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public AliasStageMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.stage = stage;
         this.msg = msg;

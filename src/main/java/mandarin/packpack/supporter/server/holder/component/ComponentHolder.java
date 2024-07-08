@@ -11,10 +11,6 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import javax.annotation.Nonnull;
 
 public abstract class ComponentHolder extends Holder {
-    public ComponentHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull String messageID) {
-        super(author, channelID, messageID);
-    }
-
     public ComponentHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
         super(author, channelID, message);
     }
@@ -54,7 +50,7 @@ public abstract class ComponentHolder extends Holder {
 
     private boolean canHandleEvent(GenericComponentInteractionCreateEvent event) {
         return event.getChannel().getId().equals(channelID)
-                && event.getMessage().getId().equals(messageID)
+                && event.getMessage().getId().equals(message.getId())
                 && event.getUser().getId().equals(userID);
     }
 }

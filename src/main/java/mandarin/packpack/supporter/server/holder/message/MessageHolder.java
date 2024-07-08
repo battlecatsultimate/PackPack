@@ -3,18 +3,19 @@ package mandarin.packpack.supporter.server.holder.message;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import javax.annotation.Nonnull;
 
 public abstract class MessageHolder extends Holder {
-    public MessageHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull String messageID) {
-        super(author, channelID, messageID);
+    public MessageHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
+        super(author, channelID, message);
     }
 
-    public MessageHolder(@Nonnull String channelID, @Nonnull String messageID, @Nonnull String userID) {
-        super(channelID, messageID, userID);
+    public MessageHolder(@Nonnull GenericCommandInteractionEvent event, @Nonnull Message message) {
+        super(event, message);
     }
 
     @Override
@@ -48,7 +49,7 @@ public abstract class MessageHolder extends Holder {
 
     private boolean canHandleEvent(MessageReactionAddEvent event) {
         return event.getChannel().getId().equals(channelID)
-                && event.getMessageId().equals(messageID)
+                && event.getMessageId().equals(message.getId())
                 && event.getUserId().equals(userID);
     }
 }

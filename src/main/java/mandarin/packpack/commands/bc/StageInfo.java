@@ -122,7 +122,7 @@ public class StageInfo extends TimedConstraintCommand {
                     if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                         StaticStore.putHolder(
                                 u.getId(),
-                                new StageReactionSlashMessageHolder(m, st, m.getChannel().getId(), u.getId(), holder, finalLang)
+                                new StageReactionSlashMessageHolder(event, m, st, holder, finalLang)
                         );
                     }
                 });

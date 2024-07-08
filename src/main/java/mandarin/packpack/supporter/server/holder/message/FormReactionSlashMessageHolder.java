@@ -12,13 +12,13 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 public class FormReactionSlashMessageHolder extends MessageHolder {
     private final Form f;
     private final ConfigHolder config;
     private final int lang;
-    private final Message m;
 
     private final boolean isFrame;
     private final boolean talent;
@@ -27,8 +27,8 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
     private final boolean treasure;
     private final TreasureHolder t;
 
-    public FormReactionSlashMessageHolder(Message m, Form f, String memberID, String channelID, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder t, int lang) {
-        super(channelID, m.getId(), memberID);
+    public FormReactionSlashMessageHolder(GenericCommandInteractionEvent event, Message message, Form f, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder t, int lang) {
+        super(event, message);
 
         this.f = f;
         this.config = config;
@@ -42,18 +42,16 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
         this.treasure = treasure;
         this.t = t;
 
-        this.m = m;
-
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)
                 return;
 
             expired = true;
 
-            StaticStore.removeHolder(memberID, FormReactionSlashMessageHolder.this);
+            StaticStore.removeHolder(userID, FormReactionSlashMessageHolder.this);
 
-            if(!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                m.clearReactions().queue();
+            if(!(message.getChannel() instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                message.clearReactions().queue();
             }
         });
     }
@@ -146,8 +144,8 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
         }
 
         if(emojiClicked) {
-            if(!(ch instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                m.clearReactions().queue();
+            if(!(ch instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                message.clearReactions().queue();
             }
 
             expired = true;
@@ -170,10 +168,10 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        MessageChannel ch = m.getChannel();
+        MessageChannel ch = message.getChannel();
 
-        if(!(ch instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_MANAGE)) {
-            m.clearReactions().queue();
+        if(!(ch instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_MANAGE)) {
+            message.clearReactions().queue();
         }
     }
 }

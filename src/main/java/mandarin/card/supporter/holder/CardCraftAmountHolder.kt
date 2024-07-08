@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 
-class CardCraftAmountHolder(author: Message, channelID: String, private val message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, channelID, message.id) {
+class CardCraftAmountHolder(author: Message, channelID: String, private val message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, channelID, message) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var amount = 1
@@ -111,7 +111,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CraftAmountHolder(authorMessage, channelID, message.id) { a ->
+                StaticStore.putHolder(authorMessage.author.id, CraftAmountHolder(authorMessage, channelID, message) { a ->
                     amount = a
 
                     message.editMessage("You are crafting $amount $name card${if (amount >= 2) "s" else ""}\n" +

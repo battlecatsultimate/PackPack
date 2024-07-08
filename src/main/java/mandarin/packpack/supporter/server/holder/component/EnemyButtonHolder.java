@@ -25,7 +25,7 @@ public class EnemyButtonHolder extends ComponentHolder {
     private final TreasureHolder t;
 
     public EnemyButtonHolder(Enemy e, @Nonnull Message author, @Nonnull Message msg, TreasureHolder t, int[] magnification, boolean compact, int lang, @Nonnull String channelID) {
-        super(author, channelID, msg.getId());
+        super(author, channelID, msg);
 
         this.embed = msg;
         this.lang = lang;

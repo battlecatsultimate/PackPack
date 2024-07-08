@@ -10,11 +10,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public abstract class ModalHolder extends Holder {
-
-    public ModalHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull String messageID) {
-        super(author, channelID, messageID);
-    }
-
     public ModalHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
         super(author, channelID, message);
     }
@@ -64,7 +59,7 @@ public abstract class ModalHolder extends Holder {
     private boolean canHandleEvent(ModalInteractionEvent event) {
         boolean result = event.getChannel().getId().equals(channelID);
 
-        result &= event.getMessage() == null || event.getMessage().getId().equals(messageID);
+        result &= event.getMessage() == null || event.getMessage().getId().equals(message.getId());
 
         result &= event.getUser().getId().equals(userID);
 

@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class CardPackManageHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
+class CardPackManageHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {
