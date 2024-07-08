@@ -227,6 +227,20 @@ public abstract class Holder {
         detector.onMessageDetected(message);
     }
 
+    public void handleMessageUpdated(@Nonnull Message message) {
+        if (!(this instanceof MessageUpdater updater))
+            return;
+
+        if(author == null) {
+            throw new NotSupportedException("E/Holder::getAuthorMessage - This holder doesn't support author message getter! : " + getClass().getName());
+        }
+
+        if (message.getChannelIdLong() != message.getChannelIdLong())
+            return;
+
+        updater.onMessageUpdated(message);
+    }
+
     public void connectTo(Holder holder) {
         if (holder.expired) {
             throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());

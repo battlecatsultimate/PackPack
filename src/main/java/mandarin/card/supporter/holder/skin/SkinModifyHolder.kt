@@ -121,6 +121,20 @@ class SkinModifyHolder(
 
                     CardData.skins.remove(skin)
 
+                    val cachedMessage = skin.getCachedMessage()
+
+                    if (cachedMessage != null) {
+                        cachedMessage.delete().queue()
+                    } else {
+                        skin.cache(authorMessage.jda, false)
+
+                        val retry = skin.getCachedMessage()
+
+                        if (retry != null) {
+                            retry.delete().queue()
+                        }
+                    }
+
                     CardData.inventories.values.forEach { inventory ->
                         inventory.skins.removeIf { s ->
                             return@removeIf s.skinID == skin.skinID

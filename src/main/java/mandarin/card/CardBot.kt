@@ -29,7 +29,9 @@ import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -559,6 +561,28 @@ object CardBot : ListenerAdapter() {
         }
     }
 
+    override fun onMessageDelete(event: MessageDeleteEvent) {
+        super.onMessageDelete(event)
+
+        CardData.skins.forEach { skin ->
+            if (skin.messageID == event.messageIdLong) {
+                skin.messageID = -1L
+                skin.cacheLink = ""
+            }
+        }
+    }
+
+    override fun onMessageUpdate(event: MessageUpdateEvent) {
+        if (event.message.author.idLong != event.jda.selfUser.idLong)
+            return
+
+        StaticStore.holders.values.forEach { hub ->
+            hub.messageHolder?.handleMessageUpdated(event.message)
+            hub.componentHolder?.handleMessageUpdated(event.message)
+            hub.modalHolder?.handleMessageUpdated(event.message)
+        }
+    }
+
     override fun onEmojiAdded(event: EmojiAddedEvent) {
         super.onEmojiAdded(event)
 
@@ -628,6 +652,9 @@ object CardBot : ListenerAdapter() {
 
         EmojiStore.initialize(ShardLoader(event.jda.shardManager))
         SlotEmojiContainer.load(event.jda.shardManager)
+
+        // Load already cached-links only
+        CardData.skins.forEach { s -> s.cache(event.jda, false) }
 
         CardData.slotMachines.forEach { s -> s.content.forEach { c -> c.load() } }
 

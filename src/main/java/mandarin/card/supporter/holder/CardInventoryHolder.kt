@@ -78,7 +78,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -101,7 +101,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -327,7 +327,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
     private fun getText() : String {
         val builder = StringBuilder("Inventory of ${member.asMention}\n\n```md\n")
 
-        if (cards.size > 0) {
+        if (cards.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ")
 

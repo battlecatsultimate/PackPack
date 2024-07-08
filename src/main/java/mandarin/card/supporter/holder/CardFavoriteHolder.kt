@@ -8,6 +8,7 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.CardFavoriteAmountHolder
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
+import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.EmbedBuilder
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardFavoriteHolder(author: Message, channelID: String, private var message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, channelID, message.id) {
+class CardFavoriteHolder(author: Message, channelID: String, private var message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, channelID, message.id), MessageUpdater {
     private val skins = inventory.skins.filter { s -> s.card == card }
 
     private var page = 0
@@ -93,7 +94,7 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
                     }
                 }
 
-                applyResult(true)
+                applyResult()
             }
             "favorite" -> {
                 val amount = inventory.cards[card] ?: 0
@@ -119,7 +120,7 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
                         .setEphemeral(true)
                         .queue()
 
-                    applyResult(false)
+                    applyResult()
                 }
 
                 CardBot.saveCardData()
@@ -148,7 +149,7 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
                         .setEphemeral(true)
                         .queue()
 
-                    applyResult(false)
+                    applyResult()
                 }
 
                 CardBot.saveCardData()
@@ -161,8 +162,14 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
         }
     }
 
+    override fun onMessageUpdated(message: Message) {
+        this.message = message
+
+        println(message.attachments)
+    }
+
     override fun onBack(child: Holder) {
-        applyResult(false)
+        applyResult()
     }
 
     override fun onConnected(event: GenericComponentInteractionCreateEvent) {
@@ -175,45 +182,29 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
             .setComponents(getComponents())
             .mentionRepliedUser(false)
 
-        if (event.message.attachments.isEmpty()) {
-            val pickedFile = if (skins.isEmpty()) {
-                card.cardImage
-            } else {
-                val equippedSkin = inventory.equippedSkins[card]
+        val equippedSkin = inventory.equippedSkins[card]
 
-                if (equippedSkin == null)
-                    card.cardImage
-                else
-                    equippedSkin.file
-            }
-
-            builder = builder.setFiles(FileUpload.fromData(pickedFile, "card.png"))
+        if (equippedSkin == null) {
+            builder = builder.setFiles(FileUpload.fromData(card.cardImage, "card.png"))
+        } else {
+            builder = builder.setFiles()
         }
 
         builder.queue()
     }
 
-    private fun applyResult(force: Boolean) {
-        message = updateMessageStatus(message)
-
+    private fun applyResult() {
         var builder = message.editMessageEmbeds(getEmbed())
             .setContent(getContents())
             .setComponents(getComponents())
             .mentionRepliedUser(false)
 
-        if (force || message.attachments.isEmpty()) {
-            val pickedFile = if (skins.isEmpty()) {
-                card.cardImage
-            } else {
-                val equippedSkin = inventory.equippedSkins[card]
+        val equippedSkin = inventory.equippedSkins[card]
 
-                if (equippedSkin == null)
-                    card.cardImage
-                else
-                    equippedSkin.file
-            }
-
-            builder = builder.setFiles(FileUpload.fromData(pickedFile, "card.png"))
+        builder = if (equippedSkin == null) {
+            builder.setFiles(FileUpload.fromData(card.cardImage, "card.png"))
+        } else {
+            builder.setFiles()
         }
 
         builder.queue()
@@ -231,6 +222,7 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
 
     private fun getEmbed() : MessageEmbed {
         val embedBuilder = EmbedBuilder()
+        val equippedSkin = inventory.equippedSkins[card]
 
         val favorite = if (inventory.favorites.containsKey(card)) " ⭐ " else ""
 
@@ -247,7 +239,16 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
             embedBuilder.addField("Favorite", (inventory.favorites[card] ?: 0).toString(), false)
         }
 
-        embedBuilder.setImage("attachment://card.png")
+        if (equippedSkin != null) {
+            embedBuilder.addField("Skin", equippedSkin.name, false)
+
+            if (equippedSkin.cacheLink.isEmpty())
+                equippedSkin.cache(authorMessage.jda, true)
+
+            embedBuilder.setImage(equippedSkin.cacheLink)
+        } else {
+            embedBuilder.setImage("attachment://card.png")
+        }
 
         return embedBuilder.build()
     }

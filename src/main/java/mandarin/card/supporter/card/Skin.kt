@@ -8,9 +8,13 @@ import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.PackCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.utils.FileUpload
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
+import java.util.concurrent.CountDownLatch
 
 class Skin {
     companion object {
@@ -41,6 +45,10 @@ class Skin {
             skin.public = public
             skin.name = name
 
+            if (obj.has("messageID")) {
+                skin.messageID = obj.get("messageID").asLong
+            }
+
             return skin
         }
     }
@@ -52,6 +60,10 @@ class Skin {
     val skinID: Int
     var name: String
     var file: File
+
+    var messageID = -1L
+    private lateinit var message: Message
+    var cacheLink = ""
 
     constructor(card: Card, file: File) {
         cost = PackCost(0L, 0L, ArrayList(), ArrayList())
@@ -172,6 +184,79 @@ class Skin {
         CardBot.saveCardData()
     }
 
+    fun cache(client: JDA, load: Boolean) {
+        if (messageID != -1L && this::message.isInitialized && cacheLink.isNotEmpty())
+            return
+
+        val guild = client.getGuildById(CardData.guild) ?: return
+
+        val cacheChannel = guild.getTextChannelById(CardData.skinCache) ?: return
+
+        if (messageID != -1L) {
+            cacheChannel.retrieveMessageById(messageID).queue({ msg ->
+                message = msg
+
+                if (msg.attachments.isNotEmpty()) {
+                    val attachment = msg.attachments.filter { a -> a.fileName == file.name }
+
+                    if (attachment.isNotEmpty()) {
+                        cacheLink = attachment.first().url
+                    }
+                }
+
+                StaticStore.logger.uploadLog("I/Skin::cache - Loaded cached skin file :\n\n- Skin ID : $skinID\n- Skin Link : $cacheLink\n- Message Link : ${message.jumpUrl}")
+            }) { e ->
+                cacheChannel.sendMessage(skinID.toString()).setFiles(FileUpload.fromData(file)).queue { msg ->
+                    message = msg
+                    messageID = msg.idLong
+
+                    if (msg.attachments.isNotEmpty()) {
+                        val attachment = msg.attachments.filter { a -> a.fileName == file.name }
+
+                        if (attachment.isNotEmpty()) {
+                            cacheLink = attachment.first().url
+                        }
+                    }
+
+                    StaticStore.logger.uploadLog("I/Skin::cache - Cached the skin file :\n\n- Skin ID : $skinID\n- Skin Link : $cacheLink\n- Message Link : ${message.jumpUrl}")
+                }
+            }
+        } else if (load) {
+            val countdown = CountDownLatch(1)
+
+            cacheChannel.sendMessage(skinID.toString()).setFiles(FileUpload.fromData(file)).queue( { msg ->
+                message = msg
+                messageID = msg.idLong
+
+                if (msg.attachments.isNotEmpty()) {
+                    val attachment = msg.attachments.filter { a -> a.fileName == file.name }
+
+                    if (attachment.isNotEmpty()) {
+                        cacheLink = attachment.first().url
+                    }
+                }
+
+                StaticStore.logger.uploadLog("I/Skin::cache - Cached the skin file :\n\n- Skin ID : $skinID\n- Skin Link : $cacheLink\n- Message Link : ${message.jumpUrl}")
+
+                countdown.countDown()
+            }) { e ->
+                StaticStore.logger.uploadErrorLog(e, "E/Skin::cache - Failed to cache the skin file")
+
+                countdown.countDown()
+            }
+
+            countdown.await()
+        }
+    }
+
+    fun getCachedMessage() : Message? {
+        return if (this::message.isInitialized) {
+            message
+        } else {
+            null
+        }
+    }
+
     fun asJson() : JsonObject {
         val obj = JsonObject()
 
@@ -181,7 +266,7 @@ class Skin {
         obj.addProperty("card", card.unitID)
         obj.addProperty("skinID", skinID)
         obj.addProperty("name", name)
-
+        obj.addProperty("messageID", messageID)
 
         return obj
     }

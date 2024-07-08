@@ -289,6 +289,8 @@ object CardData {
 
     val managerPlace = ServerData.get("managerPlace")
 
+    val skinCache = ServerData.get("skinCache")
+
     private val globalCategory = arrayOf(
         ServerData.get("bctcCategory"),
         ServerData.get("bctcRaidCategory"),
