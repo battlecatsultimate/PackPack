@@ -46,6 +46,7 @@ object CardData {
     enum class ModifyCategory {
         CARD,
         ROLE,
+        SKIN,
         CF,
         SHARD
     }

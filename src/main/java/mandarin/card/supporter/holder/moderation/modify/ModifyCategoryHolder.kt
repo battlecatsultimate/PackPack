@@ -36,11 +36,13 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
                 when(event.values[0]) {
                     "card",
                     "role",
+                    "skin",
                     "cf",
                     "shard" -> {
                         val category = when(event.values[0]) {
                             "card" -> CardData.ModifyCategory.CARD
                             "role" -> CardData.ModifyCategory.ROLE
+                            "skin" -> CardData.ModifyCategory.SKIN
                             "cf" -> CardData.ModifyCategory.CF
                             else -> CardData.ModifyCategory.SHARD
                         }
@@ -85,6 +87,7 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
 
         modeOptions.add(SelectOption.of("Cards", "card").withEmoji(EmojiStore.ABILITY["CARD"]))
         modeOptions.add(SelectOption.of("Vanity Roles", "role").withEmoji(EmojiStore.DOGE))
+        modeOptions.add(SelectOption.of("Skin", "skin").withEmoji(EmojiStore.ABILITY["SKIN"]))
         modeOptions.add(SelectOption.of("Cat Foods", "cf").withEmoji(EmojiStore.ABILITY["CF"]))
         modeOptions.add(SelectOption.of("Platinum Shards", "shard").withEmoji(EmojiStore.ABILITY["SHARD"]))
 

@@ -2,6 +2,7 @@ package mandarin.card.supporter.log
 
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
@@ -340,6 +341,73 @@ object TransactionLogger {
             modChannel.sendMessage(checker.toString()).queue()
         } else {
             builder.addField("Roles", checker.toString(), false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+        }
+
+        modChannel.sendMessageEmbeds(builder.build())
+            .setAllowedMentions(ArrayList())
+            .queue()
+    }
+
+    fun logSkinsModify(skins: List<Skin>, mod: Member, targetMember: Member, isAdd: Boolean, isMassRemove: Boolean) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        val text = if (isAdd) {
+            "Added"
+        } else if (isMassRemove) {
+            "Mass Removed"
+        } else {
+            "Removed"
+        }
+
+        builder.setTitle("Skins $text")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Moderator ${mod.asMention} manually ${text.lowercase()} the skins")
+
+        builder.addField("Target Member", targetMember.asMention + " [${targetMember.id}]", false)
+
+        val checker = StringBuilder()
+
+        for (skin in skins.toSet()) {
+            checker.append("- ")
+                .append(skin.name)
+
+            checker.append("\n")
+        }
+
+        if (checker.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+            builder.addField("Skins", "Check skins messages below", false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+
+            checker.clear()
+
+            for (skin in skins.toSet()) {
+                val line = "- ${skin.name}"
+
+                if (checker.length + line.length > 1900) {
+                    modChannel.sendMessage(checker.toString()).queue()
+
+                    checker.clear()
+                }
+
+                checker.append(line)
+                    .append("\n")
+            }
+
+            modChannel.sendMessage(checker.toString()).queue()
+        } else {
+            builder.addField("Skins", checker.toString(), false)
 
             modChannel.sendMessageEmbeds(builder.build())
                 .setAllowedMentions(ArrayList())

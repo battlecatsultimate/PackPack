@@ -77,7 +77,7 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
                 selectedRoles.addAll(inventory.vanityRoles)
 
                 event.deferReply()
-                    .setContent("Selected all cards this user has. This will remove all cards from user. Please confirm this action")
+                    .setContent("Selected all roles this user has. This will remove all roles from user. Please confirm this action")
                     .setEphemeral(true)
                     .queue()
 

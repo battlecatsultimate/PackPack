@@ -58,6 +58,9 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                     CardData.ModifyCategory.ROLE -> {
                         connectTo(event, RoleModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
                     }
+                    CardData.ModifyCategory.SKIN -> {
+                        connectTo(event, SkinModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
+                    }
                     CardData.ModifyCategory.CF -> {
                         val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
                             .setPlaceholder("Define amount of cat foods that will be ${if(isAdd) "added" else "removed"} from this user")
@@ -121,7 +124,8 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
             CardData.ModifyCategory.CARD -> "cards"
             CardData.ModifyCategory.ROLE -> "roles"
             CardData.ModifyCategory.CF -> "cat foods"
-            else -> "platinum shards"
+            CardData.ModifyCategory.SKIN -> "skins"
+            CardData.ModifyCategory.SHARD -> "platinum shards"
         }
 
         val content = when (category) {
