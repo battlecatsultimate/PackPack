@@ -58,7 +58,7 @@ class SkinModifyHolder(
 
                 val cachedMessage = skin.getCachedMessage(authorMessage.jda)
 
-                if (cachedMessage != null && cachedMessage.contentRaw != content) {
+                if (cachedMessage != null) {
                     cachedMessage.editMessage(content).setAllowedMentions(ArrayList()).queue()
                 }
 
