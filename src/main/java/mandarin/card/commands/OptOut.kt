@@ -17,6 +17,7 @@ class OptOut : Command(LangID.EN, false) {
             "**__Keep in mind that once you opt out, you won't be able to opt in back unless you contact the developer of the bot, <@${StaticStore.MANDARIN_SMELL}>.__** \n\n" +
             "Below lists are wiped data upon opting out :\n\n" +
             "- Inventory\n" +
+            "- Your Registered Skins" +
             "- Trading Session\n" +
             "- Auction\n" +
             "- Notification Preferences\n" +
@@ -32,12 +33,28 @@ class OptOut : Command(LangID.EN, false) {
                         val id = loader.user.idLong
 
                         CardData.inventories.remove(id)
+
+                        CardData.skins.removeIf { skin ->
+                            if (skin.creator == id) {
+                                CardData.inventories.forEach { (_, inventory) ->
+                                    inventory.skins.remove(skin)
+                                    inventory.equippedSkins.entries.removeIf { (_, s) ->
+                                        return@removeIf s == skin
+                                    }
+                                }
+                            }
+
+                            return@removeIf skin.creator == id
+                        }
+
                         CardData.sessions.removeIf { session ->
                             return@removeIf id in session.member
                         }
+
                         CardData.auctionSessions.removeIf { session ->
                             return@removeIf session.author == id
                         }
+
                         CardData.notifierGroup.remove(id)
 
                         val logs = LogSession.gatherPreviousSessions(CardData.getUnixEpochTime(), 0)
