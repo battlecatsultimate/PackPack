@@ -216,7 +216,7 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
 
         builder.append("\n```md\n")
 
-        if (roles.size > 0) {
+        if (roles.isNotEmpty()) {
             roles.forEachIndexed { i, role ->
                 builder.append(i + 1)
                     .append(". ")
