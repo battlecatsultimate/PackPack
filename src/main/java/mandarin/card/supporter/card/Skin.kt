@@ -190,6 +190,7 @@ class Skin {
             return
 
         val guild = client.getGuildById(CardData.guild) ?: return
+        val content = "$skinID - <@$creator>"
 
         val cacheChannel = guild.getTextChannelById(CardData.skinCache) ?: return
 
@@ -205,9 +206,16 @@ class Skin {
                     }
                 }
 
+                if (message.contentRaw != content) {
+                    message.editMessage(content).setAllowedMentions(ArrayList()).queue()
+                }
+
                 StaticStore.logger.uploadLog("I/Skin::cache - Loaded cached skin file :\n\n- Skin ID : $skinID\n- Skin Link : $cacheLink\n- Message Link : ${message.jumpUrl}")
             }) { e ->
-                cacheChannel.sendMessage(skinID.toString()).setFiles(FileUpload.fromData(file)).queue { msg ->
+                cacheChannel.sendMessage(content)
+                    .setFiles(FileUpload.fromData(file))
+                    .setAllowedMentions(ArrayList())
+                    .queue { msg ->
                     message = msg
                     messageID = msg.idLong
 
@@ -225,7 +233,10 @@ class Skin {
         } else if (load) {
             val countdown = CountDownLatch(1)
 
-            cacheChannel.sendMessage(skinID.toString()).setFiles(FileUpload.fromData(file)).queue( { msg ->
+            cacheChannel.sendMessage(content)
+                .setFiles(FileUpload.fromData(file))
+                .setAllowedMentions(ArrayList())
+                .queue( { msg ->
                 message = msg
                 messageID = msg.idLong
 
@@ -250,11 +261,17 @@ class Skin {
         }
     }
 
-    fun getCachedMessage() : Message? {
+    fun getCachedMessage(client: JDA) : Message? {
         return if (this::message.isInitialized) {
             message
         } else {
-            null
+            cache(client, false)
+
+            if (this::message.isInitialized) {
+                message
+            } else {
+                null
+            }
         }
     }
 

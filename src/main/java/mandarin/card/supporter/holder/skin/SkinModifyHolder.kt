@@ -50,6 +50,18 @@ class SkinModifyHolder(
                     skin.creator = users.first().idLong
                 }
 
+                val content = if (skin.creator == -1L) {
+                    "${skin.skinID} - Official"
+                } else {
+                    "${skin.skinID} - <@${skin.creator}>"
+                }
+
+                val cachedMessage = skin.getCachedMessage(authorMessage.jda)
+
+                if (cachedMessage != null && cachedMessage.contentRaw != content) {
+                    cachedMessage.editMessage(content).setAllowedMentions(ArrayList()).queue()
+                }
+
                 applyResult(event)
             }
             "name" -> {
@@ -127,14 +139,14 @@ class SkinModifyHolder(
 
                     CardData.skins.remove(skin)
 
-                    val cachedMessage = skin.getCachedMessage()
+                    val cachedMessage = skin.getCachedMessage(authorMessage.jda)
 
                     if (cachedMessage != null) {
                         cachedMessage.delete().queue()
                     } else {
                         skin.cache(authorMessage.jda, false)
 
-                        val retry = skin.getCachedMessage()
+                        val retry = skin.getCachedMessage(authorMessage.jda)
 
                         if (retry != null) {
                             retry.delete().queue()
