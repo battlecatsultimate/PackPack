@@ -277,6 +277,9 @@ class Skin {
 
         if (this::message.isInitialized) {
             message.delete().queue()
+
+            cacheLink = ""
+            messageID = -1L
         }
 
         this.file = newFile
