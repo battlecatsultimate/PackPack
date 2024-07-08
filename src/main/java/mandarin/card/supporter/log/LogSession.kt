@@ -653,6 +653,53 @@ class LogSession {
         return obj
     }
 
+    fun optOut(memberID: Long) {
+        activeMembers.remove(memberID)
+
+        catFoodPack.remove(memberID)
+
+        generatedCards.remove(memberID)
+
+        removedCardsSalvage.remove(memberID)
+        removedCardsManager.remove(memberID)
+
+        removedCards.remove(memberID)
+
+        shardTotal.remove(memberID)
+
+        shardSalvageT1.remove(memberID)
+        shardSalvageT2Regular.remove(memberID)
+        shardSalvageT2Seasonal.remove(memberID)
+        shardSalvageT2Collaboration.remove(memberID)
+        shardSalvageT3.remove(memberID)
+
+        shardSalvageCardT1.remove(memberID)
+        shardSalvageCardT2Regular.remove(memberID)
+        shardSalvageCardT2Seasonal.remove(memberID)
+        shardSalvageCardT2Collaboration.remove(memberID)
+        shardSalvageCardT3.remove(memberID)
+
+        shardCraftT2Regular.remove(memberID)
+        shardCraftT2Seasonal.remove(memberID)
+        shardCraftT2Collaboration.remove(memberID)
+        shardCraftT3.remove(memberID)
+        shardCraftT4.remove(memberID)
+
+        shardCraftCardT2Regular.remove(memberID)
+        shardCraftCardT2Seasonal.remove(memberID)
+        shardCraftCardT2Collaboration.remove(memberID)
+        shardCraftCardT3.remove(memberID)
+        shardCraftCardT4.remove(memberID)
+
+        catFoodTrade.remove(memberID)
+
+        catFoodSlotMachineInput.remove(memberID)
+        catFoodSlotMachineReward.remove(memberID)
+
+        platinumShardSlotMachineInput.remove(memberID)
+        platinumShardSlotMachineReward.remove(memberID)
+    }
+
     private fun saveUserAmount(obj: JsonObject, tag: String, map: Map<Long, Long>) {
         val arr = JsonArray()
 

@@ -225,9 +225,9 @@ object CardData {
     const val EMOJI_SPACE = "   "
 
     /*
-    -------------------------------------------------------
-    |                   Role and Channel                  |
-    -------------------------------------------------------
+    ----------------------------------------------------------------
+    |                   Role ,Channel, and Member                  |
+    ----------------------------------------------------------------
      */
 
     enum class Role(val id: String, val key: String, val title: String) {
@@ -328,6 +328,8 @@ object CardData {
     val auctionPlaces = ArrayList<Long>()
 
     val bannedUser = ArrayList<Long>()
+
+    val optOut = ArrayList<Long>()
 
     /*
     -------------------------------------------------------

@@ -328,6 +328,9 @@ object CardBot : ListenerAdapter() {
 
         val u = event.author
 
+        if (u.idLong in CardData.optOut)
+            return
+
         if (u.idLong in CardData.bannedUser)
             return
 
@@ -538,6 +541,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}mc" -> ManageCardSkin().execute(event)
             "${globalPrefix}buyskin",
             "${globalPrefix}bs" -> BuySkin().execute(event)
+            "${globalPrefix}optout" -> OptOut().execute(event)
 
         }
 
@@ -583,6 +587,9 @@ object CardBot : ListenerAdapter() {
         super.onGenericInteractionCreate(event)
 
         val u = event.user
+
+        if (u.idLong in CardData.optOut)
+            return
 
         if (u.idLong in CardData.bannedUser)
             return
@@ -1038,6 +1045,12 @@ object CardBot : ListenerAdapter() {
         if (obj.has("inviteLocked")) {
             inviteLocked = obj.get("inviteLocked").asBoolean
         }
+
+        if (obj.has("optOut")) {
+            obj.getAsJsonArray("optOut").forEach { e ->
+                CardData.optOut.add(e.asLong)
+            }
+        }
     }
 
     @Synchronized
@@ -1283,6 +1296,14 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("skins", skins)
+
+        val optOut = JsonArray()
+
+        CardData.optOut.forEach { id ->
+            optOut.add(id)
+        }
+
+        obj.add("optOut", optOut)
 
         try {
             val folder = File("./data/")
