@@ -1,9 +1,10 @@
 package mandarin.card.supporter.holder
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.CraftAmountHolder
 import mandarin.card.supporter.log.TransactionLogger
@@ -11,12 +12,14 @@ import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
+import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -24,6 +27,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
+import kotlin.math.min
 
 class CardCraftAmountHolder(author: Message, channelID: String, message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, channelID, message) {
     private val inventory = Inventory.getInventory(author.author.idLong)
@@ -39,21 +43,6 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
-        val emoji = when(craftMode) {
-            CardData.CraftMode.T2 -> EmojiStore.getCardEmoji(CardPack.CardType.T2)
-            CardData.CraftMode.SEASONAL -> EmojiStore.getCardEmoji(CardPack.CardType.SEASONAL)
-            CardData.CraftMode.COLLAB -> EmojiStore.getCardEmoji(CardPack.CardType.COLLABORATION)
-            CardData.CraftMode.T3 -> EmojiStore.getCardEmoji(CardPack.CardType.T3)
-            CardData.CraftMode.T4 -> EmojiStore.getCardEmoji(CardPack.CardType.T4)
-        }
-
-        val name = (emoji?.formatted ?: "") + " " + when(craftMode) {
-            CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
-            CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
-            CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
-            CardData.CraftMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-            CardData.CraftMode.T4 -> "Tier 4 [Legend Rare]"
-        }
 
         when(event.componentId) {
             "cancel" -> {
@@ -64,39 +53,18 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
                     .mentionRepliedUser(false)
                     .queue()
             }
+            "back" -> {
+                goBack(event)
+            }
             "add" -> {
                 amount++
 
-                event.deferEdit()
-                    .setContent("You are crafting $amount $name card${if (amount >= 2) "s" else ""}\n" +
-                        "\n" +
-                        "You can change the amount of card that will be crafted as well\n" +
-                        "\n" +
-                        "Required shard : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount}\n" +
-                        "Currently you have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}" +
-                        if (amount * craftMode.cost > inventory.platinumShard) "\n\n**You can't craft cards because you don't have enough platinum shards!**" else ""
-                    )
-                    .setComponents(getComponents())
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
+                applyResult(event)
             }
             "reduce" -> {
                 amount--
 
-                event.deferEdit()
-                    .setContent("You are crafting $amount $name card${if (amount >= 2) "s" else ""}\n" +
-                            "\n" +
-                            "You can change the amount of card that will be crafted as well\n" +
-                            "\n" +
-                            "Required shard : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount}\n" +
-                            "Currently you have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}" +
-                            if (amount * craftMode.cost > inventory.platinumShard) "\n\n**You can't craft cards because you don't have enough platinum shards!**" else ""
-                    )
-                    .setComponents(getComponents())
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
+                applyResult(event)
             }
             "amount" -> {
                 val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
@@ -114,68 +82,32 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
                 StaticStore.putHolder(authorMessage.author.id, CraftAmountHolder(authorMessage, channelID, message) { a ->
                     amount = a
 
-                    message.editMessage("You are crafting $amount $name card${if (amount >= 2) "s" else ""}\n" +
-                                "\n" +
-                                "You can change the amount of card that will be crafted as well\n" +
-                                "\n" +
-                                "Required shard : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount}\n" +
-                                "Currently you have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}" +
-                                if (amount * craftMode.cost > inventory.platinumShard) "\n\n**You can't craft cards because you don't have enough platinum shards!**" else ""
-                        )
-                        .setComponents(getComponents())
-                        .setAllowedMentions(ArrayList())
-                        .mentionRepliedUser(false)
-                        .queue()
+                    applyResult()
                 })
             }
             "craft" -> {
-                val components = ArrayList<ActionComponent>()
+                val emoji = when(craftMode) {
+                    CardData.CraftMode.T2 -> EmojiStore.getCardEmoji(CardPack.CardType.T2)
+                    CardData.CraftMode.SEASONAL -> EmojiStore.getCardEmoji(CardPack.CardType.SEASONAL)
+                    CardData.CraftMode.COLLAB -> EmojiStore.getCardEmoji(CardPack.CardType.COLLABORATION)
+                    CardData.CraftMode.T3 -> EmojiStore.getCardEmoji(CardPack.CardType.T3)
+                    CardData.CraftMode.T4 -> EmojiStore.getCardEmoji(CardPack.CardType.T4)
+                }
 
-                components.add(Button.success("confirm", "Confirm"))
-                components.add(Button.danger("cancel", "Cancel"))
+                val name = (emoji?.formatted ?: "") + " " + when(craftMode) {
+                    CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
+                    CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
+                    CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
+                    CardData.CraftMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+                    CardData.CraftMode.T4 -> "Tier 4 [Legend Rare]"
+                }
 
-                event.deferEdit()
-                    .setContent("Are you sure you want to spend ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount} on crafting $amount $name card${if (amount >= 2) "s" else ""}?")
-                    .setActionRow(components)
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
+                registerPopUp(event, "Are you sure you want to spend ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount} on crafting $amount $name card${if (amount >= 2) "s" else ""}?", LangID.EN)
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmButtonHolder(authorMessage, message, channelID, LangID.EN) {
+                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     val result = rollCards()
 
-                    val builder = StringBuilder("### Craft Result [${result.size} cards in total]\n\n")
-
-                    for (card in result) {
-                        builder.append("- ")
-
-                        if (card.tier == CardData.Tier.ULTRA) {
-                            builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                        } else if (card.tier == CardData.Tier.LEGEND) {
-                            builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
-                        }
-
-                        builder.append(card.cardInfo())
-
-                        if (!inventory.cards.containsKey(card)) {
-                            builder.append(" {**NEW**}")
-                        }
-
-                        if (card.tier == CardData.Tier.ULTRA) {
-                            builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                        } else if (card.tier == CardData.Tier.LEGEND) {
-                            builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                        }
-
-                        builder.append("\n")
-                    }
-
-                    event.messageChannel
-                        .sendMessage(builder.toString())
-                        .setMessageReference(authorMessage)
-                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.toSet().map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                        .mentionRepliedUser(false)
-                        .queue()
+                    displayRollResult(e, result)
 
                     inventory.addCards(result)
                     inventory.platinumShard -= amount * craftMode.cost
@@ -183,9 +115,68 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
                     CardBot.saveCardData()
 
                     TransactionLogger.logCraft(authorMessage.author.idLong, amount, craftMode, result, amount.toLong() * craftMode.cost)
-                })
+                }, LangID.EN))
             }
         }
+    }
+
+    override fun onConnected() {
+        applyResult()
+    }
+
+    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+        applyResult(event)
+    }
+
+    override fun onBack(child: Holder) {
+        applyResult()
+    }
+
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+        applyResult(event)
+    }
+
+    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+        event.deferEdit()
+            .setContent(getContents())
+            .setComponents(getComponents())
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
+
+    private fun applyResult() {
+        message.editMessage(getContents())
+            .setComponents(getComponents())
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
+
+    private fun getContents() : String {
+        val emoji = when(craftMode) {
+            CardData.CraftMode.T2 -> EmojiStore.getCardEmoji(CardPack.CardType.T2)
+            CardData.CraftMode.SEASONAL -> EmojiStore.getCardEmoji(CardPack.CardType.SEASONAL)
+            CardData.CraftMode.COLLAB -> EmojiStore.getCardEmoji(CardPack.CardType.COLLABORATION)
+            CardData.CraftMode.T3 -> EmojiStore.getCardEmoji(CardPack.CardType.T3)
+            CardData.CraftMode.T4 -> EmojiStore.getCardEmoji(CardPack.CardType.T4)
+        }
+
+        val name = (emoji?.formatted ?: "") + " " + when(craftMode) {
+            CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
+            CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
+            CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
+            CardData.CraftMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+            CardData.CraftMode.T4 -> "Tier 4 [Legend Rare]"
+        }
+
+        return "You are crafting $amount $name card${if (amount >= 2) "s" else ""}\n" +
+                "\n" +
+                "You can change the amount of card that will be crafted as well\n" +
+                "\n" +
+                "Required shard : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount}\n" +
+                "Currently you have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}" +
+                if (amount * craftMode.cost > inventory.platinumShard) "\n\n**You can't craft cards because you don't have enough platinum shards!**" else ""
     }
 
     private fun getComponents() : List<LayoutComponent> {
@@ -200,7 +191,8 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
         result.add(
             ActionRow.of(
                 Button.success("craft", "Craft").withEmoji(Emoji.fromUnicode("\uD83E\uDE84")).withDisabled(amount * craftMode.cost > inventory.platinumShard),
-                Button.danger("cancel", "Cancel")
+                Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK),
+                Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
             )
         )
 
@@ -225,5 +217,112 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
         }
 
         return result
+    }
+
+    private fun displayRollResult(event: GenericComponentInteractionCreateEvent, result: List<Card>) {
+        val card = if (result.size <= 1)
+            "card"
+        else
+            "cards"
+
+        val builder = StringBuilder("### Craft Result [${result.size} $card in total]\n\n")
+
+        for (card in result) {
+            builder.append("- ")
+
+            if (card.tier == CardData.Tier.ULTRA) {
+                builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+            } else if (card.tier == CardData.Tier.LEGEND) {
+                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+            }
+
+            builder.append(card.cardInfo())
+
+            if (!inventory.cards.containsKey(card)) {
+                builder.append(" {**NEW**}")
+            }
+
+            if (card.tier == CardData.Tier.ULTRA) {
+                builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+            } else if (card.tier == CardData.Tier.LEGEND) {
+                builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+            }
+
+            builder.append("\n")
+        }
+
+        val initialEmbed = EmbedBuilder()
+
+        initialEmbed.setDescription(builder.toString().trim())
+            .setColor(StaticStore.rainbow.random())
+
+        val newCards = result.toSet().filter { c -> !inventory.cards.containsKey(c) }.sortedWith(CardComparator()).reversed()
+
+        if (newCards.isNotEmpty()) {
+            val files = newCards.subList(0, min(newCards.size, Message.MAX_EMBED_COUNT)).mapIndexed { index, c -> FileUpload.fromData(c.cardImage, "card$index.png") }
+
+            val embeds = ArrayList<MessageEmbed>()
+
+            files.forEachIndexed { index, file ->
+                if (index == 0) {
+                    initialEmbed.setUrl("https://${file.name}").setImage("attachment://${file.name}")
+
+                    embeds.add(initialEmbed.build())
+                } else {
+                    embeds.add(EmbedBuilder().setUrl("https://${files[0].name}").setImage("attachment://${file.name}").build())
+                }
+            }
+
+            event.deferEdit()
+                .setContent("")
+                .setEmbeds(embeds)
+                .setFiles(files)
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+
+            return
+        }
+
+        val availableSkins = result.toSet()
+            .filter { c -> inventory.equippedSkins.containsKey(c) }
+            .map { c -> inventory.equippedSkins[c] }
+            .filterNotNull()
+
+        if (availableSkins.isEmpty()) {
+            event.deferEdit()
+                .setContent("")
+                .setEmbeds(initialEmbed.build())
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+
+            return
+        }
+
+        availableSkins.forEach { s -> s.cache(authorMessage.jda, true) }
+
+        val cachedLinks = availableSkins.subList(0, min(availableSkins.size, Message.MAX_EMBED_COUNT))
+            .filter { skin -> skin.cacheLink.isNotEmpty() }
+            .map { skin -> skin.cacheLink }
+
+        val embeds = ArrayList<MessageEmbed>()
+
+        cachedLinks.forEachIndexed { index, link ->
+            if (index == 0) {
+                initialEmbed.setUrl(link).setImage(link)
+
+                embeds.add(initialEmbed.build())
+            } else {
+                embeds.add(EmbedBuilder().setUrl(cachedLinks[0]).setImage(link).build())
+            }
+        }
+
+        event.deferEdit()
+            .setContent("")
+            .setEmbeds(embeds)
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 }

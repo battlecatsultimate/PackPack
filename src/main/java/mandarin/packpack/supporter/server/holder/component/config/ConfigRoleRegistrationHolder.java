@@ -166,7 +166,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack(Holder child) {
+    public void onBack(@NotNull Holder child) {
         applyResult();
     }
 

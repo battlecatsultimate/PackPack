@@ -4,6 +4,7 @@ import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.CardCostPayHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
@@ -308,7 +309,7 @@ class PackPayHolder(
             return
         }
 
-        val newCards = result.toSet().filter { c -> !inventory.cards.containsKey(c) }
+        val newCards = result.toSet().filter { c -> !inventory.cards.containsKey(c) }.sortedWith(CardComparator()).reversed()
 
         if (newCards.isNotEmpty()) {
             val files = newCards.subList(0, min(newCards.size, Message.MAX_EMBED_COUNT)).mapIndexed { index, c -> FileUpload.fromData(c.cardImage, "card$index.png") }
