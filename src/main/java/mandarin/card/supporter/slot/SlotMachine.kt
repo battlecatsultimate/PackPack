@@ -763,7 +763,7 @@ class SlotMachine {
                 val builder = EmbedBuilder()
 
                 if (currencySum <= input && cardsSum.isEmpty()) {
-                    builder.setDescription("## 😔 You lost the slot machine... 😔")
+                    builder.setDescription("### 😔 You lost the slot machine... 😔")
                         .setColor(StaticStore.rainbow[0])
                 } else {
                     builder.setDescription("## 🎰 You won the slot machine!!! 🎰")
@@ -925,7 +925,7 @@ class SlotMachine {
             val compensation = round(input * percentage).toLong()
 
             val builder = EmbedBuilder()
-                .setDescription("## 😔 You lost the slot machine... 😔")
+                .setDescription("### 😔 You lost the slot machine... 😔")
                 .setColor(StaticStore.rainbow[0])
 
             val point = if (totalSequenceStacks <= 1)
