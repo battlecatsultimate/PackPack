@@ -6,11 +6,14 @@ import mandarin.card.CardBot
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.calculation.Equation
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.FileUpload
@@ -368,35 +371,14 @@ class SlotMachine {
             }
         }
 
-        val result = StringBuilder()
-
-        emojiSequence.forEach { e -> result.append(e.formatted) }
-
         val pickedContents = pickReward(sequenceStacks)
 
         if (pickedContents.isNotEmpty()) {
-            if (pickedContents.any { c -> c.emoji == null }) {
-                result.append("\n\nBot failed to find reward with emoji above... Please contact card managers!")
-
-                message.editMessage(result.toString())
-                    .setComponents()
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
-            } else {
-                val feeEmoji = when(entryFee.entryType) {
-                    SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
-                    SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
-                }
-
+            if (!pickedContents.any { c -> c.emoji == null }) {
                 var currencySum = 0L
                 val cardsSum = ArrayList<Card>()
 
-                result.append("\n\n🎰 You won the slot machine!!! 🎰\n\nPicked Reward : \n")
-
                 pickedContents.forEach { c ->
-                    result.append("- ").append(c.emoji?.formatted).append("x").append(c.slot).append(" ")
-
                     when(c) {
                         is SlotCurrencyContent -> {
                             val reward = when(c.mode) {
@@ -405,51 +387,13 @@ class SlotMachine {
                             }
 
                             currencySum += reward
-
-                            when(c.mode) {
-                                SlotCurrencyContent.Mode.FLAT -> {
-                                    result.append("[Flat] : ").append(feeEmoji).append(" ").append(c.amount)
-                                }
-                                SlotCurrencyContent.Mode.PERCENTAGE -> {
-                                    result.append("[Percentage] : ").append(c.amount).append("% of Entry Fee")
-                                }
-                            }
-
-                            result.append("\n")
                         }
                         is SlotCardContent -> {
                             val cards = c.roll()
 
                             cardsSum.addAll(cards)
-
-                            result.append("[Card] : ").append(c.name).append("\n")
                         }
                     }
-                }
-
-                result.append("\nReward : \n")
-
-                if (currencySum != 0L) {
-                    val feeName = when(entryFee.entryType) {
-                        SlotEntryFee.EntryType.CAT_FOOD -> "Cat Foods"
-                        SlotEntryFee.EntryType.PLATINUM_SHARDS -> "Platinum Shards"
-                    }
-
-                    result.append("### ").append(feeName).append("\n").append(feeEmoji).append(" ").append(currencySum).append("\n")
-                }
-
-                if (cardsSum.isNotEmpty()) {
-                    result.append("### Cards\n")
-
-                    cardsSum.forEach { c ->
-                        result.append("- ").append(c.simpleCardInfo()).append("\n")
-                    }
-                }
-
-                val files = ArrayList<FileUpload>()
-
-                cardsSum.toSet().filter { c -> !inventory.cards.containsKey(c) }.forEach { c ->
-                    files.add(FileUpload.fromData(c.cardImage))
                 }
 
                 when(entryFee.entryType) {
@@ -461,16 +405,7 @@ class SlotMachine {
                     inventory.cards[c] = (inventory.cards[c] ?: 0) + 1
                 }
 
-                CardBot.saveCardData()
-
                 TransactionLogger.logSlotMachineWin(user, input, this, pickedContents, currencySum, cardsSum)
-
-                message.editMessage(result.toString())
-                    .setComponents()
-                    .setFiles(files)
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
             }
         } else {
             val percentage = if (slotSize == 2)
@@ -478,16 +413,7 @@ class SlotMachine {
             else
                 min(1.0, totalSequenceStacks * 1.0 / (slotSize - 2))
 
-            val entryEmoji = when(entryFee.entryType) {
-                SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
-                SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
-            }
-
             val compensation = round(input * percentage).toLong()
-
-            result.append("\n\n😔 You lost the slot machine... 😔\n\n")
-                .append("Sequence Stack Score : ").append(totalSequenceStacks).append(" Point(s)\n")
-                .append("Compensation : ").append(CardData.df.format(percentage * 100.0)).append("% of Entry Fee -> $entryEmoji $compensation")
 
             when (entryFee.entryType) {
                 SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += compensation
@@ -495,15 +421,11 @@ class SlotMachine {
             }
 
             TransactionLogger.logSlotMachineRollFail(user, input, this, totalSequenceStacks, compensation)
-
-            message.editMessage(result)
-                .setComponents()
-                .setAllowedMentions(ArrayList())
-                .mentionRepliedUser(false)
-                .queue()
         }
 
         CardBot.saveCardData()
+
+        displayResult(message, inventory, input, pickedContents, emojiSequence, totalSequenceStacks)
     }
 
     fun getOdd(c: SlotContent) : BigDecimal {
@@ -780,5 +702,243 @@ class SlotMachine {
         }
 
         return result
+    }
+
+    private fun displayResult(message: Message, inventory: Inventory, input: Long, pickedContents: List<SlotContent>, emojiSequence: List<Emoji>, totalSequenceStacks: Int) {
+        val emojis = StringBuilder()
+
+        emojiSequence.forEach { e -> emojis.append(e.formatted) }
+
+        if (pickedContents.isNotEmpty()) {
+            if (pickedContents.any { c -> c.emoji == null }) {
+                message.editMessage("$emojis\n\nBot failed to find reward with emoji above... Please contact card managers!")
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+            } else {
+                val pickedRewards = StringBuilder()
+
+                val feeEmoji = when(entryFee.entryType) {
+                    SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+                    SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+                }
+
+                var currencySum = 0L
+                val cardsSum = ArrayList<Card>()
+
+                pickedContents.forEach { c ->
+                    pickedRewards.append("- ").append(c.emoji?.formatted).append("x").append(c.slot).append(" ")
+
+                    when(c) {
+                        is SlotCurrencyContent -> {
+                            val reward = when(c.mode) {
+                                SlotCurrencyContent.Mode.FLAT -> c.amount
+                                SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
+                            }
+
+                            currencySum += reward
+
+                            when(c.mode) {
+                                SlotCurrencyContent.Mode.FLAT -> {
+                                    pickedRewards.append("[Flat] : ").append(feeEmoji).append(" ").append(c.amount)
+                                }
+                                SlotCurrencyContent.Mode.PERCENTAGE -> {
+                                    pickedRewards.append("[Percentage] : ").append(c.amount).append("% of Entry Fee")
+                                }
+                            }
+
+                            pickedRewards.append("\n")
+                        }
+                        is SlotCardContent -> {
+                            val cards = c.roll()
+
+                            cardsSum.addAll(cards)
+
+                            pickedRewards.append("[Card] : ").append(c.name).append("\n")
+                        }
+                    }
+                }
+
+                val builder = EmbedBuilder()
+
+                if (currencySum <= input && cardsSum.isEmpty()) {
+                    builder.setDescription("## 😔 You lost the slot machine... 😔")
+                } else {
+                    builder.setDescription("## 🎰 You won the slot machine!!! 🎰")
+                }
+
+                builder.addField("Picked Reward", pickedRewards.toString(), false)
+
+                if (currencySum != 0L) {
+                    val feeName = when(entryFee.entryType) {
+                        SlotEntryFee.EntryType.CAT_FOOD -> "Cat Foods"
+                        SlotEntryFee.EntryType.PLATINUM_SHARDS -> "Platinum Shards"
+                    }
+
+                    builder.addField(feeName, "$feeEmoji $currencySum", false)
+                }
+
+                if (cardsSum.isNotEmpty()) {
+                    val cards = StringBuilder()
+
+                    cardsSum.forEach { c ->
+                        val cardEmoji = if (c.tier == CardData.Tier.ULTRA) {
+                            Emoji.fromUnicode("✨").formatted
+                        } else if (c.tier == CardData.Tier.LEGEND) {
+                            EmojiStore.ABILITY["LEGEND"]?.formatted
+                        } else {
+                            ""
+                        }
+
+                        cards.append("- ").append(cardEmoji)
+
+                        if (c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND) {
+                            cards.append(" ")
+                        }
+
+                        cards.append(c.simpleCardInfo())
+
+                        if (!inventory.cards.containsKey(c) && !inventory.favorites.containsKey(c)) {
+                            cards.append(" {**NEW**}")
+                        }
+
+                        if (c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND) {
+                            cards.append(" ")
+                        }
+
+                        cards.append(cardEmoji).append("\n")
+                    }
+
+                    builder.addField("Cards", cards.toString(), false)
+                }
+
+                if (cardsSum.isEmpty()) {
+                    message.editMessage("")
+                        .setEmbeds(builder.build())
+                        .setComponents()
+                        .setAllowedMentions(ArrayList())
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    return
+                }
+
+                val newCards = cardsSum.toSet().filter { c -> !inventory.cards.containsKey(c) && !inventory.favorites.containsKey(c) }.sortedWith(CardComparator()).reversed()
+
+                if (newCards.isNotEmpty()) {
+                    val links = ArrayList<String>()
+                    val files = ArrayList<FileUpload>()
+
+                    newCards.forEachIndexed { index, card ->
+                        val skin = inventory.equippedSkins[card]
+
+                        if (skin == null) {
+                            files.add(FileUpload.fromData(card.cardImage, "card$index.png"))
+                            links.add("attachment://card$index.png")
+                        } else {
+                            skin.cache(message.jda, true)
+
+                            links.add(skin.cacheLink)
+                        }
+                    }
+
+                    val embeds = ArrayList<MessageEmbed>()
+
+                    links.forEachIndexed { index, link ->
+                        if (index == 0) {
+                            builder.setUrl("https://none.dummy").setImage(link)
+
+                            embeds.add(builder.build())
+                        } else {
+                            embeds.add(EmbedBuilder().setUrl("https://none.dummy").setImage(link).build())
+                        }
+                    }
+
+                    message.editMessage("")
+                        .setEmbeds(embeds)
+                        .setComponents()
+                        .setFiles(files)
+                        .setAllowedMentions(ArrayList())
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    return
+                }
+
+                val availableSkins = cardsSum.toSet()
+                    .filter { c -> inventory.equippedSkins.containsKey(c) }
+                    .map { c -> inventory.equippedSkins[c] }
+                    .filterNotNull()
+
+                if (availableSkins.isEmpty()) {
+                    message.editMessage("")
+                        .setEmbeds(builder.build())
+                        .setComponents()
+                        .setAllowedMentions(ArrayList())
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    return
+                }
+
+                availableSkins.forEach { s -> s.cache(message.jda, true) }
+
+                val cachedLinks = availableSkins.subList(0, min(availableSkins.size, Message.MAX_EMBED_COUNT))
+                    .filter { skin -> skin.cacheLink.isNotEmpty() }
+                    .map { skin -> skin.cacheLink }
+
+                val embeds = ArrayList<MessageEmbed>()
+
+                cachedLinks.forEachIndexed { index, link ->
+                    if (index == 0) {
+                        builder.setUrl(link).setImage(link)
+
+                        embeds.add(builder.build())
+                    } else {
+                        embeds.add(EmbedBuilder().setUrl(cachedLinks[0]).setImage(link).build())
+                    }
+                }
+
+                message.editMessage("")
+                    .setEmbeds(embeds)
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+            }
+        } else {
+            val percentage = if (slotSize == 2)
+                0.0
+            else
+                min(1.0, totalSequenceStacks * 1.0 / (slotSize - 2))
+
+            val entryEmoji = when(entryFee.entryType) {
+                SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+                SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+            }
+
+            val compensation = round(input * percentage).toLong()
+
+            val builder = EmbedBuilder()
+                .setDescription("## 😔 You lost the slot machine... 😔")
+                .setColor(StaticStore.rainbow.random())
+
+            val point = if (totalSequenceStacks <= 1)
+                "Point"
+            else
+                "Points"
+
+            builder.addField("Result", emojis.toString(), false)
+            builder.addField("Sequence Stack Score", "$totalSequenceStacks $point", false)
+            builder.addField("Compensation", "${CardData.df.format(percentage * 100.0)}% of Entry Fee -> $entryEmoji $compensation", false)
+
+            message.editMessage("")
+                .setEmbeds(builder.build())
+                .setComponents()
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+        }
     }
 }

@@ -259,23 +259,38 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
         val newCards = result.toSet().filter { c -> !inventory.cards.containsKey(c) && !inventory.favorites.containsKey(c) }.sortedWith(CardComparator()).reversed()
 
         if (newCards.isNotEmpty()) {
-            val files = newCards.subList(0, min(newCards.size, Message.MAX_EMBED_COUNT)).mapIndexed { index, c -> FileUpload.fromData(c.cardImage, "card$index.png") }
+            val links = ArrayList<String>()
+            val files = ArrayList<FileUpload>()
+
+            newCards.forEachIndexed { index, card ->
+                val skin = inventory.equippedSkins[card]
+
+                if (skin == null) {
+                    files.add(FileUpload.fromData(card.cardImage, "card$index.png"))
+                    links.add("attachment://card$index.png")
+                } else {
+                    skin.cache(event.jda, true)
+
+                    links.add(skin.cacheLink)
+                }
+            }
 
             val embeds = ArrayList<MessageEmbed>()
 
-            files.forEachIndexed { index, file ->
+            links.forEachIndexed { index, link ->
                 if (index == 0) {
-                    initialEmbed.setUrl("https://${file.name}").setImage("attachment://${file.name}")
+                    initialEmbed.setUrl("https://none.dummy").setImage(link)
 
                     embeds.add(initialEmbed.build())
                 } else {
-                    embeds.add(EmbedBuilder().setUrl("https://${files[0].name}").setImage("attachment://${file.name}").build())
+                    embeds.add(EmbedBuilder().setUrl("https://none.dummy").setImage(link).build())
                 }
             }
 
             event.deferEdit()
                 .setContent("")
                 .setEmbeds(embeds)
+                .setComponents()
                 .setFiles(files)
                 .setAllowedMentions(ArrayList())
                 .mentionRepliedUser(false)
@@ -293,6 +308,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
             event.deferEdit()
                 .setContent("")
                 .setEmbeds(initialEmbed.build())
+                .setComponents()
                 .setAllowedMentions(ArrayList())
                 .mentionRepliedUser(false)
                 .queue()
@@ -321,6 +337,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
         event.deferEdit()
             .setContent("")
             .setEmbeds(embeds)
+            .setComponents()
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
             .queue()
