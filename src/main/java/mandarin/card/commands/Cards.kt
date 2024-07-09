@@ -145,7 +145,8 @@ class Cards : Command(LangID.EN, true) {
 
             val confirmButtons = ArrayList<Button>()
 
-            confirmButtons.add(Button.primary("confirm", "Close"))
+            confirmButtons.add(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CROSS))
+            confirmButtons.add(Button.secondary("filter", "Filter Favorites").withEmoji(EmojiStore.SWITCHOFF))
 
             rows.add(ActionRow.of(confirmButtons))
 

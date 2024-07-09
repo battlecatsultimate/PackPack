@@ -28,6 +28,8 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
 
+    private var filterFavorite = false
+
     override fun clean() {
 
     }
@@ -59,6 +61,13 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
             }
             "next10" -> {
                 page += 10
+
+                applyResult(event)
+            }
+            "filter" -> {
+                filterFavorite = !filterFavorite
+
+                filterCards()
 
                 applyResult(event)
             }
@@ -138,7 +147,7 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
     }
 
     override fun onBack(child: Holder) {
-        message.editMessage(getText())
+        message.editMessage(getContents())
             .setEmbeds()
             .setFiles()
             .setComponents(getComponents())
@@ -170,12 +179,18 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
             }
         }
 
+        if (filterFavorite) {
+            cards.removeIf { card ->
+                return@removeIf (inventory.cards[card] ?: 0) == 0
+            }
+        }
+
         cards.sortWith(CardComparator())
     }
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
         event.deferEdit()
-            .setContent(getText())
+            .setContent(getContents())
             .setComponents(getComponents())
             .mentionRepliedUser(false)
             .setAllowedMentions(ArrayList())
@@ -317,27 +332,38 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
 
         val confirmButtons = ArrayList<Button>()
 
-        confirmButtons.add(Button.primary("confirm", "Confirm"))
+        val filterEmoji = if (filterFavorite) {
+            EmojiStore.SWITCHON
+        } else {
+            EmojiStore.SWITCHOFF
+        }
+
+        confirmButtons.add(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CROSS))
+        confirmButtons.add(Button.secondary("filter", "Filter Favorites").withEmoji(filterEmoji))
 
         rows.add(ActionRow.of(confirmButtons))
 
         return rows
     }
 
-    private fun getText() : String {
+    private fun getContents() : String {
         val builder = StringBuilder("Inventory of ${member.asMention}\n\n```md\n")
 
         if (cards.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ")
 
-                if (inventory.favorites.containsKey(cards[i])) {
+                if (!filterFavorite && inventory.favorites.containsKey(cards[i])) {
                     builder.append("⭐")
                 }
 
                 builder.append(cards[i].cardInfo())
 
-                val amount = (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
+                val amount = if (filterFavorite) {
+                    (inventory.cards[cards[i]] ?: 0)
+                } else {
+                    (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
+                }
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")
