@@ -770,6 +770,8 @@ class SlotMachine {
                         .setColor(StaticStore.rainbow[3])
                 }
 
+                builder.addField("Result", emojis.toString(), false)
+
                 builder.addField("Picked Reward", pickedRewards.toString(), false)
 
                 if (currencySum != 0L) {
