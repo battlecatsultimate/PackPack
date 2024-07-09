@@ -190,7 +190,11 @@ class Skin {
             return
 
         val guild = client.getGuildById(CardData.guild) ?: return
-        val content = "$skinID - <@$creator>"
+        val content = if (creator == -1L) {
+            "$skinID - Official"
+        } else {
+            "$skinID - <@$creator>"
+        }
 
         val cacheChannel = guild.getTextChannelById(CardData.skinCache) ?: return
 
