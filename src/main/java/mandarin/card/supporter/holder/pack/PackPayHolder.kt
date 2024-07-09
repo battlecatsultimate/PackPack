@@ -296,8 +296,7 @@ class PackPayHolder(
 
         val initialEmbed = EmbedBuilder()
 
-        initialEmbed.setTitle("Roll Result")
-            .setDescription(builder.toString().trim())
+        initialEmbed.setDescription(builder.toString().trim())
             .setColor(StaticStore.rainbow.random())
 
         if (noImage) {
@@ -318,11 +317,11 @@ class PackPayHolder(
 
             files.forEachIndexed { index, file ->
                 if (index == 0) {
-                    initialEmbed.setImage("attachment://${file.name}")
+                    initialEmbed.setUrl("https://${file.name}").setImage("attachment://${file.name}")
 
                     embeds.add(initialEmbed.build())
                 } else {
-                    embeds.add(EmbedBuilder().setImage("attachment://${file.name}").build())
+                    embeds.add(EmbedBuilder().setUrl("https://${files[0].name}").setImage("attachment://${file.name}").build())
                 }
             }
 
@@ -361,11 +360,11 @@ class PackPayHolder(
 
         cachedLinks.forEachIndexed { index, link ->
             if (index == 0) {
-                initialEmbed.setImage(link)
+                initialEmbed.setUrl(link).setImage(link)
 
                 embeds.add(initialEmbed.build())
             } else {
-                embeds.add(EmbedBuilder().setImage(link).build())
+                embeds.add(EmbedBuilder().setUrl(cachedLinks[0]).setImage(link).build())
             }
         }
 
