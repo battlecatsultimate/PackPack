@@ -377,7 +377,7 @@ class Inventory(private val id: Long) {
 
                         val foundCard = CardData.cards.find { c -> c.unitID == cardID } ?: return@forEach
 
-                        val skinID = o.get("key").asInt
+                        val skinID = o.get("val").asInt
 
                         val foundSkin = CardData.skins.find { s -> s.skinID == skinID } ?: return@forEach
 
