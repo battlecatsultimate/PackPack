@@ -127,7 +127,7 @@ class SkinCardSelectHolder(author: Message, channelID: String, message: Message)
         applyResult(event)
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder?) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 

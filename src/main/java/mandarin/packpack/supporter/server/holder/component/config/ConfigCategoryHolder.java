@@ -63,7 +63,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, Holder child) {
+    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, @NotNull Holder child) {
         event.deferEdit()
                 .setContent(LangID.getStringByID("sercon_category", lang))
                 .setComponents(getComponents())

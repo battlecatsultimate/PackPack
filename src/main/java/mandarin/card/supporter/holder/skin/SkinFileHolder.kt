@@ -177,7 +177,7 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
         applyResult(event)
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder?) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 

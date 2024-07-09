@@ -194,11 +194,11 @@ class SkinModifyHolder(
         applyResult(event)
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder?) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 
-    override fun onBack(child: Holder?) {
+    override fun onBack(child: Holder) {
         applyResult()
     }
 

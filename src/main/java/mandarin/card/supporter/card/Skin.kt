@@ -213,8 +213,6 @@ class Skin {
                 if (message.contentRaw != content) {
                     message.editMessage(content).setAllowedMentions(ArrayList()).queue()
                 }
-
-                StaticStore.logger.uploadLog("I/Skin::cache - Loaded cached skin file :\n\n- Skin ID : $skinID\n- Skin Link : $cacheLink\n- Message Link : ${message.jumpUrl}")
             }) { e ->
                 cacheChannel.sendMessage(content)
                     .setFiles(FileUpload.fromData(file))

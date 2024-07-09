@@ -68,7 +68,7 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, Holder child) {
+    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, @NotNull Holder child) {
         applyResult(event);
     }
 

@@ -88,7 +88,7 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
         applyResult(event)
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder?) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         skins.clear()
 
         skins.addAll(CardData.skins.filter { s -> s.card == card })
@@ -96,7 +96,7 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
         applyResult(event)
     }
 
-    override fun onBack(child: Holder?) {
+    override fun onBack(child: Holder) {
         skins.clear()
 
         skins.addAll(CardData.skins.filter { s -> s.card == card })

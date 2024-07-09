@@ -114,7 +114,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
 
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder?) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 

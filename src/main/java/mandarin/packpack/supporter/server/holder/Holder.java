@@ -200,11 +200,11 @@ public abstract class Holder {
 
     }
 
-    public void onBack(@Nonnull GenericComponentInteractionCreateEvent event, Holder child) {
+    public void onBack(@Nonnull GenericComponentInteractionCreateEvent event, @Nonnull Holder child) {
 
     }
 
-    public void onBack(@Nonnull ModalInteractionEvent event, Holder child) {
+    public void onBack(@Nonnull ModalInteractionEvent event, @Nonnull Holder child) {
 
     }
 
@@ -366,6 +366,10 @@ public abstract class Holder {
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
 
+                    if (parent instanceof MessageUpdater updater) {
+                        updater.onMessageUpdated(message);
+                    }
+
                     parent.onBack(this);
 
                     return;
@@ -414,6 +418,10 @@ public abstract class Holder {
 
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
+
+                    if (parent instanceof MessageUpdater updater) {
+                        updater.onMessageUpdated(message);
+                    }
 
                     parent.onBack(event, this);
 

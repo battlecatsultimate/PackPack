@@ -110,7 +110,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack(@NotNull ModalInteractionEvent event, Holder child) {
+    public void onBack(@NotNull ModalInteractionEvent event, @NotNull Holder child) {
         applyResult(event);
     }
 

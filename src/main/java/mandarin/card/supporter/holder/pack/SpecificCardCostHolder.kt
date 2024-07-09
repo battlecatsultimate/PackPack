@@ -231,11 +231,11 @@ class SpecificCardCostHolder(
 
     }
 
-    override fun onBack(child: Holder?) {
+    override fun onBack(child: Holder) {
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder?) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 
