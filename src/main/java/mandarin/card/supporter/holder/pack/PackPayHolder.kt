@@ -309,7 +309,7 @@ class PackPayHolder(
             return
         }
 
-        val newCards = result.toSet().filter { c -> !inventory.cards.containsKey(c) }.sortedWith(CardComparator()).reversed()
+        val newCards = result.toSet().filter { c -> !inventory.cards.containsKey(c) && !inventory.favorites.containsKey(c) }.sortedWith(CardComparator()).reversed()
 
         if (newCards.isNotEmpty()) {
             val files = newCards.subList(0, min(newCards.size, Message.MAX_EMBED_COUNT)).mapIndexed { index, c -> FileUpload.fromData(c.cardImage, "card$index.png") }
