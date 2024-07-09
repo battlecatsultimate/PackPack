@@ -373,27 +373,31 @@ class SlotMachine {
 
         val pickedContents = pickReward(sequenceStacks)
 
+        val cardsResult = ArrayList<Card>()
+
+        // Pre-roll cards in advance to display the result with synchronized inventory status
+        pickedContents.filterIsInstance<SlotCardContent>().forEach { c ->
+            val cards = c.roll()
+
+            cardsResult.addAll(cards)
+        }
+
+        try {
+            displayResult(message, inventory, input, pickedContents, emojiSequence, totalSequenceStacks, cardsResult)
+        } catch (e: Exception) {
+            StaticStore.logger.uploadErrorLog(e, "E/SlotMachine::roll - Failed to display slot machine roll result")
+        }
+
         if (pickedContents.isNotEmpty()) {
             if (!pickedContents.any { c -> c.emoji == null }) {
                 var currencySum = 0L
-                val cardsSum = ArrayList<Card>()
-
-                pickedContents.forEach { c ->
-                    when(c) {
-                        is SlotCurrencyContent -> {
-                            val reward = when(c.mode) {
-                                SlotCurrencyContent.Mode.FLAT -> c.amount
-                                SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
-                            }
-
-                            currencySum += reward
-                        }
-                        is SlotCardContent -> {
-                            val cards = c.roll()
-
-                            cardsSum.addAll(cards)
-                        }
+                pickedContents.filterIsInstance<SlotCurrencyContent>().forEach { c ->
+                    val reward = when(c.mode) {
+                        SlotCurrencyContent.Mode.FLAT -> c.amount
+                        SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
                     }
+
+                    currencySum += reward
                 }
 
                 when(entryFee.entryType) {
@@ -401,11 +405,9 @@ class SlotMachine {
                     SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += currencySum
                 }
 
-                cardsSum.forEach { c ->
-                    inventory.cards[c] = (inventory.cards[c] ?: 0) + 1
-                }
+                inventory.addCards(cardsResult)
 
-                TransactionLogger.logSlotMachineWin(user, input, this, pickedContents, currencySum, cardsSum)
+                TransactionLogger.logSlotMachineWin(user, input, this, pickedContents, currencySum, cardsResult)
             }
         } else {
             val percentage = if (slotSize == 2)
@@ -424,8 +426,6 @@ class SlotMachine {
         }
 
         CardBot.saveCardData()
-
-        displayResult(message, inventory, input, pickedContents, emojiSequence, totalSequenceStacks)
     }
 
     fun getOdd(c: SlotContent) : BigDecimal {
@@ -704,7 +704,7 @@ class SlotMachine {
         return result
     }
 
-    private fun displayResult(message: Message, inventory: Inventory, input: Long, pickedContents: List<SlotContent>, emojiSequence: List<Emoji>, totalSequenceStacks: Int) {
+    private fun displayResult(message: Message, inventory: Inventory, input: Long, pickedContents: List<SlotContent>, emojiSequence: List<Emoji>, totalSequenceStacks: Int, cardsResult: List<Card>) {
         val emojis = StringBuilder()
 
         emojiSequence.forEach { e -> emojis.append(e.formatted) }
@@ -725,44 +725,32 @@ class SlotMachine {
                 }
 
                 var currencySum = 0L
-                val cardsSum = ArrayList<Card>()
 
-                pickedContents.forEach { c ->
+                pickedContents.filterIsInstance<SlotCurrencyContent>().forEach { c ->
                     pickedRewards.append("- ").append(c.emoji?.formatted).append("x").append(c.slot).append(" ")
 
-                    when(c) {
-                        is SlotCurrencyContent -> {
-                            val reward = when(c.mode) {
-                                SlotCurrencyContent.Mode.FLAT -> c.amount
-                                SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
-                            }
+                    val reward = when(c.mode) {
+                        SlotCurrencyContent.Mode.FLAT -> c.amount
+                        SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
+                    }
 
-                            currencySum += reward
+                    currencySum += reward
 
-                            when(c.mode) {
-                                SlotCurrencyContent.Mode.FLAT -> {
-                                    pickedRewards.append("[Flat] : ").append(feeEmoji).append(" ").append(c.amount)
-                                }
-                                SlotCurrencyContent.Mode.PERCENTAGE -> {
-                                    pickedRewards.append("[Percentage] : ").append(c.amount).append("% of Entry Fee")
-                                }
-                            }
-
-                            pickedRewards.append("\n")
+                    when(c.mode) {
+                        SlotCurrencyContent.Mode.FLAT -> {
+                            pickedRewards.append("[Flat] : ").append(feeEmoji).append(" ").append(c.amount)
                         }
-                        is SlotCardContent -> {
-                            val cards = c.roll()
-
-                            cardsSum.addAll(cards)
-
-                            pickedRewards.append("[Card] : ").append(c.name).append("\n")
+                        SlotCurrencyContent.Mode.PERCENTAGE -> {
+                            pickedRewards.append("[Percentage] : ").append(c.amount).append("% of Entry Fee")
                         }
                     }
+
+                    pickedRewards.append("\n")
                 }
 
                 val builder = EmbedBuilder()
 
-                if (currencySum <= input && cardsSum.isEmpty()) {
+                if (currencySum <= input && cardsResult.isEmpty()) {
                     builder.setDescription("### 😔 You lost the slot machine... 😔")
                         .setColor(StaticStore.rainbow[0])
                 } else {
@@ -783,10 +771,10 @@ class SlotMachine {
                     builder.addField(feeName, "$feeEmoji $currencySum", false)
                 }
 
-                if (cardsSum.isNotEmpty()) {
+                if (cardsResult.isNotEmpty()) {
                     val cards = StringBuilder()
 
-                    cardsSum.forEach { c ->
+                    cardsResult.forEach { c ->
                         val cardEmoji = if (c.tier == CardData.Tier.ULTRA) {
                             Emoji.fromUnicode("✨").formatted
                         } else if (c.tier == CardData.Tier.LEGEND) {
@@ -817,7 +805,7 @@ class SlotMachine {
                     builder.addField("Cards", cards.toString(), false)
                 }
 
-                if (cardsSum.isEmpty()) {
+                if (cardsResult.isEmpty()) {
                     message.editMessage("")
                         .setEmbeds(builder.build())
                         .setComponents()
@@ -828,7 +816,7 @@ class SlotMachine {
                     return
                 }
 
-                val newCards = cardsSum.toSet().filter { c -> !inventory.cards.containsKey(c) && !inventory.favorites.containsKey(c) }.sortedWith(CardComparator()).reversed()
+                val newCards = cardsResult.toSet().filter { c -> !inventory.cards.containsKey(c) && !inventory.favorites.containsKey(c) }.sortedWith(CardComparator()).reversed()
 
                 if (newCards.isNotEmpty()) {
                     val links = ArrayList<String>()
@@ -870,7 +858,7 @@ class SlotMachine {
                     return
                 }
 
-                val availableSkins = cardsSum.toSet()
+                val availableSkins = cardsResult.toSet()
                     .filter { c -> inventory.equippedSkins.containsKey(c) }
                     .map { c -> inventory.equippedSkins[c] }
                     .filterNotNull()
