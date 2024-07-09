@@ -726,26 +726,33 @@ class SlotMachine {
 
                 var currencySum = 0L
 
-                pickedContents.filterIsInstance<SlotCurrencyContent>().forEach { c ->
+                pickedContents.forEach { c ->
                     pickedRewards.append("- ").append(c.emoji?.formatted).append("x").append(c.slot).append(" ")
 
-                    val reward = when(c.mode) {
-                        SlotCurrencyContent.Mode.FLAT -> c.amount
-                        SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
-                    }
+                    when(c) {
+                        is SlotCurrencyContent -> {
+                            val reward = when(c.mode) {
+                                SlotCurrencyContent.Mode.FLAT -> c.amount
+                                SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
+                            }
 
-                    currencySum += reward
+                            currencySum += reward
 
-                    when(c.mode) {
-                        SlotCurrencyContent.Mode.FLAT -> {
-                            pickedRewards.append("[Flat] : ").append(feeEmoji).append(" ").append(c.amount)
+                            when(c.mode) {
+                                SlotCurrencyContent.Mode.FLAT -> {
+                                    pickedRewards.append("[Flat] : ").append(feeEmoji).append(" ").append(c.amount)
+                                }
+                                SlotCurrencyContent.Mode.PERCENTAGE -> {
+                                    pickedRewards.append("[Percentage] : ").append(c.amount).append("% of Entry Fee")
+                                }
+                            }
+
+                            pickedRewards.append("\n")
                         }
-                        SlotCurrencyContent.Mode.PERCENTAGE -> {
-                            pickedRewards.append("[Percentage] : ").append(c.amount).append("% of Entry Fee")
+                        is SlotCardContent -> {
+                            pickedRewards.append("[Card] : ").append(c.name).append("\n")
                         }
                     }
-
-                    pickedRewards.append("\n")
                 }
 
                 val builder = EmbedBuilder()
