@@ -764,8 +764,10 @@ class SlotMachine {
 
                 if (currencySum <= input && cardsSum.isEmpty()) {
                     builder.setDescription("## 😔 You lost the slot machine... 😔")
+                        .setColor(StaticStore.rainbow[0])
                 } else {
                     builder.setDescription("## 🎰 You won the slot machine!!! 🎰")
+                        .setColor(StaticStore.rainbow[3])
                 }
 
                 builder.addField("Picked Reward", pickedRewards.toString(), false)
@@ -922,7 +924,7 @@ class SlotMachine {
 
             val builder = EmbedBuilder()
                 .setDescription("## 😔 You lost the slot machine... 😔")
-                .setColor(StaticStore.rainbow.random())
+                .setColor(StaticStore.rainbow[0])
 
             val point = if (totalSequenceStacks <= 1)
                 "Point"
