@@ -37,8 +37,8 @@ public class HolderHub {
                     StaticStore.logger.uploadErrorLog(e,
                             "E/HolderHub::handleEvent - Failed to handle message holder\n" +
                                     "\n" +
-                                    "Holder = " + messageHolder.getClass().getName() + "\n" +
-                                    "Command = " + messageHolder.getAuthorMessage().getContentRaw()
+                                    "Holder = " + (messageHolder == null ? "None" : messageHolder.getClass().getName()) + "\n" +
+                                    "Command = " + (messageHolder == null ? "None" : messageHolder.getAuthorMessage().getContentRaw())
                     );
                 }
             }
@@ -62,8 +62,8 @@ public class HolderHub {
                     StaticStore.logger.uploadErrorLog(e,
                             "E/HolderHub::handleEvent - Failed to handle component holder\n" +
                                     "\n" +
-                                    "Holder = " + componentHolder.getClass().getName() + "\n" +
-                                    "Command = " + componentHolder.getAuthorMessage().getContentRaw()
+                                    "Holder = " + (componentHolder == null ? "None" : componentHolder.getClass().getName()) + "\n" +
+                                    "Command = " + (componentHolder == null ? "None" : componentHolder.getAuthorMessage().getContentRaw())
                     );
                 }
             }
@@ -87,8 +87,8 @@ public class HolderHub {
                     StaticStore.logger.uploadErrorLog(e,
                             "E/HolderHub::handleEvent - Failed to handle modal holder\n" +
                                     "\n" +
-                                    "Holder = " + modalHolder.getClass().getName() + "\n" +
-                                    "Command = " + modalHolder.getAuthorMessage().getContentRaw()
+                                    "Holder = " + (modalHolder == null ? "None" : modalHolder.getClass().getName()) + "\n" +
+                                    "Command = " + (modalHolder == null ? "None" : modalHolder.getAuthorMessage().getContentRaw())
                     );
                 }
             }
