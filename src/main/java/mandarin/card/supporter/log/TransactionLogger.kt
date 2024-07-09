@@ -4,6 +4,7 @@ import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import java.util.HashMap
 import kotlin.math.min
 
 object TransactionLogger {
@@ -1332,5 +1334,120 @@ object TransactionLogger {
         slotChannel.sendMessageEmbeds(builder.build()).queue()
 
         LogSession.session.logSlotMachineWin(user, input, currencySum, cardsSum, slotMachine.entryFee.entryType)
+    }
+
+    fun logSkinCreate(manager: Long, skin: Skin) {
+        if (!this::modChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Skin Created")
+            .setDescription("Manager <@$manager> created new skin ${skin.skinID}")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+
+        builder.addField("Skin ID", skin.skinID.toString(), true)
+        builder.addField("Skin Name", skin.name, true)
+
+        builder.addField("Creator", if (skin.creator == -1L) "Official Skin" else "<@${skin.creator}>", false)
+
+        builder.addField("Is Public?", if (skin.public) "Yes" else "No", true)
+
+        val free = skin.cost.catFoods == 0L && skin.cost.platinumShards == 0L && skin.cost.cardsCosts.isEmpty()
+
+        builder.addField("Cost", if (free) "Free" else "Check cost info via `cd.mc`", true)
+
+        builder.addField("Skin File", "** **", false)
+
+        skin.cache(modChannel.jda, true)
+
+        builder.setImage(skin.cacheLink)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logSkinRemove(manager: Long, skin: Skin) {
+        if (!this::modChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Skin Created")
+            .setDescription("Manager <@$manager> remove the skin ${skin.skinID} - ${skin.name}")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+
+        builder.addField("Skin ID", skin.skinID.toString(), true)
+        builder.addField("Skin Name", skin.name, true)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logSkinPurchase(purchaser: Long, skin: Skin, containers: Array<CardPayContainer>) {
+        if (!this::logChannel.isInitialized) {
+            return
+        }
+
+        skin.cache(logChannel.jda, true)
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Skin Purchased")
+            .setDescription("User <@$purchaser> purchased skin ${skin.skinID} - ${skin.name}")
+            .setColor(StaticStore.rainbow.random())
+            .setImage(skin.cacheLink)
+
+        builder.addField("Purchaser", "<@$purchaser> [$purchaser]", false)
+
+        builder.addField("Skin ID", skin.skinID.toString(), true)
+        builder.addField("Skin Name", skin.name, true)
+
+        if (skin.cost.catFoods != 0L) {
+            builder.addField("Paid Cat Food", "${EmojiStore.ABILITY["CF"]?.formatted} ${skin.cost.catFoods}", false)
+        }
+
+        if (skin.cost.platinumShards != 0L) {
+            builder.addField("Paid Platinum Shards", "${EmojiStore.ABILITY["SHARD"]?.formatted} ${skin.cost.platinumShards}", false)
+        }
+
+        if (skin.cost.cardsCosts.isNotEmpty()) {
+            val cards = HashMap<Card, Int>()
+
+            containers.forEach { container ->
+                container.pickedCards.forEach { card ->
+                    cards[card] = (cards[card] ?: 0) + 1
+                }
+            }
+
+            val cardBuilder = StringBuilder()
+
+            cards.entries.forEach { (card, amount) ->
+                cardBuilder.append("- ").append(card.simpleCardInfo())
+
+                if (amount >= 2) {
+                    cardBuilder.append(" x").append(amount)
+                }
+
+                cardBuilder.append("\n")
+            }
+
+            if (cardBuilder.length > MessageEmbed.VALUE_MAX_LENGTH) {
+                builder.addField("Cards", "Check Message Below", false)
+
+                logChannel.sendMessageEmbeds(builder.build()).queue()
+                logChannel.sendMessage(cardBuilder.toString().trim()).queue()
+            } else {
+                builder.addField("Cards", cardBuilder.toString().trim(), false)
+
+                logChannel.sendMessageEmbeds(builder.build()).queue()
+            }
+        } else {
+            logChannel.sendMessageEmbeds(builder.build()).queue()
+        }
     }
 }

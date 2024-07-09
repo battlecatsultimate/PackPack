@@ -43,6 +43,8 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                     currentCards - paidCards <= 0
                 }
 
+                val purchaser = authorMessage.author.idLong
+
                 if (warn) {
                     val content = if (futureWarn) {
                         "After payment, you won't own any of this card. Are you sure you want to purchase this skin? This cannot be undone"
@@ -53,7 +55,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                     registerPopUp(event, content, LangID.EN)
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        skin.purchase(inventory, containers)
+                        skin.purchase(purchaser, inventory, containers)
 
                         e.deferReply()
                             .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
@@ -63,7 +65,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                         goBack()
                     }, LangID.EN))
                 } else {
-                    skin.purchase(inventory, containers)
+                    skin.purchase(purchaser, inventory, containers)
 
                     event.deferReply()
                         .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")

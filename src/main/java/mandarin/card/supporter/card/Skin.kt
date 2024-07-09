@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.PackCost
 import mandarin.packpack.supporter.EmojiStore
@@ -165,7 +166,7 @@ class Skin {
         return builder.toString().trim()
     }
 
-    fun purchase(inventory: Inventory, containers: Array<CardPayContainer>) {
+    fun purchase(purchaser: Long, inventory: Inventory, containers: Array<CardPayContainer>) {
         inventory.catFoods -= cost.catFoods
         inventory.platinumShard -= cost.platinumShards
 
@@ -183,6 +184,8 @@ class Skin {
         }
 
         CardBot.saveCardData()
+
+        TransactionLogger.logSkinPurchase(purchaser, this, containers)
     }
 
     fun cache(client: JDA, load: Boolean) {

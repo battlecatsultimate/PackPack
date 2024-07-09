@@ -5,6 +5,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.holder.modal.SkinNameHolder
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
@@ -94,6 +95,8 @@ class SkinModifyHolder(
 
                 CardBot.saveCardData()
 
+                TransactionLogger.logSkinCreate(authorMessage.author.idLong, skin)
+
                 if (skin.creator != -1L) {
                     val inventory = Inventory.getInventory(skin.creator)
 
@@ -160,6 +163,8 @@ class SkinModifyHolder(
                     }
 
                     CardBot.saveCardData()
+
+                    TransactionLogger.logSkinRemove(authorMessage.author.idLong, skin)
 
                     e.deferReply()
                         .setContent("Successfully deleted skin : ${skin.name}!")
