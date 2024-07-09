@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.pack
 
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
@@ -15,8 +15,15 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.util.ArrayList
+import kotlin.collections.any
+import kotlin.collections.filter
+import kotlin.collections.find
+import kotlin.collections.map
 import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.ranges.until
+import kotlin.text.ifEmpty
 
 class PackSelectHolder(
     author: Message,

@@ -1,8 +1,10 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.pack
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.holder.CardCostPayHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.CardPayContainer
@@ -13,8 +15,10 @@ import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -24,6 +28,19 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.FileUpload
+import java.lang.StringBuilder
+import java.util.HashMap
+import java.util.concurrent.CountDownLatch
+import kotlin.collections.any
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.forEachIndexed
+import kotlin.collections.isNotEmpty
+import kotlin.collections.map
+import kotlin.collections.set
+import kotlin.collections.toSet
+import kotlin.math.min
+import kotlin.text.toInt
 
 class PackPayHolder(
     author: Message,
@@ -68,12 +85,26 @@ class PackPayHolder(
                     cooldownMap[pack.uuid] = CardData.getUnixEpochTime() + pack.cooldown
                 }
 
-                event.deferEdit()
-                    .setContent("Rolling...! \uD83C\uDFB2")
-                    .setComponents()
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
+                try {
+                    val countdown = CountDownLatch(1)
+
+                    event.deferEdit()
+                        .setContent("Rolling...! \uD83C\uDFB2")
+                        .setComponents()
+                        .setAllowedMentions(ArrayList())
+                        .mentionRepliedUser(false)
+                        .queue({ _ ->
+                            countdown.countDown()
+                        }) { e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/PackPayHolder::onEvent - Failed to edit message")
+
+                            countdown.countDown()
+                        }}
+
+                    countdown.await()
+                } catch (e: Exception) {
+                    StaticStore.logger.uploadErrorLog(e, "E/PckPayHolder::onEvent - Failed to indicate rolling message")
+                }
 
                 inventory.catFoods -= pack.cost.catFoods
                 inventory.platinumShard -= pack.cost.platinumShards
@@ -94,59 +125,12 @@ class PackPayHolder(
                 val result = pack.roll()
 
                 try {
-                    val builder = StringBuilder("### ${pack.packName} Result [${result.size} cards in total]\n\n")
-
-                    for (card in result) {
-                        builder.append("- ")
-
-                        if (card.tier == CardData.Tier.ULTRA) {
-                            builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                        } else if (card.tier == CardData.Tier.LEGEND) {
-                            builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
-                        }
-
-                        builder.append(card.cardInfo())
-
-                        if (!inventory.cards.containsKey(card)) {
-                            builder.append(" {**NEW**}")
-                        }
-
-                        if (card.tier == CardData.Tier.ULTRA) {
-                            builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                        } else if (card.tier == CardData.Tier.LEGEND) {
-                            builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                        }
-
-                        builder.append("\n")
-                    }
-
-                    if (noImage) {
-                        message.delete().queue()
-
-                        event.messageChannel
-                            .sendMessage(builder.toString())
-                            .setMessageReference(authorMessage)
-                            .mentionRepliedUser(false)
-                            .queue()
-                    } else {
-                        message.delete().queue()
-
-                        event.messageChannel
-                            .sendMessage(builder.toString())
-                            .setMessageReference(authorMessage)
-                            .mentionRepliedUser(false)
-                            .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }
-                                .toSet()
-                                .map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                            .queue()
-                    }
+                    displayRollResult(result)
                 } catch (e: Exception) {
                     StaticStore.logger.uploadErrorLog(e, "E/PackPayHolder::onEvent - Failed to upload card roll result")
                 }
 
-                result.forEach { card ->
-                    inventory.cards[card] = (inventory.cards[card] ?: 0) + 1
-                }
+                inventory.addCards(result)
 
                 CardBot.saveCardData()
 
@@ -281,5 +265,111 @@ class PackPayHolder(
         }
 
         return result
+    }
+
+    private fun displayRollResult(result: List<Card>) {
+        val builder = StringBuilder("### ${pack.packName} Result [${result.size} cards in total]\n\n")
+
+        for (card in result) {
+            builder.append("- ")
+
+            if (card.tier == CardData.Tier.ULTRA) {
+                builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+            } else if (card.tier == CardData.Tier.LEGEND) {
+                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+            }
+
+            builder.append(card.cardInfo())
+
+            if (!inventory.cards.containsKey(card)) {
+                builder.append(" {**NEW**}")
+            }
+
+            if (card.tier == CardData.Tier.ULTRA) {
+                builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+            } else if (card.tier == CardData.Tier.LEGEND) {
+                builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+            }
+
+            builder.append("\n")
+        }
+
+        val initialEmbed = EmbedBuilder()
+
+        initialEmbed.setTitle("Roll Result")
+            .setDescription(builder.toString().trim())
+            .setColor(StaticStore.rainbow.random())
+
+        if (noImage) {
+            message.editMessage("")
+                .setEmbeds(initialEmbed.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+
+            return
+        }
+
+        val newCards = result.toSet().filter { c -> !inventory.cards.containsKey(c) }
+
+        if (newCards.isNotEmpty()) {
+            val files = newCards.subList(0, min(newCards.size, Message.MAX_EMBED_COUNT)).mapIndexed { index, c -> FileUpload.fromData(c.cardImage, "card$index.png") }
+
+            val embeds = ArrayList<MessageEmbed>()
+
+            files.forEachIndexed { index, file ->
+                if (index == 0) {
+                    initialEmbed.setImage("attachment://${file.name}")
+
+                    embeds.add(initialEmbed.build())
+                } else {
+                    embeds.add(EmbedBuilder().setImage("attachment://${file.name}").build())
+                }
+            }
+
+            message.editMessage("")
+                .setAllowedMentions(ArrayList())
+                .setEmbeds(embeds)
+                .setFiles(files)
+                .queue()
+
+            return
+        }
+
+        val availableSkins = result.toSet()
+            .filter { c -> inventory.equippedSkins.containsKey(c) }
+            .map { c -> inventory.equippedSkins[c] }
+            .filterNotNull()
+
+        if (availableSkins.isEmpty()) {
+            message.editMessage("")
+                .setEmbeds(initialEmbed.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+
+            return
+        }
+
+        availableSkins.forEach { s -> s.cache(authorMessage.jda, true) }
+
+        val cachedLinks = availableSkins.subList(0, min(availableSkins.size, Message.MAX_EMBED_COUNT))
+            .filter { skin -> skin.cacheLink.isNotEmpty() }
+            .map { skin -> skin.cacheLink }
+
+        val embeds = ArrayList<MessageEmbed>()
+
+        cachedLinks.forEachIndexed { index, link ->
+            if (index == 0) {
+                initialEmbed.setImage(link)
+
+                embeds.add(initialEmbed.build())
+            } else {
+                embeds.add(EmbedBuilder().setImage(link).build())
+            }
+        }
+
+        message.editMessage("")
+            .setAllowedMentions(ArrayList())
+            .setEmbeds(embeds)
+            .queue()
     }
 }
