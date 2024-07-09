@@ -303,7 +303,7 @@ class PackPayHolder(
         if (noImage) {
             message.editMessage("")
                 .setEmbeds(initialEmbed.build())
-                .setAllowedMentions(ArrayList())
+
                 .queue()
 
             return
@@ -327,9 +327,10 @@ class PackPayHolder(
             }
 
             message.editMessage("")
-                .setAllowedMentions(ArrayList())
                 .setEmbeds(embeds)
                 .setFiles(files)
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
                 .queue()
 
             return
@@ -344,6 +345,7 @@ class PackPayHolder(
             message.editMessage("")
                 .setEmbeds(initialEmbed.build())
                 .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
                 .queue()
 
             return
@@ -368,8 +370,9 @@ class PackPayHolder(
         }
 
         message.editMessage("")
-            .setAllowedMentions(ArrayList())
             .setEmbeds(embeds)
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
             .queue()
     }
 }
