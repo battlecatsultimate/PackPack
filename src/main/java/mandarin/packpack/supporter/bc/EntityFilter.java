@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 
 public class EntityFilter {
+    private static final int TOLERANCE = 5;
+
     private static  final int[] storyChapterMonthly = {
             3, 4, 5, 6, 7, 8, 9
     };
@@ -181,41 +183,15 @@ public class EntityFilter {
                         if(lang == CommonStatic.Lang.Locale.KR)
                             fname = KoreanSeparater.separate(fname);
 
-                        int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+                        int s = calculateOptimalDistance(name, fname);
 
-                        String[] words;
+                        if (s <= TOLERANCE) {
+                            similarity.add(s);
+                            similar.add(f);
 
-                        if(wordNumber != 1) {
-                            words = getWords(fname.split(" "), wordNumber);
-                        } else {
-                            words = fname.split(" ");
-                        }
+                            sMin = Math.min(sMin, s);
 
-                        for (String word : words) {
-                            int s = damerauLevenshteinDistance(word, name);
-
-                            if (s <= 5) {
-                                done = true;
-
-                                similar.add(f);
-                                similarity.add(s);
-
-                                sMin = Math.min(s, sMin);
-
-                                break;
-                            }
-                        }
-
-                        if(!done) {
-                            int s = damerauLevenshteinDistance(fname, name);
-
-                            if(s <= 5) {
-                                done = true;
-                                similar.add(f);
-                                similarity.add(s);
-
-                                sMin = Math.min(s, sMin);
-                            }
+                            done = true;
                         }
                     }
 
@@ -231,40 +207,15 @@ public class EntityFilter {
                                 if(lang == CommonStatic.Lang.Locale.KR)
                                     a = KoreanSeparater.separate(a);
 
-                                int wordNumber = StringUtils.countMatches(a, ' ') + 1;
+                                int s = calculateOptimalDistance(name, a);
 
-                                String[] words;
+                                if (s <= TOLERANCE) {
+                                    similar.add(f);
+                                    similarity.add(s);
 
-                                if(wordNumber != 1) {
-                                    words = getWords(a.split(" "), wordNumber);
-                                } else {
-                                    words = a.split(" ");
-                                }
+                                    sMin = Math.min(sMin, s);
 
-                                for (String word : words) {
-                                    int s = damerauLevenshteinDistance(word, name);
-
-                                    if (s <= 5) {
-                                        added = true;
-                                        similar.add(f);
-                                        similarity.add(s);
-
-                                        sMin = Math.min(s, sMin);
-
-                                        break;
-                                    }
-                                }
-
-                                if(!added) {
-                                    int s = damerauLevenshteinDistance(a, name);
-
-                                    if(s <= 5) {
-                                        added = true;
-                                        similar.add(f);
-                                        similarity.add(s);
-
-                                        sMin = Math.min(s, sMin);
-                                    }
+                                    added = true;
                                 }
 
                                 if(added)
@@ -431,40 +382,15 @@ public class EntityFilter {
                     if(lang == CommonStatic.Lang.Locale.KR)
                         ename = KoreanSeparater.separate(ename);
 
-                    int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+                    int s = calculateOptimalDistance(name, ename);
 
-                    String[] words;
+                    if (s <= TOLERANCE) {
+                        similar.add(e);
+                        similarity.add(s);
 
-                    if(wordNumber != 1) {
-                        words = getWords(ename.split(" "), wordNumber);
-                    } else {
-                        words = ename.split(" ");
-                    }
+                        sMin = Math.min(sMin, s);
 
-                    for(String word : words) {
-                        int s = damerauLevenshteinDistance(word, name);
-
-                        if(s <=  5) {
-                            done = true;
-                            similar.add(e);
-                            similarity.add(s);
-
-                            sMin = Math.min(s, sMin);
-
-                            break;
-                        }
-                    }
-
-                    if(!done) {
-                        int s = damerauLevenshteinDistance(ename, name);
-
-                        if(s <= 5) {
-                            done = true;
-                            similar.add(e);
-                            similarity.add(s);
-
-                            sMin = Math.min(s, sMin);
-                        }
+                        done = true;
                     }
                 }
 
@@ -480,40 +406,15 @@ public class EntityFilter {
                             if(lang == CommonStatic.Lang.Locale.KR)
                                 a = KoreanSeparater.separate(a);
 
-                            int wordNumber = StringUtils.countMatches(a, ' ') + 1;
+                            int s = calculateOptimalDistance(name, a);
 
-                            String[] words;
+                            if (s <= TOLERANCE) {
+                                similar.add(e);
+                                similarity.add(s);
 
-                            if(wordNumber != 1) {
-                                words = getWords(a.split(" "), wordNumber);
-                            } else {
-                                words = a.split(" ");
-                            }
+                                sMin = Math.min(sMin, s);
 
-                            for (String word : words) {
-                                int s = damerauLevenshteinDistance(word, name);
-
-                                if (s <= 5) {
-                                    added = true;
-                                    similar.add(e);
-                                    similarity.add(s);
-
-                                    sMin = Math.min(s, sMin);
-
-                                    break;
-                                }
-                            }
-
-                            if(!added) {
-                                int s = damerauLevenshteinDistance(a, name);
-
-                                if(s <= 5) {
-                                    added = true;
-                                    similar.add(e);
-                                    similarity.add(s);
-
-                                    sMin = Math.min(s, sMin);
-                                }
+                                added = true;
                             }
 
                             if(added)
@@ -594,6 +495,14 @@ public class EntityFilter {
 
                     if(!s0) {
                         mcName = mcName.replace("-", " ");
+
+                        if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
+                            s0 = true;
+                        }
+                    }
+
+                    if (!s0) {
+                        mcName = mcName.replace("\\.", "");
 
                         if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
                             s0 = true;
@@ -1619,30 +1528,14 @@ public class EntityFilter {
                 if(lang == CommonStatic.Lang.Locale.KR)
                     medalName = KoreanSeparater.separate(medalName);
 
-                int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+                int s = calculateOptimalDistance(name, medalName);
 
-                String[] words;
+                if (s <= TOLERANCE) {
+                    similar.add(i);
+                    similarity.add(s);
 
-                if(wordNumber != 1) {
-                    words = getWords(medalName.split(" "), wordNumber);
-                } else {
-                    words = medalName.split(" ");
+                    sMin = Math.min(s, sMin);
                 }
-
-                for(String word : words) {
-                    int s = damerauLevenshteinDistance(word, name);
-
-                    if(s <= 5) {
-                        similar.add(i);
-                        similarity.add(s);
-
-                        sMin = Math.min(sMin, s);
-
-                        break;
-                    }
-                }
-
-                sMin = Math.min(sMin, damerauLevenshteinDistance(medalName, name));
             }
 
             if(similar.isEmpty())
@@ -1762,30 +1655,14 @@ public class EntityFilter {
                 if(lang == CommonStatic.Lang.Locale.KR)
                     rewardName = KoreanSeparater.separate(rewardName);
 
-                int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+                int s = calculateOptimalDistance(name, rewardName);
 
-                String[] words;
+                if (s <= TOLERANCE) {
+                    similar.add(StaticStore.existingRewards.get(i));
+                    similarity.add(s);
 
-                if(wordNumber != 1) {
-                    words = getWords(rewardName.split(" "), wordNumber);
-                } else {
-                    words = rewardName.split(" ");
+                    sMin = Math.min(sMin, s);
                 }
-
-                for(String word : words) {
-                    int s = damerauLevenshteinDistance(word, name);
-
-                    if(s <= 5) {
-                        similar.add(StaticStore.existingRewards.get(i));
-                        similarity.add(s);
-
-                        sMin = Math.min(sMin, s);
-
-                        break;
-                    }
-                }
-
-                sMin = Math.min(sMin, damerauLevenshteinDistance(rewardName, name));
             }
 
             if(similar.isEmpty())
@@ -2184,23 +2061,10 @@ public class EntityFilter {
                 name = KoreanSeparater.separate(name);
             }
 
-            String[] words;
+            int s = calculateOptimalDistance(name, keyword);
 
-            int wordNumber = StringUtils.countMatches(keyword, ' ') + 1;
-
-            if(wordNumber != 1) {
-                words = getWords(name.split(" "), wordNumber);
-            } else {
-                words = name.split(" ");
-            }
-
-            int disMin = Integer.MAX_VALUE;
-
-            for(String word : words) {
-                int result = damerauLevenshteinDistance(word, keyword);
-                disMin = Math.min(disMin, result);
-                allMin = Math.min(allMin, result);
-            }
+            int disMin = s;
+            allMin = Math.min(allMin, s);
 
             if(disMin > allMin) {
                 ArrayList<String> alias;
@@ -2223,30 +2087,58 @@ public class EntityFilter {
                         if(lang == CommonStatic.Lang.Locale.KR)
                             a = KoreanSeparater.separate(a);
 
-                        wordNumber = StringUtils.countMatches(keyword, ' ') + 1;
+                        s = calculateOptimalDistance(keyword, a);
 
-                        if(wordNumber != 1) {
-                            words = getWords(a.split(" "), wordNumber);
-                        } else {
-                            words = a.split(" ");
-                        }
-
-                        for(String word : words) {
-                            int result = damerauLevenshteinDistance(word, keyword);
-                            disMin = Math.min(disMin, result);
-                            allMin = Math.min(allMin, result);
-                        }
+                        disMin = Math.min(disMin, s);
+                        allMin = Math.min(allMin, s);
                     }
                 }
             }
-
-            disMin = Math.min(disMin, damerauLevenshteinDistance(name, keyword));
-            allMin = Math.min(allMin, damerauLevenshteinDistance(name, keyword));
 
             distances.add(disMin);
         }
 
         return distances;
+    }
+
+    private static int calculateOptimalDistance(String src, String target) {
+        int distance = calculateRawDistance(src, target);
+
+        if (target.contains("-") && target.contains(".")) {
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("-", " ")));
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("\\.", "")));
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("-", " ").replaceAll("\\.", "")));
+        } else if (target.contains("-")) {
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("-", " ")));
+        } else if (target.contains(".")) {
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("\\.", "")));
+        }
+
+        return distance;
+    }
+
+    private static int calculateRawDistance(String src, String target) {
+        int distance = Integer.MAX_VALUE;
+
+        int wordNumber = StringUtils.countMatches(src, ' ') + 1;
+
+        for (int i = 1; i <= wordNumber; i++) {
+            String[] words;
+
+            if(wordNumber != 1) {
+                words = getWords(target.split(" "), i);
+            } else {
+                words = target.split(" ");
+            }
+
+            for (String word : words) {
+                distance = Math.min(distance, damerauLevenshteinDistance(word, src));
+            }
+        }
+
+        distance = Math.min(distance, damerauLevenshteinDistance(target, src));
+
+        return distance;
     }
 
     private static boolean containsEnemies(SCDef.Line[] lines, List<Enemy> enemies, boolean hasBoss, boolean or) {
