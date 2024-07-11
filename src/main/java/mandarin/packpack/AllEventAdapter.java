@@ -397,7 +397,6 @@ public class AllEventAdapter extends ListenerAdapter {
 
     public void performCommand(MessageReceivedEvent event, Message msg, CommonStatic.Lang.Locale lang, String prefix, @Nullable IDHolder idh, @Nullable ConfigHolder c) {
         switch (StaticStore.getCommand(msg.getContentRaw(), prefix)) {
-            case "checkbcu" -> new CheckBCU(lang, idh).execute(event);
             case "serverstat", "ss" -> new ServerStat(lang, idh).execute(event);
             case "analyze" -> new Analyze(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "help" -> new Help(lang, idh).execute(event);

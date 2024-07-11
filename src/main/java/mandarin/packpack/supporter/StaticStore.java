@@ -180,8 +180,6 @@ public class StaticStore {
             "1246002716480639086"
     };
 
-    public static boolean checkingBCU = false;
-
     public static final Random random = new Random();
 
     public static final BigInteger intMax = new BigInteger(Integer.toString(Integer.MAX_VALUE));
