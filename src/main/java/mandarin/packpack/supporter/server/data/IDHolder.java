@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.server.data;
 import com.google.gson.*;
 import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
@@ -239,8 +240,26 @@ public class IDHolder implements Cloneable {
     /**
      * Default IDHolder constructor for any server
      */
-    public IDHolder() {
-        config.lang = CommonStatic.Lang.Locale.EN;
+    public IDHolder(Guild guild) {
+        switch (guild.getLocale()) {
+            case CHINESE_TAIWAN, CHINESE_CHINA -> config.lang = CommonStatic.Lang.Locale.ZH;
+            case KOREAN -> config.lang = CommonStatic.Lang.Locale.KR;
+            case JAPANESE -> config.lang = CommonStatic.Lang.Locale.JP;
+            case RUSSIAN ->  config.lang = CommonStatic.Lang.Locale.RU;
+            case FRENCH -> config.lang = CommonStatic.Lang.Locale.FR;
+            case SPANISH, SPANISH_LATAM -> config.lang = CommonStatic.Lang.Locale.ES;
+            case ITALIAN -> config.lang = CommonStatic.Lang.Locale.IT;
+            case GERMAN -> config.lang = CommonStatic.Lang.Locale.DE;
+            case THAI -> config.lang = CommonStatic.Lang.Locale.TH;
+            default -> config.lang = CommonStatic.Lang.Locale.EN;
+        }
+    }
+
+    /**
+     * Empty constructor used for reading files
+     */
+    private IDHolder() {
+
     }
 
     /**
@@ -259,7 +278,7 @@ public class IDHolder implements Cloneable {
         ID = holder.ID;
         logDM = holder.logDM;
         eventMap = holder.eventMap;
-        config.inject(holder.config);
+        config.inject(config);
         banned = holder.banned;
         channelException = holder.channelException;
         forceCompact = holder.forceCompact;
