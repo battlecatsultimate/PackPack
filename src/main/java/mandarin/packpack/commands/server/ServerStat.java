@@ -54,9 +54,9 @@ public class ServerStat extends Command {
         long member = 0L;
 
         for(int i = 0; i < members.size(); i++) {
-            if(holder.MEMBER != null && StaticStore.rolesToString(members.get(i).getRoles()).contains(holder.MEMBER)) {
+            if(holder.member != null && StaticStore.rolesToString(members.get(i).getRoles()).contains(holder.member)) {
                 member++;
-            } else if(holder.MEMBER == null) {
+            } else if(holder.member == null) {
                 member++;
             }
         }

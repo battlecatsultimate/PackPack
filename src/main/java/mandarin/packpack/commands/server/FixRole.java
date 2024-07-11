@@ -33,7 +33,7 @@ public class FixRole extends ConstraintCommand {
             return;
         }
 
-        if(holder.MEMBER == null) {
+        if(holder.member == null) {
             ch.sendMessage(LangID.getStringByID("fixrole_nomem", lang)).queue();
 
             return;
@@ -58,9 +58,9 @@ public class FixRole extends ConstraintCommand {
         String content;
 
         if(ignore == null) {
-            content = LangID.getStringByID("fixrole_confirm", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER);
+            content = LangID.getStringByID("fixrole_confirm", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.member);
         } else {
-            content = LangID.getStringByID("fixrole_confirmig", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER).replace("_III_", ignore);
+            content = LangID.getStringByID("fixrole_confirmig", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.member).replace("_III_", ignore);
         }
 
         registerConfirmButtons(ch.sendMessage(content).setAllowedMentions(new ArrayList<>()), lang).queue(msg -> {
@@ -82,7 +82,7 @@ public class FixRole extends ConstraintCommand {
                 for(Member m : members) {
                     String roles = StaticStore.rolesToString(m.getRoles());
 
-                    if(!roles.contains(finalPre) && !roles.contains(holder.MEMBER)) {
+                    if(!roles.contains(finalPre) && !roles.contains(holder.member)) {
                         g.addRoleToMember(UserSnowflake.fromId(m.getId()), role).queue();
                         fixed++;
                     }

@@ -72,7 +72,7 @@ public class CheckBCU extends Command {
                     if(role.contains(finalPre))
                         pre = true;
 
-                    if(holder.MEMBER != null && role.contains(holder.MEMBER))
+                    if(holder.member != null && role.contains(holder.member))
                         mem = true;
 
                     if (!pre && !mem) {

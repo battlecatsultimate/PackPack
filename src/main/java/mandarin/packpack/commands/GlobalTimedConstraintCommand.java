@@ -52,7 +52,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             }
             case MEMBER -> {
                 if (id != null) {
-                    constRole = id.MEMBER;
+                    constRole = id.member;
                 } else {
                     constRole = null;
                 }

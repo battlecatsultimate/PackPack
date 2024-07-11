@@ -106,7 +106,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                     .mentionRepliedUser(false)
                                     .queue();
                         } else {
-                            holder.MEMBER = r.getId();
+                            holder.member = r.getId();
 
                             event.deferReply(true)
                                     .setContent(String.format(LangID.getStringByID("idset_memset", lang), r.getAsMention(), r.getId()))
@@ -115,7 +115,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                     .queue();
                         }
                     } else {
-                        holder.MEMBER = null;
+                        holder.member = null;
 
                         event.deferReply(true)
                                 .setContent(LangID.getStringByID("idset_memrem", lang))
@@ -143,7 +143,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                     .mentionRepliedUser(false)
                                     .queue();
                         } else {
-                            holder.BOOSTER = r.getId();
+                            holder.booster = r.getId();
 
                             event.deferReply(true)
                                     .setContent(String.format(LangID.getStringByID("idset_booset", lang), r.getAsMention(), r.getId()))
@@ -152,7 +152,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                     .queue();
                         }
                     } else {
-                        holder.BOOSTER = null;
+                        holder.booster = null;
 
                         event.deferReply(true)
                                 .setContent(LangID.getStringByID("idset_boorem", lang))
@@ -191,7 +191,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                         .setContent(LangID.getStringByID("idset_chantalk", lang))
                                         .queue();
                             } else {
-                                holder.ANNOUNCE = m.getId();
+                                holder.announceChannel = m.getId();
 
                                 event.deferReply(true)
                                         .setContent(String.format(LangID.getStringByID("idset_annset", lang), m.getId(), m.getAsMention()))
@@ -205,7 +205,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                             }
                         }
                     } else {
-                        holder.ANNOUNCE = null;
+                        holder.announceChannel = null;
 
                         event.deferReply(true)
                                 .setContent(LangID.getStringByID("idset_annrem", lang))
@@ -299,7 +299,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
         StringBuilder result = new StringBuilder();
 
         String[] data = { "moderator", "member", "booster" };
-        String[] ids = { holder.MOD, holder.MEMBER, holder.BOOSTER };
+        String[] ids = { holder.MOD, holder.member, holder.booster};
 
         for(int i = page * 3; i < (page + 1) * 3; i++) {
             switch (i) {
@@ -370,13 +370,13 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                             .append(LangID.getStringByID("idset_announcement", lang))
                             .append("** : ");
 
-                    if (holder.ANNOUNCE == null)
+                    if (holder.announceChannel == null)
                         result.append(LangID.getStringByID("data_none", lang));
                     else {
-                        GuildChannel ch = getChannelSafelyWithID(holder.ANNOUNCE);
+                        GuildChannel ch = getChannelSafelyWithID(holder.announceChannel);
 
                         if (ch == null) {
-                            result.append(String.format(LangID.getStringByID("data_unknown", lang), holder.ANNOUNCE));
+                            result.append(String.format(LangID.getStringByID("data_unknown", lang), holder.announceChannel));
                         } else {
                             result.append(ch.getId())
                                     .append(" [")
@@ -387,7 +387,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
                     result.append("\n\n");
 
-                    if(holder.ANNOUNCE == null)
+                    if(holder.announceChannel == null)
                         result.append(LangID.getStringByID("idset_annfalse", lang));
                     else
                         result.append(LangID.getStringByID("idset_anntrue", lang));
@@ -613,7 +613,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
         if(id.equals("none"))
             return false;
 
-        boolean res = id.equals(holder.MOD) || id.equals(holder.MEMBER) || id.equals(holder.BOOSTER);
+        boolean res = id.equals(holder.MOD) || id.equals(holder.member) || id.equals(holder.booster);
 
         if(res)
             return true;

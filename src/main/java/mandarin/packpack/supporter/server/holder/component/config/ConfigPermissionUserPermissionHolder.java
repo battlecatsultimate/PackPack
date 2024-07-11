@@ -168,12 +168,12 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
         if (member == null)
             return;
 
-        if (holder.MEMBER != null) {
-            adjustableChannelPermission.add(new Pair<>("", "MEMBER|" + holder.MEMBER));
+        if (holder.member != null) {
+            adjustableChannelPermission.add(new Pair<>("", "MEMBER|" + holder.member));
         }
 
-        if (holder.BOOSTER != null) {
-            adjustableChannelPermission.add(new Pair<>("", "BOOSTER|" + holder.BOOSTER));
+        if (holder.booster != null) {
+            adjustableChannelPermission.add(new Pair<>("", "BOOSTER|" + holder.booster));
         }
 
         for (String key : holder.ID.keySet()) {

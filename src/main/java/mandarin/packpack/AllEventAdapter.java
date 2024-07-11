@@ -179,8 +179,8 @@ public class AllEventAdapter extends ListenerAdapter {
             if(idh == null)
                 return;
 
-            if(idh.ANNOUNCE != null && idh.ANNOUNCE.equals(ch.getId()))
-                idh.ANNOUNCE = null;
+            if(idh.announceChannel != null && idh.announceChannel.equals(ch.getId()))
+                idh.announceChannel = null;
 
             for(CommonStatic.Lang.Locale key : idh.eventMap.keySet()) {
                 String channel = idh.eventMap.get(key);
@@ -228,7 +228,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
             IDHolder holder = StaticStore.idHolder.get(g.getId());
 
-            if(holder.BOOSTER == null)
+            if(holder.booster == null)
                 return;
 
             if(!StaticStore.boosterData.containsKey(g.getId()))
@@ -241,7 +241,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
             BoosterData data = booster.serverBooster.get(m.getId());
 
-            if(!StaticStore.rolesToString(m.getRoles()).contains(holder.BOOSTER)) {
+            if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
                 String role = data.getRole();
                 String emoji = data.getEmoji();
 

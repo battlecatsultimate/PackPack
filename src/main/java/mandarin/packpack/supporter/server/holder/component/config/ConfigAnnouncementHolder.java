@@ -39,14 +39,14 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 }
 
                 if (e.getValues().isEmpty()) {
-                    holder.ANNOUNCE = null;
+                    holder.announceChannel = null;
 
                     applyResult(event);
 
                     return;
                 }
 
-                holder.ANNOUNCE = e.getValues().getFirst().getId();
+                holder.announceChannel = e.getValues().getFirst().getId();
 
                 applyResult(event);
             }
@@ -142,10 +142,10 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
 
         String channel;
 
-        if (holder.ANNOUNCE == null) {
+        if (holder.announceChannel == null) {
             channel = LangID.getStringByID("data_none", lang);
         } else {
-            channel = "<#" + holder.ANNOUNCE + ">";
+            channel = "<#" + holder.announceChannel + ">";
         }
 
         String post;
@@ -195,8 +195,8 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 .setChannelTypes(ChannelType.TEXT)
                 .setPlaceholder(LangID.getStringByID("sercon_channelannselect", lang));
 
-        if (holder.ANNOUNCE != null) {
-            EntitySelectMenu.DefaultValue value = EntitySelectMenu.DefaultValue.channel(holder.ANNOUNCE);
+        if (holder.announceChannel != null) {
+            EntitySelectMenu.DefaultValue value = EntitySelectMenu.DefaultValue.channel(holder.announceChannel);
 
             channelBuilder = channelBuilder.setDefaultValues(value);
         }

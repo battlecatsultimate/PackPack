@@ -98,7 +98,7 @@ public class CustomRoleAssignHolder extends ModalHolder {
             return;
         }
 
-        if (holder.MEMBER != null && holder.MEMBER.equals(r.getId())) {
+        if (holder.member != null && holder.member.equals(r.getId())) {
             event.reply(LangID.getStringByID("idset_memalready", lang))
                     .setEphemeral(true)
                     .queue();
@@ -106,7 +106,7 @@ public class CustomRoleAssignHolder extends ModalHolder {
             return;
         }
 
-        if (holder.BOOSTER != null && holder.BOOSTER.equals(r.getId())) {
+        if (holder.booster != null && holder.booster.equals(r.getId())) {
             event.reply(LangID.getStringByID("idset_booalready", lang))
                     .setEphemeral(true)
                     .setAllowedMentions(new ArrayList<>())

@@ -97,7 +97,7 @@ public class AnalyzeServer extends ConstraintCommand {
                         builder.append("isProperlySet? : ")
                                 .append(!role.getName().equals("PackPackMod"))
                                 .append("\nisFully Set? :")
-                                .append(!role.getName().equals("PackPackMod") && idHolder.MEMBER != null)
+                                .append(!role.getName().equals("PackPackMod") && idHolder.member != null)
                                 .append("\n\n");
                     }
 

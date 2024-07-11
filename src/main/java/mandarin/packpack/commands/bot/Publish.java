@@ -50,7 +50,7 @@ public class Publish extends ConstraintCommand {
 
             IDHolder holder = StaticStore.idHolder.get(id);
 
-            if(holder.ANNOUNCE == null)
+            if(holder.announceChannel == null)
                 continue;
 
             Guild g = client.getGuildById(id);
@@ -63,7 +63,7 @@ public class Publish extends ConstraintCommand {
             if (language == null)
                 continue;
 
-            GuildChannel c = g.getGuildChannelById(holder.ANNOUNCE);
+            GuildChannel c = g.getGuildChannelById(holder.announceChannel);
 
             if(c instanceof NewsChannel) {
                 String content = null;

@@ -46,7 +46,7 @@ public abstract class TimedConstraintCommand extends Command {
             }
             case MEMBER -> {
                 if (idHolder != null) {
-                    constRole = idHolder.MEMBER;
+                    constRole = idHolder.member;
                 } else {
                     constRole = null;
                 }

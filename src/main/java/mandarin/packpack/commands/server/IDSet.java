@@ -56,10 +56,10 @@ public class IDSet extends ConstraintCommand {
 
         String memberRole;
 
-        if (holder.MEMBER == null) {
+        if (holder.member == null) {
             memberRole = "@everyone";
         } else {
-            memberRole = "<@&" + holder.MEMBER + ">";
+            memberRole = "<@&" + holder.member + ">";
         }
 
         builder.append(LangID.getStringByID("sercon_rolemem", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
@@ -69,10 +69,10 @@ public class IDSet extends ConstraintCommand {
 
         String boosterRole;
 
-        if (holder.BOOSTER == null) {
+        if (holder.booster == null) {
             boosterRole = LangID.getStringByID("data_none", lang);
         } else {
-            boosterRole = "<@&" + holder.BOOSTER + ">";
+            boosterRole = "<@&" + holder.booster + ">";
         }
 
         builder.append(LangID.getStringByID("sercon_roleboo", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
@@ -97,14 +97,14 @@ public class IDSet extends ConstraintCommand {
 
         EntitySelectMenu.DefaultValue member = g.getRoles()
                 .stream()
-                .filter(r -> r.getId().equals(holder.MEMBER))
+                .filter(r -> r.getId().equals(holder.member))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);
 
         EntitySelectMenu.DefaultValue booster = g.getRoles()
                 .stream()
-                .filter(r -> r.getId().equals(holder.BOOSTER))
+                .filter(r -> r.getId().equals(holder.booster))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);

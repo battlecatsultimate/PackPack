@@ -25,11 +25,11 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("mem")) {
-            id.MEMBER = id.setOrNull(obj.get("mem").getAsString());
+            id.member = id.setOrNull(obj.get("mem").getAsString());
         }
 
         if(obj.has("ann")) {
-            id.ANNOUNCE = id.setOrNull(obj.get("ann").getAsString());
+            id.announceChannel = id.setOrNull(obj.get("ann").getAsString());
         }
 
         if(obj.has("status")) {
@@ -41,7 +41,7 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("bo")) {
-            id.BOOSTER = id.setOrNull(obj.get("bo").getAsString());
+            id.booster = id.setOrNull(obj.get("bo").getAsString());
         }
 
         if(obj.has("channel")) {
@@ -120,15 +120,15 @@ public class IDHolder implements Cloneable {
      * Member role ID, nullable value. If this value is null, it means member will be
      * everyone
      */
-    public String MEMBER;
+    public String member;
     /**
      * Booster role ID, nullable value
      */
-    public String BOOSTER;
+    public String booster;
     /**
      * Channel where bot will post announcements, nullable value
      */
-    public String ANNOUNCE;
+    public String announceChannel;
     /**
      * Channel where bot will post random link posts in bot's DM from other user. This is
      *  for monitoring compromised accounts sending scam link to everyone
@@ -227,8 +227,8 @@ public class IDHolder implements Cloneable {
      */
     public IDHolder(String m, String me, String bo) {
         this.MOD = m;
-        this.MEMBER = me;
-        this.BOOSTER = bo;
+        this.member = me;
+        this.booster = bo;
 
         config.lang = CommonStatic.Lang.Locale.EN;
     }
@@ -248,10 +248,10 @@ public class IDHolder implements Cloneable {
     public void inject(IDHolder holder) {
         publish = holder.publish;
         MOD = holder.MOD;
-        MEMBER = holder.MEMBER;
-        ANNOUNCE = holder.ANNOUNCE;
+        member = holder.member;
+        announceChannel = holder.announceChannel;
         status = holder.status;
-        BOOSTER = holder.BOOSTER;
+        booster = holder.booster;
         channel = holder.channel;
         ID = holder.ID;
         logDM = holder.logDM;
@@ -277,10 +277,10 @@ public class IDHolder implements Cloneable {
 
         obj.addProperty("publish", publish);
         obj.addProperty("mod", getOrNull(MOD));
-        obj.addProperty("mem", getOrNull(MEMBER));
-        obj.addProperty("ann", getOrNull(ANNOUNCE));
+        obj.addProperty("mem", getOrNull(member));
+        obj.addProperty("ann", getOrNull(announceChannel));
         obj.add("status", StaticStore.listToJsonString(status));
-        obj.addProperty("bo", getOrNull(BOOSTER));
+        obj.addProperty("bo", getOrNull(booster));
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", getOrNull(logDM));
@@ -312,7 +312,7 @@ public class IDHolder implements Cloneable {
 
         ArrayList<String> result = new ArrayList<>();
 
-        if(MEMBER == null) {
+        if(this.member == null) {
             List<String> channels = channel.get("Member");
 
             if(channels == null)
@@ -345,7 +345,7 @@ public class IDHolder implements Cloneable {
     }
 
     private boolean isSetAsRole(String id) {
-        return id.equals(MOD) || id.equals(MEMBER) || id.equals(BOOSTER) || hasIDasRole(id);
+        return id.equals(MOD) || id.equals(member) || id.equals(booster) || hasIDasRole(id);
     }
 
     private String getOrNull(String id) {
@@ -539,10 +539,10 @@ public class IDHolder implements Cloneable {
             IDHolder id = (IDHolder) super.clone();
 
             id.MOD = MOD;
-            id.MEMBER = MEMBER;
-            id.BOOSTER = BOOSTER;
+            id.member = member;
+            id.booster = booster;
 
-            id.ANNOUNCE = ANNOUNCE;
+            id.announceChannel = announceChannel;
             id.logDM = logDM;
 
             id.publish = publish;

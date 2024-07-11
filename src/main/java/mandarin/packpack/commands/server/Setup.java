@@ -87,7 +87,7 @@ public class Setup extends ConstraintCommand {
                 return false;
             }
 
-            return !r.getName().equals("PackPackMod") || holder.MEMBER != null;
+            return !r.getName().equals("PackPackMod") || holder.member != null;
         } else {
             StaticStore.logger.uploadLog("Invalid ID holder data found, moderator role ID was null\nServer ID : "+g.getId()+" | "+g.getName()+"\n-----ID Holder-----\n\n"+holder);
         }

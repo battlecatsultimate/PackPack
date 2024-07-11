@@ -32,11 +32,11 @@ public class BoosterPin extends ConstraintCommand {
         if(holder == null)
             return;
 
-        if(holder.BOOSTER == null) {
+        if(holder.booster == null) {
             return;
         }
 
-        if(!StaticStore.rolesToString(m.getRoles()).contains(holder.BOOSTER)) {
+        if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
             return;
         }
 

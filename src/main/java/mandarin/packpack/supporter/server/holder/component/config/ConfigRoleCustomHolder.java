@@ -362,7 +362,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.MEMBER)) {
+        } else if (id.equals(holder.member)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolememalready", lang))
                     .setAllowedMentions(new ArrayList<>())
@@ -370,7 +370,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.BOOSTER)) {
+        } else if (id.equals(holder.booster)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
                     .setAllowedMentions(new ArrayList<>())
