@@ -241,7 +241,10 @@ public abstract class Holder {
             throw new NotSupportedException("E/Holder::getAuthorMessage - This holder doesn't support author message getter! : " + getClass().getName());
         }
 
-        if (message.getChannelIdLong() != message.getChannelIdLong())
+        if (message.getChannelIdLong() != author.getChannelIdLong())
+            return;
+
+        if (message.getIdLong() != this.message.getIdLong())
             return;
 
         updater.onMessageUpdated(message);
