@@ -6,7 +6,9 @@ import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -21,7 +23,7 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("mod")) {
-            id.MOD = id.setOrNull(obj.get("mod").getAsString());
+            id.moderator = id.setOrNull(obj.get("mod").getAsString());
         }
 
         if(obj.has("mem")) {
@@ -115,7 +117,8 @@ public class IDHolder implements Cloneable {
     /**
      * Moderator role ID, this must not be null value
      */
-    public String MOD;
+    @Nullable
+    public String moderator;
     /**
      * Member role ID, nullable value. If this value is null, it means member will be
      * everyone
@@ -225,8 +228,8 @@ public class IDHolder implements Cloneable {
      * @param me Member role ID
      * @param bo Booster roel ID
      */
-    public IDHolder(String m, String me, String bo) {
-        this.MOD = m;
+    public IDHolder(@Nonnull String m, String me, String bo) {
+        this.moderator = m;
         this.member = me;
         this.booster = bo;
 
@@ -247,7 +250,7 @@ public class IDHolder implements Cloneable {
      */
     public void inject(IDHolder holder) {
         publish = holder.publish;
-        MOD = holder.MOD;
+        moderator = holder.moderator;
         member = holder.member;
         announceChannel = holder.announceChannel;
         status = holder.status;
@@ -276,7 +279,7 @@ public class IDHolder implements Cloneable {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("publish", publish);
-        obj.addProperty("mod", getOrNull(MOD));
+        obj.addProperty("mod", getOrNull(moderator));
         obj.addProperty("mem", getOrNull(member));
         obj.addProperty("ann", getOrNull(announceChannel));
         obj.add("status", StaticStore.listToJsonString(status));
@@ -302,7 +305,7 @@ public class IDHolder implements Cloneable {
     /**
      * Get allowed channels where this {@code member} can use bot's commands
      *
-     * @param member Member data who is in this {@link net.dv8tion.jda.api.entities.Guild}
+     * @param member Data of member who is in this {@link net.dv8tion.jda.api.entities.Guild}
      *
      * @return List of channel ID where {@code member} can use the commands
      */
@@ -345,7 +348,7 @@ public class IDHolder implements Cloneable {
     }
 
     private boolean isSetAsRole(String id) {
-        return id.equals(MOD) || id.equals(member) || id.equals(booster) || hasIDasRole(id);
+        return id.equals(moderator) || id.equals(member) || id.equals(booster) || hasIDasRole(id);
     }
 
     private String getOrNull(String id) {
@@ -538,7 +541,7 @@ public class IDHolder implements Cloneable {
         try {
             IDHolder id = (IDHolder) super.clone();
 
-            id.MOD = MOD;
+            id.moderator = moderator;
             id.member = member;
             id.booster = booster;
 
