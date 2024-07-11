@@ -12,7 +12,6 @@ import mandarin.packpack.commands.math.*;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
 import mandarin.packpack.supporter.server.SpamPrevent;
@@ -37,7 +36,6 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -235,30 +233,6 @@ public class AllEventAdapter extends ListenerAdapter {
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildMemberUpdate - Error happened");
-        }
-    }
-
-    @Override
-    public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
-        super.onGuildMemberJoin(event);
-
-        Guild g = event.getGuild();
-
-        if(g.getId().equals(StaticStore.BCU_SERVER)) {
-            Member m = event.getMember();
-
-            String memberName = m.getNickname();
-            String userName = m.getUser().getName();
-
-            boolean recommend = memberName != null && KoreanSeparater.containKorean(memberName);
-
-            if(KoreanSeparater.containKorean(userName)) {
-                recommend = true;
-            }
-
-            if(recommend) {
-                m.getUser().openPrivateChannel().queue(ch -> ch.sendMessage(LangID.getStringByID("korean_recommend", CommonStatic.Lang.Locale.EN)).queue(), e -> {});
-            }
         }
     }
 
