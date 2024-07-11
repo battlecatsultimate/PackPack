@@ -47,9 +47,14 @@ public class SubscribeEvent extends ConstraintCommand {
         if (holder == null)
             return result;
 
+        CommonStatic.Lang.Locale locale = holder.config.lang;
+
+        if (locale == null)
+            return result;
+
         String[] idPriority;
 
-        switch (holder.config.lang) {
+        switch (locale) {
             case ZH -> idPriority = new String[] { "tw", "jp", "en", "kr" };
             case KR -> idPriority = new String[] { "kr", "jp", "en", "tw" };
             case JP -> idPriority = new String[] { "jp", "en", "tw", "kr" };
