@@ -1,7 +1,9 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
+
 @SuppressWarnings("unused")
 public interface Schedule {
-    String beautify(int lang);
-    String dataToString(int lang);
+    String beautify(CommonStatic.Lang.Locale lang);
+    String dataToString(CommonStatic.Lang.Locale lang);
 }

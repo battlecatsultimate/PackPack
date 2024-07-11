@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.calculation.Equation;
@@ -21,14 +22,14 @@ public class SolutionHolder extends SearchHolder {
     private final List<BigDecimal[]> targetRanges;
     private final List<NumericalResult> solutions;
 
-    public SolutionHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, String summary, List<BigDecimal[]> targetRanges, List<NumericalResult> solutions, int lang) {
+    public SolutionHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, String summary, List<BigDecimal[]> targetRanges, List<NumericalResult> solutions, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.summary = summary;
         this.targetRanges = targetRanges;
         this.solutions = solutions;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

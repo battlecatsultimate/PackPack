@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation.modify
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.CatFoodModifyHolder
@@ -21,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class ModifyModeSelectHolder(author: Message, channelID: String, message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message) {
+class ModifyModeSelectHolder(author: Message, channelID: String, message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class HasRole extends ConstraintCommand {
-    public HasRole(ROLE role, int lang, @Nullable IDHolder id) {
+    public HasRole(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, true);
     }
 

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -13,12 +14,12 @@ import java.util.List;
 public class MedalMessageHolder extends SearchHolder {
     private final ArrayList<Integer> id;
     
-    public MedalMessageHolder(ArrayList<Integer> id, Message author, Message msg, int lang, String channelID) {
+    public MedalMessageHolder(ArrayList<Integer> id, Message author, Message msg, CommonStatic.Lang.Locale lang, String channelID) {
         super(author, msg, channelID, lang);
 
         this.id = id;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

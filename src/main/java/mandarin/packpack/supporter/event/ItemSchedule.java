@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
 import common.util.stage.MapColc;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -7,7 +8,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.util.ArrayList;
 
 public class ItemSchedule extends EventFactor implements Schedule {
-    private final int locale;
+    private final CommonStatic.Lang.Locale locale;
 
     public final ArrayList<EventSection> sections = new ArrayList<>();
     public final EventDateSet date;
@@ -21,7 +22,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
     public String title;
     public String messsage;
 
-    public ItemSchedule(String line, int locale) {
+    public ItemSchedule(String line, CommonStatic.Lang.Locale locale) {
         this.locale = locale;
 
         String[] data = line.split("\t");
@@ -94,7 +95,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String beautify(int lang) {
+    public String beautify(CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder();
 
         result.append("\u001B[0;31m[");
@@ -103,14 +104,14 @@ public class ItemSchedule extends EventFactor implements Schedule {
             result.append(date.dateStart.year)
                     .append(LangID.getStringByID("year", lang));
 
-            if(lang != LangID.ZH) {
+            if(lang != CommonStatic.Lang.Locale.ZH) {
                 result.append(" ");
             }
         }
 
         result.append(getMonth(date.dateStart.month, lang));
 
-        if(lang != LangID.ZH) {
+        if(lang != CommonStatic.Lang.Locale.ZH) {
             result.append(" ");
         }
 
@@ -128,19 +129,19 @@ public class ItemSchedule extends EventFactor implements Schedule {
             result.append(" ~ ");
 
             if(!date.dateEnd.equals(END)) {
-                if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == ZH)) {
+                if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                     result.append(date.dateEnd.year)
                             .append(LangID.getStringByID("year", lang));
 
-                    if(lang != LangID.ZH) {
+                    if(lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");
                     }
                 }
 
-                if(date.dateStart.month != date.dateEnd.month || lang == ZH) {
+                if(date.dateStart.month != date.dateEnd.month || lang == CommonStatic.Lang.Locale.ZH) {
                     result.append(getMonth(date.dateEnd.month, lang));
 
-                    if(lang != LangID.ZH) {
+                    if(lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");
                     }
                 }
@@ -177,7 +178,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String dataToString(int lang) {
+    public String dataToString(CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder("```");
 
         result.append(date.dateStart.year)
@@ -339,7 +340,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
         if(status == 100)
             return "Moon";
         else if(status < 48 && status > 0) {
-            return StaticStore.safeMultiLangGet(MapColc.get("000003").maps.get(9).list.get(status-1), 0);
+            return StaticStore.safeMultiLangGet(MapColc.get("000003").maps.get(9).list.get(status-1), CommonStatic.Lang.Locale.EN);
         } else if(status == 0) {
             return "None";
         } else {

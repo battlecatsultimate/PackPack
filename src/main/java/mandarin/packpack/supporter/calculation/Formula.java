@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.calculation;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.calculation.nested.*;
 import mandarin.packpack.supporter.lang.LangID;
@@ -79,7 +80,7 @@ public class Formula {
     private String full;
     private String retry;
     
-    public Formula(String formula, @Range(from = 1, to = Integer.MAX_VALUE) int maxVariable, int lang) {
+    public Formula(String formula, @Range(from = 1, to = Integer.MAX_VALUE) int maxVariable, CommonStatic.Lang.Locale lang) {
         String stabilized = formula
                 .replaceAll("[\\[{]", "(")
                 .replaceAll("[]}]", ")")
@@ -235,7 +236,7 @@ public class Formula {
         return element.calculateFast(equation);
     }
 
-    public NumericalResult solveByIteration(BigDecimal startPoint, BigDecimal endPoint, int numberOfIteration, ROOT ROOT, int lang) {
+    public NumericalResult solveByIteration(BigDecimal startPoint, BigDecimal endPoint, int numberOfIteration, ROOT ROOT, CommonStatic.Lang.Locale lang) {
         BigDecimal err = BigDecimal.TEN.multiply(BigDecimal.TEN);
         BigDecimal pre;
 
@@ -408,7 +409,7 @@ public class Formula {
         }
     }
 
-    public NumericalResult solveByError(BigDecimal startPoint, BigDecimal endPoint, BigDecimal endError, ROOT ROOT, int lang) {
+    public NumericalResult solveByError(BigDecimal startPoint, BigDecimal endPoint, BigDecimal endError, ROOT ROOT, CommonStatic.Lang.Locale lang) {
         BigDecimal err = BigDecimal.TEN.multiply(BigDecimal.TEN);
         BigDecimal pre;
 
@@ -630,7 +631,7 @@ public class Formula {
         }
     }
 
-    public BigDecimal differentiate(BigDecimal x, BigDecimal h, SNAP snap, int lang) {
+    public BigDecimal differentiate(BigDecimal x, BigDecimal h, SNAP snap, CommonStatic.Lang.Locale lang) {
         if(h.compareTo(BigDecimal.ZERO) <= 0)
             throw new IllegalStateException("h must not be 0");
 
@@ -708,7 +709,7 @@ public class Formula {
         }
     }
 
-    public BigDecimal integrate(BigDecimal start, BigDecimal end, int section, INTEGRATION algorithm, int lang) {
+    public BigDecimal integrate(BigDecimal start, BigDecimal end, int section, INTEGRATION algorithm, CommonStatic.Lang.Locale lang) {
         if(section <= 0) {
             throw new IllegalStateException("Step size can't be zero");
         }
@@ -860,7 +861,7 @@ public class Formula {
         }
     }
 
-    private NestedElement analyze(String equation, int lang) {
+    private NestedElement analyze(String equation, CommonStatic.Lang.Locale lang) {
         if(openedBracket(equation)) {
             return null;
         }
@@ -1476,7 +1477,7 @@ public class Formula {
         return false;
     }
 
-    private NestedElement handleLast(String equation, String last, int lang) {
+    private NestedElement handleLast(String equation, String last, CommonStatic.Lang.Locale lang) {
         if(!equation.equals(last)) {
             NestedElement test = analyze(last, lang);
 

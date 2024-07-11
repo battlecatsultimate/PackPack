@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class Prefix extends ConstraintCommand {
     private static final int ERR_CANT_FIND_MEMBER = 0;
 
-    public Prefix(ROLE role, int lang, IDHolder holder) {
+    public Prefix(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(role, lang, holder, false);
     }
 

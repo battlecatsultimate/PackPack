@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot.manage;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 
 public class RegisterFixing extends ConstraintCommand {
-    public RegisterFixing(ROLE role, int lang, IDHolder id) {
+    public RegisterFixing(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class BoosterEmoji extends ConstraintCommand {
-    public BoosterEmoji(ROLE role, int lang, IDHolder id) {
+    public BoosterEmoji(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 

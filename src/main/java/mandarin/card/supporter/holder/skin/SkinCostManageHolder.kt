@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.skin
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Skin
@@ -28,7 +29,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class SkinCostManageHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message), MessageUpdater {
+class SkinCostManageHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     override fun clean() {
 
     }

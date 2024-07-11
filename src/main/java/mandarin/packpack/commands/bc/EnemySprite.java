@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -24,7 +25,7 @@ import java.util.List;
 public class EnemySprite extends TimedConstraintCommand {
     private static final int PARAM_EDI = 2;
 
-    public EnemySprite(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public EnemySprite(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_ENEMYSPRITE_ID, false);
     }
 

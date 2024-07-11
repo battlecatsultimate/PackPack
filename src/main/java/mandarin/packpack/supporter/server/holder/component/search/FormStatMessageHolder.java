@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
@@ -31,7 +32,7 @@ public class FormStatMessageHolder extends SearchHolder {
     private final boolean treasure;
     private final TreasureHolder t;
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, Level lv, TreasureHolder t, int lang) {
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, Level lv, TreasureHolder t, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.form = form;
@@ -53,7 +54,7 @@ public class FormStatMessageHolder extends SearchHolder {
         this.lv = lv;
         this.t = t;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

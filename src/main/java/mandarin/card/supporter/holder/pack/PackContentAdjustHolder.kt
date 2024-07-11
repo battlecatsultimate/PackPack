@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.pack
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CardChancePairAmountHolder
@@ -7,7 +8,6 @@ import mandarin.card.supporter.pack.CardChancePair
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardGroupData
 import mandarin.card.supporter.pack.CardPack
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -29,7 +29,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
     private val pack: CardPack,
     private val cardChancePairList: CardChancePairList,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }
@@ -87,13 +87,13 @@ class PackContentAdjustHolder(author: Message, channelID: String,
             }
             "back" -> {
                 if (new) {
-                    registerPopUp(event, "Are you sure you want to cancel creating card/chance pair list? This cannot be undone", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to cancel creating card/chance pair list? This cannot be undone")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     cardChancePairList.validateChance()
 
@@ -109,8 +109,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
             "delete" -> {
                 registerPopUp(
                     event,
-                    "Are you sure you want to delete card/chance pair list? This cannot be undone",
-                    LangID.EN
+                    "Are you sure you want to delete card/chance pair list? This cannot be undone"
                 )
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -126,7 +125,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
                         .queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

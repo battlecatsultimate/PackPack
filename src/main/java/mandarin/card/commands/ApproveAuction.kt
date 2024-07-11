@@ -1,13 +1,13 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 
-class ApproveAuction : Command(LangID.EN, true) {
+class ApproveAuction : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
         val ch = loader.channel
@@ -24,8 +24,8 @@ class ApproveAuction : Command(LangID.EN, true) {
             return
         }
 
-        replyToMessageSafely(ch, "Are you sure you want to approve this auction?", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+        replyToMessageSafely(ch, "Are you sure you want to approve this auction?", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                 val warnMessage = auctionSession.performAuction(m.idLong)
 
                 if (warnMessage.isNotEmpty()) {

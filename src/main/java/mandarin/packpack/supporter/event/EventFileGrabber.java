@@ -3,11 +3,12 @@ package mandarin.packpack.supporter.event;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.TasteApk;
-import mandarin.packpack.supporter.lang.LangID;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -36,7 +37,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class EventFileGrabber {
-    public static Map<Integer, Boolean> newWay = new HashMap<>();
+    public static Map<CommonStatic.Lang.Locale, Boolean> newWay = new HashMap<>();
 
     public static final String domain = "nyanko-events-prd.s3.ap-northeast-1.amazonaws.com";
     public static final String region = "ap-northeast-1";
@@ -80,22 +81,22 @@ public class EventFileGrabber {
         id = reader.readLine();
         key = reader.readLine();
 
-        for(int i = 0; i < 4; i++) {
-            TasteApk.VECTOR.add(reader.readLine());
-            TasteApk.KEY.add(reader.readLine());
+        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+            TasteApk.VECTOR.put(locale, reader.readLine());
+            TasteApk.KEY.put(locale, reader.readLine());
         }
 
         reader.close();
 
         if (newWay.isEmpty()) {
-            newWay.put(LangID.EN, false);
-            newWay.put(LangID.ZH, false);
-            newWay.put(LangID.KR, false);
-            newWay.put(LangID.JP, true);
+            newWay.put(CommonStatic.Lang.Locale.EN, false);
+            newWay.put(CommonStatic.Lang.Locale.ZH, false);
+            newWay.put(CommonStatic.Lang.Locale.KR, false);
+            newWay.put(CommonStatic.Lang.Locale.JP, true);
         }
     }
 
-    public static String getLink(int loc, int f) {
+    public static String getLink(CommonStatic.Lang.Locale loc, int f) {
         if (newWay.containsKey(loc) && newWay.get(loc)) {
             try {
                 String link = getNewLink(loc, f);
@@ -111,12 +112,14 @@ public class EventFileGrabber {
         return getLinkOld(loc, f);
     }
 
-    public static String getNewLink(int loc, int f) throws Exception {
-        if (loc < 0)
-            loc = 0;
+    public static String getNewLink(CommonStatic.Lang.Locale loc, int f) throws Exception {
+        if (loc == null)
+            loc = CommonStatic.Lang.Locale.EN;
 
-        if (loc >= locale.length)
-            loc = locale.length - 1;
+        int index = ArrayUtils.indexOf(EventFactor.supportedVersions, loc);
+
+        if (index == -1)
+            return null;
 
         if (f < 0)
             f = 0;
@@ -190,15 +193,17 @@ public class EventFileGrabber {
             }
         }
 
-        return newEventLink.replace("{1}", locale[loc]).replace("{2}", file[f]) + jwtToken;
+        return newEventLink.replace("{1}", locale[index]).replace("{2}", file[f]) + jwtToken;
     }
 
-    public static String getLinkOld(int loc, int f) {
-        if(loc < 0)
-            loc = 0;
+    public static String getLinkOld(CommonStatic.Lang.Locale loc, int f) {
+        if(loc == null)
+            loc = CommonStatic.Lang.Locale.EN;
 
-        if(loc >= locale.length)
-            loc = locale.length - 1;
+        int index = ArrayUtils.indexOf(EventFactor.supportedVersions, loc);
+
+        if(index == -1)
+            return null;
 
         if(f < 0)
             f = 0;
@@ -206,7 +211,7 @@ public class EventFileGrabber {
         if(f >= file.length)
             f = file.length - 1;
 
-        String l = link.replace("{1}", locale[loc]).replace("{2}", file[f]);
+        String l = link.replace("{1}", locale[index]).replace("{2}", file[f]);
 
         String amz = getAmzDate();
 

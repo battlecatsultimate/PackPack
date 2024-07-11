@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.pack
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardPack
@@ -20,7 +21,7 @@ class CardPackContentHolder(
     channelID: String,
     message: Message,
     private val pack: CardPack
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

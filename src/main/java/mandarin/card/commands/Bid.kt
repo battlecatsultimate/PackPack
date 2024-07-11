@@ -1,5 +1,6 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
@@ -7,7 +8,6 @@ import mandarin.card.supporter.holder.auction.AuctionPlaceSelectHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import net.dv8tion.jda.api.entities.Guild
@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class Bid : Command(LangID.EN, false) {
+class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
         val ch = loader.channel
@@ -98,8 +98,8 @@ class Bid : Command(LangID.EN, false) {
                     return
                 }
 
-                replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-                    StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+                replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+                    StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                         auctionSession.bid(u.idLong, catFoods)
 
                         replyToMessageSafely(ch, "Successfully posted to the bid $catFoods ${EmojiStore.ABILITY["CF"]?.formatted} to auction #${auctionSession.id}!", loader.message) { a -> a }
@@ -172,8 +172,8 @@ class Bid : Command(LangID.EN, false) {
                 return
             }
 
-            replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-                StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+            replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+                StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                     auctionSession.bid(u.idLong, catFoods)
 
                     replyToMessageSafely(ch, "Successfully posted to the bid $catFoods ${EmojiStore.ABILITY["CF"]?.formatted} to auction #${auctionSession.id}!", loader.message) { a -> a }

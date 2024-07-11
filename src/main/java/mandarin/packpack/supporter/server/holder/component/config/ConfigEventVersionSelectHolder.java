@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -15,23 +16,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
-    public ConfigEventVersionSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
+    public ConfigEventVersionSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, backup, lang);
     }
 
-    public ConfigEventVersionSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, int lang) {
+    public ConfigEventVersionSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, lang);
     }
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "en" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, LangID.EN));
-            case "jp" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, LangID.JP));
-            case "tw" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, LangID.ZH));
-            case "kr" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, LangID.KR));
+            case "en" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.EN));
+            case "jp" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.JP));
+            case "tw" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.ZH));
+            case "kr" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.KR));
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
@@ -44,7 +46,7 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
@@ -97,10 +99,12 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
 
         String[] idPriority;
 
-        switch (holder.config.lang) {
-            case LangID.ZH -> idPriority = new String[] { "tw", "jp", "en", "kr" };
-            case LangID.KR -> idPriority = new String[] { "kr", "jp", "en", "tw" };
-            case LangID.JP -> idPriority = new String[] { "jp", "en", "tw", "kr" };
+        CommonStatic.Lang.Locale language = Objects.requireNonNull(holder.config.lang);
+
+        switch (language) {
+            case ZH -> idPriority = new String[] { "tw", "jp", "en", "kr" };
+            case KR -> idPriority = new String[] { "kr", "jp", "en", "tw" };
+            case JP -> idPriority = new String[] { "jp", "en", "tw", "kr" };
             default -> idPriority = new String[] { "en", "jp", "tw", "kr" };
         }
 

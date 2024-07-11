@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.skin
 
+import common.CommonStatic
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.holder.CardCostPayHolder
@@ -7,7 +8,6 @@ import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.FileUpload
 
-class SkinPurchasePayHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message), MessageUpdater {
+class SkinPurchasePayHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     private val containers = Array(skin.cost.cardsCosts.size) {
@@ -52,7 +52,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                         "You don't own this card currently. Are you sure you want to purchase this skin? This cannot be undone"
                     }
 
-                    registerPopUp(event, content, LangID.EN)
+                    registerPopUp(event, content)
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         skin.purchase(purchaser, inventory, containers)
@@ -63,7 +63,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                             .queue()
 
                         goBack()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     skin.purchase(purchaser, inventory, containers)
 
@@ -88,13 +88,13 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                 if (containers.any { container -> container.pickedCards.isNotEmpty() }) {
                     StaticStore.removeHolder(authorMessage.author.id, this)
 
-                    registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     event.deferEdit().queue()
 

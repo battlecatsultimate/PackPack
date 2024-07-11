@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -21,14 +22,10 @@ import java.util.List;
 public abstract class SearchHolder extends ComponentHolder {
     public static final int PAGE_CHUNK = 20;
 
-    protected final int lang;
-
     protected int page = 0;
 
-    public SearchHolder(@Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, int lang) {
-        super(author, channelID, msg);
-
-        this.lang = lang;
+    public SearchHolder(@Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
     }
 
     @Override

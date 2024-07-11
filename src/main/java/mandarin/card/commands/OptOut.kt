@@ -1,15 +1,15 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.log.LogSession
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 
-class OptOut : Command(LangID.EN, false) {
+class OptOut : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         replyToMessageSafely(loader.channel,
             "Users have right to opt out from the bot collecting your data. " +
@@ -25,11 +25,11 @@ class OptOut : Command(LangID.EN, false) {
             "[Privacy Policy](https://github.com/battlecatsultimate/PackPack/blob/main/Privacy%20Policy%20CardDealer.md) is here\n" +
             "## Are you really sure you want to opt out? Once this process is done, you can't undo it",
             loader.message,
-            { a -> registerConfirmButtons(a, LangID.EN) }
+            { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }
         ) { msg ->
-            StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, LangID.EN) {
-                replyToMessageSafely(loader.channel, "This is secondary confirmation message\n# Are you sure you want to opt out?", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { message ->
-                    StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, message, loader.channel.id, LangID.EN) {
+            StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, CommonStatic.Lang.Locale.EN) {
+                replyToMessageSafely(loader.channel, "This is secondary confirmation message\n# Are you sure you want to opt out?", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { message ->
+                    StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, message, loader.channel.id, CommonStatic.Lang.Locale.EN) {
                         val id = loader.user.idLong
 
                         CardData.inventories.remove(id)

@@ -1,7 +1,11 @@
 package mandarin.packpack.supporter.server.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
+import org.jetbrains.annotations.Nullable;
 
 public class ConfigHolder implements Cloneable {
     public static ConfigHolder parseJson(JsonObject obj) {
@@ -12,7 +16,17 @@ public class ConfigHolder implements Cloneable {
         }
 
         if(obj.has("lang")) {
-            holder.lang = obj.get("lang").getAsInt();
+            JsonElement e = obj.get("lang");
+
+            if (e instanceof JsonPrimitive primitive) {
+                if (primitive.isNumber()) {
+                    holder.lang = holder.findLocale(primitive.getAsInt());
+                } else {
+                    String lang = obj.get("lang").getAsString();
+
+                    holder.lang = lang.isBlank() ? null : CommonStatic.Lang.Locale.valueOf(lang);
+                }
+            }
         }
 
         if(obj.has("defLevel")) {
@@ -43,14 +57,16 @@ public class ConfigHolder implements Cloneable {
     }
 
     public String prefix = StaticStore.globalPrefix;
-    public int lang = -1, defLevel = 30;
+    @Nullable
+    public CommonStatic.Lang.Locale lang = null;
+    public int defLevel = 30;
     public boolean useFrame = true, extra = false, compact = false, trueForm = false, treasure = false;
 
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("prefix", prefix);
-        obj.addProperty("lang", lang);
+        obj.addProperty("lang", lang == null ? "" : lang.name());
         obj.addProperty("defLevel", defLevel);
         obj.addProperty("useFrame", useFrame);
         obj.addProperty("extra", extra);
@@ -94,5 +110,17 @@ public class ConfigHolder implements Cloneable {
         c.treasure = treasure;
 
         return c;
+    }
+
+    private CommonStatic.Lang.Locale findLocale(int language) {
+        if (language == -1)
+            return null;
+
+        for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
+            if (language == locale.ordinal())
+                return locale;
+        }
+
+        return null;
     }
 }

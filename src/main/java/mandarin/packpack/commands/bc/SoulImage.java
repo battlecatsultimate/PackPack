@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.anim.AnimU;
@@ -23,7 +24,7 @@ public class SoulImage extends TimedConstraintCommand {
     private static final int PARAM_TRANSPARENT = 2;
     private static final int PARAM_DEBUG = 4;
 
-    public SoulImage(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time) {
+    public SoulImage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder idHolder, long time) {
         super(role, lang, idHolder, time, "soulimage", false);
     }
 

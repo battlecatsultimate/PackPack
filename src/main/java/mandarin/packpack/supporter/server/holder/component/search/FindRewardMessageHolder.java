@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -34,7 +35,7 @@ public class FindRewardMessageHolder extends SearchHolder {
     private final boolean isFrame;
     private final TreasureHolder treasure;
 
-    public FindRewardMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Integer> rewards, String keyword, double chance, int amount, boolean isExtra, boolean isCompact, boolean isFrame, TreasureHolder treasure, int lang) {
+    public FindRewardMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Integer> rewards, String keyword, double chance, int amount, boolean isExtra, boolean isCompact, boolean isFrame, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.rewards = rewards;
@@ -49,7 +50,7 @@ public class FindRewardMessageHolder extends SearchHolder {
 
         this.treasure = treasure;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override
@@ -100,7 +101,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(keyword))).append("```md\n");

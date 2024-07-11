@@ -1,11 +1,11 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.commands.Command
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 
-class AuctionPlace : Command(LangID.EN, true) {
+class AuctionPlace : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel
 

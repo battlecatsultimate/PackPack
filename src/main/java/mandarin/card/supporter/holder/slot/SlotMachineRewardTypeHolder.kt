@@ -1,12 +1,12 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotCurrencyContent
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class SlotMachineRewardTypeHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+class SlotMachineRewardTypeHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }
@@ -39,7 +39,7 @@ class SlotMachineRewardTypeHolder(author: Message, channelID: String, message: M
                 goBack(event)
             }
             "cancel" -> {
-                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferReply()
@@ -48,7 +48,7 @@ class SlotMachineRewardTypeHolder(author: Message, channelID: String, message: M
                         .queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

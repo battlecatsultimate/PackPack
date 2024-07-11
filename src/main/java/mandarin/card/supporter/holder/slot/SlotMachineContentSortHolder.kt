@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.slot.SlotMachineContentSortModalHolder
@@ -9,7 +10,6 @@ import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -26,7 +26,7 @@ import org.jcodec.api.UnsupportedFormatException
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineContentSortHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+class SlotMachineContentSortHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -57,7 +57,7 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, message: 
                 goBack(event)
             }
             "cancel" -> {
-                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferReply()
@@ -66,7 +66,7 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, message: 
                         .queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             else -> {
                 when {

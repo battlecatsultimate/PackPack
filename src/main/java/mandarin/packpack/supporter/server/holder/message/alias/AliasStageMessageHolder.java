@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message.alias;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -8,8 +9,8 @@ import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
@@ -27,23 +28,19 @@ public class AliasStageMessageHolder extends MessageHolder {
     private final AliasHolder.MODE mode;
     private final String aliasName;
 
-    private final int lang;
-
     private int page = 0;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public AliasStageMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(author, channelID, msg);
+    public AliasStageMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nullable String aliasName) {
+        super(author, channelID, msg, lang);
 
         this.stage = stage;
         this.channelID = channelID;
         this.mode = mode;
         this.aliasName = aliasName;
 
-        this.lang = lang;
-
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override
@@ -150,7 +147,7 @@ public class AliasStageMessageHolder extends MessageHolder {
                         break;
                     }
                     alias.add(aliasName);
-                    AliasHolder.SALIAS.put(AliasHolder.getLangCode(lang), stage.get(id), alias);
+                    AliasHolder.SALIAS.put(lang, stage.get(id), alias);
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias added\n\nStage : " + stName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }
@@ -168,7 +165,7 @@ public class AliasStageMessageHolder extends MessageHolder {
                         break;
                     }
                     alias.remove(aliasName);
-                    AliasHolder.SALIAS.put(AliasHolder.getLangCode(lang), stage.get(id), alias);
+                    AliasHolder.SALIAS.put(lang, stage.get(id), alias);
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias removed\n\nStage : " + stName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }

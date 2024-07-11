@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CardChancePairAmountHolder
@@ -9,7 +10,6 @@ import mandarin.card.supporter.pack.CardGroupData
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -34,7 +34,7 @@ class SlotMachineCardChancePairListHolder(
     private val content: SlotCardContent,
     private val cardChancePairList: CardChancePairList,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }
@@ -92,11 +92,11 @@ class SlotMachineCardChancePairListHolder(
             }
             "back" -> {
                 if (new) {
-                    registerPopUp(event, "Are you sure you want to cancel creating card/chance pair list? This cannot be undone", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to cancel creating card/chance pair list? This cannot be undone")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         goBack(e)
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     cardChancePairList.validateChance()
 
@@ -108,7 +108,7 @@ class SlotMachineCardChancePairListHolder(
                 }
             }
             "delete" -> {
-                registerPopUp(event, "Are you sure you want to delete card/chance pair list? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to delete card/chance pair list? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     content.cardChancePairLists.remove(cardChancePairList)
@@ -123,10 +123,10 @@ class SlotMachineCardChancePairListHolder(
                         .queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "cancel" -> {
-                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferReply()
@@ -135,7 +135,7 @@ class SlotMachineCardChancePairListHolder(
                         .queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 public class EventMessage extends ConstraintCommand {
-    public EventMessage(ROLE role, int lang, @Nullable IDHolder id) {
+    public EventMessage(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, true);
     }
 
@@ -33,7 +34,7 @@ public class EventMessage extends ConstraintCommand {
             return;
         }
 
-        String loc = getLocale(contents[1]);
+        CommonStatic.Lang.Locale loc = getLocale(contents[1]);
 
         if(loc == null) {
             replyToMessageSafely(ch, LangID.getStringByID("eventmes_invalidloc", lang), loader.getMessage(), a -> a);
@@ -90,12 +91,12 @@ public class EventMessage extends ConstraintCommand {
         }
     }
 
-    private String getLocale(String loc) {
+    private CommonStatic.Lang.Locale getLocale(String loc) {
         return switch (loc) {
-            case "-en" -> "en";
-            case "-tw" -> "tw";
-            case "-kr" -> "kr";
-            case "-jp" -> "jp";
+            case "-en" -> CommonStatic.Lang.Locale.EN;
+            case "-tw" -> CommonStatic.Lang.Locale.ZH;
+            case "-kr" -> CommonStatic.Lang.Locale.KR;
+            case "-jp" -> CommonStatic.Lang.Locale.JP;
             default -> null;
         };
     }

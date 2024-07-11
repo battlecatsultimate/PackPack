@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot.manage;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class UnregisterFixing extends ConstraintCommand {
-    public UnregisterFixing(ROLE role, int lang, IDHolder id) {
+    public UnregisterFixing(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 

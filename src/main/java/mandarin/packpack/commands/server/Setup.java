@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -24,7 +25,7 @@ import java.util.List;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Setup extends ConstraintCommand {
-    public Setup(ROLE role, int lang, IDHolder id) {
+    public Setup(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 

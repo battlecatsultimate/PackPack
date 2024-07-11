@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -17,7 +18,7 @@ import java.io.File;
 import java.util.*;
 
 public class EventDataArchive extends ConstraintCommand {
-    public EventDataArchive(ROLE role, int lang, IDHolder id) {
+    public EventDataArchive(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -30,13 +31,13 @@ public class EventDataArchive extends ConstraintCommand {
     public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        int locale = getLocale(loader.getContent());
+        CommonStatic.Lang.Locale locale = getLocale(loader.getContent());
         String fileName = getFileName(loader.getContent());
 
         String l = switch (locale) {
-            case LangID.ZH -> "zh";
-            case LangID.JP -> "jp";
-            case LangID.KR -> "kr";
+            case ZH -> "zh";
+            case JP -> "jp";
+            case KR -> "kr";
             default -> "en";
         };
 
@@ -98,27 +99,27 @@ public class EventDataArchive extends ConstraintCommand {
         });
     }
 
-    public int getLocale(String content) {
+    public CommonStatic.Lang.Locale getLocale(String content) {
         String[] contents = content.split(" ");
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
                 case "-jp" -> {
-                    return LangID.JP;
+                    return CommonStatic.Lang.Locale.JP;
                 }
                 case "-zh" -> {
-                    return LangID.ZH;
+                    return CommonStatic.Lang.Locale.ZH;
                 }
                 case "-kr" -> {
-                    return LangID.KR;
+                    return CommonStatic.Lang.Locale.KR;
                 }
                 case "-en" -> {
-                    return LangID.EN;
+                    return CommonStatic.Lang.Locale.EN;
                 }
             }
         }
 
-        return LangID.EN;
+        return CommonStatic.Lang.Locale.EN;
     }
 
     public String getFileName(String content) {

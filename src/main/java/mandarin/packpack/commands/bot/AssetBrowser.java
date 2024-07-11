@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import common.system.files.VFile;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
@@ -20,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class AssetBrowser extends ConstraintCommand {
-    public AssetBrowser(ROLE role, int lang, IDHolder id) {
+    public AssetBrowser(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

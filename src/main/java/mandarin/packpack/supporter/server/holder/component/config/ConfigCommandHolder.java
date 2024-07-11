@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -26,7 +27,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
     private int page = 0;
 
-    public ConfigCommandHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
+    public ConfigCommandHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, backup, lang);
     }
 
@@ -47,7 +48,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), message, channelID, holder.config, this::applyResult));
+                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), message, channelID, holder.config, this::applyResult, lang));
             }
             case "unit" -> {
                 holder.config.useFrame = !holder.config.useFrame;
@@ -106,7 +107,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()

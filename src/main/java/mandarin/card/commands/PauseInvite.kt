@@ -1,14 +1,14 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 
-class PauseInvite : Command(LangID.EN, true) {
+class PauseInvite : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
@@ -23,8 +23,8 @@ class PauseInvite : Command(LangID.EN, true) {
             "Are you sure you want to automatically disable (pause) invite links?"
         }
 
-        replyToMessageSafely(loader.channel, message, loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-            StaticStore.putHolder(loader.member.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, LangID.EN) {
+        replyToMessageSafely(loader.channel, message, loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+            StaticStore.putHolder(loader.member.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, CommonStatic.Lang.Locale.EN) {
                 replyToMessageSafely(loader.channel, if (CardBot.inviteLocked) "Enabling..." else "Disabling...", loader.message, { a -> a }) { m ->
                     g.manager.setInvitesDisabled(!CardBot.inviteLocked).queue( {
                         val alreadyLocked = CardBot.inviteLocked

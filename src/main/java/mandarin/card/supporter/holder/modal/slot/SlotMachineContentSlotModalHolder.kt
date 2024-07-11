@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.slot
 
+import common.CommonStatic
 import mandarin.card.supporter.slot.SlotContent
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.StaticStore
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.text.toDouble
 
-class SlotMachineContentSlotModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val slotContent: SlotContent) : ModalHolder(author, channelID, message) {
+class SlotMachineContentSlotModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val slotContent: SlotContent) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
@@ -20,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.function.Consumer
 
-class BuyHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class BuyHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
@@ -252,7 +253,7 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                         .setAllowedMentions(ArrayList())
                         .queue()
                 } else {
-                    registerPopUp(event, "Are you sure you want to purchase this role? It costs $cost ${EmojiStore.ABILITY["CF"]?.formatted}", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to purchase this role? It costs $cost ${EmojiStore.ABILITY["CF"]?.formatted}")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         inventory.vanityRoles.add(role)
@@ -267,7 +268,7 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                             .queue()
 
                         CardBot.saveCardData()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 }
 
                 return true

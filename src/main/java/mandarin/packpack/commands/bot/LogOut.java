@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LogOut extends ConstraintCommand {
-    public LogOut(ROLE role, int lang, IDHolder id) {
+    public LogOut(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -44,7 +45,7 @@ public class LogOut extends ConstraintCommand {
             return;
         }
 
-        registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), 0).queue( msg -> {
+        registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), CommonStatic.Lang.Locale.EN).queue(msg -> {
             User u = loader.getUser();
 
             StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), lang, () -> {

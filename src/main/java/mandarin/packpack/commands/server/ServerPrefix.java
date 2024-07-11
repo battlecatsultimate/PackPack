@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class ServerPrefix extends ConstraintCommand {
-    public ServerPrefix(ROLE role, int lang, IDHolder holder) {
+    public ServerPrefix(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(role, lang, holder, true);
     }
 

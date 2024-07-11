@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.skin
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
@@ -8,7 +9,6 @@ import mandarin.card.supporter.holder.modal.SkinNameHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -33,7 +33,7 @@ class SkinModifyHolder(
     message: Message,
     private val skin: Skin,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message), MessageUpdater {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "file" -> {
@@ -119,7 +119,7 @@ class SkinModifyHolder(
                 if (new) {
                     message.editMessageAttachments().queue()
 
-                    registerPopUp(event, "Are you sure you want to cancel creation of the skin? This cannot be undone", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to cancel creation of the skin? This cannot be undone")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         if (!Files.deleteIfExists(skin.file.toPath())) {
@@ -127,13 +127,13 @@ class SkinModifyHolder(
                         }
 
                         goBackTo(e, SkinSelectHolder::class.java)
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     goBack(event)
                 }
             }
             "delete" -> {
-                registerPopUp(event, "Are you sure you want to delete this skin? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to delete this skin? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     if (skin.file.exists() && !Files.deleteIfExists(skin.file.toPath())) {
@@ -172,7 +172,7 @@ class SkinModifyHolder(
                         .queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

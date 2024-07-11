@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
@@ -14,10 +15,11 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SubscribeEvent extends ConstraintCommand {
-    public SubscribeEvent(ROLE role, int lang, IDHolder id) {
+    public SubscribeEvent(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 
@@ -48,9 +50,9 @@ public class SubscribeEvent extends ConstraintCommand {
         String[] idPriority;
 
         switch (holder.config.lang) {
-            case LangID.ZH -> idPriority = new String[] { "tw", "jp", "en", "kr" };
-            case LangID.KR -> idPriority = new String[] { "kr", "jp", "en", "tw" };
-            case LangID.JP -> idPriority = new String[] { "jp", "en", "tw", "kr" };
+            case ZH -> idPriority = new String[] { "tw", "jp", "en", "kr" };
+            case KR -> idPriority = new String[] { "kr", "jp", "en", "tw" };
+            case JP -> idPriority = new String[] { "jp", "en", "tw", "kr" };
             default -> idPriority = new String[] { "en", "jp", "tw", "kr" };
         }
 

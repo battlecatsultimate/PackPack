@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ManualRollSelectHolder(author: Message, channelID: String, message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message) {
+class ManualRollSelectHolder(author: Message, channelID: String, message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {

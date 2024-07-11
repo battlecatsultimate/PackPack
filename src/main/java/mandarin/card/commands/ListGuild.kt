@@ -1,10 +1,10 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.holder.moderation.GuildListHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.JDA
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ListGuild : Command(LangID.EN, true) {
+class ListGuild : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 

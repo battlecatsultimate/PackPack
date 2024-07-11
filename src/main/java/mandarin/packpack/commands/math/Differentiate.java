@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.math;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.Formula;
@@ -15,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Differentiate extends ConstraintCommand {
-    public Differentiate(ROLE role, int lang, @Nullable IDHolder id) {
+    public Differentiate(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, false);
     }
 

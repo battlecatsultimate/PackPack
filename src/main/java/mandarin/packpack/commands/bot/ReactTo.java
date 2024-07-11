@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ReactTo extends ConstraintCommand {
-    public ReactTo(ROLE role, int lang, @Nullable IDHolder id) {
+    public ReactTo(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, false);
     }
 

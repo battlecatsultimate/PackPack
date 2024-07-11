@@ -1,16 +1,16 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.ServerData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 
-class ForceCancelBid : Command(LangID.EN, true) {
+class ForceCancelBid : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
         val ch = loader.channel
@@ -69,8 +69,8 @@ class ForceCancelBid : Command(LangID.EN, true) {
             return
         }
 
-        replyToMessageSafely(ch, "Are you sure you want to cancel the bid of this user? User will get notification as well", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+        replyToMessageSafely(ch, "Are you sure you want to cancel the bid of this user? User will get notification as well", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                 val previousBid = auctionSession.bidData[user] ?: 0
 
                 auctionSession.forceCancelBid(m.idLong, user)

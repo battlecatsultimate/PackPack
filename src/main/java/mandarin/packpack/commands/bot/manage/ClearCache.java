@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot.manage;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -11,7 +12,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class ClearCache extends ConstraintCommand {
-    public ClearCache(ROLE role, int lang, IDHolder id) {
+    public ClearCache(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

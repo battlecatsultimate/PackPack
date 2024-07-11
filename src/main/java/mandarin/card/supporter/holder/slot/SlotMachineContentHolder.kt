@@ -1,9 +1,9 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -21,7 +21,7 @@ import java.math.RoundingMode
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineContentHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+class SlotMachineContentHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {
@@ -64,7 +64,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, message: Mess
                 goBack(event)
             }
             "cancel" -> {
-                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferReply()
@@ -73,7 +73,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, message: Mess
                         .queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

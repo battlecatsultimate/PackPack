@@ -1,16 +1,16 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.AuctionSession
 import mandarin.card.supporter.CardData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 
-class CancelBid : Command(LangID.EN, false) {
+class CancelBid : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
         val ch = loader.channel
@@ -79,8 +79,8 @@ class CancelBid : Command(LangID.EN, false) {
             return
         }
 
-        replyToMessageSafely(ch, "Are you sure you want to cancel the bid?", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+        replyToMessageSafely(ch, "Are you sure you want to cancel the bid?", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                 auctionSession.cancelBid(u.idLong)
 
                 replyToMessageSafely(ch, "Successfully canceled the bid!", loader.message) { a -> a }

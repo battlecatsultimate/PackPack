@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.modal;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
@@ -13,8 +14,8 @@ public class LevelModalHolder extends ModalHolder {
     private final ConfigHolder config;
     private final Consumer<ModalInteractionEvent> editor;
 
-    public LevelModalHolder(Message author, Message msg, String channelID, ConfigHolder config, Consumer<ModalInteractionEvent> editor) {
-        super(author, channelID, msg);
+    public LevelModalHolder(Message author, Message msg, String channelID, ConfigHolder config, Consumer<ModalInteractionEvent> editor, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.config = config;
         this.editor = editor;

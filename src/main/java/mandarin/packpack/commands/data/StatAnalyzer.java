@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.MaAnim;
@@ -37,7 +38,7 @@ public class StatAnalyzer extends ConstraintCommand {
             "-trait", "-c", "-cell", "-apk", "-en", "-jp", "-tw", "-kr"
     );
 
-    public StatAnalyzer(ROLE role, int lang, IDHolder id) {
+    public StatAnalyzer(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

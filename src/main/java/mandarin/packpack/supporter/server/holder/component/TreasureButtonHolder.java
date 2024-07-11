@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -22,17 +23,13 @@ public class TreasureButtonHolder extends ComponentHolder {
     private final TreasureHolder treasure;
     private final TreasureHolder backup;
 
-    private final int lang;
-
-    public TreasureButtonHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @NotNull TreasureHolder treasure, int lang) {
-        super(author, channelID, msg);
+    public TreasureButtonHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @NotNull TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.treasure = treasure;
         backup = this.treasure.copy();
 
-        this.lang = lang;
-
-        registerAutoFinish(this, msg, lang, "treasure_expire", FIVE_MIN);
+        registerAutoFinish(this, msg, "treasure_expire", FIVE_MIN);
     }
 
     @Override

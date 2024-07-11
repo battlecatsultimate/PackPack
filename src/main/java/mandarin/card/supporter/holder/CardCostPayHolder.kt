@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.CardData
@@ -35,7 +36,7 @@ class CardCostPayHolder(
     message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
-) : ComponentHolder(author, channelID, message), MessageUpdater {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val cards = ArrayList<Card>(inventory.cards.keys)
 

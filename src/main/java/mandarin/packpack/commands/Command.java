@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
@@ -35,7 +36,7 @@ import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public abstract class Command {
-    public static MessageCreateAction registerConfirmButtons(MessageCreateAction m, int lang) {
+    public static MessageCreateAction registerConfirmButtons(MessageCreateAction m, CommonStatic.Lang.Locale lang) {
         List<ActionComponent> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
@@ -44,7 +45,7 @@ public abstract class Command {
         return m.setActionRow(components);
     }
 
-    public static MessageCreateAction registerSearchComponents(MessageCreateAction m, int dataSize, List<String> data, int lang) {
+    public static MessageCreateAction registerSearchComponents(MessageCreateAction m, int dataSize, List<String> data, CommonStatic.Lang.Locale lang) {
         int totPage = dataSize / SearchHolder.PAGE_CHUNK;
 
         if(dataSize % SearchHolder.PAGE_CHUNK != 0)
@@ -237,12 +238,12 @@ public abstract class Command {
     public final int DEFAULT_ERROR = -1;
     public final int SERVER_ERROR = -2;
 
-    public final int lang;
+    public final CommonStatic.Lang.Locale lang;
     public final boolean requireGuild;
 
     protected final List<Permission> requiredPermission = new ArrayList<>();
 
-    public Command(int lang, boolean requireGuild) {
+    public Command(CommonStatic.Lang.Locale lang, boolean requireGuild) {
         this.lang = lang;
         this.requireGuild = requireGuild;
     }

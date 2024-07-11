@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -11,8 +12,8 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import javax.annotation.Nonnull;
 
 public abstract class ComponentHolder extends Holder {
-    public ComponentHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
-        super(author, channelID, message);
+    public ComponentHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
     }
 
     @Override

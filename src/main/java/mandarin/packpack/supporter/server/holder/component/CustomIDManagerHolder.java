@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -34,8 +35,8 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
     private int page;
 
-    public CustomIDManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message msg, @NotNull IDHolder holder, @NotNull Guild g) {
-        super(author, channelID, msg);
+    public CustomIDManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message msg, @NotNull IDHolder holder, @NotNull Guild g, @NotNull CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.holder = holder;
         this.g = g;
@@ -57,7 +58,10 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
+
+        if (lang == null)
+            return;
 
         switch (event.getComponentId()) {
             case "customAdd" -> {
@@ -84,7 +88,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
                         .setComponents(getManagerComponents())
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
-                        .queue(), holder, g));
+                        .queue(), holder, g, lang));
             }
             case "customRemove" -> {
                 if (event instanceof StringSelectInteractionEvent e) {
@@ -120,7 +124,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
 
-                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new IDManagerHolder(getAuthorMessage(), channelID, message, holder, g));
+                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new IDManagerHolder(getAuthorMessage(), channelID, message, holder, g, lang));
             }
             case "prev10" -> {
                 page -= 10;
@@ -155,7 +159,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
     }
 
     private String getManagerText() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         StringBuilder builder = new StringBuilder(LangID.getStringByID("idset_managetitle", lang)).append("\n\n");
 
@@ -199,7 +203,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
     }
 
     private String getPreviousMessage() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         String[] data = { "moderator", "member", "booster" };
         String[] ids = { holder.MOD, holder.MEMBER, holder.BOOSTER };
@@ -235,7 +239,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
     }
 
     private List<LayoutComponent> getManagerComponents() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         List<LayoutComponent> result = new ArrayList<>();
 
@@ -323,7 +327,8 @@ public class CustomIDManagerHolder extends ComponentHolder {
     }
 
     private List<LayoutComponent> getPreviousComponents() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
+
         List<LayoutComponent> result = new ArrayList<>();
 
         List<ActionComponent> pages = new ArrayList<>();

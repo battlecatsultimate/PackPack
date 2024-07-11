@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -21,11 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
-    public ConfigRoleRegistrationHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
+    public ConfigRoleRegistrationHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, backup, lang);
     }
 
-    public ConfigRoleRegistrationHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, int lang) {
+    public ConfigRoleRegistrationHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, lang);
     }
 
@@ -141,7 +142,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()

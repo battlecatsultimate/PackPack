@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message;
 
+import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import common.system.files.VFile;
 import common.util.anim.ImgCut;
@@ -25,7 +26,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AnimMessageHolder extends MessageHolder {
     private final AnimMixer mixer;
-    private final int lang;
     private final File container;
 
     private final boolean debug;
@@ -41,10 +41,9 @@ public class AnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
-        super(author, channelID, target);
+    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, CommonStatic.Lang.Locale lang, @Nonnull String channelID, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
+        super(author, channelID, target, lang);
 
-        this.lang = lang;
         this.container = container;
 
         this.debug = debug;
@@ -261,7 +260,7 @@ public class AnimMessageHolder extends MessageHolder {
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 

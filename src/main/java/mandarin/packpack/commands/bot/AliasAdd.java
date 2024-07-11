@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -28,7 +29,7 @@ import java.util.Objects;
 
 public class AliasAdd extends ConstraintCommand {
 
-    public AliasAdd(ROLE role, int lang, IDHolder id) {
+    public AliasAdd(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -85,7 +86,7 @@ public class AliasAdd extends ConstraintCommand {
 
                     alias.add(aliasName);
 
-                    AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), forms.getFirst(), alias);
+                    AliasHolder.FALIAS.put(lang, forms.getFirst(), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
 
@@ -177,7 +178,7 @@ public class AliasAdd extends ConstraintCommand {
 
                     alias.add(aliasName);
 
-                    AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemies.getFirst(), alias);
+                    AliasHolder.EALIAS.put(lang, enemies.getFirst(), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
 
@@ -279,7 +280,7 @@ public class AliasAdd extends ConstraintCommand {
 
                     alias.add(aliasName);
 
-                    AliasHolder.SALIAS.put(AliasHolder.getLangCode(lang), stages.getFirst(), alias);
+                    AliasHolder.SALIAS.put(lang, stages.getFirst(), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
 

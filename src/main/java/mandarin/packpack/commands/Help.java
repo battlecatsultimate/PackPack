@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -17,7 +18,7 @@ public class Help extends Command {
     @Nullable
     private final IDHolder holder;
 
-    public Help(int lang, @Nullable IDHolder holder) {
+    public Help(CommonStatic.Lang.Locale lang, @Nullable IDHolder holder) {
         super(lang, false);
 
         this.holder = holder;

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -38,8 +39,8 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
     private int page;
 
-    public IDManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message msg, @NotNull IDHolder holder, @NotNull Guild g) {
-        super(author, channelID, msg);
+    public IDManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message msg, @NotNull IDHolder holder, @NotNull Guild g, @NotNull CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.holder = holder;
         this.g = g;
@@ -61,7 +62,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         switch (event.getComponentId()) {
             case "mod" -> {
@@ -177,7 +178,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
                 expired = true;
 
-                StaticStore.putHolder(userID, new CustomIDManagerHolder(getAuthorMessage(), channelID, message, holder, g));
+                StaticStore.putHolder(userID, new CustomIDManagerHolder(getAuthorMessage(), channelID, message, holder, g, this.lang));
             }
             case "announce" -> {
                 if (event instanceof EntitySelectInteractionEvent e) {
@@ -293,7 +294,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     }
 
     private String generateIDData() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         StringBuilder result = new StringBuilder();
 
@@ -433,7 +434,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     }
 
     private String getManagerText() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         StringBuilder builder = new StringBuilder(LangID.getStringByID("idset_managetitle", lang)).append("\n\n");
 
@@ -471,7 +472,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     }
 
     private List<LayoutComponent> registerComponent() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         List<LayoutComponent> components = new ArrayList<>();
 
@@ -553,7 +554,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     }
 
     private List<LayoutComponent> getManagerComponents() {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
 
         List<LayoutComponent> result = new ArrayList<>();
 

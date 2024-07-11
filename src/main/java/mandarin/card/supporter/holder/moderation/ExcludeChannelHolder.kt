@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.log.TransactionLogger
@@ -24,7 +25,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.max
 import kotlin.math.min
 
-class ExcludeChannelHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class ExcludeChannelHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {

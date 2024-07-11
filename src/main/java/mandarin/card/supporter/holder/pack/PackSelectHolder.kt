@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.pack
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -31,7 +32,7 @@ class PackSelectHolder(
     private val member: Member,
     message: Message,
     private val noImage: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val packList = CardData.cardPacks.filter { pack -> pack.activated && !pack.isInvalid() && (pack.cost.roles.isEmpty() || pack.cost.roles.any { id -> id in member.roles.map { role -> role.id } }) }
 
     private var page = 0

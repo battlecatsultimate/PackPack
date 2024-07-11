@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerLocale extends ConstraintCommand {
-    public ServerLocale(ROLE role, int lang, IDHolder id) {
+    public ServerLocale(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 
@@ -33,31 +34,16 @@ public class ServerLocale extends ConstraintCommand {
         String localeName;
         Emoji emoji;
 
-        if (holder.config.lang == -1) {
+        if (holder.config.lang == null) {
             localeName = LangID.getStringByID("locale_server", lang);
             emoji = Emoji.fromUnicode("⚙️");
         } else {
-            int index = -1;
-
-            for (int i = 0; i < StaticStore.langIndex.length; i++) {
-                if (holder.config.lang == StaticStore.langIndex[i]) {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (index == -1) {
-                StaticStore.logger.uploadLog("W/LocaleSettingHolder::onEvent - Unknown language ID : %d".formatted(holder.config.lang));
-
-                index = LangID.EN;
-            }
-
-            localeName = LangID.getStringByID("lang_" + StaticStore.langCode[index], lang);
-            emoji = Emoji.fromUnicode(StaticStore.langUnicode[index]);
+            localeName = LangID.getStringByID("lang_" + holder.config.lang.code, lang);
+            emoji = Emoji.fromUnicode(StaticStore.langUnicode[lang.ordinal()]);
         }
 
         replyToMessageSafely(ch, LangID.getStringByID("locale_select", holder.config.lang).formatted(emoji, localeName), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new LocaleSettingHolder(loader.getMessage(), ch.getId(), msg, holder.config, holder, true))
+            StaticStore.putHolder(loader.getUser().getId(), new LocaleSettingHolder(loader.getMessage(), ch.getId(), msg, holder.config, holder, true, lang))
         );
     }
 
@@ -69,11 +55,10 @@ public class ServerLocale extends ConstraintCommand {
 
         List<SelectOption> localeOptions = new ArrayList<>();
 
-        for (int i = 0; i < StaticStore.langCode.length; i++) {
-            String localeCode = StaticStore.langCode[i];
-            Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[i]);
-            
-            localeOptions.add(SelectOption.of(LangID.getStringByID("lang_" + localeCode, holder.config.lang), localeCode).withEmoji(emoji).withDefault(holder.config.lang == StaticStore.langIndex[i]));
+        for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+            Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
+
+            localeOptions.add(SelectOption.of(LangID.getStringByID("lang_" + locale.code, holder.config.lang), locale.name()).withEmoji(emoji).withDefault(holder.config.lang == locale));
         }
         
         result.add(ActionRow.of(

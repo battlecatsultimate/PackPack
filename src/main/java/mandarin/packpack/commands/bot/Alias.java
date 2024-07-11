@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import common.pack.Identifier;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -29,7 +30,7 @@ import java.util.Objects;
 
 public class Alias extends ConstraintCommand {
 
-    public Alias(ROLE role, int lang, IDHolder id) {
+    public Alias(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

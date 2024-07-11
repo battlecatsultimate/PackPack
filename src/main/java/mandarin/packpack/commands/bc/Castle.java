@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.system.fake.FakeImage;
 import common.system.files.VFile;
 import common.util.Data;
@@ -27,12 +28,15 @@ public class Castle extends ConstraintCommand {
     public static void performButton(ButtonInteractionEvent event, CastleImg cs) throws Exception {
         Interaction interaction = event.getInteraction();
 
-        int lang = LangID.EN;
+        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
         User u = interaction.getUser();
 
         if(StaticStore.config.containsKey(u.getId())) {
-            lang =  StaticStore.config.get(u.getId()).lang;
+            lang = StaticStore.config.get(u.getId()).lang;
+
+            if (lang == null)
+                lang = CommonStatic.Lang.Locale.EN;
         }
 
         File temp = new File("./temp");
@@ -59,7 +63,7 @@ public class Castle extends ConstraintCommand {
 
             FakeImage castle;
 
-            if (code == 1 && lang != LangID.JP) {
+            if (code == 1 && lang != CommonStatic.Lang.Locale.JP) {
                 VFile vf = VFile.get("./org/img/ec/ec" + Data.trio(cs.id.id) + "_" + getLocale(lang) + ".png");
 
                 if (vf != null) {
@@ -118,10 +122,10 @@ public class Castle extends ConstraintCommand {
         }
     }
 
-    private static String getLocale(int lang) {
+    private static String getLocale(CommonStatic.Lang.Locale lang) {
         return switch (lang) {
-            case LangID.KR -> "ko";
-            case LangID.ZH -> "tw";
+            case KR -> "ko";
+            case ZH -> "tw";
             default -> "en";
         };
     }
@@ -133,11 +137,11 @@ public class Castle extends ConstraintCommand {
 
     private CastleImg cs;
 
-    public Castle(ROLE role, int lang, IDHolder id) {
+    public Castle(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
-    public Castle(ROLE role, int lang, IDHolder id, CastleImg cs) {
+    public Castle(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, CastleImg cs) {
         super(role, lang, id, false);
 
         this.cs = cs;
@@ -181,7 +185,7 @@ public class Castle extends ConstraintCommand {
 
             FakeImage castle;
 
-            if(code == 1 && lang != LangID.JP) {
+            if(code == 1 && lang != CommonStatic.Lang.Locale.JP) {
                 VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(cs.id.id)+"_"+getLocale(lang)+".png");
 
                 if(vf != null) {
@@ -280,7 +284,7 @@ public class Castle extends ConstraintCommand {
 
                 FakeImage castle;
 
-                if(code == 1 && lang != LangID.JP) {
+                if(code == 1 && lang != CommonStatic.Lang.Locale.JP) {
                     VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(image.id.id)+"_"+getLocale(lang)+".png");
 
                     if(vf != null) {

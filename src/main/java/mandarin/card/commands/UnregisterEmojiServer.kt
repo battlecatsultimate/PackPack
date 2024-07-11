@@ -1,13 +1,13 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.ServerData
 import mandarin.card.supporter.slot.SlotEmojiContainer
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 
-class UnregisterEmojiServer : Command(LangID.EN, true) {
+class UnregisterEmojiServer : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 

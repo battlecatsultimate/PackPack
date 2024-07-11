@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -40,7 +41,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
     private FindStage.MONTHLY selected = FindStage.MONTHLY.ALL;
 
-    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nonnull Message author, @Nonnull Message msg, String channelID, int star, TreasureHolder treasure, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nonnull Message author, @Nonnull Message msg, String channelID, int star, TreasureHolder treasure, boolean isFrame, boolean isExtra, boolean isCompact, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.stage = stage;
@@ -55,7 +56,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
         actualStage.addAll(stage);
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override
@@ -137,7 +138,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
         try {
             EntityHandler.showStageEmb(actualStage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, msg ->
-                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID, isCompact))
+                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID, isCompact, lang))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FindStageMessageHolder::onSelected - Failed to upload stage embed");

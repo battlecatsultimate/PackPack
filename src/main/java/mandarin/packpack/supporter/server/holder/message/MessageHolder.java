@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.Event;
@@ -10,12 +11,12 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import javax.annotation.Nonnull;
 
 public abstract class MessageHolder extends Holder {
-    public MessageHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
-        super(author, channelID, message);
+    public MessageHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
     }
 
-    public MessageHolder(@Nonnull GenericCommandInteractionEvent event, @Nonnull Message message) {
-        super(event, message);
+    public MessageHolder(@Nonnull GenericCommandInteractionEvent event, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+        super(event, message, lang);
     }
 
     @Override

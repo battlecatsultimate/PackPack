@@ -1,5 +1,6 @@
 package mandarin.packpack;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
@@ -181,7 +182,7 @@ public class AllEventAdapter extends ListenerAdapter {
             if(idh.ANNOUNCE != null && idh.ANNOUNCE.equals(ch.getId()))
                 idh.ANNOUNCE = null;
 
-            for(int key : idh.eventMap.keySet()) {
+            for(CommonStatic.Lang.Locale key : idh.eventMap.keySet()) {
                 String channel = idh.eventMap.get(key);
 
                 if(channel == null || channel.isBlank() || channel.equals(ch.getId())) {
@@ -286,7 +287,7 @@ public class AllEventAdapter extends ListenerAdapter {
             }
 
             if(recommend) {
-                m.getUser().openPrivateChannel().queue(ch -> ch.sendMessage(LangID.getStringByID("korean_recommend", 0)).queue(), e -> {});
+                m.getUser().openPrivateChannel().queue(ch -> ch.sendMessage(LangID.getStringByID("korean_recommend", CommonStatic.Lang.Locale.EN)).queue(), e -> {});
             }
         }
     }
@@ -315,7 +316,7 @@ public class AllEventAdapter extends ListenerAdapter {
             if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(StaticStore.globalPrefix))
                 prefix = StaticStore.globalPrefix;
 
-            int lang = -1;
+            CommonStatic.Lang.Locale lang = null;
 
             ConfigHolder c;
 
@@ -351,8 +352,8 @@ public class AllEventAdapter extends ListenerAdapter {
                     }
                 }
 
-                if(lang == -1)
-                    lang = LangID.EN;
+                if(lang == null)
+                    lang = CommonStatic.Lang.Locale.EN;
 
                 performCommand(event, msg, lang, prefix, null, c);
             } else if(mc instanceof GuildChannel) {
@@ -411,7 +412,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(idh.config.prefix))
                     prefix = idh.config.prefix;
 
-                if(lang == -1)
+                if(lang == null)
                     lang = idh.config.lang;
 
                 performCommand(event, msg, lang, prefix, idh, c);
@@ -443,7 +444,7 @@ public class AllEventAdapter extends ListenerAdapter {
         }
     }
 
-    public void performCommand(MessageReceivedEvent event, Message msg, int lang, String prefix, @Nullable IDHolder idh, @Nullable ConfigHolder c) {
+    public void performCommand(MessageReceivedEvent event, Message msg, CommonStatic.Lang.Locale lang, String prefix, @Nullable IDHolder idh, @Nullable ConfigHolder c) {
         switch (StaticStore.getCommand(msg.getContentRaw(), prefix)) {
             case "checkbcu" -> new CheckBCU(lang, idh).execute(event);
             case "serverstat", "ss" -> new ServerStat(lang, idh).execute(event);

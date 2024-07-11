@@ -1,6 +1,7 @@
 package mandarin.packpack.commands.bot;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -14,7 +15,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 
 public class DumpHeap extends ConstraintCommand {
-    public DumpHeap(ROLE role, int lang, @Nullable IDHolder id) {
+    public DumpHeap(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, false);
     }
 

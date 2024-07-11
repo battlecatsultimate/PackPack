@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.bc;
 
+import common.CommonStatic;
 import common.battle.data.MaskAtk;
 import common.battle.data.MaskEnemy;
 import common.battle.data.MaskEntity;
@@ -54,7 +55,7 @@ public class Interpret extends Data {
             P_IMUSPEED
     };
 
-    public static String getTrait(List<Trait> traits, int star, boolean icon, int lang) {
+    public static String getTrait(List<Trait> traits, int star, boolean icon, CommonStatic.Lang.Locale lang) {
         StringBuilder res = new StringBuilder();
 
         for(int i = 0; i < traits.size(); i++) {
@@ -96,7 +97,7 @@ public class Interpret extends Data {
         };
     }
 
-    public static ArrayList<String> getAbi(MaskEntity mu, boolean icon, int lang, List<Trait> traits, TreasureHolder holder) {
+    public static ArrayList<String> getAbi(MaskEntity mu, boolean icon, CommonStatic.Lang.Locale lang, List<Trait> traits, TreasureHolder holder) {
         ArrayList<String> l = new ArrayList<>();
 
         for(int i = 0; i < ABIS.length; i++) {
@@ -156,7 +157,7 @@ public class Interpret extends Data {
         return l;
     }
 
-    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, boolean icon, int lang, double multi, double amulti, boolean treasure, List<Trait> traits, Function<List<Trait>, Double> function) {
+    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, boolean icon, CommonStatic.Lang.Locale lang, double multi, double amulti, boolean treasure, List<Trait> traits, Function<List<Trait>, Double> function) {
         ArrayList<String> l = new ArrayList<>();
         ArrayList<Integer> id = new ArrayList<>();
 
@@ -230,12 +231,12 @@ public class Interpret extends Data {
             return false;
     }
 
-    private static boolean isEnglish(int lang) {
-        return lang != LangID.KR && lang != LangID.JP && lang != LangID.ZH;
+    private static boolean isEnglish(CommonStatic.Lang.Locale lang) {
+        return lang == CommonStatic.Lang.Locale.EN;
     }
 
     @SuppressWarnings("unused")
-    private static String getNumberAttack(String pre, int lang) {
+    private static String getNumberAttack(String pre, CommonStatic.Lang.Locale lang) {
         return pre + " Attack";
     }
 
@@ -280,7 +281,7 @@ public class Interpret extends Data {
         }
     }
 
-    private static String getTraitEmoji(String code, int lang) {
+    private static String getTraitEmoji(String code, CommonStatic.Lang.Locale lang) {
         Emoji emoji;
 
         if(code.startsWith("T_")) {

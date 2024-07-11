@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -25,7 +26,7 @@ import java.util.List;
 
 public class EnemyDPS extends TimedConstraintCommand {
 
-    public EnemyDPS(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, long time) {
+    public EnemyDPS(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, long time) {
         super(role, lang, idHolder, time, StaticStore.COMMAND_ENEMYDPS_ID, false);
     }
 

@@ -1,10 +1,10 @@
 package mandarin.card.supporter.holder.auction
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.auction.AuctionBidHolder
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, channelID, message) {
+class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     override fun clean() {
@@ -58,7 +58,6 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
                     registerPopUp(
                         message,
                         "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $bid to Auction #${auctionSession.id} <#${auctionSession.channel}>? You won't be able to use bid cat foods in other place until you cancel the bid",
-                        LangID.EN
                     )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -74,7 +73,7 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
                         expired = true
 
                         expire()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 })
             }
             "cancel" -> {

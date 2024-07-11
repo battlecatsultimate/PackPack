@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BoosterPin extends ConstraintCommand {
-    public BoosterPin(ROLE role, int lang, @Nullable IDHolder id) {
+    public BoosterPin(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, true);
     }
 

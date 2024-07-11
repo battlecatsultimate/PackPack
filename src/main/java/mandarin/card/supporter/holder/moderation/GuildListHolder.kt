@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -12,7 +13,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class GuildListHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class GuildListHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     private val jda = author.jda

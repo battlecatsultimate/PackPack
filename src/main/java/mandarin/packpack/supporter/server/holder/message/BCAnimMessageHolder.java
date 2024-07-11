@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message;
 
+import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import common.system.files.VFile;
 import common.util.anim.ImgCut;
@@ -44,7 +45,6 @@ public class BCAnimMessageHolder extends MessageHolder {
 
     private final AnimMixer mixer;
     private final boolean performance;
-    private final int lang;
     private final File container;
 
     private boolean pngDone = false;
@@ -56,11 +56,10 @@ public class BCAnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, boolean performance, int lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
-        super(author, channelID, target);
+    public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, boolean performance, CommonStatic.Lang.Locale lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
+        super(author, channelID, target, lang);
         
         this.performance = performance;
-        this.lang = lang;
         this.container = container;
 
         int len = zombie ? 7 : 4;
@@ -125,7 +124,7 @@ public class BCAnimMessageHolder extends MessageHolder {
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 

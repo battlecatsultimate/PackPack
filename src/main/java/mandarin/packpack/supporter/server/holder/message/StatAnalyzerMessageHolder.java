@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message;
 
+import common.CommonStatic;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.MaAnim;
@@ -33,7 +34,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
     private final int lv;
     private final String[] name;
 
-    public StatAnalyzerMessageHolder(Message msg, Message author, int uID, int len, boolean isSecond, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, String channelID, File container, int lv, String[] name, int lang, List<String> requiredFiles) {
+    public StatAnalyzerMessageHolder(Message msg, Message author, int uID, int len, boolean isSecond, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, String channelID, File container, int lv, String[] name, CommonStatic.Lang.Locale lang, List<String> requiredFiles) {
         super(msg, author, channelID, container, requiredFiles, lang);
 
         this.cellData = cellData;

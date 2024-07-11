@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.modal;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -8,13 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class ServerPrefixModalHolder extends ModalHolder {
     private final ConfigHolder config;
-    private final int lang;
 
-    public ServerPrefixModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, ConfigHolder config, int lang) {
-        super(author, channelID, message);
+    public ServerPrefixModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, ConfigHolder config, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
 
         this.config = config;
-        this.lang = lang;
     }
 
     @Override

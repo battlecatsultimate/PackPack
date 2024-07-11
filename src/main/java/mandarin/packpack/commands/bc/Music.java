@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -25,7 +26,7 @@ public class Music extends GlobalTimedConstraintCommand {
     public static void performButton(ButtonInteractionEvent event, common.util.stage.Music ms) throws Exception {
         Interaction interaction = event.getInteraction();
 
-        int lang = LangID.EN;
+        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
         User u = interaction.getUser();
 
@@ -79,11 +80,11 @@ public class Music extends GlobalTimedConstraintCommand {
 
     private common.util.stage.Music ms;
 
-    public Music(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
+    public Music(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(10), false);
     }
 
-    public Music(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, common.util.stage.Music ms) {
+    public Music(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, String mainID, common.util.stage.Music ms) {
         super(role, lang, id, mainID, 0, false);
         this.ms = ms;
     }

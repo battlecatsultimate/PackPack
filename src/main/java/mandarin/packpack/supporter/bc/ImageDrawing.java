@@ -292,7 +292,7 @@ public class ImageDrawing {
         return image;
     }
 
-    public static File drawBGAnimEffect(Background bg, Message msg, int lang) throws Exception {
+    public static File drawBGAnimEffect(Background bg, Message msg, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -617,7 +617,7 @@ public class ImageDrawing {
         return file;
     }
 
-    public static File drawAnimMp4(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, int lang) throws Exception {
+    public static File drawAnimMp4(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -901,7 +901,7 @@ public class ImageDrawing {
         return mp4;
     }
 
-    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, int lang) throws Exception {
+    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -1167,7 +1167,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawBCAnim(AnimMixer mixer, Message msg, float siz, boolean performance, int lang) throws Exception {
+    public static File drawBCAnim(AnimMixer mixer, Message msg, float siz, boolean performance, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -1972,7 +1972,7 @@ public class ImageDrawing {
         return image;
     }
 
-    public static File drawStageStatImage(CustomStageMap map, List<CellDrawer> group, boolean isFrame, int lv, String name, String code, int index, int lang) throws Exception {
+    public static File drawStageStatImage(CustomStageMap map, List<CellDrawer> group, boolean isFrame, int lv, String name, String code, int index, CommonStatic.Lang.Locale lang) throws Exception {
         File f = new File("./temp/");
 
         if(!f.exists() && !f.mkdirs())
@@ -2276,7 +2276,7 @@ public class ImageDrawing {
         return image;
     }
 
-    public static File drawTalentImage(String name, String type, CustomTalent talent, int lang) throws Exception {
+    public static File drawTalentImage(String name, String type, CustomTalent talent, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -2689,7 +2689,7 @@ public class ImageDrawing {
         return image;
     }
 
-    public static Object[] plotGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, int lang) throws Exception {
+    public static Object[] plotGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -2905,7 +2905,7 @@ public class ImageDrawing {
         return new Object[] { image, text.get() };
     }
 
-    public static Object[] plotTGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, BigDecimal[] tRange, boolean keepRatio, int lang) throws Exception {
+    public static Object[] plotTGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, BigDecimal[] tRange, boolean keepRatio, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -3123,7 +3123,7 @@ public class ImageDrawing {
         return new Object[] { image, text.get() };
     }
 
-    public static Object[] plotXYGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, int lang) throws Exception {
+    public static Object[] plotXYGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -3448,7 +3448,7 @@ public class ImageDrawing {
         return new Object[] { image, text.get() };
     }
 
-    public static Object[] plotRThetaGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, double[] rRange, double[] tRange, int lang) throws Exception {
+    public static Object[] plotRThetaGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, double[] rRange, double[] tRange, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -3906,7 +3906,7 @@ public class ImageDrawing {
         return new Object[] { image, text.get() };
     }
 
-    public static File plotDPSGraph(BigDecimal[][] coordinates, @Nullable BigDecimal[][] withTreasure, BigDecimal[] xRange, BigDecimal[] yRange, int lang) throws Exception {
+    public static File plotDPSGraph(BigDecimal[][] coordinates, @Nullable BigDecimal[][] withTreasure, BigDecimal[] xRange, BigDecimal[] yRange, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -4249,7 +4249,7 @@ public class ImageDrawing {
      * @param lang Language value
      * @return Returns { Width of Chance, Width of Item, Width of Amount, Total Width, Total Height }
      */
-    private static float[] measureDropTableWidth(Stage st, CustomStageMap map, int lang, boolean reward) {
+    private static float[] measureDropTableWidth(Stage st, CustomStageMap map, CommonStatic.Lang.Locale lang, boolean reward) {
         List<String[]> dropData;
 
         if(reward) {
@@ -4304,7 +4304,7 @@ public class ImageDrawing {
      * @param lang Language value
      * @return Returns { Width of Enemy, Width of Number, Width of Base, Width of Magnification, Width of Start, Width of Layer, Width of Boss, Total Width, Total Height }
      */
-    private static float[] measureEnemySchemeWidth(Stage st, CustomStageMap map, boolean isRanking, boolean isFrame, int lv, int lang) {
+    private static float[] measureEnemySchemeWidth(Stage st, CustomStageMap map, boolean isRanking, boolean isFrame, int lv, CommonStatic.Lang.Locale lang) {
         float[] result = new float[11];
         
         float ew = contentFont.textWidth(LangID.getStringByID("data_enemy", lang));
@@ -4466,7 +4466,7 @@ public class ImageDrawing {
         return result;
     }
 
-    private static void drawRewardTable(GLGraphics g, int x, int y, Stage st, CustomStageMap map, float[] dimension, int desiredGap, int lang, boolean reward) throws Exception {
+    private static void drawRewardTable(GLGraphics g, int x, int y, Stage st, CustomStageMap map, float[] dimension, int desiredGap, CommonStatic.Lang.Locale lang, boolean reward) throws Exception {
         List<String[]> data;
 
         if(reward)
@@ -4615,7 +4615,7 @@ public class ImageDrawing {
         }
     }
 
-    private static void drawEnemySchemeTable(GLGraphics g, int y, Stage st, CustomStageMap map, float[] dimension, int desiredGap, boolean isRanking, boolean isFrame, int lv, int lang) throws Exception {
+    private static void drawEnemySchemeTable(GLGraphics g, int y, Stage st, CustomStageMap map, float[] dimension, int desiredGap, boolean isRanking, boolean isFrame, int lv, CommonStatic.Lang.Locale lang) throws Exception {
         int w = desiredGap * 19 + rewardIconSize;
 
         for(int i = ENEMY; i <= BOSS; i++) {

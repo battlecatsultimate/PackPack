@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -23,10 +24,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ConfigGeneralHolder extends ServerConfigHolder {
 
-    public ConfigGeneralHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
+    public ConfigGeneralHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, backup, lang);
     }
 
@@ -37,20 +39,19 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 if (!(event instanceof StringSelectInteractionEvent se))
                     return;
 
-                holder.config.lang = StaticStore.safeParseInt(se.getValues().getFirst());
+                holder.config.lang = CommonStatic.Lang.Locale.valueOf(se.getValues().getFirst());
 
                 String languageName = switch (holder.config.lang) {
-                    case LangID.EN -> LangID.getStringByID("lang_en", lang);
-                    case LangID.ZH -> LangID.getStringByID("lang_zh", lang);
-                    case LangID.KR -> LangID.getStringByID("lang_kr", lang);
-                    case LangID.JP -> LangID.getStringByID("lang_jp", lang);
-                    case LangID.FR -> LangID.getStringByID("lang_fr", lang);
-                    case LangID.IT -> LangID.getStringByID("lang_it", lang);
-                    case LangID.ES -> LangID.getStringByID("lang_es", lang);
-                    case LangID.DE -> LangID.getStringByID("lang_de", lang);
-                    case LangID.TH -> LangID.getStringByID("lang_th", lang);
-                    case LangID.RU -> LangID.getStringByID("lang_ru", lang);
-                    default -> throw new IllegalStateException("E/ConfigGeneralHolder::getContents - Unrecognized locale " + holder.config.lang + " detected");
+                    case EN -> LangID.getStringByID("lang_en", lang);
+                    case ZH -> LangID.getStringByID("lang_zh", lang);
+                    case KR -> LangID.getStringByID("lang_kr", lang);
+                    case JP -> LangID.getStringByID("lang_jp", lang);
+                    case FR -> LangID.getStringByID("lang_fr", lang);
+                    case IT -> LangID.getStringByID("lang_it", lang);
+                    case ES -> LangID.getStringByID("lang_es", lang);
+                    case DE -> LangID.getStringByID("lang_de", lang);
+                    case TH -> LangID.getStringByID("lang_th", lang);
+                    case RU -> LangID.getStringByID("lang_ru", lang);
                 };
 
                 event.deferReply()
@@ -87,7 +88,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
@@ -144,32 +145,32 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
-        Emoji e = switch (holder.config.lang) {
-            case LangID.EN -> Emoji.fromUnicode("🇺🇸");
-            case LangID.ZH -> Emoji.fromUnicode("🇹🇼");
-            case LangID.KR -> Emoji.fromUnicode("🇰🇷");
-            case LangID.JP -> Emoji.fromUnicode("🇯🇵");
-            case LangID.FR -> Emoji.fromUnicode("🇫🇷");
-            case LangID.IT -> Emoji.fromUnicode("🇮🇹");
-            case LangID.ES -> Emoji.fromUnicode("🇪🇸");
-            case LangID.DE -> Emoji.fromUnicode("🇩🇪");
-            case LangID.TH -> Emoji.fromUnicode("🇹🇭");
-            case LangID.RU -> Emoji.fromUnicode("🇷🇺");
-            default -> throw new IllegalStateException("E/ConfigGeneralHolder::getContents - Unrecognized locale " + holder.config.lang + " detected");
+        CommonStatic.Lang.Locale locale = Objects.requireNonNull(holder.config.lang);
+
+        Emoji e = switch (locale) {
+            case EN -> Emoji.fromUnicode("🇺🇸");
+            case ZH -> Emoji.fromUnicode("🇹🇼");
+            case KR -> Emoji.fromUnicode("🇰🇷");
+            case JP -> Emoji.fromUnicode("🇯🇵");
+            case FR -> Emoji.fromUnicode("🇫🇷");
+            case IT -> Emoji.fromUnicode("🇮🇹");
+            case ES -> Emoji.fromUnicode("🇪🇸");
+            case DE -> Emoji.fromUnicode("🇩🇪");
+            case TH -> Emoji.fromUnicode("🇹🇭");
+            case RU -> Emoji.fromUnicode("🇷🇺");
         };
 
-        String languageName = switch (holder.config.lang) {
-            case LangID.EN -> LangID.getStringByID("lang_en", lang);
-            case LangID.ZH -> LangID.getStringByID("lang_zh", lang);
-            case LangID.KR -> LangID.getStringByID("lang_kr", lang);
-            case LangID.JP -> LangID.getStringByID("lang_jp", lang);
-            case LangID.FR -> LangID.getStringByID("lang_fr", lang);
-            case LangID.IT -> LangID.getStringByID("lang_it", lang);
-            case LangID.ES -> LangID.getStringByID("lang_es", lang);
-            case LangID.DE -> LangID.getStringByID("lang_de", lang);
-            case LangID.TH -> LangID.getStringByID("lang_th", lang);
-            case LangID.RU -> LangID.getStringByID("lang_ru", lang);
-            default -> throw new IllegalStateException("E/ConfigGeneralHolder::getContents - Unrecognized locale " + holder.config.lang + " detected");
+        String languageName = switch (locale) {
+            case EN -> LangID.getStringByID("lang_en", lang);
+            case ZH -> LangID.getStringByID("lang_zh", lang);
+            case KR -> LangID.getStringByID("lang_kr", lang);
+            case JP -> LangID.getStringByID("lang_jp", lang);
+            case FR -> LangID.getStringByID("lang_fr", lang);
+            case IT -> LangID.getStringByID("lang_it", lang);
+            case ES -> LangID.getStringByID("lang_es", lang);
+            case DE -> LangID.getStringByID("lang_de", lang);
+            case TH -> LangID.getStringByID("lang_th", lang);
+            case RU -> LangID.getStringByID("lang_ru", lang);
         };
 
         return LangID.getStringByID("sercon_gentit", lang) + "\n" +
@@ -184,29 +185,16 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
 
         List<SelectOption> languageOptions = new ArrayList<>();
 
-        for (int j = 0; j < StaticStore.langIndex.length; j++) {
-            String l = LangID.getStringByID("lang_" + StaticStore.langCode[j], lang);
-
-            Emoji e = switch (StaticStore.langIndex[j]) {
-                case LangID.EN -> Emoji.fromUnicode("🇺🇸");
-                case LangID.ZH -> Emoji.fromUnicode("🇹🇼");
-                case LangID.KR -> Emoji.fromUnicode("🇰🇷");
-                case LangID.JP -> Emoji.fromUnicode("🇯🇵");
-                case LangID.FR -> Emoji.fromUnicode("🇫🇷");
-                case LangID.IT -> Emoji.fromUnicode("🇮🇹");
-                case LangID.ES -> Emoji.fromUnicode("🇪🇸");
-                case LangID.DE -> Emoji.fromUnicode("🇩🇪");
-                case LangID.TH -> Emoji.fromUnicode("🇹🇭");
-                case LangID.RU -> Emoji.fromUnicode("🇷🇺");
-                default -> throw new IllegalStateException("E/ConfigGeneralHolder::getComponents - Unrecognized locale " + StaticStore.langCode[j] + " detected");
-            };
+        for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
+            String l = LangID.getStringByID("lang_" + locale.code, lang);
+            Emoji e = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
             languageOptions.add(
                     SelectOption.of(
                                     LangID.getStringByID("config_locale", lang).replace("_", l),
-                                    String.valueOf(StaticStore.langIndex[j])
+                                    locale.name()
                             )
-                            .withDefault(holder.config.lang == StaticStore.langIndex[j])
+                            .withDefault(holder.config.lang == locale)
                             .withEmoji(e)
             );
         }

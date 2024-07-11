@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.slot.SlotMachineCardRewardNameModalHolder
@@ -11,7 +12,6 @@ import mandarin.card.supporter.slot.SlotEmojiContainer
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -40,7 +40,7 @@ class SlotMachineCardRewardHolder(
     message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCardContent,
-    private val new: Boolean) : ComponentHolder(author, channelID, message) {
+    private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var emojiName = ""
 
     private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.filter { c -> c !== content && c is SlotPlaceHolderContent }.any { c -> c.emoji?.name == e.name && c.emoji?.id == e.id } }.toMutableList()
@@ -147,11 +147,11 @@ class SlotMachineCardRewardHolder(
             }
             "back" -> {
                 if (new) {
-                    registerPopUp(event, "Are you sure you want to cancel creation of this reward? This cannot be undone", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to cancel creation of this reward? This cannot be undone")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         goBackTo(e, SlotMachineContentHolder::class.java)
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     CardBot.saveCardData()
 
@@ -159,7 +159,7 @@ class SlotMachineCardRewardHolder(
                 }
             }
             "cancel" -> {
-                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferReply()
@@ -168,7 +168,7 @@ class SlotMachineCardRewardHolder(
                         .queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

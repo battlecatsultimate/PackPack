@@ -1,11 +1,12 @@
 package mandarin.card.supporter.holder.modal
 
+import common.CommonStatic
 import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class SkinNameHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ModalHolder(author, channelID, message) {
+class SkinNameHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "skinName")
             return

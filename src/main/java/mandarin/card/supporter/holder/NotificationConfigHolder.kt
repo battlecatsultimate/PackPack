@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class NotificationConfigHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class NotificationConfigHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var tested = false
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {

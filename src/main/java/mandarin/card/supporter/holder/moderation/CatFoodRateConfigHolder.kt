@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CatFoodRateHolder
@@ -17,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class CatFoodRateConfigHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class CatFoodRateConfigHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

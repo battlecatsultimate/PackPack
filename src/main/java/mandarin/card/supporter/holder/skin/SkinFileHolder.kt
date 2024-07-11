@@ -1,11 +1,11 @@
 package mandarin.card.supporter.holder.skin
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.MessageDetector
 import mandarin.packpack.supporter.server.holder.MessageUpdater
@@ -25,12 +25,12 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
 
     private var downloading = false
 
-    constructor(author: Message, channelID: String, message: Message, card: Card) : super(author, channelID, message) {
+    constructor(author: Message, channelID: String, message: Message, card: Card) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.skin = null
         this.card = card
     }
 
-    constructor(author: Message, channelID: String, message: Message, card: Card, skin: Skin) : super(author, channelID, message) {
+    constructor(author: Message, channelID: String, message: Message, card: Card, skin: Skin) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.skin = skin
         this.card = card
     }
@@ -43,14 +43,14 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
                         "Are you sure you want to stop creating new skin?"
                     else
                         "Are you sure you want to cancel replacing skin file?"
-                    , LangID.EN)
+                )
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     goBack(e)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "close" -> {
-                registerPopUp(event, "Are you sure you want to stop creating new skin?", LangID.EN)
+                registerPopUp(event, "Are you sure you want to stop creating new skin?")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferEdit()
@@ -61,7 +61,7 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
                         .queue()
 
                     expired = true
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

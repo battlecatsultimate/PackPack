@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -34,7 +35,7 @@ import java.util.List;
 public class ConfigRoleCustomHolder extends ServerConfigHolder {
     private int page = 0;
 
-    public ConfigRoleCustomHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
+    public ConfigRoleCustomHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, backup, lang);
     }
 
@@ -100,7 +101,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
 
                 String id = values.getFirst();
 
-                registerPopUp(e, LangID.getStringByID("sercon_customunreg", lang).formatted(id), lang);
+                registerPopUp(e, LangID.getStringByID("sercon_customunreg", lang).formatted(id));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, ev -> {
                     holder.ID.entrySet().removeIf(entry -> {
@@ -157,7 +158,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()

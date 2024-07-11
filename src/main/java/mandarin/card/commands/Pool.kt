@@ -1,12 +1,12 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 
-class Pool(private val tier: CardData.Tier) : Command(LangID.EN, true) {
+class Pool(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel
         val m = loader.member

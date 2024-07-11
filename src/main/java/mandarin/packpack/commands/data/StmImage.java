@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import common.system.fake.FakeImage;
 import common.system.fake.ImageBuilder;
 import common.system.files.FDFile;
@@ -28,7 +29,7 @@ public class StmImage extends ConstraintCommand {
     private static final int PARAM_JP = 4;
     private static final int PARAM_FORCE = 8;
 
-    public StmImage(ROLE role, int lang, IDHolder holder) {
+    public StmImage(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(role, lang, holder, false);
     }
 

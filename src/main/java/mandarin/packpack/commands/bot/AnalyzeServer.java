@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -17,7 +18,7 @@ import java.io.FileWriter;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AnalyzeServer extends ConstraintCommand {
-    public AnalyzeServer(ROLE role, int lang, IDHolder id) {
+    public AnalyzeServer(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 

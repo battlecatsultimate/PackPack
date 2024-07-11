@@ -166,7 +166,7 @@ public class DataToString extends Data {
         talentIcon.put(id, icon);
     }
 
-    public static String getTitle(Form f, int lang) {
+    public static String getTitle(Form f, CommonStatic.Lang.Locale lang) {
         if(f == null)
             return "";
 
@@ -199,7 +199,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getTitle(Enemy e, int lang) {
+    public static String getTitle(Enemy e, CommonStatic.Lang.Locale lang) {
         if(e == null)
             return "";
 
@@ -210,7 +210,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getRarity(int type, int lang) {
+    public static String getRarity(int type, CommonStatic.Lang.Locale lang) {
         String rarity;
 
         if(type == 0)
@@ -261,7 +261,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getAbilT(MaskUnit f, int lang) {
+    public static String getAbilT(MaskUnit f, CommonStatic.Lang.Locale lang) {
         if(f == null)
             return "";
 
@@ -283,7 +283,7 @@ public class DataToString extends Data {
         return sb.toString();
     }
 
-    public static String getAbilT(MaskEnemy e, int lang) {
+    public static String getAbilT(MaskEnemy e, CommonStatic.Lang.Locale lang) {
         if(e == null)
             return "";
 
@@ -440,7 +440,7 @@ public class DataToString extends Data {
         return Data.trio(eid);
     }
 
-    public static String getRangeTitle(MaskEntity e, int lang) {
+    public static String getRangeTitle(MaskEntity e, CommonStatic.Lang.Locale lang) {
         if(e == null)
             return LangID.getStringByID("data_range", lang);
 
@@ -892,7 +892,7 @@ public class DataToString extends Data {
         return String.valueOf((long) (magnification / 100.0 * e.multi(BasisSet.current()) * e.getHp()));
     }
 
-    public static String getTrait(MaskUnit f, boolean talent, Level lvs, boolean icon, int lang) {
+    public static String getTrait(MaskUnit f, boolean talent, Level lvs, boolean icon, CommonStatic.Lang.Locale lang) {
         if(f == null)
             return "";
 
@@ -934,7 +934,7 @@ public class DataToString extends Data {
         return trait;
     }
 
-    public static String getTrait(MaskEnemy e, boolean icon, int lang) {
+    public static String getTrait(MaskEnemy e, boolean icon, CommonStatic.Lang.Locale lang) {
         if(e == null)
             return "";
 
@@ -990,7 +990,7 @@ public class DataToString extends Data {
         return String.valueOf((int) (e.getDrop() * t.getDropMultiplier() / 100));
     }
 
-    public static String getSiMu(MaskUnit f, int lang) {
+    public static String getSiMu(MaskUnit f, CommonStatic.Lang.Locale lang) {
         if(f == null)
             return "";
 
@@ -1000,7 +1000,7 @@ public class DataToString extends Data {
             return LangID.getStringByID("data_single", lang);
     }
 
-    public static String getSiMu(MaskEnemy e, int lang) {
+    public static String getSiMu(MaskEnemy e, CommonStatic.Lang.Locale lang) {
         if(e == null)
             return "";
 
@@ -1010,7 +1010,7 @@ public class DataToString extends Data {
             return LangID.getStringByID("data_single", lang);
     }
 
-    public static String getTalent(MaskUnit f, Level lv, int lang) {
+    public static String getTalent(MaskUnit f, Level lv, CommonStatic.Lang.Locale lang) {
         if(f == null || f.getPCoin() == null)
             return LangID.getStringByID("data_notalent", lang);
 
@@ -1057,7 +1057,7 @@ public class DataToString extends Data {
         return sb.toString();
     }
 
-    public static String getBarrier(MaskEnemy e, int lang) {
+    public static String getBarrier(MaskEnemy e, CommonStatic.Lang.Locale lang) {
         if(e == null)
             return "";
 
@@ -1075,7 +1075,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getPackName(String id, int lang) {
+    public static String getPackName(String id, CommonStatic.Lang.Locale lang) {
         if(mapIds.contains(id))
             return LangID.getStringByID("data_default", lang);
 
@@ -1121,7 +1121,7 @@ public class DataToString extends Data {
         return res.toString();
     }
 
-    public static String getEnergy(Stage st, int lang) {
+    public static String getEnergy(Stage st, CommonStatic.Lang.Locale lang) {
         if(!(st.info instanceof DefStageInfo info))
             return LangID.getStringByID("data_none", lang);
 
@@ -1164,14 +1164,14 @@ public class DataToString extends Data {
             return String.valueOf((int) (info.xp * t.getStudyMultiplier()));
     }
 
-    public static String getDifficulty(Stage st, int lang) {
+    public static String getDifficulty(Stage st, CommonStatic.Lang.Locale lang) {
         if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).diff == -1)
             return LangID.getStringByID("data_none", lang);
         else
             return "★"+((DefStageInfo) st.info).diff;
     }
 
-    public static String getContinuable(Stage st, int lang) {
+    public static String getContinuable(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.non_con) {
             return LangID.getStringByID("data_false", lang);
         } else {
@@ -1201,7 +1201,7 @@ public class DataToString extends Data {
         return String.valueOf(st.max);
     }
 
-    public static String getMusic(Stage st, int lang) {
+    public static String getMusic(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.mus0 == null || st.mus0.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
@@ -1213,7 +1213,7 @@ public class DataToString extends Data {
         return "<"+st.mush+"%";
     }
 
-    public static String getMusic1(Stage st, int lang) {
+    public static String getMusic1(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.mus1 == null || st.mus1.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
@@ -1221,7 +1221,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getBackground(Stage st, int lang) {
+    public static String getBackground(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.bg == null || st.bg.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
@@ -1229,7 +1229,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getCastle(Stage st, int lang) {
+    public static String getCastle(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.castle == null || st.castle.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
@@ -1253,7 +1253,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getBossGuard(Stage st, int lang) {
+    public static String getBossGuard(Stage st, CommonStatic.Lang.Locale lang) {
         if (st.bossGuard) {
             return LangID.getStringByID("data_active", lang);
         } else {
@@ -1261,7 +1261,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static ArrayList<String> getLimit(Stage st, Limit l, boolean isFrame, int lang) {
+    public static ArrayList<String> getLimit(Stage st, Limit l, boolean isFrame, CommonStatic.Lang.Locale lang) {
         ArrayList<String> res = new ArrayList<>();
 
         if(l == null)
@@ -1359,7 +1359,7 @@ public class DataToString extends Data {
         return res;
     }
 
-    public static ArrayList<String> getLimit(Limit l, CustomStageMap map, boolean isFrame, int lang) {
+    public static ArrayList<String> getLimit(Limit l, CustomStageMap map, boolean isFrame, CommonStatic.Lang.Locale lang) {
         ArrayList<String> res = new ArrayList<>();
 
         if(l == null)
@@ -1509,7 +1509,7 @@ public class DataToString extends Data {
         return code;
     }
 
-    public static String getDescription(Form f, int lang) {
+    public static String getDescription(Form f, CommonStatic.Lang.Locale lang) {
         if(f.unit == null)
             return null;
 
@@ -1543,7 +1543,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getDescription(Enemy e, int lang) {
+    public static String getDescription(Enemy e, CommonStatic.Lang.Locale lang) {
         String[] desc = MultiLangCont.getStatic().EEXP.getCont(e, lang);
 
         if(desc == null)
@@ -1574,7 +1574,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getCatFruitEvolve(Form f, int lang) {
+    public static String getCatFruitEvolve(Form f, CommonStatic.Lang.Locale lang) {
         if (f.unit == null)
             return null;
 
@@ -1607,7 +1607,7 @@ public class DataToString extends Data {
         return result.toString();
     }
 
-    public static String getRewards(Stage s, int lang) {
+    public static String getRewards(Stage s, CommonStatic.Lang.Locale lang) {
         if(s == null || !(s.info instanceof DefStageInfo info) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
             return null;
 
@@ -1660,7 +1660,7 @@ public class DataToString extends Data {
         return builder.toString();
     }
 
-    public static List<String[]> getRewards(Stage s, CustomStageMap map, int lang) {
+    public static List<String[]> getRewards(Stage s, CustomStageMap map, CommonStatic.Lang.Locale lang) {
         if(s == null || !(s.info instanceof DefStageInfo info) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
             return null;
 
@@ -1852,7 +1852,7 @@ public class DataToString extends Data {
         return res;
     }
 
-    public static String getScoreDrops(Stage st, int lang) {
+    public static String getScoreDrops(Stage st, CommonStatic.Lang.Locale lang) {
         if(st == null || !(st.info instanceof DefStageInfo info) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
             return null;
 
@@ -1875,7 +1875,7 @@ public class DataToString extends Data {
         return builder.toString();
     }
 
-    public static List<String[]> getScoreDrops(Stage st, CustomStageMap map, int lang) {
+    public static List<String[]> getScoreDrops(Stage st, CustomStageMap map, CommonStatic.Lang.Locale lang) {
         if(st == null || !(st.info instanceof DefStageInfo info) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
             return null;
 
@@ -1904,7 +1904,7 @@ public class DataToString extends Data {
         return result;
     }
 
-    public static String getComboDescription(Combo c, int lang) {
+    public static String getComboDescription(Combo c, CommonStatic.Lang.Locale lang) {
         int factor = getComboFactor(c.type, c.lv);
 
         String desc;
@@ -1978,7 +1978,7 @@ public class DataToString extends Data {
         return desc + "\n\n" + builder;
     }
 
-    public static String getComboDescription(int type, int lv, int lang) {
+    public static String getComboDescription(int type, int lv, CommonStatic.Lang.Locale lang) {
         int factor = getComboFactor(type, lv);
 
         String desc = LangID.getStringByID("data_"+getComboKeyword(type)+"combodesc", lang).replace("_", String.valueOf(factor));
@@ -2004,15 +2004,15 @@ public class DataToString extends Data {
         return desc;
     }
 
-    public static String getComboType(Combo c, int lang) {
+    public static String getComboType(Combo c, CommonStatic.Lang.Locale lang) {
         return LangID.getStringByID("data_"+getComboKeyword(c.type)+"combo", lang) + " [" + getComboLevel(c.lv, lang)+"]";
     }
 
-    public static String getComboType(int type, int lang) {
+    public static String getComboType(int type, CommonStatic.Lang.Locale lang) {
         return LangID.getStringByID("data_"+getComboKeyword(type)+"combo", lang);
     }
 
-    public static String getComboLevel(int lv, int lang) {
+    public static String getComboLevel(int lv, CommonStatic.Lang.Locale lang) {
         return switch (lv) {
             case 0 -> LangID.getStringByID("data_combosm", lang);
             case 1 -> LangID.getStringByID("data_combom", lang);
@@ -2155,7 +2155,7 @@ public class DataToString extends Data {
         return new int[] {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
     }
 
-    public static List<String> getMiscellaneous(Stage st, int lang) {
+    public static List<String> getMiscellaneous(Stage st, CommonStatic.Lang.Locale lang) {
         List<String> result = new ArrayList<>();
 
         if(st.getCont() == null || st.getCont().info == null)
@@ -2200,7 +2200,7 @@ public class DataToString extends Data {
         return result;
     }
 
-    private static String getMapStageName(Stage st, int lang) {
+    private static String getMapStageName(Stage st, CommonStatic.Lang.Locale lang) {
         String map = MultiLangCont.get(st.getCont(), lang);
         String stage = MultiLangCont.get(st, lang);
 
@@ -2215,7 +2215,7 @@ public class DataToString extends Data {
         return map + " - " + stage;
     }
 
-    public static String getEXStage(Stage st, int lang) {
+    public static String getEXStage(Stage st, CommonStatic.Lang.Locale lang) {
         if(!(st.info instanceof DefStageInfo info) || (!((DefStageInfo) st.info).exConnection && ((DefStageInfo) st.info).exStages == null)) {
             return null;
         }
@@ -2252,7 +2252,7 @@ public class DataToString extends Data {
         return sb.toString();
     }
 
-    public static String getCompactTitle(Form f, int lang) {
+    public static String getCompactTitle(Form f, CommonStatic.Lang.Locale lang) {
         if(f == null)
             return "";
 
@@ -2457,11 +2457,11 @@ public class DataToString extends Data {
         return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs, t) + " - " + getSpeed(f, talent, lvs);
     }
 
-    public static String getDropBarrierSpeed(MaskEnemy e, TreasureHolder t, int lang) {
+    public static String getDropBarrierSpeed(MaskEnemy e, TreasureHolder t, CommonStatic.Lang.Locale lang) {
         return getDrop(e, t) + " - " + getBarrier(e, lang) + " - " + getSpeed(e);
     }
 
-    public static String getCompactTitle(Enemy e, int lang) {
+    public static String getCompactTitle(Enemy e, CommonStatic.Lang.Locale lang) {
         if(e == null)
             return "";
 
@@ -2480,19 +2480,19 @@ public class DataToString extends Data {
         return name;
     }
 
-    public static String getIdDifficultyLevel(Stage st, int star, int lang) {
+    public static String getIdDifficultyLevel(Stage st, int star, CommonStatic.Lang.Locale lang) {
         return getStageCode(st) +" - " + getDifficulty(st, lang) + " - " + getStar(st, star);
     }
 
-    public static String getEnergyBaseXP(Stage st, TreasureHolder t, int lang) {
+    public static String getEnergyBaseXP(Stage st, TreasureHolder t, CommonStatic.Lang.Locale lang) {
         return getEnergy(st, lang) + " - " + getBaseHealth(st) + " - " + getXP(st, t);
     }
 
-    public static String getEnemyContinuableLength(Stage st, int lang) {
+    public static String getEnemyContinuableLength(Stage st, CommonStatic.Lang.Locale lang) {
         return getMaxEnemy(st) + " - " + getContinuable(st, lang) + " - " + getLength(st);
     }
 
-    public static String getMusciBackgroundCastle(Stage st, int lang) {
+    public static String getMusciBackgroundCastle(Stage st, CommonStatic.Lang.Locale lang) {
         String result = getMusic(st, lang);
 
         if(st.mus1 != null && (st.mus0 == null || st.mus0.id != st.mus1.id)) {
@@ -2502,7 +2502,7 @@ public class DataToString extends Data {
         return result + " - " + getBackground(st, lang) + " - " + getCastle(st, lang);
     }
 
-    public static String getMaterialDrop(Stage st, int star, int lang) {
+    public static String getMaterialDrop(Stage st, int star, CommonStatic.Lang.Locale lang) {
         if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).maxMaterial == -1 || st.getCont() == null)
             return null;
 
@@ -2541,7 +2541,7 @@ public class DataToString extends Data {
         return result.toString();
     }
 
-    public static String getTalentTitle(MaskUnit du, int index, int lang) {
+    public static String getTalentTitle(MaskUnit du, int index, CommonStatic.Lang.Locale lang) {
         if(du == null || du.getPCoin() == null)
             return "";
 
@@ -2593,7 +2593,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getTalentTitle(String[] data, int index, int lang) {
+    public static String getTalentTitle(String[] data, int index, CommonStatic.Lang.Locale lang) {
         if(!StaticStore.isNumeric(data[2 + index * 14]) || !StaticStore.isNumeric(data[2 + index * 14 + 1]))
             return "";
 
@@ -2619,7 +2619,7 @@ public class DataToString extends Data {
         return name;
     }
 
-    public static String getTalentExplanation(MaskUnit du, MaskUnit improved, int index, boolean isFrame, int lang) {
+    public static String getTalentExplanation(MaskUnit du, MaskUnit improved, int index, boolean isFrame, CommonStatic.Lang.Locale lang) {
         if(du == null || du.getPCoin() == null)
             return "";
 
@@ -2740,7 +2740,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getTalentExplanation(String[] data, MaskUnit du, int index, boolean isFrame, int lang) {
+    public static String getTalentExplanation(String[] data, MaskUnit du, int index, boolean isFrame, CommonStatic.Lang.Locale lang) {
         String talentName;
 
         int abilityID = StaticStore.safeParseInt(data[2 + index * 14]);
@@ -2922,7 +2922,7 @@ public class DataToString extends Data {
         return item;
     }
 
-    private static String fillUpNpCost(int[] data, int lang, boolean space) {
+    private static String fillUpNpCost(int[] data, CommonStatic.Lang.Locale lang, boolean space) {
         if(talentLevel.containsKey(data[11])) {
             if(data[1] < 2) {
                 return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_npsingle", lang).replace("_", String.valueOf(talentLevel.get(data[11])[0]));
@@ -2953,7 +2953,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String accumulateNpCost(PCoin talent, int lang) {
+    public static String accumulateNpCost(PCoin talent, CommonStatic.Lang.Locale lang) {
         int cost = 0;
 
         for(int i = 0; i < talent.info.size(); i++) {

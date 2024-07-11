@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Medal extends ConstraintCommand {
-    public Medal(ROLE role, int lang, IDHolder id) {
+    public Medal(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.CardChancePair
@@ -9,7 +10,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CardChanceHolder(author: Message, channelID: String, message: Message, private val pack: CardPack, private val cardChancePair: CardChancePair) : ModalHolder(author, channelID, message) {
+class CardChanceHolder(author: Message, channelID: String, message: Message, private val pack: CardPack, private val cardChancePair: CardChancePair) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

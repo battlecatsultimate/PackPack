@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.modal;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -8,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class AnnouncementAdditionalMessageHolder extends ModalHolder {
     private final IDHolder holder;
 
-    public AnnouncementAdditionalMessageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, IDHolder holder) {
-        super(author, channelID, message);
+    public AnnouncementAdditionalMessageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
 
         this.holder = holder;
     }

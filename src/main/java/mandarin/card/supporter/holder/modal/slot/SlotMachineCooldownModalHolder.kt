@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.SlotMachine
@@ -14,7 +15,7 @@ import kotlin.text.lowercase
 import kotlin.text.replace
 import kotlin.text.split
 
-class SlotMachineCooldownModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ModalHolder(author, channelID, message) {
+class SlotMachineCooldownModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

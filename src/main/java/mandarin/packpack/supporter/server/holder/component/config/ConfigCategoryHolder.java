@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigCategoryHolder extends ServerConfigHolder {
-    public ConfigCategoryHolder(Message author, String channelID, Message message, @NotNull IDHolder holder, int lang) {
+    public ConfigCategoryHolder(Message author, String channelID, Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, lang);
     }
 
@@ -44,7 +45,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()

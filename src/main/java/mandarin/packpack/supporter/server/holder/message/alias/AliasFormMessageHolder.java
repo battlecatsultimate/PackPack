@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message.alias;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
@@ -22,22 +23,18 @@ public class AliasFormMessageHolder extends MessageHolder {
     private final AliasHolder.MODE mode;
     private final String aliasName;
 
-    private final int lang;
-
     private int page = 0;
     private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public AliasFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(author, channelID, msg);
+    public AliasFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nullable String aliasName) {
+        super(author, channelID, msg, lang);
 
         this.form = form;
         this.channelID = channelID;
         this.mode = mode;
         this.aliasName = aliasName;
-
-        this.lang = lang;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)
@@ -140,7 +137,7 @@ public class AliasFormMessageHolder extends MessageHolder {
                         break;
                     }
                     alias.add(aliasName);
-                    AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), form.get(id), alias);
+                    AliasHolder.FALIAS.put(lang, form.get(id), alias);
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }
@@ -158,7 +155,7 @@ public class AliasFormMessageHolder extends MessageHolder {
                         break;
                     }
                     alias.remove(aliasName);
-                    AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), form.get(id), alias);
+                    AliasHolder.FALIAS.put(lang, form.get(id), alias);
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias removed\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }

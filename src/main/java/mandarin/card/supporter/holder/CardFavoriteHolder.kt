@@ -1,10 +1,11 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import common.util.Data
 import mandarin.card.CardBot
-import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.holder.modal.CardFavoriteAmountHolder
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -28,7 +29,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardFavoriteHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, channelID, message), MessageUpdater {
+class CardFavoriteHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     private val skins = inventory.skins.filter { s -> s.card == card }
 
     private var page = 0

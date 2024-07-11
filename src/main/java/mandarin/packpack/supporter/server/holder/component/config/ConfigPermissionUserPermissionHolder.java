@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import kotlin.Pair;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
@@ -36,7 +37,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
 
     private int page = 0;
 
-    public ConfigPermissionUserPermissionHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, @NotNull Guild g, String userID, int lang) {
+    public ConfigPermissionUserPermissionHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, @NotNull Guild g, String userID, CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, holder, backup, lang);
 
         this.userID = userID;
@@ -123,7 +124,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()

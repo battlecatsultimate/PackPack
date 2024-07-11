@@ -1,5 +1,6 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
@@ -8,7 +9,6 @@ import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
+class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel
         val m = loader.member

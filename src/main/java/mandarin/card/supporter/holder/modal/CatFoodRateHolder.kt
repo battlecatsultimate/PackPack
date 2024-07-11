@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.StaticStore
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.math.max
 import kotlin.math.min
 
-class CatFoodRateHolder(author: Message, channelID: String, message: Message, private val editor: Runnable) : ModalHolder(author, channelID, message) {
+class CatFoodRateHolder(author: Message, channelID: String, message: Message, private val editor: Runnable) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

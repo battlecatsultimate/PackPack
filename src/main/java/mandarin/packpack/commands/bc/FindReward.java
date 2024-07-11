@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -34,7 +35,7 @@ public class FindReward extends TimedConstraintCommand {
 
     private final ConfigHolder config;
 
-    public FindReward(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time, ConfigHolder config) {
+    public FindReward(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder idHolder, long time, ConfigHolder config) {
         super(role, lang, idHolder, time, StaticStore.COMMAND_FINDREWARD_ID, false);
 
         if(config == null)
@@ -101,7 +102,7 @@ public class FindReward extends TimedConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_severalst", lang).replace("_", validateName(rewardName)))

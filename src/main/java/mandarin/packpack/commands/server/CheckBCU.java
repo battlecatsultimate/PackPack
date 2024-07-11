@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -17,7 +18,7 @@ import java.util.List;
 public class CheckBCU extends Command {
     private final IDHolder holder;
 
-    public CheckBCU(int lang, @Nullable IDHolder holder) {
+    public CheckBCU(CommonStatic.Lang.Locale lang, @Nullable IDHolder holder) {
         super(lang, true);
 
         this.holder = holder;

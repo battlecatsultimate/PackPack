@@ -1,9 +1,9 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
-class InventoryWipeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class InventoryWipeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "user" -> {
@@ -24,7 +24,7 @@ class InventoryWipeHolder(author: Message, channelID: String, message: Message) 
 
                 val user = event.mentions.users.first().idLong
 
-                registerPopUp(event, "Are you sure you want to wipe user <@$user>'s inventory? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to wipe user <@$user>'s inventory? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     CardData.inventories.remove(user)
@@ -37,7 +37,7 @@ class InventoryWipeHolder(author: Message, channelID: String, message: Message) 
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
                         .queue()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "close" -> {
                 expired = true

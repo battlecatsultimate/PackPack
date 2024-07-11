@@ -7,9 +7,9 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.util.Comparator;
 
 public class DateComparator implements Comparator<String> {
-    private final int lang;
+    private final CommonStatic.Lang.Locale lang;
 
-    public DateComparator(int lang) {
+    public DateComparator(CommonStatic.Lang.Locale lang) {
         this.lang = lang;
     }
 
@@ -80,7 +80,7 @@ public class DateComparator implements Comparator<String> {
         return result;
     }
 
-    private int monthToNumber(String month, int lang) {
+    private int monthToNumber(String month, CommonStatic.Lang.Locale lang) {
         if(month.equals(LangID.getStringByID("january", lang)))
             return 1;
         else if(month.equals(LangID.getStringByID("february", lang)))

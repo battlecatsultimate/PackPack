@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
@@ -80,7 +81,7 @@ public class SpamPrevent {
     long preventTime = 0;
     long scale = 1;
 
-    public boolean isPrevented(MessageChannel ch, int lang, String id) {
+    public boolean isPrevented(MessageChannel ch, CommonStatic.Lang.Locale lang, String id) {
         if(id.equals(StaticStore.MANDARIN_SMELL))
             return false;
 
@@ -138,7 +139,7 @@ public class SpamPrevent {
 
                 scale *= 2;
 
-                int lang = LangID.EN;
+                CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
                 if(interaction.getMember() != null) {
                     Member m = interaction.getMember();
@@ -168,7 +169,7 @@ public class SpamPrevent {
         return obj;
     }
 
-    private String beautifyMillis(int lang) {
+    private String beautifyMillis(CommonStatic.Lang.Locale lang) {
         long time = preventTime;
 
         long day = time / (1000 * 60 * 60 * 24);

@@ -1,9 +1,9 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.TasteApk;
-import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DownloadApk extends ConstraintCommand {
-    public DownloadApk(ROLE role, int lang, IDHolder id) {
+    public DownloadApk(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -50,21 +50,21 @@ public class DownloadApk extends ConstraintCommand {
 
         Message m = loader.getMessage();
 
-        int loc = getLocale(m.getContentRaw());
+        CommonStatic.Lang.Locale loc = getLocale(m.getContentRaw());
 
         String localeCode;
         String packageName;
 
         switch (loc) {
-            case LangID.JP -> {
+            case JP -> {
                 localeCode = "jp";
                 packageName = "jp.co.ponos.battlecats";
             }
-            case LangID.ZH -> {
+            case ZH -> {
                 localeCode = "tw";
                 packageName = "jp.co.ponos.battlecatstw";
             }
-            case LangID.KR -> {
+            case KR -> {
                 localeCode = "kr";
                 packageName = "jp.co.ponos.battlecatskr";
             }
@@ -256,15 +256,15 @@ public class DownloadApk extends ConstraintCommand {
         StaticStore.apkDownloading = false;
     }
 
-    private int getLocale(String content) {
+    private CommonStatic.Lang.Locale getLocale(String content) {
         if(content.contains("-tw"))
-            return LangID.ZH;
+            return CommonStatic.Lang.Locale.ZH;
         else if(content.contains("-kr"))
-            return LangID.KR;
+            return CommonStatic.Lang.Locale.KR;
         else if(content.contains("-jp"))
-            return LangID.JP;
+            return CommonStatic.Lang.Locale.JP;
         else
-            return LangID.EN;
+            return CommonStatic.Lang.Locale.EN;
     }
 
     private File generateLogFile(String result) throws Exception {

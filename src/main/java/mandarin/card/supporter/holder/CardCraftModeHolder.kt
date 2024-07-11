@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.filter.BannerFilter
@@ -16,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class CardCraftModeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class CardCraftModeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     override fun clean() {

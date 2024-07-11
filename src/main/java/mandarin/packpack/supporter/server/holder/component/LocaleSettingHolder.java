@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
@@ -26,8 +27,8 @@ public class LocaleSettingHolder extends ComponentHolder {
     @Nullable
     private final IDHolder holder;
 
-    public LocaleSettingHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull ConfigHolder config, @Nullable IDHolder holder, boolean forServer) {
-        super(author, channelID, message);
+    public LocaleSettingHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull ConfigHolder config, @Nullable IDHolder holder, boolean forServer, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
 
         this.config = config;
         this.forServer = forServer;
@@ -45,58 +46,27 @@ public class LocaleSettingHolder extends ComponentHolder {
                 String localeCode = e.getValues().getFirst();
 
                 if (localeCode.equals("auto")) {
-                    config.lang = -1;
+                    config.lang = null;
                 } else {
-                    int index = -1;
-
-                    for (int i = 0; i < StaticStore.langCode.length; i++) {
-                        if (localeCode.equals(StaticStore.langCode[i])) {
-                            index = i;
-
-                            break;
-                        }
-                    }
-
-                    if (index == -1) {
-                        StaticStore.logger.uploadLog("W/LocaleSettingHolder::onEvent - Unknown locale code : %s".formatted(localeCode));
-
-                        return;
-                    }
-
-                    config.lang = StaticStore.langIndex[index];
+                    config.lang = CommonStatic.Lang.Locale.valueOf(localeCode);
                 }
 
-                int lang;
+                CommonStatic.Lang.Locale lang;
 
-                if (config.lang == -1)
-                    lang = holder != null ? holder.config.lang : config.lang;
+                if (config.lang == null)
+                    lang = holder != null ? holder.config.lang : CommonStatic.Lang.Locale.EN;
                 else
                     lang = config.lang;
 
                 String localeName;
                 Emoji emoji;
 
-                if (config.lang == -1) {
+                if (config.lang == null) {
                     localeName = LangID.getStringByID("locale_server", lang);
                     emoji = Emoji.fromUnicode("⚙️");
                 } else {
-                    int index = -1;
-
-                    for (int i = 0; i < StaticStore.langIndex.length; i++) {
-                        if (config.lang == StaticStore.langIndex[i]) {
-                            index = i;
-                            break;
-                        }
-                    }
-
-                    if (index == -1) {
-                        StaticStore.logger.uploadLog("W/LocaleSettingHolder::onEvent - Unknown language ID : %d".formatted(config.lang));
-
-                        index = LangID.EN;
-                    }
-
-                    localeName = LangID.getStringByID("lang_" + StaticStore.langCode[index], lang);
-                    emoji = Emoji.fromUnicode(StaticStore.langUnicode[index]);
+                    localeName = LangID.getStringByID("lang_" + config.lang.code, lang);
+                    emoji = Emoji.fromUnicode(StaticStore.langUnicode[config.lang.ordinal()]);
                 }
 
                 event.deferEdit()
@@ -107,10 +77,10 @@ public class LocaleSettingHolder extends ComponentHolder {
                         .queue();
             }
             case "confirm" -> {
-                int lang;
+                CommonStatic.Lang.Locale lang;
 
-                if (config.lang == -1)
-                    lang = holder != null ? holder.config.lang : config.lang;
+                if (config.lang == null)
+                    lang = holder != null ? holder.config.lang : CommonStatic.Lang.Locale.EN;
                 else
                     lang = config.lang;
 
@@ -133,10 +103,10 @@ public class LocaleSettingHolder extends ComponentHolder {
 
     @Override
     public void onExpire(String id) {
-        int lang;
+        CommonStatic.Lang.Locale lang;
 
-        if (config.lang == -1)
-            lang = holder != null ? holder.config.lang : config.lang;
+        if (config.lang == null)
+            lang = holder != null ? holder.config.lang : CommonStatic.Lang.Locale.EN;
         else
             lang = config.lang;
 
@@ -148,10 +118,10 @@ public class LocaleSettingHolder extends ComponentHolder {
     }
 
     private List<LayoutComponent> getComponents() {
-        int lang;
+        CommonStatic.Lang.Locale lang;
 
-        if (config.lang == -1)
-            lang = holder != null ? holder.config.lang : config.lang;
+        if (config.lang == null)
+            lang = holder != null ? holder.config.lang : CommonStatic.Lang.Locale.EN;
         else
             lang = config.lang;
 
@@ -160,14 +130,13 @@ public class LocaleSettingHolder extends ComponentHolder {
         List<SelectOption> localeOptions = new ArrayList<>();
 
         if (!forServer) {
-            localeOptions.add(SelectOption.of(LangID.getStringByID("locale_server", lang), "auto").withDescription(LangID.getStringByID("locale_serverdesc", lang)).withEmoji(Emoji.fromUnicode("⚙️")).withDefault(config.lang == -1));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("locale_server", lang), "auto").withDescription(LangID.getStringByID("locale_serverdesc", lang)).withEmoji(Emoji.fromUnicode("⚙️")).withDefault(config.lang == null));
         }
 
-        for (int i = 0; i < StaticStore.langCode.length; i++) {
-            String localeCode = StaticStore.langCode[i];
-            Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[i]);
+        for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
+            Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
-            localeOptions.add(SelectOption.of(LangID.getStringByID("lang_" + localeCode, lang), localeCode).withEmoji(emoji).withDefault(config.lang != -1 && config.lang == StaticStore.langIndex[i]));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("lang_" + locale.code, lang), locale.name()).withEmoji(emoji).withDefault(config.lang == locale));
         }
 
         result.add(ActionRow.of(

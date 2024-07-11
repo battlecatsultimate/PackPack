@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.pack
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CardPackNameHolder
@@ -23,7 +24,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class CardPackManageHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class CardPackManageHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {

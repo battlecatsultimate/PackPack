@@ -1,14 +1,14 @@
 package mandarin.card.commands
 
-import mandarin.card.supporter.card.CardComparator
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.CardInventoryHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Guild
@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.requests.RestAction
 import kotlin.math.min
 
-class Cards : Command(LangID.EN, true) {
+class Cards : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val g = loader.guild
 

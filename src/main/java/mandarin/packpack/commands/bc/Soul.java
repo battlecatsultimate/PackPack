@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -25,7 +26,7 @@ public class Soul extends GlobalTimedConstraintCommand {
     private final int PARAM_RAW = 4;
     private final int PARAM_GIF = 8;
 
-    public Soul(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
+    public Soul(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30), false);
     }
 

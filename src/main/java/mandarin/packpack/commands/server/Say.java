@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 public class Say extends ConstraintCommand {
-    public Say(ROLE role, int lang, @Nullable IDHolder id) {
+    public Say(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, true);
     }
 

@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.pack.Soul;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class SoulSprite extends TimedConstraintCommand {
-    public SoulSprite(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time) {
+    public SoulSprite(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder idHolder, long time) {
         super(role, lang, idHolder, time, "soulsprite", false);
     }
 

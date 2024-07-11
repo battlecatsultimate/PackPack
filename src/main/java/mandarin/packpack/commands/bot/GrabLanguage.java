@@ -1,7 +1,7 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class GrabLanguage extends ConstraintCommand {
-    public GrabLanguage(ROLE role, int lang, @Nullable IDHolder id) {
+    public GrabLanguage(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -21,15 +21,17 @@ public class GrabLanguage extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ", 4);
 
         if(contents.length < 3) {
-            replyToMessageSafely(ch, "Format : `p!gl [Locale Number] [ID]`", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, "Format : `p!gl [Locale] [ID]`", loader.getMessage(), a -> a);
 
             return;
         }
 
-        int l = LangID.EN;
+        CommonStatic.Lang.Locale l = getLocale(contents[1]);
 
-        if(StaticStore.isNumeric(contents[1])) {
-            l = StaticStore.safeParseInt(contents[1]);
+        if (l == null) {
+            replyToMessageSafely(ch, "Valid Locale Code :\n- en\n- tw\n- kr\n- jp\n- ru", loader.getMessage(), a -> a);
+
+            return;
         }
 
         if(contents.length > 3) {
@@ -40,6 +42,29 @@ public class GrabLanguage extends ConstraintCommand {
             }
         } else {
             replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), loader.getMessage(), a -> a);
+        }
+    }
+
+    private CommonStatic.Lang.Locale getLocale(String code) {
+        switch (code) {
+            case "-en" -> {
+                return CommonStatic.Lang.Locale.EN;
+            }
+            case "-tw" -> {
+                return CommonStatic.Lang.Locale.ZH;
+            }
+            case "-jp" -> {
+                return CommonStatic.Lang.Locale.JP;
+            }
+            case "-kr" -> {
+                return CommonStatic.Lang.Locale.KR;
+            }
+            case "-ru" -> {
+                return CommonStatic.Lang.Locale.RU;
+            }
+            default -> {
+                return null;
+            }
         }
     }
 }

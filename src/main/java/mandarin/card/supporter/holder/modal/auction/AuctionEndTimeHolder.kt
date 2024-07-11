@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.auction
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
@@ -12,7 +13,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.text.split
 
-class AuctionEndTimeHolder(author: Message, channelID: String, message: Message, private val onSelected: (timeStamp: Long) -> Unit) : ModalHolder(author, channelID, message) {
+class AuctionEndTimeHolder(author: Message, channelID: String, message: Message, private val onSelected: (timeStamp: Long) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

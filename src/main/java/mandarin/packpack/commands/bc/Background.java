@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -27,7 +28,7 @@ public class Background extends TimedConstraintCommand {
     public static void performButton(ButtonInteractionEvent event, common.util.pack.Background bg) throws Exception {
         Interaction interaction = event.getInteraction();
 
-        int lang = LangID.EN;
+        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
         User u = interaction.getUser();
 
@@ -58,11 +59,11 @@ public class Background extends TimedConstraintCommand {
 
     private common.util.pack.Background bg;
 
-    public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public Background(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_BG_ID, false);
     }
 
-    public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, common.util.pack.Background bg) {
+    public Background(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time, common.util.pack.Background bg) {
         super(role, lang, id, time, StaticStore.COMMAND_BG_ID, false);
 
         this.bg = bg;

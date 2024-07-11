@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.skin
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.pack.CardPack
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class SkinPurchaseCardHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class SkinPurchaseCardHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = CardData.skins.map { skin -> skin.card }.toSet().sortedWith(CardComparator()).toMutableList()
 
     private var page = 0

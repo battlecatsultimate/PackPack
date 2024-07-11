@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.auction
 
+import common.CommonStatic
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
@@ -10,7 +11,7 @@ import kotlin.text.replace
 import kotlin.text.toDouble
 import kotlin.text.toLong
 
-class AuctionInitialPriceHolder(author: Message, channelID: String, message: Message, private val onSelected: (Long) -> Unit) : ModalHolder(author, channelID, message) {
+class AuctionInitialPriceHolder(author: Message, channelID: String, message: Message, private val onSelected: (Long) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CraftCostModifyHolder
 import mandarin.packpack.supporter.EmojiStore
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class CraftCostHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class CraftCostHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val size = 2
 
     private var page = 0

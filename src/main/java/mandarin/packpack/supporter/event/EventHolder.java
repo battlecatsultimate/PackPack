@@ -1,8 +1,10 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.group.*;
 import mandarin.packpack.supporter.lang.LangID;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -14,20 +16,20 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class EventHolder extends EventFactor {
-    public final Map<Integer, List<Integer>> yearly = new HashMap<>();
-    public final Map<Integer, List<Integer>> monthly = new HashMap<>();
-    public final Map<Integer, List<Integer>> weekly = new HashMap<>();
-    public final Map<Integer, List<Integer>> daily = new HashMap<>();
+    public final Map<CommonStatic.Lang.Locale, List<Integer>> yearly = new HashMap<>();
+    public final Map<CommonStatic.Lang.Locale, List<Integer>> monthly = new HashMap<>();
+    public final Map<CommonStatic.Lang.Locale, List<Integer>> weekly = new HashMap<>();
+    public final Map<CommonStatic.Lang.Locale, List<Integer>> daily = new HashMap<>();
 
-    public final Map<Integer, List<StageSchedule>> stages = new HashMap<>();
-    public final Map<Integer, List<GachaSchedule>> gachas = new HashMap<>();
-    public final Map<Integer, List<ItemSchedule>> items = new HashMap<>();
+    public final Map<CommonStatic.Lang.Locale, List<StageSchedule>> stages = new HashMap<>();
+    public final Map<CommonStatic.Lang.Locale, List<GachaSchedule>> gachas = new HashMap<>();
+    public final Map<CommonStatic.Lang.Locale, List<ItemSchedule>> items = new HashMap<>();
 
-    public Map<Integer, List<Integer>> stageCache = new HashMap<>();
-    public Map<Integer, List<Integer>> gachaCache = new HashMap<>();
-    public Map<Integer, List<Integer>> itemCache = new HashMap<>();
+    public Map<CommonStatic.Lang.Locale, List<Integer>> stageCache = new HashMap<>();
+    public Map<CommonStatic.Lang.Locale, List<Integer>> gachaCache = new HashMap<>();
+    public Map<CommonStatic.Lang.Locale, List<Integer>> itemCache = new HashMap<>();
 
-    public void updateStage(File f, int locale, boolean init) throws Exception {
+    public void updateStage(File f, CommonStatic.Lang.Locale locale, boolean init) throws Exception {
         if(failedToPrepareFile(locale))
             return;
 
@@ -166,7 +168,7 @@ public class EventHolder extends EventFactor {
         this.yearly.put(locale, yearly);
     }
 
-    public void updateGacha(File f, int locale, boolean init) throws Exception {
+    public void updateGacha(File f, CommonStatic.Lang.Locale locale, boolean init) throws Exception {
         if(failedToPrepareFile(locale))
             return;
 
@@ -246,7 +248,7 @@ public class EventHolder extends EventFactor {
         this.gachas.put(locale, g);
     }
 
-    public void updateItem(File f, int locale, boolean init) throws Exception {
+    public void updateItem(File f, CommonStatic.Lang.Locale locale, boolean init) throws Exception {
         if(failedToPrepareFile(locale))
             return;
 
@@ -326,7 +328,7 @@ public class EventHolder extends EventFactor {
         this.items.put(locale, i);
     }
 
-    public Map<SCHEDULE, List<String>> printStageEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
+    public Map<SCHEDULE, List<String>> printStageEvent(CommonStatic.Lang.Locale locale, CommonStatic.Lang.Locale lang, boolean full, boolean raw, boolean now, int time) {
         Map<SCHEDULE, List<String>> result = new LinkedHashMap<>();
 
         List<StageSchedule> fullStages = this.stages.get(locale);
@@ -489,7 +491,7 @@ public class EventHolder extends EventFactor {
         return result;
     }
 
-    public List<String> printGachaEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
+    public List<String> printGachaEvent(CommonStatic.Lang.Locale locale, CommonStatic.Lang.Locale lang, boolean full, boolean raw, boolean now, int time) {
         List<GachaSchedule> fullGachas = this.gachas.get(locale);
 
         List<GachaSchedule> gachas;
@@ -535,7 +537,7 @@ public class EventHolder extends EventFactor {
         return normals;
     }
 
-    public List<String> printItemEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
+    public List<String> printItemEvent(CommonStatic.Lang.Locale locale, CommonStatic.Lang.Locale lang, boolean full, boolean raw, boolean now, int time) {
         List<ItemSchedule> fullItems = this.items.get(locale);
 
         List<ItemSchedule> items;
@@ -579,7 +581,7 @@ public class EventHolder extends EventFactor {
         return normals;
     }
 
-    private ArrayList<String> getOnlyNewLine(File src, File newSrc, int loc) throws Exception {
+    private ArrayList<String> getOnlyNewLine(File src, File newSrc, CommonStatic.Lang.Locale loc) throws Exception {
         ArrayList<String> oldLines = new ArrayList<>();
         ArrayList<String> newLines = new ArrayList<>();
 
@@ -686,7 +688,7 @@ public class EventHolder extends EventFactor {
         return newLines;
     }
 
-    private boolean failedToPrepareFile(int locale) {
+    private boolean failedToPrepareFile(CommonStatic.Lang.Locale locale) {
         File event = new File("./data/event/");
 
         if(!event.exists()) {
@@ -714,7 +716,7 @@ public class EventHolder extends EventFactor {
         return false;
     }
 
-    private String getLocaleName(int locale) {
+    private String getLocaleName(CommonStatic.Lang.Locale locale) {
         return switch (locale) {
             case EN -> "en";
             case ZH -> "zh";
@@ -739,29 +741,28 @@ public class EventHolder extends EventFactor {
     }
 
     public void initialize() throws Exception {
-        String[] loc = {"en", "zh", "kr", "jp"};
         String[] file = {"gatya.tsv", "item.tsv", "sale.tsv"};
 
-        for(int j = 0; j < loc.length; j++) {
-            String locale = loc[j];
+        for(CommonStatic.Lang.Locale locale : supportedVersions) {
+            String localeCode = locale.code;
 
             for(int i = 0; i < file.length; i++) {
-                File f = new File("./data/event/"+locale+"/"+file[i]);
+                File f = new File("./data/event/"+localeCode+"/"+file[i]);
 
                 if(!f.exists())
                     continue;
 
 
                 switch (i) {
-                    case GATYA -> updateGacha(f, j, true);
-                    case SALE -> updateStage(f, j, true);
-                    case ITEM -> updateItem(f, j, true);
+                    case GATYA -> updateGacha(f, locale, true);
+                    case SALE -> updateStage(f, locale, true);
+                    case ITEM -> updateItem(f, locale, true);
                 }
             }
         }
     }
 
-    private String manualSchedulePrint(EventDate dateStart, EventDate dateEnd, String scheduleName, int lang) {
+    private String manualSchedulePrint(EventDate dateStart, EventDate dateEnd, String scheduleName, CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder("\u001B[0;31m[");
 
         if(dateStart.year != dateEnd.year || dateStart.year != currentYear) {
@@ -799,7 +800,7 @@ public class EventHolder extends EventFactor {
     }
 
     public boolean[][] checkUpdates() throws Exception {
-        boolean[][] updates = new boolean[4][3];
+        boolean[][] updates = new boolean[supportedVersions.length][3];
 
         File temp = new File("./temp");
 
@@ -813,12 +814,13 @@ public class EventHolder extends EventFactor {
 
         String[] file = {"gatya.tsv", "item.tsv", "sale.tsv"};
 
-        for(int i = 0; i < 4; i++) {
+        for(CommonStatic.Lang.Locale locale : supportedVersions) {
             for(int j = 0; j < file.length; j++) {
                 String fi = file[j];
-                File f = new File("./data/event/"+getLocaleName(i)+"/"+fi);
+                File f = new File("./data/event/"+locale.code+"/"+fi);
+                int index = ArrayUtils.indexOf(supportedVersions, locale);
 
-                String url = EventFileGrabber.getLink(i, j);
+                String url = EventFileGrabber.getLink(locale, j);
 
                 if(url == null)
                     continue;
@@ -828,9 +830,9 @@ public class EventHolder extends EventFactor {
                     String newMD5 = getMD5fromURL(url);
 
                     if(oldMD5 == null || !oldMD5.equals(newMD5)) {
-                        updates[i][j] = true;
+                        updates[index][j] = true;
 
-                        archive(f, i, j);
+                        archive(f, locale, j);
 
                         File temporary = StaticStore.generateTempFile(temp, fi, ".tmp", false);
 
@@ -865,13 +867,13 @@ public class EventHolder extends EventFactor {
                         }
 
                         switch (j) {
-                            case SALE -> updateStage(target, i, false);
-                            case GATYA -> updateGacha(target, i, false);
-                            case ITEM -> updateItem(target, i, false);
+                            case SALE -> updateStage(target, locale, false);
+                            case GATYA -> updateGacha(target, locale, false);
+                            case ITEM -> updateItem(target, locale, false);
                         }
                     }
                 } else {
-                    updates[i][j] = true;
+                    updates[index][j] = true;
 
                     File temporary = StaticStore.generateTempFile(temp, fi, ".tmp", false);
 
@@ -911,12 +913,12 @@ public class EventHolder extends EventFactor {
                     }
 
                     switch (j) {
-                        case SALE -> updateStage(target, i, false);
-                        case GATYA -> updateGacha(target, i, false);
-                        case ITEM -> updateItem(target, i, false);
+                        case SALE -> updateStage(target, locale, false);
+                        case GATYA -> updateGacha(target, locale, false);
+                        case ITEM -> updateItem(target, locale, false);
                     }
 
-                    archive(f, i, j);
+                    archive(f, locale, j);
                 }
             }
         }
@@ -979,7 +981,7 @@ public class EventHolder extends EventFactor {
         }
     }
 
-    private void archive(File old, int lang, int file) throws Exception {
+    private void archive(File old, CommonStatic.Lang.Locale lang, int file) throws Exception {
         File archive = new File("./data/event/" + getLocaleName(lang) + "/archive/" + getFileName(file));
 
         if(!archive.exists() && !archive.mkdirs()) {

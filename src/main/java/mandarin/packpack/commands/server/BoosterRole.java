@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -26,7 +27,7 @@ public class BoosterRole extends ConstraintCommand {
     private final static String hexString = "0123456789abcdef";
     private final static Pattern p = Pattern.compile("\".+\"");
 
-    public BoosterRole(ROLE role, int lang, IDHolder id) {
+    public BoosterRole(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 

@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -18,7 +19,7 @@ public class ServerStat extends Command {
 
     private final IDHolder holder;
 
-    public ServerStat(int lang, IDHolder holder) {
+    public ServerStat(CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(lang, true);
 
         this.holder = holder;

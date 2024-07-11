@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SuggestUnban extends ConstraintCommand {
 
-    public SuggestUnban(ROLE role, int lang, IDHolder id) {
+    public SuggestUnban(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

@@ -1,11 +1,11 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.slot.SlotMachineEmojiSearchModalHolder
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -32,7 +32,7 @@ class SlotMachinePlaceHolderRewardHolder(
     private val slotMachine: SlotMachine,
     private val content: SlotPlaceHolderContent,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var emojiName = ""
     private var page = 0
 
@@ -109,7 +109,7 @@ class SlotMachinePlaceHolderRewardHolder(
                 goBack(event)
             }
             "delete" -> {
-                registerPopUp(event, "Are you sure you want to delete this reward? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to delete this reward? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     slotMachine.content.remove(content)
@@ -117,10 +117,10 @@ class SlotMachinePlaceHolderRewardHolder(
                     e.deferReply().setContent("Successfully removed reward!").setEphemeral(true).queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "cancel" -> {
-                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferReply()
@@ -129,7 +129,7 @@ class SlotMachinePlaceHolderRewardHolder(
                         .queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

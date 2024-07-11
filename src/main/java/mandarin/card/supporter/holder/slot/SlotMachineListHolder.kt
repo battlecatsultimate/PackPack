@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.slot.SlotMachineNameModalHolder
 import mandarin.packpack.supporter.EmojiStore
@@ -22,7 +23,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineListHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class SlotMachineListHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {

@@ -34,7 +34,6 @@ import java.util.Queue;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Initializer {
     private static final String[] folder = {"bot/", "jp/", "kr/", "bot-zh/", "fr/", "it/", "es/", "de/", "th/"};
-    private static final int[] loc = {0, 3, 2, 1, 6, 9, 8, 5, 10};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt", "GachaName.txt", "MissionName.txt"};
 
     public static void checkAssetDownload(boolean runLWJGL) {
@@ -171,10 +170,17 @@ public class Initializer {
 
         for(int n = 0; n < folder.length; n++) {
             String fo = folder[n];
-            String f = switch(fo) {
-                case "bot/" -> "en";
-                case "bot-zh/" -> "zh";
-                default -> fo.substring(0, fo.length() - 1);
+            CommonStatic.Lang.Locale f = switch(fo) {
+                case "bot/" -> CommonStatic.Lang.Locale.EN;
+                case "jp/" -> CommonStatic.Lang.Locale.JP;
+                case "kr/" -> CommonStatic.Lang.Locale.KR;
+                case "bot-zh/" -> CommonStatic.Lang.Locale.ZH;
+                case "fr/" -> CommonStatic.Lang.Locale.FR;
+                case "it/" -> CommonStatic.Lang.Locale.IT;
+                case "es/" -> CommonStatic.Lang.Locale.ES;
+                case "de/" -> CommonStatic.Lang.Locale.DE;
+                case "th/" -> CommonStatic.Lang.Locale.TH;
+                default -> throw new IllegalStateException("E/Initializer::define - Invalid locale folder : %s".formatted(fo));
             };
 
             for(String fi : file) {
@@ -478,7 +484,7 @@ public class Initializer {
                                     String name = str[1].trim();
 
                                     if (StaticStore.isNumeric(name) && StaticStore.safeParseInt(name) < 0) {
-                                        name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name), loc[n]);
+                                        name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name), f);
                                     }
 
                                     if (str.length == 3 && name != null) {

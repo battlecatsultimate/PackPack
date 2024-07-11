@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
@@ -14,15 +15,11 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     @Nullable
     private final Consumer<GenericComponentInteractionCreateEvent>  onCancel;
 
-    private final int lang;
-
-    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @NotNull Consumer<GenericComponentInteractionCreateEvent> onCancel, int lang) {
-        super(author, channelID, msg);
+    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @NotNull Consumer<GenericComponentInteractionCreateEvent> onCancel, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.onConfirm = onConfirm;
         this.onCancel = onCancel;
-
-        this.lang = lang;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)
@@ -36,13 +33,11 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         });
     }
 
-    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, int lang) {
-        super(author, channelID, msg);
+    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.onConfirm = onConfirm;
         this.onCancel = null;
-
-        this.lang = lang;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)

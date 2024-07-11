@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 public class Save extends ConstraintCommand {
-    public Save(ROLE role, int lang, IDHolder holder) {
+    public Save(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(role, lang, holder, false);
     }
 

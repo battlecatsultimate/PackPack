@@ -1,15 +1,15 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.TradingSession
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
+class Confirm(private val session: TradingSession) : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel
         val m = loader.member
@@ -38,7 +38,7 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
 
                 a.setActionRow(components)
             }, { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                     session.agreed[index] = true
 
                     val opposite = (2 - index) / 2

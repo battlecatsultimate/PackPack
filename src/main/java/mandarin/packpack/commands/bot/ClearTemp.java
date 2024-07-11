@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 public class ClearTemp extends ConstraintCommand {
-    public ClearTemp(ROLE role, int lang, IDHolder id) {
+    public ClearTemp(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

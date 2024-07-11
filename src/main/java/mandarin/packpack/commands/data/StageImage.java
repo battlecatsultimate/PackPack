@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import common.system.fake.FakeImage;
 import common.system.fake.ImageBuilder;
 import common.system.files.FDFile;
@@ -27,7 +28,7 @@ public class StageImage extends ConstraintCommand {
     private static final int PARAM_REAL = 2;
     private static final int PARAM_FORCE = 4;
 
-    public StageImage(ROLE role, int lang, IDHolder holder) {
+    public StageImage(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(role, lang, holder, false);
     }
 

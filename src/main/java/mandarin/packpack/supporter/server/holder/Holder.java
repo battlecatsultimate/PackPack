@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -35,7 +36,7 @@ public abstract class Holder {
 
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
 
-    public static void registerAutoFinish(Holder holder, Message msg, int lang, long millis) {
+    public static void registerAutoFinish(Holder holder, Message msg, long millis) {
         StaticStore.executorHandler.postDelayed(millis, () -> {
             if(holder.expired)
                 return;
@@ -43,13 +44,13 @@ public abstract class Holder {
             holder.expire(holder.userID);
             holder.expired = true;
 
-            msg.editMessage(LangID.getStringByID("formst_expire", lang))
+            msg.editMessage(LangID.getStringByID("formst_expire", holder.lang))
                     .setComponents()
                     .queue();
         });
     }
 
-    public static void registerAutoFinish(Holder holder, Message msg, int lang, long millis, @Nullable Runnable run) {
+    public static void registerAutoFinish(Holder holder, Message msg, long millis, @Nullable Runnable run) {
         StaticStore.executorHandler.postDelayed(millis, () -> {
         if(holder.expired)
             return;
@@ -57,7 +58,7 @@ public abstract class Holder {
         holder.expire(holder.userID);
         holder.expired = true;
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        msg.editMessage(LangID.getStringByID("formst_expire", holder.lang))
                 .setComponents()
                 .queue();
 
@@ -66,7 +67,7 @@ public abstract class Holder {
         });
     }
 
-    public static void registerAutoFinish(Holder holder, Message msg, int lang, String langID, long millis) {
+    public static void registerAutoFinish(Holder holder, Message msg, String langID, long millis) {
         StaticStore.executorHandler.postDelayed(millis, () -> {
             if(holder.expired)
                 return;
@@ -74,13 +75,13 @@ public abstract class Holder {
             holder.expire(holder.userID);
             holder.expired = true;
 
-            msg.editMessage(LangID.getStringByID(langID, lang))
+            msg.editMessage(LangID.getStringByID(langID, holder.lang))
                     .setComponents()
                     .queue();
         });
     }
 
-    public static void registerAutoFinish(Holder holder, Message msg, int lang, String langID, long millis, @Nullable Runnable run) {
+    public static void registerAutoFinish(Holder holder, Message msg, String langID, long millis, @Nullable Runnable run) {
         StaticStore.executorHandler.postDelayed(millis, () -> {
             if (holder.expired)
                 return;
@@ -88,7 +89,7 @@ public abstract class Holder {
             holder.expire(holder.userID);
             holder.expired = true;
 
-            msg.editMessage(LangID.getStringByID(langID, lang))
+            msg.editMessage(LangID.getStringByID(langID, holder.lang))
                     .setComponents()
                     .queue();
 
@@ -107,20 +108,25 @@ public abstract class Holder {
     @Nonnull
     public final String userID;
 
+    @Nonnull
+    public final CommonStatic.Lang.Locale lang;
+
     @Nullable
     public Holder parent;
 
     public boolean expired = false;
 
-    public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
+    public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         this.author = author;
 
         this.channelID = channelID;
         this.message = message;
         userID = author.getAuthor().getId();
+
+        this.lang = lang;
     }
 
-    public Holder(@Nonnull GenericCommandInteractionEvent event, @Nonnull Message message) {
+    public Holder(@Nonnull GenericCommandInteractionEvent event, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         this.author = null;
 
         String channelID = event.getChannelId();
@@ -133,6 +139,8 @@ public abstract class Holder {
         this.message = message;
 
         userID = event.getUser().getId();
+
+        this.lang = lang;
     }
 
     public abstract STATUS handleEvent(Event event);
@@ -449,7 +457,7 @@ public abstract class Holder {
         }
     }
 
-    public void registerPopUp(GenericComponentInteractionCreateEvent event, String content, int lang) {
+    public void registerPopUp(GenericComponentInteractionCreateEvent event, String content) {
         event.deferEdit()
                 .setContent(content)
                 .setAllowedMentions(new ArrayList<>())
@@ -464,7 +472,7 @@ public abstract class Holder {
                 .queue();
     }
 
-    public void registerPopUp(ModalInteractionEvent event, String content, int lang) {
+    public void registerPopUp(ModalInteractionEvent event, String content) {
         event.deferEdit()
                 .setContent(content)
                 .setAllowedMentions(new ArrayList<>())
@@ -479,7 +487,7 @@ public abstract class Holder {
                 .queue();
     }
 
-    public void registerPopUp(Message message, String content, int lang) {
+    public void registerPopUp(Message message, String content) {
         message.editMessage(content)
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)

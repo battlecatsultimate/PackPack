@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -20,18 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScamLinkSubscriptionHolder extends ComponentHolder {
-    private final int lang;
-
     private final String targetChannel;
     private final String mute;
 
     private ScamLinkHandler.ACTION action = ScamLinkHandler.ACTION.MUTE;
     private boolean noticeAll = false;
 
-    public ScamLinkSubscriptionHolder(Message author, Message msg, String channelID, int lang, String targetChannel, String mute) {
-        super(author, channelID, msg);
-        
-        this.lang = lang;
+    public ScamLinkSubscriptionHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang, String targetChannel, String mute) {
+        super(author, channelID, msg, lang);
 
         this.targetChannel = targetChannel;
         this.mute = mute;

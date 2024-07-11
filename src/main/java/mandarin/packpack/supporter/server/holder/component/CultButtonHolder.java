@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
@@ -7,12 +8,8 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import org.jetbrains.annotations.NotNull;
 
 public class CultButtonHolder extends ComponentHolder {
-    private final int lang;
-
-    public CultButtonHolder(Message author, Message msg, String channelID, String memberID, int lang) {
-        super(author, channelID, msg);
-
-        this.lang = lang;
+    public CultButtonHolder(Message author, Message msg, String channelID, String memberID, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         StaticStore.executorHandler.postDelayed(10000, () -> {
             if(expired)

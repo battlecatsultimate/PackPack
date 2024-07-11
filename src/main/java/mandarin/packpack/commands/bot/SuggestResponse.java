@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SuggestResponse extends ConstraintCommand {
 
-    public SuggestResponse(ROLE role, int lang, IDHolder id) {
+    public SuggestResponse(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

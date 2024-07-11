@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
 import common.util.unit.Level;
@@ -40,21 +41,21 @@ public class FormStat extends ConstraintCommand {
             return;
         }
 
-        int lang = LangID.EN;
+        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
         User u = interaction.getUser();
 
         if(StaticStore.config.containsKey(u.getId())) {
             lang = StaticStore.config.get(u.getId()).lang;
 
-            if(lang == -1) {
+            if(lang == null) {
                 if(interaction.getGuild() == null) {
-                    lang = LangID.EN;
+                    lang = CommonStatic.Lang.Locale.EN;
                 } else {
                     IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
 
                     if(idh == null) {
-                        lang = LangID.EN;
+                        lang = CommonStatic.Lang.Locale.EN;
                     } else {
                         lang = idh.config.lang;
                     }
@@ -82,7 +83,7 @@ public class FormStat extends ConstraintCommand {
 
         Form f = EntityFilter.pickOneForm(name, lang);
 
-        int finalLang = lang;
+        CommonStatic.Lang.Locale finalLang = lang;
 
         if(f == null) {
             event.deferReply()
@@ -164,7 +165,7 @@ public class FormStat extends ConstraintCommand {
 
     private final ConfigHolder config;
 
-    public FormStat(ROLE role, int lang, IDHolder holder, ConfigHolder config) {
+    public FormStat(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder, ConfigHolder config) {
         super(role, lang, holder, false);
 
         if(config == null)

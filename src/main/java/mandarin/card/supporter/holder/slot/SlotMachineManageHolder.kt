@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.slot.SlotMachineCooldownModalHolder
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 
-class SlotMachineManageHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, channelID, message) {
+class SlotMachineManageHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {
@@ -108,7 +109,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
                 goBack()
             }
             "cancel" -> {
-                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     e.deferReply()
@@ -117,7 +118,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
                         .queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "prev" -> {
                 page--
@@ -142,7 +143,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
                 applyResult(event)
             }
             "delete" -> {
-                registerPopUp(event, "Are you sure you want to delete this slot machine? This cannot be undone", LangID.EN)
+                registerPopUp(event, "Are you sure you want to delete this slot machine? This cannot be undone")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     CardData.slotMachines.remove(slotMachine)
@@ -154,7 +155,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
                     e.deferReply().setContent("Successfully removed slot machine : ${slotMachine.name}!").setEphemeral(true).queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

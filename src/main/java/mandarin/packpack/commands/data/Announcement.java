@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
@@ -16,7 +17,7 @@ public class Announcement extends ConstraintCommand {
     private static final int PARAM_KR = 8;
     private static final int PARAM_TW = 16;
 
-    public Announcement(ROLE role, int lang, IDHolder id) {
+    public Announcement(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -48,15 +49,15 @@ public class Announcement extends ConstraintCommand {
             }
             default -> {
                 switch (lang) {
-                    case 1 -> {
+                    case ZH -> {
                         loc = "tw";
                         ver = StaticStore.taiwaneseVersion;
                     }
-                    case 2 -> {
+                    case KR -> {
                         loc = "ko";
                         ver = StaticStore.koreanVersion;
                     }
-                    case 3 -> {
+                    case JP -> {
                         loc = "ja";
                         ver = StaticStore.japaneseVersion;
                     }

@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -26,7 +27,7 @@ public class FormSprite extends TimedConstraintCommand {
     private static final int PARAM_UDI = 4;
     private static final int PARAM_EDI = 8;
 
-    public FormSprite(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public FormSprite(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_FORMSPRITE_ID, false);
     }
 

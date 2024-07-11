@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.modal;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -19,8 +20,8 @@ public class CustomRoleAssignHolder extends ModalHolder {
     private final IDHolder holder;
     private final Guild g;
 
-    public CustomRoleAssignHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull Runnable editor, @NotNull IDHolder holder, @NotNull Guild g) {
-        super(author, channelID, message);
+    public CustomRoleAssignHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull Runnable editor, @NotNull IDHolder holder, @NotNull Guild g, @NotNull CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
 
         this.editor = editor;
         this.holder = holder;
@@ -39,7 +40,8 @@ public class CustomRoleAssignHolder extends ModalHolder {
 
     @Override
     public void onEvent(@Nonnull ModalInteractionEvent event) {
-        int lang = holder.config.lang;
+        CommonStatic.Lang.Locale lang = holder.config.lang;
+
         List<ModalMapping> values = event.getValues();
 
         String name = getValueFromMap(values, "name");

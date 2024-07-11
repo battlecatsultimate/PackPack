@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.modal;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -10,15 +11,13 @@ import java.util.function.Consumer;
 
 public class CustomRoleNameModalHolder extends ModalHolder {
     private final IDHolder holder;
-    private final int lang;
 
     private final Consumer<String> onSelected;
 
-    public CustomRoleNameModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, int lang, Consumer<String> onSelected) {
-        super(author, channelID, message);
+    public CustomRoleNameModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang, Consumer<String> onSelected) {
+        super(author, channelID, message, lang);
 
         this.holder = holder;
-        this.lang = lang;
 
         this.onSelected = onSelected;
     }

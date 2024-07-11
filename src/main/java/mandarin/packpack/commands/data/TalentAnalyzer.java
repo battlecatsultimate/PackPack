@@ -33,7 +33,7 @@ public class TalentAnalyzer extends ConstraintCommand {
             "-s", "-second", "-uid", "-u", "-n", "-name", "-en", "-jp", "-tw", "-kr"
     );
 
-    public TalentAnalyzer(ROLE role, int lang, IDHolder id) {
+    public TalentAnalyzer(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

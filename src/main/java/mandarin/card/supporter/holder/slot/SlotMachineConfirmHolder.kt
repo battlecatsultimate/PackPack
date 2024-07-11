@@ -1,12 +1,12 @@
 package mandarin.card.supporter.holder.slot
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.slot.SlotMachineRollModalHolder
 import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -23,7 +23,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class SlotMachineConfirmHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, channelID, message) {
+class SlotMachineConfirmHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var page = 0
@@ -47,7 +47,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
 
                     val fee = slotMachine.entryFee.maximumFee
 
-                    registerPopUp(event, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
                         ev.deferEdit()
@@ -60,7 +60,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                             }
 
                         expired = true
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
 
@@ -90,8 +90,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
 
                             registerPopUp(
                                 e,
-                                "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?",
-                                LangID.EN
+                                "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?"
                             )
 
                             connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
@@ -105,7 +104,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                                     }
 
                                 expired = true
-                            }, LangID.EN))
+                            }, CommonStatic.Lang.Locale.EN))
                         })
                 }
             }

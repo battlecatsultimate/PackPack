@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
@@ -29,7 +30,7 @@ public class FormImage extends TimedConstraintCommand {
     private static final int PARAM_TRANSPARENT = 2;
     private static final int PARAM_DEBUG = 4;
 
-    public FormImage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public FormImage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_FORMIMAGE_ID, false);
     }
 

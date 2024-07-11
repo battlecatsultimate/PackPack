@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -66,7 +67,7 @@ public class FindStage extends TimedConstraintCommand {
 
     private final ConfigHolder config;
 
-    public FindStage(ConstraintCommand.ROLE role, int lang, IDHolder id, ConfigHolder config, long time) {
+    public FindStage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, ConfigHolder config, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_FINDSTAGE_ID, false);
 
         if(config == null)
@@ -210,7 +211,7 @@ public class FindStage extends TimedConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");

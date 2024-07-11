@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class RankListHolder(author: Message, channelID: String, message: Message, private val users: List<Long>, private val currencies: List<Long>, private val catFood: Boolean) : ComponentHolder(author, channelID, message) {
+class RankListHolder(author: Message, channelID: String, message: Message, private val users: List<Long>, private val currencies: List<Long>, private val catFood: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {

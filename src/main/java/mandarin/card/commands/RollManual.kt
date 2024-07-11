@@ -1,11 +1,11 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.moderation.ManualRollSelectHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Guild
@@ -20,7 +20,7 @@ import java.util.concurrent.CountDownLatch
 import kotlin.math.ceil
 import kotlin.math.min
 
-class RollManual : Command(LangID.EN, true) {
+class RollManual : Command(CommonStatic.Lang.Locale.EN, true) {
     @Throws(Exception::class)
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel

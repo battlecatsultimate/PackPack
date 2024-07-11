@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Card
@@ -35,7 +36,7 @@ class SuggestInventoryHolder(
     private val suggestionMessage: Message,
     private val session: TradingSession,
     private val inventory: Inventory
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val index = session.member.indexOf(author.author.idLong)
     private val suggestion = session.suggestion[index]
     private val backup = suggestion.copy()

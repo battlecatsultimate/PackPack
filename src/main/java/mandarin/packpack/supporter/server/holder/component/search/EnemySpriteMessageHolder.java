@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
@@ -17,13 +18,13 @@ public class EnemySpriteMessageHolder extends SearchHolder {
 
     private final int mode;
 
-    public EnemySpriteMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int lang) {
+    public EnemySpriteMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.enemy = enemy;
         this.mode = mode;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

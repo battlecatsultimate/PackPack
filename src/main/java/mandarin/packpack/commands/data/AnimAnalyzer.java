@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import common.system.files.VFile;
 import common.util.anim.ImgCut;
 import common.util.anim.MaAnim;
@@ -8,7 +9,6 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.EntityHandler;
-import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.message.AnimMessageHolder;
@@ -32,7 +32,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     private static final int PARAM_USEAPK = 32;
     private static final int PARAM_PERFORMANCE = 64;
 
-    public AnimAnalyzer(ROLE role, int lang, IDHolder id) {
+    public AnimAnalyzer(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -64,9 +64,9 @@ public class AnimAnalyzer extends ConstraintCommand {
             }
 
             String localeCode = switch (getLocale(loader.getContent())) {
-                case LangID.EN -> "en";
-                case LangID.ZH -> "zh";
-                case LangID.KR -> "kr";
+                case EN -> "en";
+                case ZH -> "zh";
+                case KR -> "kr";
                 default -> "jp";
             };
 
@@ -289,15 +289,15 @@ public class AnimAnalyzer extends ConstraintCommand {
         return null;
     }
 
-    private int getLocale(String content) {
+    private CommonStatic.Lang.Locale getLocale(String content) {
         if(content.contains("-tw"))
-            return LangID.ZH;
+            return CommonStatic.Lang.Locale.ZH;
         else if(content.contains("-en"))
-            return LangID.EN;
+            return CommonStatic.Lang.Locale.EN;
         else if(content.contains("-kr"))
-            return LangID.KR;
+            return CommonStatic.Lang.Locale.KR;
         else
-            return LangID.JP;
+            return CommonStatic.Lang.Locale.JP;
     }
 
     private boolean validateFiles(String code, File workspace, boolean zombie) {

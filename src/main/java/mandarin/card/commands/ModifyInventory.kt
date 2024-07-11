@@ -1,12 +1,12 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.moderation.modify.ModifyCategoryHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class ModifyInventory : Command(LangID.EN, true) {
+class ModifyInventory : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel
         val m = loader.member

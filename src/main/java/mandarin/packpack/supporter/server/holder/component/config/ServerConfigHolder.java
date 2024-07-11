@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Conflictable;
@@ -17,28 +18,22 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
     protected final IDHolder holder;
     protected final IDHolder backup;
 
-    protected final int lang;
-
-    public ServerConfigHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, int lang) {
-        super(author, channelID, message);
+    public ServerConfigHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
 
         this.message = message;
 
         this.holder = holder;
         backup = this.holder.clone();
-
-        this.lang = lang;
     }
 
-    public ServerConfigHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
-        super(author, channelID, message);
+    public ServerConfigHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
 
         this.message = message;
 
         this.holder = holder;
         this.backup = backup;
-
-        this.lang = lang;
     }
 
     @Override

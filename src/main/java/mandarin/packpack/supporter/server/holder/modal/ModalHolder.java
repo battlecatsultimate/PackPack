@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.modal;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.Event;
@@ -10,8 +11,8 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public abstract class ModalHolder extends Holder {
-    public ModalHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
-        super(author, channelID, message);
+    public ModalHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
     }
 
     @Override

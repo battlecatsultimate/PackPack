@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FixRole extends ConstraintCommand {
-    public FixRole(ROLE role, int lang, IDHolder id) {
+    public FixRole(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -48,7 +49,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private final int castle;
     private final int music;
 
-    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, boolean monthly, int star, TreasureHolder treasure, int background, int castle, int music, int lang) {
+    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, boolean monthly, int star, TreasureHolder treasure, int background, int castle, int music, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.enemySequences = enemySequences;
@@ -71,7 +72,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
         enemy = enemySequences.removeFirst();
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override
@@ -121,7 +122,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");

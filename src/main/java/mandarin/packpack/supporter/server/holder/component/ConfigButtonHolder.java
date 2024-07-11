@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -37,8 +38,8 @@ public class ConfigButtonHolder extends ComponentHolder {
 
     private int page = 0;
 
-    public ConfigButtonHolder(Message author, Message msg, ConfigHolder config, IDHolder holder, String channelID) {
-        super(author, channelID, msg);
+    public ConfigButtonHolder(Message author, Message msg, ConfigHolder config, IDHolder holder, String channelID, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
         
         this.config = config;
         this.backup = config.clone();
@@ -64,8 +65,14 @@ public class ConfigButtonHolder extends ComponentHolder {
                 
                 if (es.getValues().size() != 1)
                     return;
-                
-                config.lang = StaticStore.safeParseInt(es.getValues().getFirst());
+
+                String code = es.getValues().getFirst();
+
+                if (code.isBlank()) {
+                    config.lang = null;
+                } else {
+                    config.lang = CommonStatic.Lang.Locale.valueOf(code);
+                }
                 
                 performResult(event);
             }
@@ -88,7 +95,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                         .setComponents(parseComponents())
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
-                        .queue()));
+                        .queue(), lang));
             }
             case "extra" -> {
                 config.extra = !config.extra;
@@ -201,10 +208,10 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                 StaticStore.removeHolder(userID, this);
 
-                int lang = config.lang;
+                CommonStatic.Lang.Locale lang = config.lang;
 
-                if (lang == -1)
-                    lang = holder == null ? LangID.EN : holder.config.lang;
+                if (lang == null)
+                    lang = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("config_apply", lang))
@@ -261,10 +268,10 @@ public class ConfigButtonHolder extends ComponentHolder {
     }
 
     private List<ActionRow> parseComponents() {
-        int lang = config.lang;
+        CommonStatic.Lang.Locale lang = config.lang;
 
-        if(lang == -1)
-            lang = holder == null ? LangID.EN : holder.config.lang;
+        if(lang == null)
+            lang = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
 
         List<ActionRow> m = new ArrayList<>();
 
@@ -281,12 +288,15 @@ public class ConfigButtonHolder extends ComponentHolder {
                 case 2 -> {
                     List<SelectOption> languages = new ArrayList<>();
 
-                    languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(config.lang == -1));
+                    languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(config.lang == null));
 
-                    for (int j = 0; j < StaticStore.langIndex.length; j++) {
-                        String l = LangID.getStringByID("lang_" + StaticStore.langCode[j], lang);
+                    for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
+                        String l = LangID.getStringByID("lang_" + locale.code, lang);
 
-                        languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), String.valueOf(StaticStore.langIndex[j])).withDefault(config.lang == StaticStore.langIndex[j]));
+                        languages.add(
+                                SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), locale.name())
+                                        .withDefault(config.lang == locale)
+                        );
                     }
 
                     m.add(ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()));
@@ -354,10 +364,10 @@ public class ConfigButtonHolder extends ComponentHolder {
     }
 
     private String parseMessage() {
-        int lang = config.lang;
+        CommonStatic.Lang.Locale lang = config.lang;
 
-        if(lang == -1)
-            lang = holder == null ? LangID.EN : holder.config.lang;
+        if(lang == null)
+            lang = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
 
         StringBuilder message = new StringBuilder();
 
@@ -377,19 +387,24 @@ public class ConfigButtonHolder extends ComponentHolder {
                             .append(ex);
                 }
                 case 2 -> {
-                    String locale = switch (config.lang) {
-                        case LangID.EN -> LangID.getStringByID("lang_en", lang);
-                        case LangID.JP -> LangID.getStringByID("lang_jp", lang);
-                        case LangID.KR -> LangID.getStringByID("lang_kr", lang);
-                        case LangID.ZH -> LangID.getStringByID("lang_zh", lang);
-                        case LangID.FR -> LangID.getStringByID("lang_fr", lang);
-                        case LangID.IT -> LangID.getStringByID("lang_it", lang);
-                        case LangID.ES -> LangID.getStringByID("lang_es", lang);
-                        case LangID.DE -> LangID.getStringByID("lang_de", lang);
-                        case LangID.TH -> LangID.getStringByID("lang_th", lang);
-                        case LangID.RU -> LangID.getStringByID("lang_ru", lang);
-                        default -> LangID.getStringByID("config_auto", lang);
-                    };
+                    String locale;
+
+                    if (config.lang == null) {
+                        locale = LangID.getStringByID("config_auto", lang);
+                    } else {
+                        locale = switch (config.lang) {
+                            case EN -> LangID.getStringByID("lang_en", lang);
+                            case JP -> LangID.getStringByID("lang_jp", lang);
+                            case KR -> LangID.getStringByID("lang_kr", lang);
+                            case ZH -> LangID.getStringByID("lang_zh", lang);
+                            case FR -> LangID.getStringByID("lang_fr", lang);
+                            case IT -> LangID.getStringByID("lang_it", lang);
+                            case ES -> LangID.getStringByID("lang_es", lang);
+                            case DE -> LangID.getStringByID("lang_de", lang);
+                            case TH -> LangID.getStringByID("lang_th", lang);
+                            case RU -> LangID.getStringByID("lang_ru", lang);
+                        };
+                    }
 
                     message.append("**")
                             .append(LangID.getStringByID("config_locale", lang).replace("_", locale))

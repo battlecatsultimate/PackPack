@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import mandarin.packpack.PackBot;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -9,10 +10,11 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class CheckEventUpdate extends ConstraintCommand {
-    public CheckEventUpdate(ROLE role, int lang, IDHolder id) {
+    public CheckEventUpdate(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -46,10 +48,15 @@ public class CheckEventUpdate extends ConstraintCommand {
     private String parseResult(boolean[][] result) {
         StringBuilder r = new StringBuilder();
 
-        for(int i = 0; i < result.length; i++) {
-            for(int j = 0; j < result[i].length; j++) {
-                if(result[i][j]) {
-                    r.append(getLocale(i)).append(" : ").append(getFile(j)).append("\n");
+        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+            int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
+
+            if (index == -1)
+                continue;
+
+            for(int j = 0; j < result[index].length; j++) {
+                if(result[index][j]) {
+                    r.append(locale.code).append(" : ").append(getFile(j)).append("\n");
                 }
             }
         }
@@ -61,15 +68,6 @@ public class CheckEventUpdate extends ConstraintCommand {
         } else {
             return "";
         }
-    }
-
-    private String getLocale(int loc) {
-        return switch (loc) {
-            case EventFactor.EN -> "en";
-            case EventFactor.ZH -> "tw";
-            case EventFactor.KR -> "kr";
-            default -> "jp";
-        };
     }
 
     private String getFile(int f) {

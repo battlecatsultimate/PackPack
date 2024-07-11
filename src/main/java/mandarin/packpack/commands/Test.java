@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import common.battle.data.MaskAtk;
 import common.battle.data.MaskUnit;
 import common.pack.UserProfile;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Test extends GlobalTimedConstraintCommand {
-    public Test(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
+    public Test(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(1), true);
     }
 
@@ -232,7 +233,7 @@ public class Test extends GlobalTimedConstraintCommand {
             maximumX = maximumX.max(coordinates.get(i)[0]);
         }
 
-        ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, 0);
+        ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, CommonStatic.Lang.Locale.EN);
     }
 
     @Override

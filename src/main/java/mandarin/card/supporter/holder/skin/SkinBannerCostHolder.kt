@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.skin
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Skin
@@ -7,7 +8,6 @@ import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SkinBannerCostHolder(author: Message, channelID: String, message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message) {
+class SkinBannerCostHolder(author: Message, channelID: String, message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
 
     private var page = 0
 
@@ -88,8 +88,7 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
                 if (new) {
                     registerPopUp(
                         event,
-                        "Are you sure you want to cancel creating card cost and go back? This can't be undone",
-                        LangID.EN
+                        "Are you sure you want to cancel creating card cost and go back? This can't be undone"
                     )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -98,7 +97,7 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
                         e.deferEdit().queue()
 
                         parent?.goBack()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     if (skin in CardData.skins) {
                         CardBot.saveCardData()
@@ -114,8 +113,7 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
             "delete" -> {
                 registerPopUp(
                     event,
-                    "Are you sure you want to delete card cost? This can't be undone",
-                    LangID.EN
+                    "Are you sure you want to delete card cost? This can't be undone"
                 )
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -131,7 +129,7 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
                         .queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "prev" -> {
                 page--

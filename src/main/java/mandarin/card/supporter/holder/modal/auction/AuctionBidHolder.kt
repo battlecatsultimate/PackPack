@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.auction
 
+import common.CommonStatic
 import mandarin.card.supporter.AuctionSession
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
@@ -13,7 +14,7 @@ import kotlin.text.replace
 import kotlin.text.toDouble
 import kotlin.text.toLong
 
-class AuctionBidHolder(author: Message, channelID: String, message: Message, private val auctionSession: AuctionSession, private val onSelected: (Long) -> Unit) : ModalHolder(author, channelID, message) {
+class AuctionBidHolder(author: Message, channelID: String, message: Message, private val auctionSession: AuctionSession, private val onSelected: (Long) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

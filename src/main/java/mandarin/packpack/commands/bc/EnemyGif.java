@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -39,7 +40,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             forbidden.add(d);
     }
 
-    public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
+    public EnemyGif(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30), false);
     }
 

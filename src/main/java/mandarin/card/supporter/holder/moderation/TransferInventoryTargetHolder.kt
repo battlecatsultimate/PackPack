@@ -1,10 +1,10 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -24,7 +24,7 @@ class TransferInventoryTargetHolder(
     private val sourceUser: Long,
     mode: CardData.TransferMode,
     r: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     var transferMode = mode
         private set
     var reset = r
@@ -57,7 +57,7 @@ class TransferInventoryTargetHolder(
 
                 registerPopUp(event, "Are you sure you want to transfer inventory from <@$sourceUser> to <@$id>? This cannot be undone.\n" +
                         "\n" +
-                        "Mode is $modeName, and $resetText", LangID.EN)
+                        "Mode is $modeName, and $resetText")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message,{ e ->
                     val sourceInventory = Inventory.getInventory(sourceUser)
@@ -77,7 +77,7 @@ class TransferInventoryTargetHolder(
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
                         .queue()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "mode" -> {
                 transferMode = CardData.TransferMode.entries[(transferMode.ordinal + 1) % CardData.TransferMode.entries.size]

@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -32,7 +33,7 @@ public abstract class ConstraintCommand extends Command {
     final String constRole;
     protected final IDHolder holder;
 
-    public ConstraintCommand(ROLE role, int lang, @Nullable IDHolder id, boolean requireGuild) {
+    public ConstraintCommand(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id, boolean requireGuild) {
         super(lang, requireGuild);
 
         switch (role) {

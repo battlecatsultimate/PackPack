@@ -1,12 +1,12 @@
 package mandarin.card.commands
 
-import mandarin.card.supporter.card.Card
+import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.log.LogSession
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import java.io.BufferedWriter
 import java.io.File
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets
 import kotlin.math.abs
 import kotlin.math.max
 
-class Report : Command(LangID.EN, true) {
+class Report : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
         val ch = loader.channel

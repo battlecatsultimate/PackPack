@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.modal;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
@@ -20,17 +21,15 @@ public class TreasureModalHolder extends ModalHolder {
     }
 
     private final TreasureHolder treasure;
-    private final int lang;
 
     private final TREASURE type;
 
     private final Runnable editor;
 
-    public TreasureModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull TreasureHolder treasure, int lang, TREASURE type, Runnable editor) {
-        super(author, channelID, message);
+    public TreasureModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull TreasureHolder treasure, CommonStatic.Lang.Locale lang, TREASURE type, Runnable editor) {
+        super(author, channelID, message, lang);
 
         this.treasure = treasure;
-        this.lang = lang;
 
         this.type = type;
 

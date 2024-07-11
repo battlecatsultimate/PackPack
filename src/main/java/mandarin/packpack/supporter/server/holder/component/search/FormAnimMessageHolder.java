@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
@@ -34,7 +35,7 @@ public class FormAnimMessageHolder extends SearchHolder {
 
     private final String command;
 
-    public FormAnimMessageHolder(ArrayList<Form> form, @Nonnull Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
+    public FormAnimMessageHolder(ArrayList<Form> form, @Nonnull Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
         super(author, msg, channelID, lang);
 
         this.form = form;
@@ -49,7 +50,7 @@ public class FormAnimMessageHolder extends SearchHolder {
 
         this.command = author.getContentRaw();
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

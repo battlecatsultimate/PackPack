@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -21,19 +22,15 @@ public class HasRolePageHolder extends ComponentHolder {
     private final List<Member> members;
     private final Role role;
 
-    private final int lang;
-
     private int page = 0;
 
-    public HasRolePageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull List<Member> members, @NotNull Role role, int lang) {
-        super(author, channelID, message);
+    public HasRolePageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull List<Member> members, @NotNull Role role, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
 
         this.members = members;
         this.role = role;
 
-        this.lang = lang;
-
-        registerAutoFinish(this, message, lang, "hasrole_close", FIVE_MIN);
+        registerAutoFinish(this, message, "hasrole_close", FIVE_MIN);
     }
 
     @Override

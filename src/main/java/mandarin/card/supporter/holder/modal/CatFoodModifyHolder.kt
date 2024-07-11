@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal
 
+import common.CommonStatic
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.math.max
 
-class CatFoodModifyHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val isAdd: Boolean, private val targetMember: String) : ModalHolder(author, channelID, message) {
+class CatFoodModifyHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val isAdd: Boolean, private val targetMember: String) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import common.CommonStatic;
 import common.io.json.JsonDecoder;
 import common.io.json.JsonEncoder;
 import common.pack.Identifier;
@@ -12,7 +13,6 @@ import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -43,8 +43,8 @@ public class AliasHolder {
         JsonObject enemyAlias = new JsonObject();
         JsonObject stageAlias = new JsonObject();
 
-        for(int i = 0; i < 4; i++) {
-            Map<Form, ArrayList<String>> formMap = FALIAS.getMap(getLangCode(i));
+        for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+            Map<Form, ArrayList<String>> formMap = FALIAS.getMap(locale);
 
             if(formMap != null && !formMap.isEmpty()) {
                 JsonArray segment = new JsonArray();
@@ -67,10 +67,10 @@ public class AliasHolder {
                     segment.add(container);
                 }
 
-                formAlias.add(getLangCode(i), segment);
+                formAlias.add(locale.name(), segment);
             }
 
-            Map<Enemy, ArrayList<String>> enemyMap = EALIAS.getMap(getLangCode(i));
+            Map<Enemy, ArrayList<String>> enemyMap = EALIAS.getMap(locale);
 
             if(enemyMap != null && !enemyMap.isEmpty()) {
                 JsonArray segment = new JsonArray();
@@ -92,10 +92,10 @@ public class AliasHolder {
                     segment.add(container);
                 }
 
-                enemyAlias.add(getLangCode(i), segment);
+                enemyAlias.add(locale.name(), segment);
             }
 
-            Map<Stage, ArrayList<String>> stageMap = SALIAS.getMap(getLangCode(i));
+            Map<Stage, ArrayList<String>> stageMap = SALIAS.getMap(locale);
 
             if(stageMap != null && !stageMap.isEmpty()) {
                 JsonArray segment = new JsonArray();
@@ -117,7 +117,7 @@ public class AliasHolder {
                     segment.add(container);
                 }
 
-                stageAlias.add(getLangCode(i), segment);
+                stageAlias.add(locale.name(), segment);
             }
         }
 
@@ -132,35 +132,41 @@ public class AliasHolder {
         if(obj.has("form")) {
             JsonObject formAlias = obj.getAsJsonObject("form");
 
-            for(int i = 0; i < 4; i++) {
-                if(formAlias.has(getLangCode(i))) {
-                    JsonArray segment = formAlias.getAsJsonArray(getLangCode(i));
+            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                JsonArray segment;
 
-                    for(int j = 0; j < segment.size(); j++) {
-                        JsonObject container = segment.get(j).getAsJsonObject();
+                if (formAlias.has(locale.name())) {
+                    segment = formAlias.getAsJsonArray(locale.name());
+                } else if (formAlias.has(locale.code)) {
+                    segment = formAlias.getAsJsonArray(locale.code);
+                } else {
+                    continue;
+                }
 
-                        if(container.has("key") && container.has("val") && container.has("fid")) {
-                            Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
+                for(int j = 0; j < segment.size(); j++) {
+                    JsonObject container = segment.get(j).getAsJsonObject();
 
-                            if(id.cls != Unit.class)
-                                continue;
+                    if(container.has("key") && container.has("val") && container.has("fid")) {
+                        Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
 
-                            Unit u = Identifier.get((Identifier<Unit>) id);
+                        if(id.cls != Unit.class)
+                            continue;
 
-                            if(u == null)
-                                continue;
+                        Unit u = Identifier.get((Identifier<Unit>) id);
 
-                            int fid = container.get("fid").getAsInt();
+                        if(u == null)
+                            continue;
 
-                            if(fid < 0 || fid >= u.forms.length)
-                                continue;
+                        int fid = container.get("fid").getAsInt();
 
-                            Form f = u.forms[fid];
+                        if(fid < 0 || fid >= u.forms.length)
+                            continue;
 
-                            ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+                        Form f = u.forms[fid];
 
-                            FALIAS.put(getLangCode(i), f, arr);
-                        }
+                        ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+
+                        FALIAS.put(locale, f, arr);
                     }
                 }
             }
@@ -169,62 +175,74 @@ public class AliasHolder {
         if(obj.has("enemy")) {
             JsonObject enemyAlias = obj.getAsJsonObject("enemy");
 
-            for(int i = 0; i < 4; i++) {
-                if(enemyAlias.has(getLangCode(i))) {
-                    JsonArray segment = enemyAlias.getAsJsonArray(getLangCode(i));
+            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                JsonArray segment;
 
-                    for(int j = 0; j < segment.size(); j++) {
-                        JsonObject container = segment.get(j).getAsJsonObject();
+                if (enemyAlias.has(locale.name())) {
+                    segment = enemyAlias.getAsJsonArray(locale.name());
+                } else if (enemyAlias.has(locale.code)) {
+                    segment = enemyAlias.getAsJsonArray(locale.code);
+                } else {
+                    continue;
+                }
 
-                        if(container.has("key") && container.has("val")) {
-                            Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
+                for(int j = 0; j < segment.size(); j++) {
+                    JsonObject container = segment.get(j).getAsJsonObject();
 
-                            if(!AbEnemy.class.isAssignableFrom(id.cls))
-                                continue;
+                    if(container.has("key") && container.has("val")) {
+                        Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
 
-                            AbEnemy ae = Identifier.get((Identifier<AbEnemy>) id);
+                        if(!AbEnemy.class.isAssignableFrom(id.cls))
+                            continue;
 
-                            if(!(ae instanceof Enemy))
-                                continue;
+                        AbEnemy ae = Identifier.get((Identifier<AbEnemy>) id);
 
-                            ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+                        if(!(ae instanceof Enemy))
+                            continue;
 
-                            EALIAS.put(getLangCode(i), (Enemy) ae, arr);
-                        }
+                        ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+
+                        EALIAS.put(locale, (Enemy) ae, arr);
                     }
                 }
             }
         }
 
         if(obj.has("stage")) {
-            JsonObject enemyAlias = obj.getAsJsonObject("stage");
+            JsonObject stageAlias = obj.getAsJsonObject("stage");
 
-            for(int i = 0; i < 4; i++) {
-                if(enemyAlias.has(getLangCode(i))) {
-                    JsonArray segment = enemyAlias.getAsJsonArray(getLangCode(i));
+            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                JsonArray segment;
 
-                    for(int j = 0; j < segment.size(); j++) {
-                        JsonObject container = segment.get(j).getAsJsonObject();
+                if (stageAlias.has(locale.name())) {
+                    segment = stageAlias.getAsJsonArray(locale.name());
+                } else if (stageAlias.has(locale.code)) {
+                    segment = stageAlias.getAsJsonArray(locale.code);
+                } else {
+                    continue;
+                }
 
-                        if(container.has("key") && container.has("val")) {
-                            Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
+                for(int j = 0; j < segment.size(); j++) {
+                    JsonObject container = segment.get(j).getAsJsonObject();
 
-                            if(id.cls != Stage.class)
-                                continue;
+                    if(container.has("key") && container.has("val")) {
+                        Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
 
-                            Stage s = Identifier.get((Identifier<Stage>) id);
+                        if(id.cls != Stage.class)
+                            continue;
 
-                            ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+                        Stage s = Identifier.get((Identifier<Stage>) id);
 
-                            SALIAS.put(getLangCode(i), s, arr);
-                        }
+                        ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+
+                        SALIAS.put(locale, s, arr);
                     }
                 }
             }
         }
     }
 
-    public static ArrayList<String> getAlias(TYPE type, int lang, Object data) {
+    public static ArrayList<String> getAlias(TYPE type, CommonStatic.Lang.Locale lang, Object data) {
         ArrayList<String> aliases;
 
         switch (type) {
@@ -233,7 +251,7 @@ public class AliasHolder {
                     return null;
                 }
 
-                Map<Form, ArrayList<String>> fMap = FALIAS.getMap(getLangCode(lang));
+                Map<Form, ArrayList<String>> fMap = FALIAS.getMap(lang);
 
                 aliases = fMap.get((Form) data);
                 break;
@@ -242,7 +260,7 @@ public class AliasHolder {
                     return null;
                 }
 
-                Map<Enemy, ArrayList<String>> eMap = EALIAS.getMap(getLangCode(lang));
+                Map<Enemy, ArrayList<String>> eMap = EALIAS.getMap(lang);
 
                 aliases = eMap.get((Enemy) data);
 
@@ -252,7 +270,7 @@ public class AliasHolder {
                     return null;
                 }
 
-                Map<Stage, ArrayList<String>> sMap = SALIAS.getMap(getLangCode(lang));
+                Map<Stage, ArrayList<String>> sMap = SALIAS.getMap(lang);
 
                 aliases = sMap.get((Stage) data);
 
@@ -262,14 +280,5 @@ public class AliasHolder {
         }
 
         return aliases;
-    }
-
-    public static String getLangCode(int lang) {
-        return switch (lang) {
-            case LangID.ZH -> "zh";
-            case LangID.KR -> "kr";
-            case LangID.JP -> "jp";
-            default -> "en";
-        };
     }
 }

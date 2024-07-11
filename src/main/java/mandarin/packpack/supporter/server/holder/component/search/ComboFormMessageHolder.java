@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
@@ -28,7 +29,7 @@ public class ComboFormMessageHolder extends SearchHolder {
     private final String cName;
     private final String fName;
 
-    public ComboFormMessageHolder(ArrayList<Form> form, @Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, int lang, String cName, String fName) {
+    public ComboFormMessageHolder(ArrayList<Form> form, @Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, CommonStatic.Lang.Locale lang, String cName, String fName) {
         super(author, msg, channelID, lang);
 
         this.form = form;
@@ -36,7 +37,7 @@ public class ComboFormMessageHolder extends SearchHolder {
         this.cName = cName;
         this.fName = fName;
 
-        registerAutoFinish(this, msg, lang, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override
@@ -143,7 +144,7 @@ public class ComboFormMessageHolder extends SearchHolder {
         return form.size();
     }
 
-    private String getSearchKeywords(String fName, String cName, int lang) {
+    private String getSearchKeywords(String fName, String cName, CommonStatic.Lang.Locale lang) {
         StringBuilder builder = new StringBuilder();
 
         if(cName != null) {

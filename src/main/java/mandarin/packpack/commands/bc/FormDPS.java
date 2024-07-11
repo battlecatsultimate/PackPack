@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
 import common.util.unit.Level;
@@ -31,7 +32,7 @@ public class FormDPS extends TimedConstraintCommand {
 
     private final ConfigHolder config;
 
-    public FormDPS(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, ConfigHolder config, long time) {
+    public FormDPS(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, ConfigHolder config, long time) {
         super(role, lang, idHolder, time, StaticStore.COMMAND_FORMDPS_ID, false);
 
         if(config == null)

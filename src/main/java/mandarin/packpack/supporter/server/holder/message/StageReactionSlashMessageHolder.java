@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message;
 
+import common.CommonStatic;
 import common.pack.Identifier;
 import common.pack.UserProfile;
 import common.util.pack.Background;
@@ -24,14 +25,12 @@ import java.util.ArrayList;
 
 public class StageReactionSlashMessageHolder extends MessageHolder {
     private final IDHolder holder;
-    private final int lang;
     private final Stage st;
 
-    public StageReactionSlashMessageHolder(GenericCommandInteractionEvent event, Message message, Stage st, IDHolder holder, int lang) {
-        super(event, message);
+    public StageReactionSlashMessageHolder(GenericCommandInteractionEvent event, Message message, Stage st, IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(event, message, lang);
 
         this.holder = holder;
-        this.lang = lang;
         this.st = st;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {

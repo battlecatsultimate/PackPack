@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.Product
@@ -22,7 +23,7 @@ class RequirementSelectHolder : ComponentHolder {
     private val role: CardData.Role
     private val reward: Consumer<GenericComponentInteractionCreateEvent>
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, channelID, message) {
+    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.inventory = inventory
         this.role = role
@@ -30,7 +31,7 @@ class RequirementSelectHolder : ComponentHolder {
         reward = Consumer {  }
     }
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message) {
+    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.inventory = inventory
         this.reward = reward

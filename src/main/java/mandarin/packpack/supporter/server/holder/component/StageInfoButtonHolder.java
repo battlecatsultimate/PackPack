@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import common.pack.Identifier;
 import common.pack.UserProfile;
 import common.util.pack.Background;
@@ -22,8 +23,8 @@ public class StageInfoButtonHolder extends ComponentHolder {
     private final Stage st;
     private final boolean compact;
 
-    public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID, boolean compact) {
-        super(author, channelID, msg);
+    public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID, boolean compact, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.st = st;
         this.compact = compact;

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message;
 
+import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
@@ -17,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class FileAnalyzerHolder extends MessageHolder {
     private static final int INVALID = -3, FAILED = -2, READY = -1, SUCCESS = 1;
 
-    protected final int lang;
     protected final Message msg;
     protected final File container;
 
@@ -26,12 +26,11 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
     private final List<String> requiredFiles;
     private final List<Integer> fileDownloaded = new ArrayList<>();
 
-    public FileAnalyzerHolder(@Nonnull Message msg, @Nonnull Message author, @Nonnull String channelID, File container, List<String> requiredFiles, int lang) {
-        super(author, channelID, msg);
+    public FileAnalyzerHolder(@Nonnull Message msg, @Nonnull Message author, @Nonnull String channelID, File container, List<String> requiredFiles, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.msg = msg;
         this.container = container;
-        this.lang = lang;
 
         this.requiredFiles = requiredFiles;
 
@@ -42,7 +41,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
         if(!checkAttachments(author, false)) {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, msg, lang, "stat_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, msg, "stat_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 

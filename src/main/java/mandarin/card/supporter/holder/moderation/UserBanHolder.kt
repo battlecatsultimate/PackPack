@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -15,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class UserBanHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class UserBanHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {

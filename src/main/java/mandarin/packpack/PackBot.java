@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -286,37 +287,41 @@ public class PackBot {
                 continue;
             }
 
-            boolean[] done = { false, false, false, false };
+            boolean[] done = new boolean[EventFactor.supportedVersions.length];
             boolean[] gachaChange = new boolean[4];
             int[] dataFound = new int[4];
 
-            for(int i = 0; i < r.length; i++) {
+            for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
                 boolean eventDone = false;
+                int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
 
-                for(int j = 0; j < r[i].length; j++) {
+                if (index == -1)
+                    continue;
+
+                for(int j = 0; j < r[index].length; j++) {
                     if(j == EventFactor.GATYA) {
-                        gachaChange[i] = r[i][j];
+                        gachaChange[index] = r[index][j];
                     }
 
-                    if(r[i][j] && holder.eventMap.containsKey(i) && holder.eventMap.get(i) != null) {
+                    if(r[index][j] && holder.eventMap.containsKey(locale) && holder.eventMap.get(locale) != null) {
                         try {
-                            GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(i));
+                            GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(locale));
 
                             if(ch instanceof GuildMessageChannel && ((GuildMessageChannel) ch).canTalk()) {
                                 if(j == EventFactor.SALE) {
-                                    Map<EventFactor.SCHEDULE, List<String>> result = StaticStore.event.printStageEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
+                                    Map<EventFactor.SCHEDULE, List<String>> result = StaticStore.event.printStageEvent(locale, holder.config.lang, false, holder.eventRaw, false, 0);
 
                                     if(result.isEmpty())
                                         continue;
 
-                                    boolean wasDone = done[i];
+                                    boolean wasDone = done[index];
 
-                                    done[i] = true;
+                                    done[index] = true;
 
                                     if(!eventDone) {
                                         eventDone = true;
 
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.config.lang)).queue();
+                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc" + locale.code, holder.config.lang)).queue();
                                     }
 
                                     boolean started = false;
@@ -382,7 +387,7 @@ public class PackBot {
                                                     builder.append("\n");
 
                                                 data.removeFirst();
-                                                dataFound[i] += 1;
+                                                dataFound[index] += 1;
                                             }
 
                                             builder.append("```");
@@ -396,21 +401,21 @@ public class PackBot {
                                     List<String> result;
 
                                     if(j == EventFactor.GATYA)
-                                        result = StaticStore.event.printGachaEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
+                                        result = StaticStore.event.printGachaEvent(locale, holder.config.lang, false, holder.eventRaw, false, 0);
                                     else
-                                        result = StaticStore.event.printItemEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
+                                        result = StaticStore.event.printItemEvent(locale, holder.config.lang, false, holder.eventRaw, false, 0);
 
                                     if(result.isEmpty())
                                         continue;
 
-                                    boolean wasDone = done[i];
+                                    boolean wasDone = done[index];
 
-                                    done[i] = true;
+                                    done[index] = true;
 
                                     if(!eventDone) {
                                         eventDone = true;
 
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.config.lang)).queue();
+                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc" + locale.code, holder.config.lang)).queue();
                                     }
 
                                     boolean started = false;
@@ -449,7 +454,7 @@ public class PackBot {
                                             builder.append(line).append("\n");
 
                                             result.removeFirst();
-                                            dataFound[i] += 1;
+                                            dataFound[index] += 1;
                                         }
 
                                         if(result.isEmpty() && j == EventFactor.GATYA) {
@@ -501,14 +506,16 @@ public class PackBot {
 
             List<String> sentChannels = new ArrayList<>();
 
-            for(int i = 0; i < done.length; i++) {
-                if(done[i] && holder.eventMap.containsKey(i)) {
-                    GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(i));
+            for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+                int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
+
+                if(done[index] && holder.eventMap.containsKey(locale)) {
+                    GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(locale));
 
                     if(ch instanceof GuildMessageChannel) {
-                        if (!sentChannels.contains(holder.eventMap.get(i))) {
+                        if (!sentChannels.contains(holder.eventMap.get(locale))) {
                             sent = true;
-                            sentChannels.add(holder.eventMap.get(i));
+                            sentChannels.add(holder.eventMap.get(locale));
 
                             ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
                         }
@@ -516,9 +523,9 @@ public class PackBot {
                         if(!holder.eventMessage.isEmpty()) {
                             Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
 
-                            if(holder.eventMessage.containsKey(getLocale(i))) {
-                                if(!p.matcher(holder.eventMessage.get(getLocale(i))).find() || (gachaChange[i] || dataFound[i] >= 5)) {
-                                    ((GuildMessageChannel) ch).sendMessage(holder.eventMessage.get(getLocale(i))).queue();
+                            if(holder.eventMessage.containsKey(locale)) {
+                                if(!p.matcher(holder.eventMessage.get(locale)).find() || (gachaChange[index] || dataFound[index] >= 5)) {
+                                    ((GuildMessageChannel) ch).sendMessage(holder.eventMessage.get(locale)).queue();
                                 }
                             }
                         }
@@ -535,10 +542,15 @@ public class PackBot {
     private static String parseResult(boolean[][] result) {
         StringBuilder r = new StringBuilder();
 
-        for(int i = 0; i < result.length; i++) {
-            for(int j = 0; j < result[i].length; j++) {
-                if(result[i][j]) {
-                    r.append(getLocale(i)).append(" : ").append(getFile(j)).append("\n");
+        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+            int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
+
+            if (index == -1)
+                continue;
+
+            for(int j = 0; j < result[index].length; j++) {
+                if(result[index][j]) {
+                    r.append(locale.code).append(" : ").append(getFile(j)).append("\n");
                 }
             }
         }
@@ -550,15 +562,6 @@ public class PackBot {
         } else {
             return "";
         }
-    }
-
-    private static String getLocale(int loc) {
-        return switch (loc) {
-            case EventFactor.EN -> "en";
-            case EventFactor.ZH -> "tw";
-            case EventFactor.KR -> "kr";
-            default -> "jp";
-        };
     }
 
     private static String getFile(int f) {

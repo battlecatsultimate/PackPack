@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
@@ -23,7 +24,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
     private final int[] magnification;
     private final TreasureHolder treasure;
 
-    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nonnull Message author, @Nonnull Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, TreasureHolder treasure, int lang) {
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nonnull Message author, @Nonnull Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.enemy = enemy;
@@ -34,7 +35,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
         this.isCompact = isCompact;
         this.treasure = treasure;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

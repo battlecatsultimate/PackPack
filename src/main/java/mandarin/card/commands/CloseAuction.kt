@@ -1,14 +1,14 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 
-class CloseAuction : Command(LangID.EN, true) {
+class CloseAuction : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
         val ch = loader.channel
@@ -24,8 +24,8 @@ class CloseAuction : Command(LangID.EN, true) {
             return
         }
 
-        replyToMessageSafely(loader.channel, "Are you sure you want to close this auction? This process cannot be undone\n\n**__This command performs transaction. If you want to close the auction AND NOT perform the transaction, please call `${CardBot.globalPrefix}cancelauction`__**", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, LangID.EN) {
+        replyToMessageSafely(loader.channel, "Are you sure you want to close this auction? This process cannot be undone\n\n**__This command performs transaction. If you want to close the auction AND NOT perform the transaction, please call `${CardBot.globalPrefix}cancelauction`__**", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, CommonStatic.Lang.Locale.EN) {
                 val warnMessage = auctionSession.closeSession(m.idLong, false)
 
                 if (warnMessage.isNotEmpty()) {

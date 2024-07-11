@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.calculation;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public class Operator extends Element {
         this.type = type;
     }
 
-    public Number calculate(Number n0, Number n1, int lang) {
+    public Number calculate(Number n0, Number n1, CommonStatic.Lang.Locale lang) {
         BigDecimal d0;
         BigDecimal d1;
 

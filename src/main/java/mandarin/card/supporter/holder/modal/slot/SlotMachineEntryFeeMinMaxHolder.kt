@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.SlotMachine
@@ -13,7 +14,7 @@ import kotlin.text.replace
 import kotlin.text.toDouble
 import kotlin.text.toLong
 
-class SlotMachineEntryFeeMinMaxHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val isMinimum: Boolean) : ModalHolder(author, channelID, message) {
+class SlotMachineEntryFeeMinMaxHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val isMinimum: Boolean) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

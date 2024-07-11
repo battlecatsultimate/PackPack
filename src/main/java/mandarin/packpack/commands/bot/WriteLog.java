@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class WriteLog extends ConstraintCommand {
-    public WriteLog(ROLE role, int lang, @Nullable IDHolder id) {
+    public WriteLog(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, false);
     }
 

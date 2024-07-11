@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -16,17 +17,14 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 public class EnemyButtonHolder extends ComponentHolder {
-    private final int lang;
     private final Enemy e;
 
     private final int[] magnification;
     private final boolean compact;
     private final TreasureHolder t;
 
-    public EnemyButtonHolder(Enemy e, @Nonnull Message author, @Nonnull Message msg, TreasureHolder t, int[] magnification, boolean compact, int lang, @Nonnull String channelID) {
-        super(author, channelID, msg);
-
-        this.lang = lang;
+    public EnemyButtonHolder(Enemy e, @Nonnull Message author, @Nonnull Message msg, TreasureHolder t, int[] magnification, boolean compact, CommonStatic.Lang.Locale lang, @Nonnull String channelID) {
+        super(author, channelID, msg, lang);
         this.e = e;
 
         this.magnification = magnification;

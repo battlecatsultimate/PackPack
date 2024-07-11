@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.slot
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.CardChancePair
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.text.toDouble
 
-class SlotMachineCardChanceHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val cardChancePair: CardChancePair) : ModalHolder(author, channelID, message) {
+class SlotMachineCardChanceHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val cardChancePair: CardChancePair) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

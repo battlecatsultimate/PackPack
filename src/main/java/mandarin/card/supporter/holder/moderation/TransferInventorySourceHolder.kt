@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
-class TransferInventorySourceHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class TransferInventorySourceHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var transferMode = CardData.TransferMode.INJECT
     private var reset = false
 

@@ -33,7 +33,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
             "-en", "-jp", "-tw", "-kr", "-r", "-range"
     );
 
-    public StageStatAnalyzer(ROLE role, int lang, IDHolder id) {
+    public StageStatAnalyzer(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

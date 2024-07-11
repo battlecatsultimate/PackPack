@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.auction
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.AuctionSession
@@ -23,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class AuctionCreateHolder(author: Message, channelID: String, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, channelID, message) {
+class AuctionCreateHolder(author: Message, channelID: String, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var selectedCard: Card? = null
     private var amount = -1
     private var endTime = -1L

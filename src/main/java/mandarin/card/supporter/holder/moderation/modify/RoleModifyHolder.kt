@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation.modify
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
@@ -15,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class RoleModifyHolder(author: Message, channelID: String, message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message) {
+class RoleModifyHolder(author: Message, channelID: String, message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val roles = ArrayList<CardData.Role>(
         if (isAdd) {
             CardData.Role.entries.filter { r -> r !in inventory.vanityRoles }

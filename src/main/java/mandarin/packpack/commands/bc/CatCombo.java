@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CatCombo extends TimedConstraintCommand {
-    public CatCombo(ConstraintCommand.ROLE role, int lang, IDHolder id) {
+    public CatCombo(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, TimeUnit.SECONDS.toMillis(5), StaticStore.COMMAND_COMBO_ID, false);
     }
 
@@ -198,7 +199,7 @@ public class CatCombo extends TimedConstraintCommand {
         }
     }
 
-    private String getSearchKeywords(String fName, String cName, int lang) {
+    private String getSearchKeywords(String fName, String cName, CommonStatic.Lang.Locale lang) {
         StringBuilder builder = new StringBuilder();
 
         if(cName != null) {

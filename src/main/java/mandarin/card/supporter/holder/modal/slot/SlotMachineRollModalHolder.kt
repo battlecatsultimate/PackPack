@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal.slot
 
+import common.CommonStatic
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.card.supporter.slot.SlotMachine
@@ -13,7 +14,7 @@ import kotlin.text.isEmpty
 import kotlin.text.replace
 import kotlin.text.toDouble
 
-class SlotMachineRollModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val inventory: Inventory, private val onSelected: (ModalInteractionEvent, Long) -> Unit) : ModalHolder(author, channelID, message) {
+class SlotMachineRollModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val inventory: Inventory, private val onSelected: (ModalInteractionEvent, Long) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class EventGrabberHolder extends ComponentHolder {
-    public EventGrabberHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message) {
-        super(author, channelID, message);
+    public EventGrabberHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull CommonStatic.Lang.Locale lang) {
+        super(author, channelID, message, lang);
     }
 
     @Override
@@ -38,22 +39,22 @@ public class EventGrabberHolder extends ComponentHolder {
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "bcen" -> {
-                EventFileGrabber.newWay.put(EventFactor.EN, !EventFileGrabber.newWay.get(EventFactor.EN));
+                EventFileGrabber.newWay.put(CommonStatic.Lang.Locale.EN, !EventFileGrabber.newWay.get(CommonStatic.Lang.Locale.EN));
 
                 performResult(event);
             }
             case "bctw" -> {
-                EventFileGrabber.newWay.put(EventFactor.ZH, !EventFileGrabber.newWay.get(EventFactor.ZH));
+                EventFileGrabber.newWay.put(CommonStatic.Lang.Locale.ZH, !EventFileGrabber.newWay.get(CommonStatic.Lang.Locale.ZH));
 
                 performResult(event);
             }
             case "bckr" -> {
-                EventFileGrabber.newWay.put(EventFactor.KR, !EventFileGrabber.newWay.get(EventFactor.KR));
+                EventFileGrabber.newWay.put(CommonStatic.Lang.Locale.KR, !EventFileGrabber.newWay.get(CommonStatic.Lang.Locale.KR));
 
                 performResult(event);
             }
             case "bcjp" -> {
-                EventFileGrabber.newWay.put(EventFactor.JP, !EventFileGrabber.newWay.get(EventFactor.JP));
+                EventFileGrabber.newWay.put(CommonStatic.Lang.Locale.JP, !EventFileGrabber.newWay.get(CommonStatic.Lang.Locale.JP));
 
                 performResult(event);
             }
@@ -82,14 +83,14 @@ public class EventGrabberHolder extends ComponentHolder {
     private List<LayoutComponent> registerComponent() {
         List<LayoutComponent> layouts = new ArrayList<>();
 
-        for(int i = 0; i < 4; i ++) {
-            boolean newWay = EventFileGrabber.newWay.get(i);
+        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+            boolean newWay = EventFileGrabber.newWay.get(locale);
 
-            String name = switch (i) {
-                case EventFactor.EN -> "BCEN : ";
-                case EventFactor.ZH -> "BCTW : ";
-                case EventFactor.JP -> "BCJP : ";
-                case EventFactor.KR -> "BCKR : ";
+            String name = switch (locale) {
+                case EN -> "BCEN : ";
+                case ZH -> "BCTW : ";
+                case JP -> "BCJP : ";
+                case KR -> "BCKR : ";
                 default -> "";
             };
 
@@ -108,14 +109,14 @@ public class EventGrabberHolder extends ComponentHolder {
     private String parseMessage() {
         StringBuilder builder = new StringBuilder();
 
-        for(int i = 0; i < 4; i++) {
-            boolean newWay = EventFileGrabber.newWay.get(i);
+        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+            boolean newWay = EventFileGrabber.newWay.get(locale);
 
-            String name = switch (i) {
-                case EventFactor.EN -> "BCEN : ";
-                case EventFactor.ZH -> "BCTW : ";
-                case EventFactor.JP -> "BCJP : ";
-                case EventFactor.KR -> "BCKR : ";
+            String name = switch (locale) {
+                case EN -> "BCEN : ";
+                case ZH -> "BCTW : ";
+                case JP -> "BCJP : ";
+                case KR -> "BCKR : ";
                 default -> "";
             };
 
@@ -123,7 +124,7 @@ public class EventGrabberHolder extends ComponentHolder {
 
             builder.append(name).append(isNew);
 
-            if (i < 3) {
+            if (locale != CommonStatic.Lang.Locale.JP) {
                 builder.append("\n");
             }
         }

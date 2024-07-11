@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.calculation;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -116,7 +117,7 @@ public class Equation {
         }
     }
 
-    public static BigDecimal calculate(String equation, String parent, boolean formula, int lang) {
+    public static BigDecimal calculate(String equation, String parent, boolean formula, CommonStatic.Lang.Locale lang) {
         if(equation.equals(parent)) {
             error.add(String.format(LangID.getStringByID("calc_notnum", lang), equation));
 
@@ -251,7 +252,7 @@ public class Equation {
         return builder.toString();
     }
 
-    private static List<Element> parse(String equation, boolean formula, int lang) {
+    private static List<Element> parse(String equation, boolean formula, CommonStatic.Lang.Locale lang) {
         if(openedBracket(equation)) {
             error.add(LangID.getStringByID("calc_opened", lang));
 
@@ -1021,15 +1022,15 @@ public class Equation {
         return Double.NaN;
     }
 
-    private static BigDecimal nPr(BigInteger n, BigInteger r, int lang) {
+    private static BigDecimal nPr(BigInteger n, BigInteger r, CommonStatic.Lang.Locale lang) {
         return factorial(n, lang).divide(factorial(n.subtract(r), lang), Equation.context);
     }
 
-    private static BigDecimal nCr(BigInteger n, BigInteger r, int lang) {
+    private static BigDecimal nCr(BigInteger n, BigInteger r, CommonStatic.Lang.Locale lang) {
         return factorial(n, lang).divide(factorial(r, lang).multiply(factorial(n.subtract(r), lang)), Equation.context);
     }
 
-    private static BigDecimal factorial(BigInteger n, int lang) {
+    private static BigDecimal factorial(BigInteger n, CommonStatic.Lang.Locale lang) {
         if(n.compareTo(BigInteger.ZERO) < 0)
             return BigDecimal.ONE;
 

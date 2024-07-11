@@ -3,10 +3,8 @@ package mandarin.packpack.supporter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import common.CommonStatic;
 import common.io.WebFileIO;
 import common.io.assets.UpdateCheck;
 import common.io.json.JsonDecoder;
@@ -16,6 +14,7 @@ import common.util.lang.MultiLangCont;
 import common.util.pack.Background;
 import mandarin.packpack.PackBot;
 import mandarin.packpack.supporter.bc.DataToString;
+import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
@@ -99,7 +98,7 @@ public class StaticStore {
     public static Map<String, ConfigHolder> config = new HashMap<>();
     public static Map<String, TreasureHolder> treasure = new HashMap<>();
 
-    public static final Map<Integer, String> announcements = new HashMap<>();
+    public static final Map<CommonStatic.Lang.Locale, String> announcements = new HashMap<>();
 
     public static Map<String, String> suggestBanned = new HashMap<>();
 
@@ -144,43 +143,17 @@ public class StaticStore {
     public static final Map<String, HolderHub> holders = new HashMap<>();
     private static final List<String> queuedFileNames = new ArrayList<>();
 
-    public static final int[] langIndex = {
-            LangID.EN,
-            LangID.ZH,
-            LangID.KR,
-            LangID.JP,
-            LangID.FR,
-            LangID.IT,
-            LangID.ES,
-            LangID.DE,
-            LangID.TH,
-            LangID.RU
-    };
-
-    public static final String[] langCode = {
-            "en",
-            "zh",
-            "kr",
-            "jp",
-            "fr",
-            "it",
-            "es",
-            "de",
-            "th",
-            "ru"
-    };
-
     public static final String[] langUnicode = {
             "🇺🇸",
             "🇹🇼",
             "🇰🇷",
             "🇯🇵",
-            "🇫🇷",
-            "🇮🇹",
-            "🇪🇸",
+            "🇷🇺",
             "🇩🇪",
-            "🇹🇭",
-            "🇷🇺"
+            "🇫🇷",
+            "🇪🇸",
+            "🇮🇹",
+            "🇹🇭"
     };
 
     public static final int[] rainbow = {rgb(217, 65, 68), rgb(217, 128, 65), rgb(224, 213, 85)
@@ -245,6 +218,12 @@ public class StaticStore {
     public static List<String> cultist = new ArrayList<>();
 
     public static final Map<String, String> conflictedAnimation = new HashMap<>();
+
+    static {
+        if (CommonStatic.Lang.Locale.values().length != langUnicode.length) {
+            throw new IllegalStateException("E/StaticStore - Number of supported language and unicode size are desycned!");
+        }
+    }
 
     public static String rolesToString(List<Role> roles) {
         StringBuilder builder = new StringBuilder();
@@ -435,10 +414,10 @@ public class StaticStore {
         return arr;
     }
 
-    public static JsonArray mapToJsonIntegerList(Map<Integer, List<Integer>> map) {
+    public static JsonArray mapToJsonLocaleList(Map<CommonStatic.Lang.Locale, List<Integer>> map) {
         JsonArray arr = new JsonArray();
 
-        for(int key : map.keySet()) {
+        for(CommonStatic.Lang.Locale key : map.keySet()) {
             List<Integer> list = map.get(key);
 
             if(list == null || list.isEmpty())
@@ -446,7 +425,7 @@ public class StaticStore {
 
             JsonObject set = new JsonObject();
 
-            set.addProperty("key", key);
+            set.addProperty("key", key.name());
             set.add("val", listToJsonInteger(list));
 
             arr.add(set);
@@ -455,15 +434,15 @@ public class StaticStore {
         return arr;
     }
 
-    public static JsonArray mapToJsonIntegerBoolean(Map<Integer, Boolean> map) {
+    public static JsonArray mapToJsonLocaleBoolean(Map<CommonStatic.Lang.Locale, Boolean> map) {
         JsonArray arr = new JsonArray();
 
-        for(int key : map.keySet()) {
+        for(CommonStatic.Lang.Locale key : map.keySet()) {
             boolean b = map.get(key);
 
             JsonObject set = new JsonObject();
 
-            set.addProperty("key", key);
+            set.addProperty("key", key.name());
             set.addProperty("val", b);
 
             arr.add(set);
@@ -522,20 +501,6 @@ public class StaticStore {
         return map;
     }
 
-    public static Map<String, Integer> jsonToMapInt(JsonArray arr) {
-        Map<String, Integer> map = new HashMap<>();
-
-        for(int i = 0; i < arr.size(); i++) {
-            JsonObject obj = arr.get(i).getAsJsonObject();
-
-            if(obj.has("key") && obj.has("val")) {
-                map.put(obj.get("key").getAsString(), obj.get("val").getAsInt());
-            }
-        }
-
-        return map;
-    }
-
     public static Map<String, BoosterHolder> jsonToMapBoosterHolder(JsonArray arr) {
         Map<String, BoosterHolder> map = new HashMap<>();
 
@@ -584,17 +549,25 @@ public class StaticStore {
         return map;
     }
 
-    public static Map<Integer, List<Integer>> jsonToMapIntegerList(JsonArray arr) {
-        Map<Integer, List<Integer>> map = new HashMap<>();
+    public static Map<CommonStatic.Lang.Locale, List<Integer>> jsonToMapLocaleList(JsonArray arr) {
+        Map<CommonStatic.Lang.Locale, List<Integer>> map = new HashMap<>();
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject set = arr.get(i).getAsJsonObject();
 
             if(set.has("key") && set.has("val")) {
-                int key = set.get("key").getAsInt();
+                JsonElement k = set.get("key");
                 List<Integer> val = jsonToListInteger(set.get("val").getAsJsonArray());
 
-                map.put(key, val);
+                CommonStatic.Lang.Locale locale;
+
+                if (k instanceof JsonPrimitive primitive && primitive.isNumber()) {
+                    locale = EventFactor.supportedVersions[primitive.getAsInt()];
+                } else {
+                    locale = CommonStatic.Lang.Locale.valueOf(k.getAsString());
+                }
+
+                map.put(locale, val);
             }
         }
 
@@ -621,17 +594,25 @@ public class StaticStore {
         return result;
     }
 
-    public static Map<Integer, Boolean> jsonToMapIntegerBoolean(JsonArray arr) {
-        Map<Integer, Boolean> map = new HashMap<>();
+    public static Map<CommonStatic.Lang.Locale, Boolean> jsonToMapLocaleBoolean(JsonArray arr) {
+        Map<CommonStatic.Lang.Locale, Boolean> map = new HashMap<>();
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject set = arr.get(i).getAsJsonObject();
 
             if(set.has("key") && set.has("val")) {
-                int key = set.get("key").getAsInt();
+                JsonElement k = set.get("key");
                 boolean val = set.get("val").getAsBoolean();
 
-                map.put(key, val);
+                CommonStatic.Lang.Locale locale;
+
+                if (k instanceof JsonPrimitive primitive && primitive.isNumber()) {
+                    locale = EventFactor.supportedVersions[primitive.getAsInt()];
+                } else {
+                    locale = CommonStatic.Lang.Locale.valueOf(k.getAsString());
+                }
+
+                map.put(locale, val);
             }
         }
 
@@ -708,14 +689,14 @@ public class StaticStore {
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
         obj.add("needFixing", listToJsonString(needFixing));
-        obj.add("gachaCache", mapToJsonIntegerList(event.gachaCache));
-        obj.add("itemCache", mapToJsonIntegerList(event.itemCache));
-        obj.add("stageCache", mapToJsonIntegerList(event.stageCache));
+        obj.add("gachaCache", mapToJsonLocaleList(event.gachaCache));
+        obj.add("itemCache", mapToJsonLocaleList(event.itemCache));
+        obj.add("stageCache", mapToJsonLocaleList(event.stageCache));
         obj.add("scamLink", scamLink.jsonfy());
         obj.add("scamLinkHandlers", scamLinkHandlers.jsonfy());
         obj.add("optoutMembers", listToJsonString(optoutMembers));
         obj.add("cultist", listToJsonString(cultist));
-        obj.add("eventNewWay", mapToJsonIntegerBoolean(EventFileGrabber.newWay));
+        obj.add("eventNewWay", mapToJsonLocaleBoolean(EventFileGrabber.newWay));
         obj.add("backgroundStageLength", mapToJsonBackgroundInteger(backgroundStageLength));
 
         if (EventFileGrabber.accountCode != null && EventFileGrabber.password != null && EventFileGrabber.passwordRefreshToken != null) {
@@ -839,24 +820,6 @@ public class StaticStore {
                 treasure = jsonToMapTreasureHolder(obj.getAsJsonArray("treasure"));
             }
 
-            if(obj.has("locale")) {
-                Map<String, Integer> locales = jsonToMapInt(obj.get("locale").getAsJsonArray());
-
-                for(String key : locales.keySet()) {
-                    ConfigHolder c;
-
-                    if(config.containsKey(key)) {
-                        c = config.get(key);
-                    } else {
-                        c = new ConfigHolder();
-                    }
-
-                    c.lang = locales.get(key);
-
-                    config.put(key, c);
-                }
-            }
-
             if(obj.has("imgur")) {
                 imgur = new ImgurDataHolder(obj.getAsJsonObject("imgur"));
             }
@@ -906,15 +869,15 @@ public class StaticStore {
             }
 
             if(obj.has("gachaCache")) {
-                event.gachaCache = jsonToMapIntegerList(obj.getAsJsonArray("gachaCache"));
+                event.gachaCache = jsonToMapLocaleList(obj.getAsJsonArray("gachaCache"));
             }
 
             if(obj.has("itemCache")) {
-                event.itemCache = jsonToMapIntegerList(obj.getAsJsonArray("itemCache"));
+                event.itemCache = jsonToMapLocaleList(obj.getAsJsonArray("itemCache"));
             }
 
             if(obj.has("stageCache")) {
-                event.stageCache = jsonToMapIntegerList(obj.getAsJsonArray("stageCache"));
+                event.stageCache = jsonToMapLocaleList(obj.getAsJsonArray("stageCache"));
             }
 
             if(obj.has("scamLink")) {
@@ -934,7 +897,7 @@ public class StaticStore {
             }
 
             if(obj.has("eventNewWay")) {
-                EventFileGrabber.newWay = jsonToMapIntegerBoolean(obj.getAsJsonArray("eventNewWay"));
+                EventFileGrabber.newWay = jsonToMapLocaleBoolean(obj.getAsJsonArray("eventNewWay"));
             }
 
             if(obj.has("accountCode")) {
@@ -1167,12 +1130,10 @@ public class StaticStore {
         return null;
     }
 
-    public static String safeMultiLangGet(Object any, int lang) {
-        lang = Math.max(0, lang);
-
+    public static String safeMultiLangGet(Object any, CommonStatic.Lang.Locale lang) {
         String res = MultiLangCont.get(any, lang);
 
-        if(res != null && lang != LangID.JP) {
+        if(res != null && lang != CommonStatic.Lang.Locale.JP) {
             res = res.replaceAll("[’|‘]" , "'");
         }
 
@@ -1296,11 +1257,11 @@ public class StaticStore {
         return builder.toString();
     }
 
-    public static String getVersion(int lang) {
+    public static String getVersion(CommonStatic.Lang.Locale lang) {
         return switch (lang) {
-            case 0 -> englishVersion;
-            case 1 -> taiwaneseVersion;
-            case 2 -> koreanVersion;
+            case EN -> englishVersion;
+            case ZH -> taiwaneseVersion;
+            case KR -> koreanVersion;
             default -> japaneseVersion;
         };
     }
@@ -1375,7 +1336,7 @@ public class StaticStore {
 
                 PackBot.statusMessage.queue(msg -> {
                     if (msg.getJDA().getSelfUser().getId().equals(msg.getAuthor().getId())) {
-                        msg.editMessage(LangID.getStringByID("stat_info", LangID.EN)
+                        msg.editMessage(LangID.getStringByID("stat_info", CommonStatic.Lang.Locale.EN)
                                 .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
                                 .replace("_CCC_", String.valueOf(StaticStore.executed))
                                 .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.bc;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
@@ -14,8 +15,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class TasteApk {
-    public static final List<String> VECTOR = new ArrayList<>();
-    public static final List<String> KEY = new ArrayList<>();
+    public static final Map<CommonStatic.Lang.Locale, String> VECTOR = new HashMap<>();
+    public static final Map<CommonStatic.Lang.Locale, String> KEY = new HashMap<>();
     public static final byte[] LIST = getList();
 
     public static boolean isValidApk(File apk) throws Exception {
@@ -45,7 +46,7 @@ public class TasteApk {
         return hasAsset && hasPack && hasList;
     }
 
-    public static String tasteApk(File apk, MessageChannel ch, int loc) throws Exception {
+    public static String tasteApk(File apk, MessageChannel ch, CommonStatic.Lang.Locale loc) throws Exception {
         File workspace = new File(apk.getParent(), "workspace");
 
         if(!workspace.exists() && !workspace.mkdirs()) {
@@ -185,7 +186,7 @@ public class TasteApk {
         return assets;
     }
 
-    private static boolean tasteAsset(File workspace, String asset, int loc, StringBuilder builder) throws Exception {
+    private static boolean tasteAsset(File workspace, String asset, CommonStatic.Lang.Locale loc, StringBuilder builder) throws Exception {
         File destination = new File(workspace, asset);
 
         if(!destination.exists() && !destination.mkdirs()) {
@@ -326,7 +327,7 @@ public class TasteApk {
         return cipher;
     }
 
-    private static Cipher getPackCipher(int loc) throws Exception {
+    private static Cipher getPackCipher(CommonStatic.Lang.Locale loc) throws Exception {
         SecretKeySpec spec = new SecretKeySpec(stringToByte(KEY.get(loc)), "AES");
         IvParameterSpec iv = new IvParameterSpec(stringToByte(VECTOR.get(loc)));
 

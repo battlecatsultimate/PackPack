@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -19,7 +20,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         WEEKLY
     }
 
-    private final int locale;
+    private final CommonStatic.Lang.Locale locale;
 
     public final ArrayList<EventSection> sections = new ArrayList<>();
     public final EventDateSet date;
@@ -30,7 +31,7 @@ public class StageSchedule extends EventFactor implements Schedule {
     public final ArrayList<StageMap> stages = new ArrayList<>();
     public final ArrayList<String> unknownStages = new ArrayList<>();
 
-    public StageSchedule(String line, int locale) {
+    public StageSchedule(String line, CommonStatic.Lang.Locale locale) {
         this.locale = locale;
 
         int[] data = parseInts(line);
@@ -123,7 +124,7 @@ public class StageSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String dataToString(int lang) {
+    public String dataToString(CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder("```");
 
         result.append(date.dateStart.year)
@@ -300,23 +301,23 @@ public class StageSchedule extends EventFactor implements Schedule {
         return result.toString();
     }
 
-    public String beautifyWithCustomName(String name, int lang) {
+    public String beautifyWithCustomName(String name, CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder();
 
         result.append("\u001B[0;31m[");
 
-        if(date.dateStart.year != currentYear || lang == ZH) {
+        if(date.dateStart.year != currentYear || lang == CommonStatic.Lang.Locale.ZH) {
             result.append(date.dateStart.year)
                     .append(LangID.getStringByID("year", lang));
 
-            if(lang != LangID.ZH) {
+            if(lang != CommonStatic.Lang.Locale.ZH) {
                 result.append(" ");
             }
         }
 
         result.append(getMonth(date.dateStart.month, lang));
 
-        if(lang != LangID.ZH) {
+        if(lang != CommonStatic.Lang.Locale.ZH) {
             result.append(" ");
         }
 
@@ -328,19 +329,19 @@ public class StageSchedule extends EventFactor implements Schedule {
             result.append("] ");
         } else {
 
-            if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == ZH)) {
+            if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                 result.append(date.dateEnd.year)
                         .append(LangID.getStringByID("year", lang));
 
-                if(lang != LangID.ZH) {
+                if(lang != CommonStatic.Lang.Locale.ZH) {
                     result.append(" ");
                 }
             }
 
-            if(date.dateStart.month != date.dateEnd.month || lang == ZH) {
+            if(date.dateStart.month != date.dateEnd.month || lang == CommonStatic.Lang.Locale.ZH) {
                 result.append(getMonth(date.dateEnd.month, lang));
 
-                if(lang != LangID.ZH) {
+                if(lang != CommonStatic.Lang.Locale.ZH) {
                     result.append(" ");
                 }
             }
@@ -356,7 +357,7 @@ public class StageSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String beautify(int lang) {
+    public String beautify(CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder();
 
         result.append("\u001B[0;31m[");
@@ -365,14 +366,14 @@ public class StageSchedule extends EventFactor implements Schedule {
             result.append(date.dateStart.year)
                     .append(LangID.getStringByID("year", lang));
 
-            if(lang != LangID.ZH) {
+            if(lang != CommonStatic.Lang.Locale.ZH) {
                 result.append(" ");
             }
         }
 
         result.append(getMonth(date.dateStart.month, lang));
 
-        if(lang != LangID.ZH) {
+        if(lang != CommonStatic.Lang.Locale.ZH) {
             result.append(" ");
         }
 
@@ -390,19 +391,19 @@ public class StageSchedule extends EventFactor implements Schedule {
             result.append(" ~ ");
 
             if(!date.dateEnd.equals(END)) {
-                if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == ZH)) {
+                if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                     result.append(date.dateEnd.year)
                             .append(LangID.getStringByID("year", lang));
 
-                    if(lang != LangID.ZH) {
+                    if(lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");
                     }
                 }
 
-                if(date.dateStart.month != date.dateEnd.month || (date.dateStart.year == currentYear && lang == ZH)) {
+                if(date.dateStart.month != date.dateEnd.month || (date.dateStart.year == currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                     result.append(getMonth(date.dateEnd.month, lang));
 
-                    if(lang != LangID.ZH) {
+                    if(lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");
                     }
                 }
@@ -861,6 +862,6 @@ public class StageSchedule extends EventFactor implements Schedule {
 
     @Override
     public String toString() {
-        return "{ Type : "+type+" | Contents : " + beautify(0) +" }";
+        return "{ Type : "+type+" | Contents : " + beautify(CommonStatic.Lang.Locale.EN) +" }";
     }
 }

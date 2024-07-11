@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import common.pack.PackData;
 import common.pack.UserProfile;
@@ -25,7 +26,7 @@ public class Analyze extends ConstraintCommand {
 
     private final DecimalFormat df = new DecimalFormat("#.##");
 
-    public Analyze(ROLE role, int lang, IDHolder holder) {
+    public Analyze(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(role, lang, holder, false);
     }
 

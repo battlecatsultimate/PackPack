@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
@@ -11,7 +12,6 @@ import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardCraftAmountHolder(author: Message, channelID: String, message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, channelID, message) {
+class CardCraftAmountHolder(author: Message, channelID: String, message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var amount = 1
@@ -102,7 +102,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
                     CardData.CraftMode.T4 -> "Tier 4 [Legend Rare]"
                 }
 
-                registerPopUp(event, "Are you sure you want to spend ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount} on crafting $amount $name card${if (amount >= 2) "s" else ""}?", LangID.EN)
+                registerPopUp(event, "Are you sure you want to spend ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount} on crafting $amount $name card${if (amount >= 2) "s" else ""}?")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     val result = rollCards()
@@ -115,7 +115,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
                     CardBot.saveCardData()
 
                     TransactionLogger.logCraft(authorMessage.author.idLong, amount, craftMode, result, amount.toLong() * craftMode.cost)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

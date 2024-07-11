@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -27,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigEventManagerHolder extends ServerConfigHolder {
-    private final int locale;
+    private final CommonStatic.Lang.Locale locale;
 
-    public ConfigEventManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang, int locale) {
+    public ConfigEventManagerHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang, CommonStatic.Lang.Locale locale) {
         super(author, channelID, message, holder, backup, lang);
 
         this.locale = locale;
@@ -87,17 +88,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                String localeCode;
-
-                switch (locale) {
-                    case LangID.JP -> localeCode = "jp";
-                    case LangID.ZH -> localeCode = "tw";
-                    case LangID.KR -> localeCode = "kr";
-                    case LangID.EN -> localeCode = "en";
-                    default -> throw new IllegalStateException("E/ConfigEventManagerHolder::onEvent - Unknown locale type %d".formatted(locale));
-                }
-
-                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), channelID, message, holder, localeCode));
+                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), channelID, message, holder, lang, locale));
             }
             case "sort" -> {
                 holder.eventRaw = !holder.eventRaw;
@@ -116,7 +107,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
+                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
@@ -170,28 +161,23 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
     private String getContents() {
         Emoji emoji;
         String bcVersion;
-        String localeCode;
 
         switch (locale) {
-            case LangID.EN -> {
+            case EN -> {
                 emoji = Emoji.fromUnicode("🇺🇸");
                 bcVersion = LangID.getStringByID("sercon_channeleventen", lang);
-                localeCode = "en";
             }
-            case LangID.JP -> {
+            case JP -> {
                 emoji = Emoji.fromUnicode("🇯🇵");
                 bcVersion = LangID.getStringByID("sercon_channeleventjp", lang);
-                localeCode = "jp";
             }
-            case LangID.ZH -> {
+            case ZH -> {
                 emoji = Emoji.fromUnicode("🇹🇼");
                 bcVersion = LangID.getStringByID("sercon_channeleventtw", lang);
-                localeCode = "zh";
             }
-            case LangID.KR -> {
+            case KR -> {
                 emoji = Emoji.fromUnicode("🇰🇷");
                 bcVersion = LangID.getStringByID("sercon_channeleventkr", lang);
-                localeCode = "kr";
             }
             default -> throw new IllegalStateException("E/ConfigEventManagerHolder::getComponents - Unknown locale type %s found".formatted(locale));
         }
@@ -214,7 +200,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
         String additional;
 
-        if (holder.eventMessage.containsKey(localeCode)) {
+        if (holder.eventMessage.containsKey(locale)) {
             additional = LangID.getStringByID("sercon_channelcontents", lang);
         } else {
             additional = LangID.getStringByID("sercon_channelnone", lang);
@@ -230,8 +216,8 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 .append(LangID.getStringByID("sercon_channeleventchannel", lang).formatted(channel)).append("\n")
                 .append(LangID.getStringByID("sercon_channeleventadditional", lang).formatted(additional));
 
-        if (holder.eventMessage.containsKey(localeCode)) {
-            String message = holder.eventMessage.get(localeCode);
+        if (holder.eventMessage.containsKey(locale)) {
+            String message = holder.eventMessage.get(locale);
 
             builder.append("\n\n```\n")
                     .append(LangID.getStringByID("sercon_channelmessage", lang))

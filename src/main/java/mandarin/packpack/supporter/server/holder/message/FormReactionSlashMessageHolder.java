@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.message;
 
+import common.CommonStatic;
 import common.util.unit.Form;
 import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
@@ -18,7 +19,6 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 public class FormReactionSlashMessageHolder extends MessageHolder {
     private final Form f;
     private final ConfigHolder config;
-    private final int lang;
 
     private final boolean isFrame;
     private final boolean talent;
@@ -27,12 +27,11 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
     private final boolean treasure;
     private final TreasureHolder t;
 
-    public FormReactionSlashMessageHolder(GenericCommandInteractionEvent event, Message message, Form f, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder t, int lang) {
-        super(event, message);
+    public FormReactionSlashMessageHolder(GenericCommandInteractionEvent event, Message message, Form f, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder t, CommonStatic.Lang.Locale lang) {
+        super(event, message, lang);
 
         this.f = f;
         this.config = config;
-        this.lang = lang;
 
         this.isFrame = isFrame;
         this.talent = talent;

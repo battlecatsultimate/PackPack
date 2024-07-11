@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
@@ -19,14 +20,14 @@ public class EnemyDPSHolder extends SearchHolder {
 
     private final TreasureHolder t;
 
-    public EnemyDPSHolder(ArrayList<Enemy> form, Message author, Message msg, String channelID, TreasureHolder t, int magnification, int lang) {
+    public EnemyDPSHolder(ArrayList<Enemy> form, Message author, Message msg, String channelID, TreasureHolder t, int magnification, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.form = form;
         this.magnification = magnification;
         this.t = t;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

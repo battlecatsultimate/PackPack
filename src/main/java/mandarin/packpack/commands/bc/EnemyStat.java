@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -32,21 +33,21 @@ public class EnemyStat extends ConstraintCommand {
             return;
         }
 
-        int lang = LangID.EN;
+        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
         User u = interaction.getUser();
 
         if(StaticStore.config.containsKey(u.getId())) {
             lang =  StaticStore.config.get(u.getId()).lang;
 
-            if(lang == -1) {
+            if(lang == null) {
                 if(interaction.getGuild() == null) {
-                    lang = LangID.EN;
+                    lang = CommonStatic.Lang.Locale.EN;
                 } else {
                     IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
 
                     if(idh == null) {
-                        lang = LangID.EN;
+                        lang = CommonStatic.Lang.Locale.EN;
                     } else {
                         lang = idh.config.lang;
                     }
@@ -68,7 +69,7 @@ public class EnemyStat extends ConstraintCommand {
                 SlashOption.getIntOption(options, "atk_magnification", 100)
         };
 
-        final int finalLang = lang;
+        final CommonStatic.Lang.Locale finalLang = lang;
 
         if(e == null) {
             interaction.deferReply().setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("formst_specific", finalLang)).queue();
@@ -88,7 +89,7 @@ public class EnemyStat extends ConstraintCommand {
 
     private final ConfigHolder config;
 
-    public EnemyStat(ROLE role, int lang, IDHolder id, ConfigHolder config) {
+    public EnemyStat(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, ConfigHolder config) {
         super(role, lang, id, false);
 
         if(config == null)

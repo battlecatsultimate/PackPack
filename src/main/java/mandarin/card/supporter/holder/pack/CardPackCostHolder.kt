@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.pack
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CatFoodCostHolder
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class CardPackCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack) : ComponentHolder(author, channelID, message) {
+class CardPackCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

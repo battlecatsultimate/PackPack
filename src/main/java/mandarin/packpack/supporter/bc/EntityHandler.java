@@ -97,7 +97,7 @@ public class EntityHandler {
         }
     }
 
-    public static void performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder holder, int lang, Consumer<Message> onSuccess) throws Exception {
+    public static void performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder holder, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
         ReplyCallbackAction action = event.deferReply();
 
         int level = lv.getLv();
@@ -350,7 +350,7 @@ public class EntityHandler {
         });
     }
 
-    public static void showUnitEmb(Form f, MessageChannel ch, @Nullable Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, int lang, boolean addEmoji, boolean compact, Consumer<Message> onSuccess) throws Exception {
+    public static void showUnitEmb(Form f, MessageChannel ch, @Nullable Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, CommonStatic.Lang.Locale lang, boolean addEmoji, boolean compact, Consumer<Message> onSuccess) throws Exception {
         int level = lv.getLv();
         int levelp = lv.getPlusLv();
 
@@ -653,7 +653,7 @@ public class EntityHandler {
         });
     }
 
-    public static void showTalentEmbed(MessageChannel ch, Message reference, Form unit, boolean isFrame, int lang) throws Exception {
+    public static void showTalentEmbed(MessageChannel ch, Message reference, Form unit, boolean isFrame, CommonStatic.Lang.Locale lang) throws Exception {
         if(unit.du == null || unit.du.getPCoin() == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
@@ -746,7 +746,7 @@ public class EntityHandler {
         return false;
     }
 
-    public static void showEnemyEmb(Enemy e, MessageChannel ch, Message reference, boolean isFrame, boolean extra, boolean compact, int[] magnification, TreasureHolder holder, int lang) throws Exception {
+    public static void showEnemyEmb(Enemy e, MessageChannel ch, Message reference, boolean isFrame, boolean extra, boolean compact, int[] magnification, TreasureHolder holder, CommonStatic.Lang.Locale lang) throws Exception {
         File img = generateIcon(e);
 
         EmbedBuilder spec = new EmbedBuilder();
@@ -889,7 +889,7 @@ public class EntityHandler {
         });
     }
 
-    public static void performEnemyEmb(Enemy e, GenericCommandInteractionEvent event, boolean isFrame, boolean extra, int[] magnification, TreasureHolder holder, int lang) throws Exception {
+    public static void performEnemyEmb(Enemy e, GenericCommandInteractionEvent event, boolean isFrame, boolean extra, int[] magnification, TreasureHolder holder, CommonStatic.Lang.Locale lang) throws Exception {
         File img = generateIcon(e);
 
         EmbedBuilder spec = new EmbedBuilder();
@@ -1101,7 +1101,7 @@ public class EntityHandler {
         return img;
     }
 
-    private static File generateCatfruit(Form f, int lang) throws Exception {
+    private static File generateCatfruit(Form f, CommonStatic.Lang.Locale lang) throws Exception {
         if(f.unit == null)
             return null;
 
@@ -1251,7 +1251,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static void showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, TreasureHolder holder, int lang, Consumer<Message> onSuccess) throws Exception {
+    public static void showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, TreasureHolder holder, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1474,7 +1474,7 @@ public class EntityHandler {
         });
     }
 
-    public static void performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, int lang, TreasureHolder holder, Consumer<Message> onSuccess) throws Exception {
+    public static void performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, CommonStatic.Lang.Locale lang, TreasureHolder holder, Consumer<Message> onSuccess) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1674,7 +1674,7 @@ public class EntityHandler {
         );
     }
 
-    private static File generateScheme(Stage st, boolean isFrame, int lang, int star, TreasureHolder holder) throws Exception {
+    private static File generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int star, TreasureHolder holder) throws Exception {
         File temp = new File("./temp/");
 
         if(!temp.exists()) {
@@ -2143,7 +2143,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static void generateFormImage(Form f, MessageChannel ch, Message reference, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
+    public static void generateFormImage(Form f, MessageChannel ch, Message reference, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang) throws Exception {
         f.anim.load();
 
         if(mode >= f.anim.anims.length)
@@ -2168,7 +2168,7 @@ public class EntityHandler {
         }
     }
 
-    public static void generateEnemyImage(Enemy en, MessageChannel ch, Message reference, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
+    public static void generateEnemyImage(Enemy en, MessageChannel ch, Message reference, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang) throws Exception {
         en.anim.load();
 
         if(mode >= en.anim.anims.length)
@@ -2193,7 +2193,7 @@ public class EntityHandler {
         }
     }
 
-    private static String getModeName(int mode, int max, int lang) {
+    private static String getModeName(int mode, int max, CommonStatic.Lang.Locale lang) {
         switch (mode) {
             case 1 -> {
                 return LangID.getStringByID("fimg_idle", lang);
@@ -2222,7 +2222,7 @@ public class EntityHandler {
         }
     }
 
-    public static void generateFormAnim(Form f, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
+    public static void generateFormAnim(Form f, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
         if(f.unit == null || f.unit.id == null) {
             onFail.run();
 
@@ -2504,7 +2504,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateEnemyAnim(Enemy en, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
+    public static void generateEnemyAnim(Enemy en, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
         if(en.id == null) {
             onFail.run();
 
@@ -2785,7 +2785,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, boolean performance, int lang, boolean debug, int limit, boolean raw, int index) {
+    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, boolean performance, CommonStatic.Lang.Locale lang, boolean debug, int limit, boolean raw, int index) {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -2816,7 +2816,7 @@ public class EntityHandler {
                 if(raw) {
                     img = ImageDrawing.drawAnimMp4(anim, msg, 1f, performance, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, performance, debug, lang, limit);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, performance, debug, limit, lang);
                 }
 
                 long end = System.currentTimeMillis();
@@ -2968,7 +2968,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, boolean performance, int lang, Runnable onFail, Runnable onSuccess) {
+    public static void generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, boolean performance, CommonStatic.Lang.Locale lang, Runnable onFail, Runnable onSuccess) {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -3089,7 +3089,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateBGAnim(MessageChannel ch, Message reference, Background bg, int lang) {
+    public static void generateBGAnim(MessageChannel ch, Message reference, Background bg, CommonStatic.Lang.Locale lang) {
         ch.sendMessage(LangID.getStringByID("bg_prepare", lang)).queue(message -> {
             if(message == null)
                 return;
@@ -3151,7 +3151,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, int lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
+    public static void generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
         if(s.getID() == null) {
             onFail.run();
 
@@ -3386,7 +3386,7 @@ public class EntityHandler {
         }
     }
 
-    public static void getFormSprite(Form f, MessageChannel ch, Message reference, int mode, int lang) throws Exception {
+    public static void getFormSprite(Form f, MessageChannel ch, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
         if(f.unit == null || f.unit.id == null) {
             ch.sendMessage(LangID.getStringByID("fsp_cantunit", lang)).queue();
             return;
@@ -3480,7 +3480,7 @@ public class EntityHandler {
         f.anim.unload();
     }
 
-    public static void getEnemySprite(Enemy e, MessageChannel ch, Message reference, int mode, int lang) throws Exception {
+    public static void getEnemySprite(Enemy e, MessageChannel ch, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
         if(e.id == null) {
             Command.replyToMessageSafely(ch, LangID.getStringByID("esp_cantunit", lang), reference, a -> a);
             return;
@@ -3546,7 +3546,7 @@ public class EntityHandler {
         e.anim.unload();
     }
 
-    public static void getSoulSprite(Soul s, MessageChannel ch, Message reference, int lang) throws Exception {
+    public static void getSoulSprite(Soul s, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws Exception {
         if(s.getID() == null) {
             ch.sendMessage(LangID.getStringByID("soul_nosoul", lang)).queue();
 
@@ -3604,7 +3604,7 @@ public class EntityHandler {
         s.anim.unload();
     }
 
-    public static void showMedalEmbed(int id, MessageChannel ch, Message reference, int lang) throws  Exception {
+    public static void showMedalEmbed(int id, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws  Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -3620,9 +3620,9 @@ public class EntityHandler {
 
         String medalName = "./org/page/medal/medal_"+Data.trio(id);
 
-        if(id <= 13 && lang != 3) {
+        if(id <= 13 && lang != CommonStatic.Lang.Locale.JP) {
             medalName += "_"+getLocaleName(lang);
-        } else if(id == 90 && lang != 3) {
+        } else if(id == 90 && lang != CommonStatic.Lang.Locale.JP) {
             medalName += "_en";
         }
 
@@ -3673,7 +3673,7 @@ public class EntityHandler {
         }
     }
 
-    public static void showComboEmbed(MessageChannel ch, Message reference, Combo c, int lang) throws Exception {
+    public static void showComboEmbed(MessageChannel ch, Message reference, Combo c, CommonStatic.Lang.Locale lang) throws Exception {
         File icon = generateComboImage(c);
 
         EmbedBuilder e = new EmbedBuilder();
@@ -3706,7 +3706,7 @@ public class EntityHandler {
             Command.sendMessageWithFile(ch, "", e.build(), icon, "combo.png", reference);
     }
 
-    public static void showFormDPS(MessageChannel ch, Message authorMessage, Form f, TreasureHolder treasureSetting, Level lv, ConfigHolder config, boolean talent, boolean treasure, int lang) throws Exception {
+    public static void showFormDPS(MessageChannel ch, Message authorMessage, Form f, TreasureHolder treasureSetting, Level lv, ConfigHolder config, boolean talent, boolean treasure, CommonStatic.Lang.Locale lang) throws Exception {
         int level = lv.getLv();
         int levelp = lv.getPlusLv();
 
@@ -4379,7 +4379,7 @@ public class EntityHandler {
         }
     }
 
-    public static void showEnemyDPS(MessageChannel ch, Message authorMessage, Enemy e, TreasureHolder treasureSetting, int magnification, int lang) throws Exception {
+    public static void showEnemyDPS(MessageChannel ch, Message authorMessage, Enemy e, TreasureHolder treasureSetting, int magnification, CommonStatic.Lang.Locale lang) throws Exception {
         int adjustedMagnification;
 
         if (magnification <= 0) {
@@ -4987,7 +4987,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, int lang) throws Exception {
+    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, CommonStatic.Lang.Locale lang) throws Exception {
         List<List<CellDrawer>> cellGroup = new ArrayList<>();
 
         for(int i = 0; i < units.length; i++) {
@@ -5017,7 +5017,7 @@ public class EntityHandler {
         }
     }
 
-    public static void generateEnemyStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy enemy, String name, File container, int m, boolean isFrame, int eid, int lang) throws Exception {
+    public static void generateEnemyStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy enemy, String name, File container, int m, boolean isFrame, int eid, CommonStatic.Lang.Locale lang) throws Exception {
         List<CellDrawer> cellGroup = getEnemyCell(data, procData, abilData, traitData, enemy, lang, m, isFrame);
 
         File result = ImageDrawing.drawEnemyStatImage(cellGroup, LangID.getStringByID("stat_magnif", lang).replace("_", String.valueOf(m)), name, container, eid);
@@ -5041,7 +5041,7 @@ public class EntityHandler {
         }
     }
 
-    public static void generateStageStatImage(MessageChannel ch, CustomStageMap map, int lv, boolean isFrame, int lang, String[] name, String code) {
+    public static void generateStageStatImage(MessageChannel ch, CustomStageMap map, int lv, boolean isFrame, CommonStatic.Lang.Locale lang, String[] name, String code) {
         List<List<CellDrawer>> cellGroups = new ArrayList<>();
 
         if(map.customIndex.isEmpty()) {
@@ -5153,7 +5153,7 @@ public class EntityHandler {
         }
     }
 
-    private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, int lang, int lv, boolean isFrame) {
+    private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, CommonStatic.Lang.Locale lang, int lv, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
         Level lvs = new Level(0);
@@ -5291,7 +5291,7 @@ public class EntityHandler {
         return cells;
     }
 
-    private static List<CellDrawer> getEnemyCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy e, int lang, int m, boolean isFrame) {
+    private static List<CellDrawer> getEnemyCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy e, CommonStatic.Lang.Locale lang, int m, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
         cells.add(new NormalCellDrawer(
@@ -5425,7 +5425,7 @@ public class EntityHandler {
         return cells;
     }
 
-    private static List<CellDrawer> getStageCell(CustomStageMap map, int index, int lang, int lv, boolean isFrame) {
+    private static List<CellDrawer> getStageCell(CustomStageMap map, int index, CommonStatic.Lang.Locale lang, int lv, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
         Stage st = map.list.get(index);
@@ -5540,7 +5540,7 @@ public class EntityHandler {
         return image;
     }
 
-    private static String getIconName(int mode, int lang) {
+    private static String getIconName(int mode, CommonStatic.Lang.Locale lang) {
         if(mode == 0)
             return LangID.getStringByID("fsp_sprite", lang);
         else if(mode == 1)
@@ -5622,12 +5622,12 @@ public class EntityHandler {
         }
     }
 
-    private static String getLocaleName(int lang) {
-        if(lang == 0)
+    private static String getLocaleName(CommonStatic.Lang.Locale lang) {
+        if(lang == CommonStatic.Lang.Locale.EN)
             return "en";
-        else if(lang == 1)
+        else if(lang == CommonStatic.Lang.Locale.ZH)
             return "tw";
-        else if(lang == 2)
+        else if(lang == CommonStatic.Lang.Locale.KR)
             return "kr";
         else
             return "";
@@ -5661,7 +5661,7 @@ public class EntityHandler {
         };
     }
 
-    private static List<String> mergeImmune(List<String> abilities, int lang) {
+    private static List<String> mergeImmune(List<String> abilities, CommonStatic.Lang.Locale lang) {
         List<String> result = new ArrayList<>();
         List<String> immunes = new ArrayList<>();
 
@@ -5669,14 +5669,14 @@ public class EntityHandler {
             String actualName = abilities.get(i).replaceAll("<:.+:\\d+> ", "");
 
             switch (lang) {
-                case LangID.KR, LangID.JP -> {
+                case KR, JP -> {
                     if (actualName.endsWith(LangID.getStringByID("data_immune", lang))) {
                         immunes.add(actualName);
                     } else {
                         result.add(abilities.get(i));
                     }
                 }
-                case LangID.EN -> {
+                case EN -> {
                     if (actualName.startsWith(LangID.getStringByID("data_immune", lang))) {
                         immunes.add(actualName);
                     } else {
@@ -5708,7 +5708,7 @@ public class EntityHandler {
         String e = emoji == null ? "" : emoji.getFormatted() + " ";
 
         switch (lang) {
-            case LangID.KR, LangID.JP -> result.add(e + sb + LangID.getStringByID("data_immune", lang));
+            case KR, JP -> result.add(e + sb + LangID.getStringByID("data_immune", lang));
             default -> result.add(e + LangID.getStringByID("data_immune", lang) + sb);
         }
 

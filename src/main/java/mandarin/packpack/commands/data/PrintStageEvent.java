@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
@@ -8,6 +9,7 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PrintStageEvent extends ConstraintCommand {
-    public PrintStageEvent(ROLE role, int lang, IDHolder id) {
+    public PrintStageEvent(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -129,30 +131,32 @@ public class PrintStageEvent extends ConstraintCommand {
         }
     }
 
-    private int getLang() {
-        if(lang >= 1 && lang < 4) {
+    private CommonStatic.Lang.Locale getLang() {
+        int index = ArrayUtils.indexOf(EventFactor.supportedVersions, lang);
+
+        if(index != -1) {
             return lang;
         } else {
-            return 0;
+            return CommonStatic.Lang.Locale.EN;
         }
     }
 
-    private int getLocale(String content) {
+    private CommonStatic.Lang.Locale getLocale(String content) {
         String[] contents = content.split(" ");
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
                 case "-en" -> {
-                    return LangID.EN;
+                    return CommonStatic.Lang.Locale.EN;
                 }
                 case "-tw" -> {
-                    return LangID.ZH;
+                    return CommonStatic.Lang.Locale.ZH;
                 }
                 case "-kr" -> {
-                    return LangID.KR;
+                    return CommonStatic.Lang.Locale.KR;
                 }
                 case "-jp" -> {
-                    return LangID.JP;
+                    return CommonStatic.Lang.Locale.JP;
                 }
             }
         }

@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.moderation
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
@@ -17,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.FileUpload
 
-class ManualRollConfirmHolder(author: Message, channelID: String, message: Message, private val member: Member, private val pack: CardPack, private val users: List<String>) : ComponentHolder(author, channelID, message) {
+class ManualRollConfirmHolder(author: Message, channelID: String, message: Message, private val member: Member, private val pack: CardPack, private val users: List<String>) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

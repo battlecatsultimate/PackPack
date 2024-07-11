@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.pack
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
@@ -12,7 +13,6 @@ import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -50,7 +50,7 @@ class PackPayHolder(
     private val member: Member,
     private val pack: CardPack,
     private val noImage: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val containers = Array(pack.cost.cardsCosts.size) {
         CardPayContainer(pack.cost.cardsCosts[it])
     }
@@ -150,13 +150,13 @@ class PackPayHolder(
                 if (containers.any { container -> container.pickedCards.isNotEmpty() }) {
                     StaticStore.removeHolder(authorMessage.author.id, this)
 
-                    registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared", LangID.EN)
+                    registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     event.deferEdit().queue()
 

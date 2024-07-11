@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.math;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
@@ -13,7 +14,7 @@ import java.text.DecimalFormat;
 
 public class Calculator extends ConstraintCommand {
 
-    public Calculator(ROLE role, int lang, IDHolder id) {
+    public Calculator(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

@@ -1,9 +1,9 @@
 package mandarin.card.commands
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import okhttp3.internal.UTC
@@ -12,7 +12,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class ChangeAuctionTime : Command(LangID.EN, true) {
+class ChangeAuctionTime : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
         val ch = loader.channel
@@ -65,8 +65,8 @@ class ChangeAuctionTime : Command(LangID.EN, true) {
                 "### End Date\n" +
                 "From : <t:${auctionSession.endDate}:f> <t:${auctionSession.endDate}:R>\n" +
                 "To : <t:${dateTime}:f> <t:${dateTime}:R>\n" +
-                "Time ${if (dateTime - auctionSession.endDate < 0) "Decreased" else "Increased"} By : ${CardData.convertMillisecondsToText(abs((dateTime - auctionSession.endDate) * 1000L))}", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+                "Time ${if (dateTime - auctionSession.endDate < 0) "Decreased" else "Increased"} By : ${CardData.convertMillisecondsToText(abs((dateTime - auctionSession.endDate) * 1000L))}", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                 auctionSession.changeEndTime(m.idLong, dateTime)
 
                 replyToMessageSafely(ch, "Successfully changed end time!", loader.message) { a -> a }

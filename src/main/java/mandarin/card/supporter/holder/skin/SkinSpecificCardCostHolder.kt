@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.skin
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
@@ -9,7 +10,6 @@ import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -34,7 +34,7 @@ class SkinSpecificCardCostHolder(
     private val skin: Skin,
     private val cost: SpecificCardCost,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = ArrayList<Card>(CardData.cards.sortedWith(CardComparator()))
 
     private var page = 0
@@ -156,8 +156,7 @@ class SkinSpecificCardCostHolder(
                 if (new) {
                     registerPopUp(
                         event,
-                        "Are you sure you want to cancel creating card cost and go back? This can't be undone",
-                        LangID.EN
+                        "Are you sure you want to cancel creating card cost and go back? This can't be undone"
                     )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -166,7 +165,7 @@ class SkinSpecificCardCostHolder(
                         e.deferEdit().queue()
 
                         parent?.goBack()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     if (skin in CardData.skins) {
                         CardBot.saveCardData()
@@ -182,8 +181,7 @@ class SkinSpecificCardCostHolder(
             "delete" -> {
                 registerPopUp(
                     event,
-                    "Are you sure you want to delete card cost? This can't be undone",
-                    LangID.EN
+                    "Are you sure you want to delete card cost? This can't be undone"
                 )
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -199,7 +197,7 @@ class SkinSpecificCardCostHolder(
                         .queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "prev" -> {
                 page--

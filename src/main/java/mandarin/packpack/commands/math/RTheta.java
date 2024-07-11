@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.math;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -19,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RTheta extends TimedConstraintCommand {
-    public RTheta(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, long time) {
+    public RTheta(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, long time) {
         super(role, lang, idHolder, time, StaticStore.COMMAND_RTHETA_ID, false);
     }
 

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.unit.Unit;
@@ -24,7 +25,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
     private static final Pattern p = Pattern.compile("<h2>.+</h2>");
 
-    private final int locale;
+    private final CommonStatic.Lang.Locale locale;
 
     public final ArrayList<EventSection> sections = new ArrayList<>();
     public final EventDateSet date;
@@ -32,7 +33,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
     public final ArrayList<GachaSection> gacha = new ArrayList<>();
 
-    public GachaSchedule(String line, int locale) {
+    public GachaSchedule(String line, CommonStatic.Lang.Locale locale) {
         this.locale = locale;
 
         String[] data = line.split("\t");
@@ -192,7 +193,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String beautify(int lang) {
+    public String beautify(CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder();
 
         result.append("\u001B[0;31m[");
@@ -201,14 +202,14 @@ public class GachaSchedule extends EventFactor implements Schedule {
             result.append(date.dateStart.year)
                     .append(LangID.getStringByID("year", lang));
 
-            if(lang != LangID.ZH) {
+            if(lang != CommonStatic.Lang.Locale.ZH) {
                 result.append(" ");
             }
         }
 
         result.append(getMonth(date.dateStart.month, lang));
 
-        if(lang != LangID.ZH) {
+        if(lang != CommonStatic.Lang.Locale.ZH) {
             result.append(" ");
         }
 
@@ -226,19 +227,19 @@ public class GachaSchedule extends EventFactor implements Schedule {
             result.append(" ~ ");
 
             if(!date.dateEnd.equals(END)) {
-                if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == ZH)) {
+                if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                     result.append(date.dateEnd.year)
                             .append(LangID.getStringByID("year", lang));
 
-                    if(lang != LangID.ZH) {
+                    if(lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");
                     }
                 }
 
-                if(date.dateStart.month != date.dateEnd.month || lang == ZH) {
+                if(date.dateStart.month != date.dateEnd.month || lang == CommonStatic.Lang.Locale.ZH) {
                     result.append(getMonth(date.dateEnd.month, lang));
 
-                    if (lang != LangID.ZH) {
+                    if (lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");
                     }
                 }
@@ -379,7 +380,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String dataToString(int lang) {
+    public String dataToString(CommonStatic.Lang.Locale lang) {
         StringBuilder result = new StringBuilder("```");
 
         result.append(date.dateStart.year)
@@ -553,7 +554,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             return String.valueOf(n);
     }
 
-    public String tryGetGachaName(GachaSection section, int lang) {
+    public String tryGetGachaName(GachaSection section, CommonStatic.Lang.Locale lang) {
         int gachaID = section.gachaID;
 
         if(gachaID <= 100) {
@@ -633,7 +634,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 !section.additional.isEmpty();
     }
 
-    private String getAdditionalCode(GachaSection.ADDITIONAL a, int lang) {
+    private String getAdditionalCode(GachaSection.ADDITIONAL a, CommonStatic.Lang.Locale lang) {
         return switch (a) {
             case GRANDON -> LangID.getStringByID("printgacha_gr", lang);
             case STEP -> LangID.getStringByID("printgacha_s", lang);
@@ -679,7 +680,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
         return weirdUR;
     }
 
-    private String getWeirdChanceData(GachaSection section, int lang) {
+    private String getWeirdChanceData(GachaSection section, CommonStatic.Lang.Locale lang) {
         String result = "\u001B[0;0m<";
 
         result += LangID.getStringByID("printgacha_chance", lang);

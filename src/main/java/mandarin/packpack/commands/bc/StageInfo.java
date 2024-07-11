@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -54,7 +55,7 @@ public class StageInfo extends TimedConstraintCommand {
 
         List<OptionMapping> options = event.getOptions();
 
-        int lang = LangID.EN;
+        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
         IDHolder holder;
 
@@ -77,14 +78,14 @@ public class StageInfo extends TimedConstraintCommand {
         if(StaticStore.config.containsKey(u.getId())) {
             lang = StaticStore.config.get(u.getId()).lang;
 
-            if(lang == -1) {
+            if(lang == null) {
                 if(interaction.getGuild() == null) {
-                    lang = LangID.EN;
+                    lang = CommonStatic.Lang.Locale.EN;
                 } else {
                     IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
 
                     if(idh == null) {
-                        lang = LangID.EN;
+                        lang = CommonStatic.Lang.Locale.EN;
                     } else {
                         lang = idh.config.lang;
                     }
@@ -116,7 +117,7 @@ public class StageInfo extends TimedConstraintCommand {
             try {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                int finalLang = lang;
+                CommonStatic.Lang.Locale finalLang = lang;
 
                 EntityHandler.performStageEmb(st, event, frame, extra, star, lang, treasure, m -> {
                     if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
@@ -134,7 +135,7 @@ public class StageInfo extends TimedConstraintCommand {
 
     private final ConfigHolder config;
 
-    public StageInfo(ConstraintCommand.ROLE role, int lang, IDHolder id, ConfigHolder config, long time) {
+    public StageInfo(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, ConfigHolder config, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID, false);
 
         if(config == null)
@@ -216,7 +217,7 @@ public class StageInfo extends TimedConstraintCommand {
 
                     Message author = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(finalStages.getFirst(), author, result, ch.getId(), isCompact));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(finalStages.getFirst(), author, result, ch.getId(), isCompact, lang));
                 });
             } else {
                 int param = checkParameters(command);

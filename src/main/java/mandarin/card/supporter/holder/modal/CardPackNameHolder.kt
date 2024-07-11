@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.pack.CardPackAdjustHolder
@@ -13,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class CardPackNameHolder(author: Message, channelID: String, message: Message, private val new: Boolean, private val pack: CardPack?) : ModalHolder(author, channelID, message) {
+class CardPackNameHolder(author: Message, channelID: String, message: Message, private val new: Boolean, private val pack: CardPack?) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

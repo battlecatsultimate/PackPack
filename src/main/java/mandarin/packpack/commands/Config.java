@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -25,7 +26,7 @@ import java.util.Objects;
 public class Config extends ConstraintCommand {
     private final ConfigHolder config;
 
-    public Config(ROLE role, int lang, IDHolder id, ConfigHolder config) {
+    public Config(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, ConfigHolder config) {
         super(role, lang, id, false);
 
         this.config = Objects.requireNonNullElseGet(config, ConfigHolder::new);
@@ -35,18 +36,26 @@ public class Config extends ConstraintCommand {
     public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        String locale = switch (config.lang) {
-            case LangID.EN -> LangID.getStringByID("lang_en", lang);
-            case LangID.JP -> LangID.getStringByID("lang_jp", lang);
-            case LangID.KR -> LangID.getStringByID("lang_kr", lang);
-            case LangID.ZH -> LangID.getStringByID("lang_zh", lang);
-            case LangID.FR -> LangID.getStringByID("lang_fr", lang);
-            case LangID.IT -> LangID.getStringByID("lang_it", lang);
-            case LangID.ES -> LangID.getStringByID("lang_es", lang);
-            case LangID.DE -> LangID.getStringByID("lang_de", lang);
-            case LangID.TH -> LangID.getStringByID("lang_th", lang);
-            default -> LangID.getStringByID("config_auto", lang);
-        };
+        CommonStatic.Lang.Locale language = config.lang;
+
+        String locale;
+
+        if (language == null) {
+            locale = LangID.getStringByID("config_auto", lang);
+        } else {
+            locale = switch (language) {
+                case EN -> LangID.getStringByID("lang_en", lang);
+                case JP -> LangID.getStringByID("lang_jp", lang);
+                case KR -> LangID.getStringByID("lang_kr", lang);
+                case ZH -> LangID.getStringByID("lang_zh", lang);
+                case FR -> LangID.getStringByID("lang_fr", lang);
+                case IT -> LangID.getStringByID("lang_it", lang);
+                case ES -> LangID.getStringByID("lang_es", lang);
+                case DE -> LangID.getStringByID("lang_de", lang);
+                case TH -> LangID.getStringByID("lang_th", lang);
+                default -> LangID.getStringByID("config_auto", lang);
+            };
+        }
 
         String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
         String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
@@ -59,12 +68,12 @@ public class Config extends ConstraintCommand {
 
         List<SelectOption> languages = new ArrayList<>();
 
-        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(config.lang == -1));
+        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(config.lang == null));
 
-        for(int i = 0; i < StaticStore.langIndex.length; i++) {
-            String l = LangID.getStringByID("lang_"+StaticStore.langCode[i], config.lang);
+        for (CommonStatic.Lang.Locale loc : CommonStatic.Lang.supportedLanguage) {
+            String l = LangID.getStringByID("lang_" + loc.code, config.lang);
 
-            languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), String.valueOf(StaticStore.langIndex[i])).withDefault(config.lang == StaticStore.langIndex[i]));
+            languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), loc.code).withDefault(config.lang == loc));
         }
 
         Button extra;
@@ -96,7 +105,7 @@ public class Config extends ConstraintCommand {
 
             User u = author.getAuthor();
 
-            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId()));
+            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), config.lang == null ? holder.config.lang : config.lang));
         });
     }
 }

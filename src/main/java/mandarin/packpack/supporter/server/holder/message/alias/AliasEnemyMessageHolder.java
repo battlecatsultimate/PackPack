@@ -1,13 +1,14 @@
 package mandarin.packpack.supporter.server.holder.message.alias;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -23,23 +24,19 @@ public class AliasEnemyMessageHolder extends MessageHolder {
     private final AliasHolder.MODE mode;
     private final String aliasName;
 
-    private final int lang;
-
     private int page = 0;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public AliasEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(author, channelID, msg);
+    public AliasEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nullable String aliasName) {
+        super(author, channelID, msg, lang);
 
         this.enemy = enemy;
         this.mode = mode;
         this.channelID = channelID;
         this.aliasName = aliasName;
 
-        this.lang = lang;
-
-        registerAutoFinish(this, msg, lang, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override
@@ -131,7 +128,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
                         break;
                     }
                     alias.add(aliasName);
-                    AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemy.get(id), alias);
+                    AliasHolder.EALIAS.put(lang, enemy.get(id), alias);
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }
@@ -149,7 +146,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
                         break;
                     }
                     alias.remove(aliasName);
-                    AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemy.get(id), alias);
+                    AliasHolder.EALIAS.put(lang, enemy.get(id), alias);
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias removed\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }

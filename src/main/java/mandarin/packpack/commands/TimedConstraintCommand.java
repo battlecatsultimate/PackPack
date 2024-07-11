@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -32,7 +33,7 @@ public abstract class TimedConstraintCommand extends Command {
 
     private boolean startTimer = true;
 
-    public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, long time, String id, boolean requireGuild) {
+    public TimedConstraintCommand(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, long time, String id, boolean requireGuild) {
         super(lang, requireGuild);
 
         switch (role) {

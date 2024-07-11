@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.server;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import org.jetbrains.annotations.NotNull;
 
 public class BoosterEmojiRemove extends ConstraintCommand {
-    public BoosterEmojiRemove(ROLE role, int lang, IDHolder id) {
+    public BoosterEmojiRemove(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
 

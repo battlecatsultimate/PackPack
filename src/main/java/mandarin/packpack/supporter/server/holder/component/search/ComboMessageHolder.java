@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
@@ -22,13 +23,13 @@ public class ComboMessageHolder extends SearchHolder {
     private final ArrayList<Combo> combo;
     private final Message fMsg;
 
-    public ComboMessageHolder(ArrayList<Combo> combo, Message author, Message msg, Message fMsg, String channelID, int lang) {
+    public ComboMessageHolder(ArrayList<Combo> combo, Message author, Message msg, Message fMsg, String channelID, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.combo = combo;
         this.fMsg = fMsg;
 
-        registerAutoFinish(this, msg, lang, TimeUnit.MINUTES.toMillis(5), () -> {
+        registerAutoFinish(this, msg, TimeUnit.MINUTES.toMillis(5), () -> {
             if (expired)
                 return;
 

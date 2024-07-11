@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.bc;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -14,7 +15,6 @@ import common.util.unit.Form;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.KoreanSeparater;
-import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,7 +33,7 @@ public class EntityFilter {
             18, 19, 20, 21, 22, 23, 35, 36, 49
     };
 
-    public static ArrayList<Form> findUnitWithName(String name, boolean trueForm, int lang) {
+    public static ArrayList<Form> findUnitWithName(String name, boolean trueForm, CommonStatic.Lang.Locale lang) {
         ArrayList<Form> res = new ArrayList<>();
         ArrayList<Form> clear = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public class EntityFilter {
                 boolean added = false;
                 boolean cleared = false;
 
-                for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
                     String[] idFormats = {
                             Data.trio(u.id.id) + "-" + Data.trio(f.fid),
                             Data.trio(u.id.id) + " - " + Data.trio(f.fid),
@@ -81,7 +81,7 @@ public class EntityFilter {
                     String formName = null;
 
                     if(MultiLangCont.get(f, lang) != null) {
-                        formName = StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]);
+                        formName = StaticStore.safeMultiLangGet(f, locale);
                     }
 
                     if (formName == null || formName.isBlank()) {
@@ -157,7 +157,7 @@ public class EntityFilter {
 
             name = name.toLowerCase(Locale.ENGLISH);
 
-            if(lang == LangID.KR)
+            if(lang == CommonStatic.Lang.Locale.KR)
                 name = KoreanSeparater.separate(name);
 
             int sMin = 10;
@@ -178,7 +178,7 @@ public class EntityFilter {
                     if(!fname.isBlank()) {
                         fname = fname.toLowerCase(Locale.ENGLISH);
 
-                        if(lang == LangID.KR)
+                        if(lang == CommonStatic.Lang.Locale.KR)
                             fname = KoreanSeparater.separate(fname);
 
                         int wordNumber = StringUtils.countMatches(name, ' ') + 1;
@@ -228,7 +228,7 @@ public class EntityFilter {
 
                                 a = a.toLowerCase(Locale.ENGLISH);
 
-                                if(lang == LangID.KR)
+                                if(lang == CommonStatic.Lang.Locale.KR)
                                     a = KoreanSeparater.separate(a);
 
                                 int wordNumber = StringUtils.countMatches(a, ' ') + 1;
@@ -303,7 +303,7 @@ public class EntityFilter {
         return res;
     }
 
-    public static Form pickOneForm(String name, int lang) {
+    public static Form pickOneForm(String name, CommonStatic.Lang.Locale lang) {
         ArrayList<Form> forms = findUnitWithName(name, false, lang);
 
         if(forms.isEmpty())
@@ -337,7 +337,7 @@ public class EntityFilter {
         }
     }
 
-    public static ArrayList<Enemy> findEnemyWithName(String name, int lang) {
+    public static ArrayList<Enemy> findEnemyWithName(String name, CommonStatic.Lang.Locale lang) {
         ArrayList<Enemy> res = new ArrayList<>();
         ArrayList<Enemy> clear = new ArrayList<>();
 
@@ -348,16 +348,16 @@ public class EntityFilter {
             boolean added = false;
             boolean cleared = false;
 
-            for(int i = 0; i < StaticStore.langIndex.length; i++) {
+            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
                 StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
                         .append(" ").append(" ");
 
                 String enemyName = null;
 
                 if(MultiLangCont.get(e, lang) != null) {
-                    ename.append(StaticStore.safeMultiLangGet(e, StaticStore.langIndex[i]));
+                    ename.append(StaticStore.safeMultiLangGet(e, locale));
 
-                    enemyName = StaticStore.safeMultiLangGet(e, StaticStore.langIndex[i]);
+                    enemyName = StaticStore.safeMultiLangGet(e, locale);
                 }
 
                 if(ename.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
@@ -411,7 +411,7 @@ public class EntityFilter {
 
             int sMin = 10;
 
-            if(lang == LangID.KR)
+            if(lang == CommonStatic.Lang.Locale.KR)
                 name = KoreanSeparater.separate(name);
 
             for(Enemy e : UserProfile.getBCData().enemies.getList()) {
@@ -428,7 +428,7 @@ public class EntityFilter {
                 if(!ename.isBlank()) {
                     ename = ename.toLowerCase(Locale.ENGLISH);
 
-                    if(lang == LangID.KR)
+                    if(lang == CommonStatic.Lang.Locale.KR)
                         ename = KoreanSeparater.separate(ename);
 
                     int wordNumber = StringUtils.countMatches(name, ' ') + 1;
@@ -477,7 +477,7 @@ public class EntityFilter {
 
                             a = a.toLowerCase(Locale.ENGLISH);
 
-                            if(lang == LangID.KR)
+                            if(lang == CommonStatic.Lang.Locale.KR)
                                 a = KoreanSeparater.separate(a);
 
                             int wordNumber = StringUtils.countMatches(a, ' ') + 1;
@@ -539,7 +539,7 @@ public class EntityFilter {
         }
     }
 
-    public static Enemy pickOneEnemy(String name, int lang) {
+    public static Enemy pickOneEnemy(String name, CommonStatic.Lang.Locale lang) {
         ArrayList<Enemy> e = findEnemyWithName(name, lang);
 
         if(e.isEmpty())
@@ -574,7 +574,7 @@ public class EntityFilter {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public static ArrayList<Stage> findStageWithName(String[] names, int lang) {
+    public static ArrayList<Stage> findStageWithName(String[] names, CommonStatic.Lang.Locale lang) {
         ArrayList<Stage> result = new ArrayList<>();
         ArrayList<Stage> clear = new ArrayList<>();
 
@@ -584,8 +584,8 @@ public class EntityFilter {
                 if(mc == null)
                     continue;
 
-                for(int i = 0; i < StaticStore.langIndex.length; i++ ) {
-                    String mcName = StaticStore.safeMultiLangGet(mc, StaticStore.langIndex[i]);
+                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                    String mcName = StaticStore.safeMultiLangGet(mc, locale);
 
                     if(mcName == null || mcName.isBlank())
                         continue;
@@ -669,8 +669,8 @@ public class EntityFilter {
                     boolean s0 = false;
 
                     if(names[0] != null && !names[0].isBlank()) {
-                        for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, StaticStore.langIndex[i]);
+                        for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, locale);
 
                             if(mcName == null || mcName.isBlank())
                                 continue;
@@ -701,8 +701,8 @@ public class EntityFilter {
 
                             boolean s1 = false;
 
-                            for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                                String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
+                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                String stmName = StaticStore.safeMultiLangGet(stm, locale);
 
                                 if(stmName == null || stmName.isBlank())
                                     continue;
@@ -767,8 +767,8 @@ public class EntityFilter {
 
                                     boolean s1 = false;
 
-                                    for(int j = 0; j < 4; j++) {
-                                        String stmName = StaticStore.safeMultiLangGet(stm, j);
+                                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                        String stmName = StaticStore.safeMultiLangGet(stm, locale);
 
                                         if(stmName == null || stmName.isBlank())
                                             continue;
@@ -859,8 +859,8 @@ public class EntityFilter {
                     boolean s0 = false;
 
                     if(names[0] != null && !names[0].isBlank()) {
-                        for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, StaticStore.langIndex[i]);
+                        for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, locale);
 
                             if(mcName == null || mcName.isBlank())
                                 continue;
@@ -892,8 +892,8 @@ public class EntityFilter {
                             boolean s1 = false;
 
                             if(names[1] != null && !names[1].isBlank()) {
-                                for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                                    String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
+                                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                    String stmName = StaticStore.safeMultiLangGet(stm, locale);
 
                                     if(stmName == null || stmName.isBlank())
                                         continue;
@@ -925,8 +925,8 @@ public class EntityFilter {
                                     boolean s2 = false;
                                     boolean cleared = false;
 
-                                    for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                                        String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
+                                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                        String stName = StaticStore.safeMultiLangGet(st, locale);
 
                                         if(stName != null && !stName.isBlank()) {
                                             if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
@@ -940,7 +940,7 @@ public class EntityFilter {
                                             }
                                         }
 
-                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
+                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
 
                                         if(alias != null && !alias.isEmpty()) {
                                             for(String a : alias) {
@@ -1049,8 +1049,8 @@ public class EntityFilter {
                                             boolean s2 = false;
                                             boolean cleared = false;
 
-                                            for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                                                String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
+                                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                                String stName = StaticStore.safeMultiLangGet(st, locale);
 
                                                 if(stName != null && !stName.isBlank()) {
                                                     if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
@@ -1064,7 +1064,7 @@ public class EntityFilter {
                                                     }
                                                 }
 
-                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
+                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
 
                                                 if(alias != null && !alias.isEmpty()) {
                                                     for(String a : alias) {
@@ -1179,8 +1179,8 @@ public class EntityFilter {
                                     boolean s1 = false;
 
                                     if(names[1] != null && !names[1].isBlank()) {
-                                        for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                                            String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
+                                        for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                            String stmName = StaticStore.safeMultiLangGet(stm, locale);
 
                                             if(stmName == null || stmName.isBlank())
                                                 continue;
@@ -1212,8 +1212,8 @@ public class EntityFilter {
                                             boolean s2 = false;
                                             boolean cleared = false;
 
-                                            for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                                                String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
+                                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                                String stName = StaticStore.safeMultiLangGet(st, locale);
 
                                                 if(stName != null && !stName.isBlank()) {
                                                     if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
@@ -1227,7 +1227,7 @@ public class EntityFilter {
                                                     }
                                                 }
 
-                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
+                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
 
                                                 if(alias != null && !alias.isEmpty()) {
                                                     for(String a : alias) {
@@ -1336,8 +1336,8 @@ public class EntityFilter {
                                                     boolean s2 = false;
                                                     boolean cleared = false;
 
-                                                    for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                                                        String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
+                                                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                                        String stName = StaticStore.safeMultiLangGet(st, locale);
 
                                                         if(stName != null && !stName.isBlank()) {
                                                             if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
@@ -1351,7 +1351,7 @@ public class EntityFilter {
                                                             }
                                                         }
 
-                                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
+                                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
 
                                                         if(alias != null && !alias.isEmpty()) {
                                                             for(String a : alias) {
@@ -1470,8 +1470,8 @@ public class EntityFilter {
 
                 boolean s1 = false;
 
-                for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                    String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
+                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                    String stmName = StaticStore.safeMultiLangGet(stm, locale);
 
                     if(stmName == null || stmName.isBlank())
                         continue;
@@ -1491,7 +1491,7 @@ public class EntityFilter {
         return stmResult;
     }
 
-    public static Stage pickOneStage(String[] names, int lang) {
+    public static Stage pickOneStage(String[] names, CommonStatic.Lang.Locale lang) {
         ArrayList<Stage> stages = findStageWithName(names, lang);
 
         if(stages.isEmpty() && names[0] == null && names[1] == null) {
@@ -1577,12 +1577,12 @@ public class EntityFilter {
         return result;
     }
 
-    public static ArrayList<Integer> findMedalByName(String name, int lang) {
+    public static ArrayList<Integer> findMedalByName(String name, CommonStatic.Lang.Locale lang) {
         ArrayList<Integer> result = new ArrayList<>();
 
         for(int i = 0; i < StaticStore.medalNumber; i++) {
-            for(int j = 0; j < 4; j++) {
-                String medalName = StaticStore.MEDNAME.getCont(i, j);
+            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                String medalName = StaticStore.MEDNAME.getCont(i, locale);
 
                 if(medalName == null || medalName.isBlank()) {
                     medalName = Data.trio(i);
@@ -1605,7 +1605,7 @@ public class EntityFilter {
 
             name = name.toLowerCase(Locale.ENGLISH);
 
-            if(lang == LangID.KR)
+            if(lang == CommonStatic.Lang.Locale.KR)
                 name = KoreanSeparater.separate(name);
 
             for(int i = 0; i < StaticStore.medalNumber; i++) {
@@ -1616,7 +1616,7 @@ public class EntityFilter {
 
                 medalName = medalName.toLowerCase(Locale.ENGLISH);
 
-                if(lang == LangID.KR)
+                if(lang == CommonStatic.Lang.Locale.KR)
                     medalName = KoreanSeparater.separate(medalName);
 
                 int wordNumber = StringUtils.countMatches(name, ' ') + 1;
@@ -1673,8 +1673,8 @@ public class EntityFilter {
 
             if(f == null) {
                 if(cName != null) {
-                    for(int l = 0; l < 4; l++) {
-                        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, l) + " | " + DataToString.getComboType(c, l);
+                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, locale) + " | " + DataToString.getComboType(c, locale);
 
                         if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
                             result.add(c);
@@ -1693,8 +1693,8 @@ public class EntityFilter {
 
                     if(c.forms[k].unit.id.id == f.unit.id.id && c.forms[k].fid <= f.fid) {
                         if(cName != null) {
-                            for(int l = 0; l < 4; l++) {
-                                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, l) + " | " + DataToString.getComboType(c, l);
+                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, locale) + " | " + DataToString.getComboType(c, locale);
 
                                 if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
                                     result.add(c);
@@ -1719,12 +1719,12 @@ public class EntityFilter {
         return result;
     }
 
-    public static List<Integer> findRewardByName(String name, int lang) {
+    public static List<Integer> findRewardByName(String name, CommonStatic.Lang.Locale lang) {
         List<Integer> result = new ArrayList<>();
 
         for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
-            for(int j = 0; j < StaticStore.langIndex.length; j++) {
-                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i), StaticStore.langIndex[j]);
+            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i), locale);
 
                 if (rewardName == null || rewardName.isBlank()) {
                     rewardName = Data.trio(StaticStore.existingRewards.get(i));
@@ -1748,7 +1748,7 @@ public class EntityFilter {
 
             name = name.toLowerCase(Locale.ENGLISH);
 
-            if(lang == LangID.KR)
+            if(lang == CommonStatic.Lang.Locale.KR)
                 name = KoreanSeparater.separate(name);
 
             for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
@@ -1759,7 +1759,7 @@ public class EntityFilter {
 
                 rewardName = rewardName.toLowerCase(Locale.ENGLISH);
 
-                if(lang == LangID.KR)
+                if(lang == CommonStatic.Lang.Locale.KR)
                     rewardName = KoreanSeparater.separate(rewardName);
 
                 int wordNumber = StringUtils.countMatches(name, ' ') + 1;
@@ -1919,7 +1919,7 @@ public class EntityFilter {
                 table[i][j] = Math.min(Math.min(table[i-1][j] + 1, table[i][j-1] + 1), table[i-1][j-1] + cost);
 
                 if(i > 1 && j > 1 && src.charAt(i-1) == compare.charAt(j-2) && src.charAt(i-2) == compare.charAt(j-1)) {
-                    table[i][j] = Math.min(table[i][j], table[i-2][j-2]);
+                    table[i][j] = Math.min(table[i][j], table[i-2][j-2] + 1);
                 }
             }
         }
@@ -1927,29 +1927,39 @@ public class EntityFilter {
         return table[src.length()][compare.length()];
     }
 
+    /**
+     * Get word list by separated per number of words in search keywords<br>
+     * <br>
+     * For example, if target text is `abc def ghi`, and search keyword was `abc def`, then this
+     * method will slice target text by 2 each words. Result will be : <br>
+     * {@code
+     * { abc def, def ghi }
+     * }
+     * @param src Target text separated by spaces
+     * @param numberOfWords Number of words in search keywords
+     * @return Array of sliced words
+     */
     private static String[] getWords(String[] src, int numberOfWords) {
-        int length;
-
-        if(src.length % numberOfWords == 0)
-            length = src.length / numberOfWords;
-        else
-            length = src.length / numberOfWords + 1;
+        int length = Math.max(1, src.length - numberOfWords + 1);
 
         String[] result = new String[length];
 
-        for(int i = 0; i < src.length; i += numberOfWords) {
-            StringBuilder builder = new StringBuilder();
+        if (src.length < numberOfWords) {
+            result[0] = String.join(" ", src);
+        } else {
+            for (int i = 0; i < length; i++) {
+                StringBuilder builder = new StringBuilder();
 
-            for(int j = 0; j < numberOfWords; j++) {
-                if(i + j < src.length) {
-                    builder.append(src[i+j]);
+                for (int j = i; j < i + numberOfWords; j++) {
+                    builder.append(src[j]);
 
-                    if(j < numberOfWords - 1 && i+j < src.length - 1)
+                    if (j < i + numberOfWords - 1) {
                         builder.append(" ");
+                    }
                 }
-            }
 
-            result[i/numberOfWords] = builder.toString();
+                result[i] = builder.toString();
+            }
         }
 
         return result;
@@ -1962,8 +1972,8 @@ public class EntityFilter {
 
             keyword = keyword.toLowerCase(Locale.ENGLISH);
 
-            for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                String name = StaticStore.safeMultiLangGet(t, StaticStore.langIndex[i]);
+            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                String name = StaticStore.safeMultiLangGet(t, locale);
 
                 if(name != null && !name.isBlank()) {
                     if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
@@ -1974,14 +1984,19 @@ public class EntityFilter {
                     if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
                         return true;
 
+                    name = name.replace("\\.", "");
+
+                    if (name.toLowerCase(Locale.ENGLISH).contains(keyword))
+                        return true;
+
                     ArrayList<String> alias;
 
                     if(cls == Form.class) {
-                        alias = AliasHolder.FALIAS.getCont((Form) t, StaticStore.langIndex[i]);
+                        alias = AliasHolder.FALIAS.getCont((Form) t, locale);
                     } else if(cls == Enemy.class) {
-                        alias = AliasHolder.EALIAS.getCont((Enemy) t, StaticStore.langIndex[i]);
+                        alias = AliasHolder.EALIAS.getCont((Enemy) t, locale);
                     } else if(cls == Stage.class) {
-                        alias = AliasHolder.SALIAS.getCont((Stage) t, StaticStore.langIndex[i]);
+                        alias = AliasHolder.SALIAS.getCont((Stage) t, locale);
                     } else {
                         continue;
                     }
@@ -1996,11 +2011,11 @@ public class EntityFilter {
                     ArrayList<String> alias;
 
                     if(cls == Form.class) {
-                        alias = AliasHolder.FALIAS.getCont((Form) t, StaticStore.langIndex[i]);
+                        alias = AliasHolder.FALIAS.getCont((Form) t, locale);
                     } else if(cls == Enemy.class) {
-                        alias = AliasHolder.EALIAS.getCont((Enemy) t, StaticStore.langIndex[i]);
+                        alias = AliasHolder.EALIAS.getCont((Enemy) t, locale);
                     } else if(cls == Stage.class) {
-                        alias = AliasHolder.SALIAS.getCont((Stage) t, StaticStore.langIndex[i]);
+                        alias = AliasHolder.SALIAS.getCont((Stage) t, locale);
                     } else {
                         continue;
                     }
@@ -2043,13 +2058,13 @@ public class EntityFilter {
         return false;
     }
 
-    private static <T> ArrayList<Integer> getFullDistances(Iterable<T> set, String keyword, int lang, Class<T> cls) {
+    private static <T> ArrayList<Integer> getFullDistances(Iterable<T> set, String keyword, CommonStatic.Lang.Locale lang, Class<T> cls) {
         ArrayList<Integer> distances = new ArrayList<>();
         int allMin = Integer.MAX_VALUE;
 
         keyword = keyword.toLowerCase(Locale.ENGLISH);
 
-        if(lang == LangID.KR)
+        if(lang == CommonStatic.Lang.Locale.KR)
             keyword = KoreanSeparater.separate(keyword);
 
         for(T t : set) {
@@ -2080,7 +2095,7 @@ public class EntityFilter {
                     for(String a : alias) {
                         a = a.toLowerCase(Locale.ENGLISH);
 
-                        if(lang == LangID.KR)
+                        if(lang == CommonStatic.Lang.Locale.KR)
                             a = KoreanSeparater.separate(a);
 
                         int aliasResult = damerauLevenshteinDistance(a, keyword);
@@ -2094,7 +2109,7 @@ public class EntityFilter {
             } else {
                 name = name.toLowerCase(Locale.ENGLISH);
 
-                if(lang == LangID.KR) {
+                if(lang == CommonStatic.Lang.Locale.KR) {
                     name = KoreanSeparater.separate(name);
                 }
 
@@ -2123,7 +2138,7 @@ public class EntityFilter {
                         for(String a : alias) {
                             a = a.toLowerCase(Locale.ENGLISH);
 
-                            if(lang == LangID.KR)
+                            if(lang == CommonStatic.Lang.Locale.KR)
                                 a = KoreanSeparater.separate(a);
 
                             int aliasResult = damerauLevenshteinDistance(a, keyword);
@@ -2141,13 +2156,13 @@ public class EntityFilter {
         return distances;
     }
 
-    private static <T> ArrayList<Integer> getDistances(Iterable<T> set, String keyword, int lang, Class<T> cls) {
+    private static <T> ArrayList<Integer> getDistances(Iterable<T> set, String keyword, CommonStatic.Lang.Locale lang, Class<T> cls) {
         ArrayList<Integer> distances = new ArrayList<>();
         int allMin = Integer.MAX_VALUE;
 
         keyword = keyword.toLowerCase(Locale.ENGLISH);
 
-        if(lang == LangID.KR)
+        if(lang == CommonStatic.Lang.Locale.KR)
             keyword = KoreanSeparater.separate(keyword);
 
         for(T t : set) {
@@ -2165,7 +2180,7 @@ public class EntityFilter {
 
             name = name.toLowerCase(Locale.ENGLISH);
 
-            if(lang == LangID.KR) {
+            if(lang == CommonStatic.Lang.Locale.KR) {
                 name = KoreanSeparater.separate(name);
             }
 
@@ -2205,7 +2220,7 @@ public class EntityFilter {
                     for(String a : alias) {
                         a = a.toLowerCase(Locale.ENGLISH);
 
-                        if(lang == LangID.KR)
+                        if(lang == CommonStatic.Lang.Locale.KR)
                             a = KoreanSeparater.separate(a);
 
                         wordNumber = StringUtils.countMatches(keyword, ' ') + 1;

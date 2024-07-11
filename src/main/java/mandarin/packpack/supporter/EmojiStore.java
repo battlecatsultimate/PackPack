@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter;
 
+import common.CommonStatic;
 import common.util.lang.MultiLangCont;
 import mandarin.card.supporter.CardData;
 import mandarin.card.supporter.pack.CardPack;
@@ -274,7 +275,24 @@ public class EmojiStore {
             return;
         }
 
-        TRAIT.put(loc.equals("tw") ? "zh" : loc, key, emoji);
+        CommonStatic.Lang.Locale foundLocale = null;
+
+        if (loc.equals("tw")) {
+            loc = "zh";
+        }
+
+        for (CommonStatic.Lang.Locale l : CommonStatic.Lang.Locale.values()) {
+            if (l.code.equals(loc)) {
+                foundLocale = l;
+                break;
+            }
+        }
+
+        if (foundLocale == null) {
+            throw new IllegalStateException("E/EmojiStore::putTrait - Invalid locale : %s".formatted(loc));
+        }
+
+        TRAIT.put(foundLocale, key, emoji);
     }
 
     private static Emoji getEmoteWitNameAndID(ShardLoader loader, String name, long id) {

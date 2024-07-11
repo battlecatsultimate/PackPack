@@ -1,22 +1,13 @@
 package mandarin.packpack.supporter.lang;
 
 import com.google.gson.JsonObject;
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
 public class LangID {
-    public static final int EN = 0;
-    public static final int ZH = 1;
-    public static final int KR = 2;
-    public static final int JP = 3;
-    public static final int RU = 4;
-    public static final int FR = 6;
-    public static final int IT = 9;
-    public static final int ES = 8;
-    public static final int DE = 5;
-    public static final int TH = 10;
-
     public static JsonObject EN_OBJ;
     public static JsonObject JP_OBJ;
     public static JsonObject KR_OBJ;
@@ -43,7 +34,10 @@ public class LangID {
         printMissingTags();
     }
 
-    public static String getStringByID(String id, int locale) {
+    public static String getStringByID(String id, @Nullable CommonStatic.Lang.Locale locale) {
+        if (locale == null)
+            locale = CommonStatic.Lang.Locale.EN;
+
         switch (locale) {
             case EN -> {
                 if (EN_OBJ == null)
@@ -120,7 +114,7 @@ public class LangID {
         return id;
     }
 
-    public static boolean hasID(String id, int locale) {
+    public static boolean hasID(String id, CommonStatic.Lang.Locale locale) {
         return switch (locale) {
             case EN -> EN_OBJ != null && EN_OBJ.has(id);
             case JP -> JP_OBJ != null && JP_OBJ.has(id);
@@ -131,24 +125,36 @@ public class LangID {
     }
 
     public static void printMissingTags() {
-        for(int i = ZH; i <= JP; i++) {
+        CommonStatic.Lang.Locale[] localeList = {
+                CommonStatic.Lang.Locale.ZH,
+                CommonStatic.Lang.Locale.KR,
+                CommonStatic.Lang.Locale.JP,
+                CommonStatic.Lang.Locale.RU
+        };
+
+        for(CommonStatic.Lang.Locale locale : localeList) {
             JsonObject target;
 
-            switch (i) {
-                case ZH:
+            switch (locale) {
+                case ZH -> {
                     target = ZH_OBJ;
                     System.out.println("---------- TW ----------");
-                    break;
-                case KR:
+                }
+                case KR -> {
                     target = KR_OBJ;
                     System.out.println("---------- KR ----------");
-                    break;
-                case JP:
+                }
+                case JP -> {
                     target = JP_OBJ;
                     System.out.println("---------- JP ----------");
-                    break;
-                default:
+                }
+                case RU -> {
+                    target = RU_OBJ;
+                    System.out.println("---------- RU ----------");
+                }
+                default -> {
                     return;
+                }
             }
 
             for(String key : EN_OBJ.keySet()) {

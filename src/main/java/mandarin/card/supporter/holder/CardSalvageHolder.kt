@@ -1,16 +1,16 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.CardBot
-import mandarin.card.supporter.card.Card
-import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class CardSalvageHolder(author: Message, channelID: String, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, channelID, message) {
+class CardSalvageHolder(author: Message, channelID: String, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val tier = when(salvageMode) {
         CardData.SalvageMode.T1 -> CardData.Tier.COMMON
@@ -107,11 +107,11 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
                 if (shard >= 100 || selectedCard.size >= 20) {
                     registerPopUp(event, "Are you sure you are fine with salvaging selected cards?\n" +
                             "\n" +
-                            "**Salvaging means you will lose selected cards from your inventory and gain platinum shards as return. You can't undo the process once you confirm it**", LangID.EN)
+                            "**Salvaging means you will lose selected cards from your inventory and gain platinum shards as return. You can't undo the process once you confirm it**")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         salvage.invoke(e)
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     salvage.invoke(event)
                 }
@@ -132,7 +132,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -228,11 +228,11 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
                     StaticStore.putHolder(authorMessage.author.id, this)
                 }
 
-                registerPopUp(event, "Are you sure you want to add all cards?", LangID.EN)
+                registerPopUp(event, "Are you sure you want to add all cards?")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     adder.invoke(e)
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "dupe" -> {
                 cards.forEach { c ->

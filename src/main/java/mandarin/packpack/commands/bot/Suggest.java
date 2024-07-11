@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 
 public class Suggest extends TimedConstraintCommand {
-    public Suggest(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public Suggest(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_SUGGEST_ID, true);
     }
 

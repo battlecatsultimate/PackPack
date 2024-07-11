@@ -1,12 +1,12 @@
 package mandarin.card.supporter.holder.pack
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CardPackCooldownHolder
 import mandarin.card.supporter.holder.modal.CardPackNameHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -25,7 +25,7 @@ class CardPackAdjustHolder(
     message: Message,
     private val pack: CardPack,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message) {
+) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }
@@ -102,8 +102,7 @@ class CardPackAdjustHolder(
                 if (new) {
                     registerPopUp(
                         event,
-                        "Are you sure you want to cancel creating card pack? This cannot be undone",
-                        LangID.EN
+                        "Are you sure you want to cancel creating card pack? This cannot be undone"
                     )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -112,7 +111,7 @@ class CardPackAdjustHolder(
                         e.deferEdit().queue()
 
                         goBack()
-                    }, LangID.EN))
+                    }, CommonStatic.Lang.Locale.EN))
                 } else {
                     CardBot.saveCardData()
 
@@ -124,8 +123,7 @@ class CardPackAdjustHolder(
             "delete" -> {
                 registerPopUp(
                     event,
-                    "Are you sure you want to delete card pack? This cannot be undone",
-                    LangID.EN
+                    "Are you sure you want to delete card pack? This cannot be undone"
                 )
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
@@ -139,7 +137,7 @@ class CardPackAdjustHolder(
                         .queue()
 
                     goBack()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
         }
     }

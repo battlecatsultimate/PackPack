@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -15,13 +16,13 @@ public class EventDataArchiveHolder extends SearchHolder {
     private final List<File> files;
     private final String fileName;
 
-    public EventDataArchiveHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<File> files, String fileName, int lang) {
+    public EventDataArchiveHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<File> files, String fileName, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.files = files;
         this.fileName = fileName;
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

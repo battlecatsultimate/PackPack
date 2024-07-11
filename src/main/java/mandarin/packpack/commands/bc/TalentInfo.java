@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -23,7 +24,7 @@ import java.util.List;
 public class TalentInfo extends ConstraintCommand {
     private final ConfigHolder config;
 
-    public TalentInfo(ROLE role, int lang, IDHolder id, ConfigHolder config) {
+    public TalentInfo(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, ConfigHolder config) {
         super(role, lang, id, false);
 
         if(config == null) {

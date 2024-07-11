@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.data;
 
+import common.CommonStatic;
 import common.pack.UserProfile;
 import common.system.fake.FakeImage;
 import common.system.fake.ImageBuilder;
@@ -30,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ComboAnalyzer extends ConstraintCommand {
-    public ComboAnalyzer(ROLE role, int lang, IDHolder id) {
+    public ComboAnalyzer(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 

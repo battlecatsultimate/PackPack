@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class SwitchEventGrabber extends ConstraintCommand {
-    public SwitchEventGrabber(ROLE role, int lang, @Nullable IDHolder id) {
+    public SwitchEventGrabber(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -34,7 +35,7 @@ public class SwitchEventGrabber extends ConstraintCommand {
         replyToMessageSafely(ch, parseMessage(), loader.getMessage(), this::registerComponent, m -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), ch.getId(), m));
+            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), ch.getId(), m, lang));
         });
 
     }
@@ -42,15 +43,15 @@ public class SwitchEventGrabber extends ConstraintCommand {
     private MessageCreateAction registerComponent(MessageCreateAction action) {
         List<LayoutComponent> layouts = new ArrayList<>();
 
-        for(int i = 0; i < 4; i ++) {
-            boolean newWay = EventFileGrabber.newWay.get(i);
+        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+            boolean newWay = EventFileGrabber.newWay.get(locale);
 
-            String name = switch (i) {
-                case EventFactor.EN -> "BCEN : ";
-                case EventFactor.ZH -> "BCTW : ";
-                case EventFactor.JP -> "BCJP : ";
-                case EventFactor.KR -> "BCKR : ";
-                default -> "";
+            String name = switch (locale) {
+                case EN -> "BCEN : ";
+                case ZH -> "BCTW : ";
+                case JP -> "BCJP : ";
+                case KR -> "BCKR : ";
+                default -> throw new IllegalStateException(("E/SwitchEventGrabber::parseMessage - Unknown supported version : %s".formatted(locale)));
             };
 
             String isNew = newWay ? "New Way" : "Old Way";
@@ -68,22 +69,22 @@ public class SwitchEventGrabber extends ConstraintCommand {
     private String parseMessage() {
         StringBuilder builder = new StringBuilder();
 
-        for(int i = 0; i < 4; i++) {
-            boolean newWay = EventFileGrabber.newWay.get(i);
+        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+            boolean newWay = EventFileGrabber.newWay.get(locale);
 
-            String name = switch (i) {
-                case EventFactor.EN -> "BCEN : ";
-                case EventFactor.ZH -> "BCTW : ";
-                case EventFactor.JP -> "BCJP : ";
-                case EventFactor.KR -> "BCKR : ";
-                default -> "";
+            String name = switch (locale) {
+                case EN -> "BCEN : ";
+                case ZH -> "BCTW : ";
+                case JP -> "BCJP : ";
+                case KR -> "BCKR : ";
+                default -> throw new IllegalStateException(("E/SwitchEventGrabber::parseMessage - Unknown supported version : %s".formatted(locale)));
             };
 
             String isNew = newWay ? "New Way" : "Old Way";
 
             builder.append(name).append(isNew);
 
-            if (i < 3) {
+            if (locale != CommonStatic.Lang.Locale.JP) {
                 builder.append("\n");
             }
         }

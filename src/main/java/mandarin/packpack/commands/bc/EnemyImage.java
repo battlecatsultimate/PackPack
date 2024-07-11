@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
@@ -30,7 +31,7 @@ public class EnemyImage extends TimedConstraintCommand {
     private static final int PARAM_TRANSPARENT = 2;
     private static final int PARAM_DEBUG = 4;
 
-    public EnemyImage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public EnemyImage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_ENEMYIMAGE_ID, false);
     }
 

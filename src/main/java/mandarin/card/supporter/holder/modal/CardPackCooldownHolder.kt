@@ -1,12 +1,13 @@
 package mandarin.card.supporter.holder.modal
 
+import common.CommonStatic
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CardPackCooldownHolder(author: Message, channelID: String, message: Message, private val pack: CardPack) : ModalHolder(author, channelID, message) {
+class CardPackCooldownHolder(author: Message, channelID: String, message: Message, private val pack: CardPack) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

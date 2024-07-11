@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Card
@@ -41,7 +42,7 @@ class FilterProcessHolder : ComponentHolder {
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, role: CardData.Role) : super(author, channelID, message) {
+    constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, role: CardData.Role) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.filters = filters
         this.inventory = inventory
@@ -56,7 +57,7 @@ class FilterProcessHolder : ComponentHolder {
         filterCards()
     }
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message) {
+    constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.filters = filters
         this.inventory = inventory
@@ -171,7 +172,7 @@ class FilterProcessHolder : ComponentHolder {
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -194,7 +195,7 @@ class FilterProcessHolder : ComponentHolder {
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]

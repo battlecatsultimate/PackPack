@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -36,10 +37,7 @@ public class EventFactor {
     public static final EventDate END = new EventDate(20300101, false, null, false);
     public static final String NOMAX = "99.99.99";
 
-    public static final int EN = 0;
-    public static final int ZH = 1;
-    public static final int KR = 2;
-    public static final int JP = 3;
+    public static final CommonStatic.Lang.Locale[] supportedVersions = { CommonStatic.Lang.Locale.EN, CommonStatic.Lang.Locale.ZH, CommonStatic.Lang.Locale.KR, CommonStatic.Lang.Locale.JP };
 
     public static final int GATYA = 0;
     public static final int ITEM = 1;
@@ -288,7 +286,7 @@ public class EventFactor {
         return mcid + map.id.id;
     }
 
-    public static String getMonth(int mon, int lang) {
+    public static String getMonth(int mon, CommonStatic.Lang.Locale lang) {
         return switch (mon) {
             case 1 -> LangID.getStringByID("january", lang);
             case 2 -> LangID.getStringByID("february", lang);
@@ -306,7 +304,7 @@ public class EventFactor {
         };
     }
 
-    public String getWhichDay(int data, int lang) {
+    public String getWhichDay(int data, CommonStatic.Lang.Locale lang) {
         return switch (data) {
             case MONDAY -> LangID.getStringByID("monday", lang);
             case TUESDAY -> LangID.getStringByID("tuesday", lang);
@@ -320,7 +318,7 @@ public class EventFactor {
         };
     }
 
-    public static String getNumberWithDayFormat(int num, int lang) {
+    public static String getNumberWithDayFormat(int num, CommonStatic.Lang.Locale lang) {
         switch (lang) {
             case EN -> {
                 if (num != 11 && num % 10 == 1)
@@ -345,8 +343,8 @@ public class EventFactor {
     }
 
     @SuppressWarnings("unused")
-    public static String getNumberExtension(int num, int lang) {
-        if(lang == LangID.EN) {
+    public static String getNumberExtension(int num, CommonStatic.Lang.Locale lang) {
+        if(lang == CommonStatic.Lang.Locale.EN) {
             if(num != 11 && num % 10 == 1)
                 return "st";
             else if(num != 12 && num % 10 == 2)
@@ -390,7 +388,7 @@ public class EventFactor {
         return v;
     }
 
-    public static String beautifyItem(int lang, int itemID, int itemAmount) {
+    public static String beautifyItem(CommonStatic.Lang.Locale lang, int itemID, int itemAmount) {
         if (itemID >= 11000 && itemID < 12000) {
             MapColc mc = MapColc.get(Data.hex(11));
 
@@ -443,7 +441,7 @@ public class EventFactor {
 
         char c = item.charAt(item.length() - 1);
 
-        if(itemAmount > 1 && lang == LangID.EN && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || Character.isDigit(c)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+        if(itemAmount > 1 && lang == CommonStatic.Lang.Locale.EN && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || Character.isDigit(c)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
             item = getPlural(item);
 
         if(itemID == 202 || itemID == 203) {
@@ -455,7 +453,7 @@ public class EventFactor {
         }
     }
 
-    public static String beautifyGameItem(int lang, int itemID, int itemAmount) {
+    public static String beautifyGameItem(CommonStatic.Lang.Locale lang, int itemID, int itemAmount) {
         String item = MultiLangCont.getStatic().RWNAME.getCont(itemID, lang);
 
         if (item == null || item.isBlank()) {
@@ -464,7 +462,7 @@ public class EventFactor {
 
         char c = item.charAt(item.length() - 1);
 
-        if (itemAmount > 1 && lang == LangID.EN && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || Character.isDigit(c)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+        if (itemAmount > 1 && lang == CommonStatic.Lang.Locale.EN && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || Character.isDigit(c)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
             item = getPlural(item);
 
         if (itemID == 11 || itemID == 12 || itemID == 20 || itemID == 21) {

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import common.util.unit.Form;
 import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 
 public class FormButtonHolder extends ComponentHolder {
     private final ConfigHolder config;
-    private final int lang;
     private final Form f;
 
     private final boolean isFrame;
@@ -30,11 +30,10 @@ public class FormButtonHolder extends ComponentHolder {
     private final boolean treasure;
     private final TreasureHolder t;
 
-    public FormButtonHolder(Form f, @Nonnull Message author,@Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, boolean treasure, TreasureHolder t, Level lv, int lang, @Nonnull String channelID) {
-        super(author, channelID, msg);
+    public FormButtonHolder(Form f, @Nonnull Message author, @Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, boolean treasure, TreasureHolder t, Level lv, CommonStatic.Lang.Locale lang, @Nonnull String channelID) {
+        super(author, channelID, msg, lang);
 
         this.config = config;
-        this.lang = lang;
         this.f = f;
 
         this.isFrame = isFrame;

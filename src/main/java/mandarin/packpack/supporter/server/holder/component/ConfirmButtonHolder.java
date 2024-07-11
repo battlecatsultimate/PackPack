@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
@@ -8,13 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class ConfirmButtonHolder extends ComponentHolder {
     private final Runnable action;
-    private final int lang;
 
-    public ConfirmButtonHolder(Message author, Message msg, String channelID, int lang, Runnable action) {
-        super(author, channelID, msg);
+    public ConfirmButtonHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang, Runnable action) {
+        super(author, channelID, msg, lang);
 
         this.action = action;
-        this.lang = lang;
 
         StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
             if(expired)

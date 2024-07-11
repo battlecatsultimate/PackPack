@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder.modal
 
+import common.CommonStatic
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.StaticStore
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.math.min
 
-class CardFavoriteAmountHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val card: Card, private val favorite: Boolean) : ModalHolder(author, channelID, message) {
+class CardFavoriteAmountHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val card: Card, private val favorite: Boolean) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

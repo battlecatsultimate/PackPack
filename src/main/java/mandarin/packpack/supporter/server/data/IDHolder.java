@@ -1,11 +1,8 @@
 package mandarin.packpack.supporter.server.data;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
@@ -69,18 +66,6 @@ public class IDHolder implements Cloneable {
             id.config = ConfigHolder.parseJson(obj.getAsJsonObject("config"));
         }
 
-        if(obj.has("server")) {
-            JsonElement e = obj.get("server");
-
-            if (!e.isJsonNull()) {
-                id.config.prefix = e.getAsString();
-            }
-        }
-
-        if(obj.has("locale")) {
-            id.config.lang = obj.get("locale").getAsInt();
-        }
-
         if(obj.has("banned")) {
             id.banned = id.jsonObjectToListString(obj.getAsJsonArray("banned"));
         }
@@ -102,22 +87,11 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("eventMessage")) {
-            id.eventMessage = StaticStore.jsonToMapString(obj.getAsJsonArray("eventMessage").getAsJsonArray());
-        }
-
-        if(obj.has("event") && obj.has("eventLocale")) {
-            List<Integer> locales = id.jsonObjectToListInteger(obj.getAsJsonArray("eventLocale"));
-            String channel = id.setOrNull(obj.get("event").getAsString());
-
-            if(locales != null && channel != null && !channel.isBlank()) {
-                for(int l : locales) {
-                    id.eventMap.put(l, channel);
-                }
-            }
+            id.eventMessage = id.jsonObjectToMapLocaleString(obj.getAsJsonArray("eventMessage").getAsJsonArray());
         }
 
         if(obj.has("eventMap")) {
-            id.eventMap = id.jsonObjectToMapIntegerString(obj.get("eventMap"));
+            id.eventMap = id.jsonObjectToMapLocaleString(obj.get("eventMap"));
         }
 
         if(obj.has("boosterPin")) {
@@ -132,8 +106,8 @@ public class IDHolder implements Cloneable {
             id.boosterPinChannel = id.jsonObjectToListString(obj.getAsJsonArray("boosterPinChannel"));
         }
 
-        if(id.config.lang < 0)
-            id.config.lang = 0;
+        if(id.config.lang == null)
+            id.config.lang = CommonStatic.Lang.Locale.EN;
 
         return id;
     }
@@ -222,12 +196,12 @@ public class IDHolder implements Cloneable {
      * Additional message that will be sent whenever bot posts new event data. Key is locale
      * value (BCEN, BCKR, ...), and value is contents of additional message
      */
-    public Map<String, String> eventMessage = new HashMap<>();
+    public Map<CommonStatic.Lang.Locale, String> eventMessage = new HashMap<>();
     /**
      * Event data posting channels. Key is locale value (BCEN, BCKR, ...), and value is channel
      * ID
      */
-    public Map<Integer, String> eventMap = new TreeMap<>();
+    public Map<CommonStatic.Lang.Locale, String> eventMap = new TreeMap<>();
     /**
      * Channel permission data. Key is assigned role ID, and value is list of allowed channels.
      * If channel list is null, it means this role allows users to use commands in all channels
@@ -256,14 +230,14 @@ public class IDHolder implements Cloneable {
         this.MEMBER = me;
         this.BOOSTER = bo;
 
-        config.lang = LangID.EN;
+        config.lang = CommonStatic.Lang.Locale.EN;
     }
 
     /**
      * Default IDHolder constructor for any server
      */
     public IDHolder() {
-        config.lang = LangID.EN;
+        config.lang = CommonStatic.Lang.Locale.EN;
     }
 
     /**
@@ -310,14 +284,14 @@ public class IDHolder implements Cloneable {
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", getOrNull(logDM));
-        obj.add("eventMap", mapIntegerStringToJsonArray(eventMap));
+        obj.add("eventMap", mapLocaleStringToJsonArray(eventMap));
         obj.add("config", config.jsonfy());
         obj.add("banned", listStringToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
         obj.addProperty("forceCompact", forceCompact);
         obj.addProperty("forceFullTreasure", forceFullTreasure);
         obj.addProperty("announceMessage", announceMessage);
-        obj.add("eventMessage", StaticStore.mapToJsonString(eventMessage));
+        obj.add("eventMessage", mapLocaleStringToJsonArray(eventMessage));
         obj.addProperty("boosterPin", boosterPin);
         obj.addProperty("boosterAll", boosterAll);
         obj.add("boosterPinChannel", listStringToJsonObject(boosterPinChannel));
@@ -396,16 +370,16 @@ public class IDHolder implements Cloneable {
         return array;
     }
 
-    private JsonElement mapIntegerStringToJsonArray(Map<Integer, String> map) {
+    private JsonElement mapLocaleStringToJsonArray(Map<CommonStatic.Lang.Locale, String> map) {
         JsonArray array = new JsonArray();
 
-        for(int key : map.keySet()) {
+        for(CommonStatic.Lang.Locale key : map.keySet()) {
             if(map.get(key) == null || map.get(key).isBlank())
                 continue;
 
             JsonObject obj = new JsonObject();
 
-            obj.addProperty("key", key);
+            obj.addProperty("key", key.name());
             obj.addProperty("val", map.get(key));
 
             array.add(obj);
@@ -430,33 +404,28 @@ public class IDHolder implements Cloneable {
         return null;
     }
 
-    private List<Integer> jsonObjectToListInteger(JsonElement obj) {
-        if(obj.isJsonArray()) {
-            JsonArray ele = obj.getAsJsonArray();
-
-            List<Integer> arr = new ArrayList<>();
-
-            for(int i = 0; i < ele.size(); i++) {
-                arr.add(ele.get(i).getAsInt());
-            }
-
-            return arr;
-        }
-
-        return null;
-    }
-
-    private Map<Integer, String> jsonObjectToMapIntegerString(JsonElement obj) {
+    private Map<CommonStatic.Lang.Locale, String> jsonObjectToMapLocaleString(JsonElement obj) {
         if(obj.isJsonArray()) {
             JsonArray arr = obj.getAsJsonArray();
 
-            Map<Integer, String> result = new TreeMap<>();
+            Map<CommonStatic.Lang.Locale, String> result = new TreeMap<>();
 
             for(int i = 0; i < arr.size(); i++) {
                 JsonObject o = arr.get(i).getAsJsonObject();
 
                 if(o.has("key") && o.has("val")) {
-                    result.put(o.get("key").getAsInt(), o.get("val").getAsString());
+                    JsonElement key = o.get("key");
+
+                    if (key instanceof JsonPrimitive primitive && primitive.isNumber()) {
+                        result.put(getLocale(primitive.getAsInt()), o.get("val").getAsString());
+                    } else {
+                        String code = key.getAsString();
+
+                        if (code.equals("tw"))
+                            code = "zh";
+
+                        result.put(CommonStatic.Lang.Locale.valueOf(code.toUpperCase(Locale.US)), o.get("val").getAsString());
+                    }
                 }
             }
 
@@ -604,5 +573,14 @@ public class IDHolder implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    private CommonStatic.Lang.Locale getLocale(int ordinal) {
+        for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
+            if (locale.ordinal() == ordinal)
+                return locale;
+        }
+
+        return CommonStatic.Lang.Locale.EN;
     }
 }

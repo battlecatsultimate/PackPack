@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
+import common.CommonStatic;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -20,16 +21,14 @@ import java.util.List;
 public class SetupMemberButtonHolder extends ComponentHolder {
     private final IDHolder holder;
     private final String modID;
-    private final int lang;
 
     private String roleID;
 
-    public SetupMemberButtonHolder(Message msg, Message author, String channelID, IDHolder holder, String modID, int lang) {
-        super(author, channelID, msg);
+    public SetupMemberButtonHolder(Message msg, Message author, String channelID, IDHolder holder, String modID, CommonStatic.Lang.Locale lang) {
+        super(author, channelID, msg, lang);
 
         this.holder = holder;
         this.modID = modID;
-        this.lang = lang;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.system.files.VFile;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.EmojiStore;
@@ -26,7 +27,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     private final List<VFile> files = new ArrayList<>();
 
-    public AssetBrowserHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @Nonnull VFile vf, int lang) {
+    public AssetBrowserHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @Nonnull VFile vf, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.vf = vf;
@@ -39,7 +40,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
         files.addAll(fileList);
 
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

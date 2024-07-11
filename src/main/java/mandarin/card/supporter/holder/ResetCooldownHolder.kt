@@ -1,9 +1,9 @@
 package mandarin.card.supporter.holder
 
+import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ResetCooldownHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message) {
+class ResetCooldownHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     override fun clean() {
@@ -42,7 +42,7 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
 
                 val pack = CardData.cardPacks[index]
 
-                registerPopUp(event, "Are you sure you want to reset cooldown of this pack [`${pack.packName}`] **for all users?\n\n__This cannot be undone__**", LangID.EN)
+                registerPopUp(event, "Are you sure you want to reset cooldown of this pack [`${pack.packName}`] **for all users?\n\n__This cannot be undone__**")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     expired = true
@@ -59,7 +59,7 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
                         .queue()
-                }, LangID.EN))
+                }, CommonStatic.Lang.Locale.EN))
             }
             "prev" -> {
                 page--

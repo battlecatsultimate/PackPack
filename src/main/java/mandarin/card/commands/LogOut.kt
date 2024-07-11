@@ -1,19 +1,18 @@
 package mandarin.card.commands
 
 
+import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.ServerData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
-
-import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import kotlin.system.exitProcess
 
-class LogOut : Command(LangID.EN, true) {
+class LogOut : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         if (CardBot.test)
             return
@@ -58,8 +57,8 @@ class LogOut : Command(LangID.EN, true) {
             return
         }
 
-        registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), 0).queue { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+        registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), CommonStatic.Lang.Locale.EN).queue { msg ->
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                 val self = ch.jda.selfUser.asMention
                 val channel = loader.guild.getGuildChannelById(CardData.statusChannel)
 

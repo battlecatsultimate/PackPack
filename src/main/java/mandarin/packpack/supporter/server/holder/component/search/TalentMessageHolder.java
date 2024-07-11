@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component.search;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
@@ -19,7 +20,7 @@ public class TalentMessageHolder extends SearchHolder {
 
     private final boolean isFrame;
 
-    public TalentMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Form> form, boolean isFrame, int lang) {
+    public TalentMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Form> form, boolean isFrame, CommonStatic.Lang.Locale lang) {
         super(author, msg, channelID, lang);
 
         this.form = form;

@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class Publish extends ConstraintCommand {
-    public Publish(ROLE role, int lang, IDHolder id) {
+    public Publish(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
     }
 
@@ -39,7 +39,7 @@ public class Publish extends ConstraintCommand {
         if (client == null)
             return;
 
-        if(!StaticStore.announcements.containsKey(0)) {
+        if(!StaticStore.announcements.containsKey(CommonStatic.Lang.Locale.EN)) {
             createMessageWithNoPings(ch, "You have to at least make announcement for English!");
             return;
         }
@@ -58,14 +58,19 @@ public class Publish extends ConstraintCommand {
             if(g == null)
                 continue;
 
+            CommonStatic.Lang.Locale language = holder.config.lang;
+
+            if (language == null)
+                continue;
+
             GuildChannel c = g.getGuildChannelById(holder.ANNOUNCE);
 
             if(c instanceof NewsChannel) {
                 String content = null;
 
-                int[] pref = CommonStatic.Lang.pref[holder.config.lang];
+                CommonStatic.Lang.Locale[] pref = CommonStatic.Lang.pref[language.ordinal()];
 
-                for(int p : pref) {
+                for(CommonStatic.Lang.Locale p : pref) {
                     if(StaticStore.announcements.containsKey(p)) {
                         content = StaticStore.announcements.get(p);
                         break;
@@ -94,9 +99,9 @@ public class Publish extends ConstraintCommand {
             } else if(c instanceof GuildMessageChannel) {
                 String content = null;
 
-                int[] pref = CommonStatic.Lang.pref[holder.config.lang];
+                CommonStatic.Lang.Locale[] pref = CommonStatic.Lang.pref[language.ordinal()];
 
-                for(int p : pref) {
+                for(CommonStatic.Lang.Locale p : pref) {
                     if(StaticStore.announcements.containsKey(p)) {
                         content = StaticStore.announcements.get(p);
                         break;
