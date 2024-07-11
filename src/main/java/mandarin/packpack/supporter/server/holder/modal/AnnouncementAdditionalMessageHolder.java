@@ -21,7 +21,13 @@ public class AnnouncementAdditionalMessageHolder extends ModalHolder {
             return;
         }
 
-        holder.announceMessage = getValueFromMap(event.getValues(), "message").strip();
+        String messageContent = getValueFromMap(event.getValues(), "message").strip();
+
+        if (messageContent.isBlank()) {
+            holder.announceMessage = null;
+        } else {
+            holder.announceMessage = messageContent;
+        }
 
         goBack(event);
     }

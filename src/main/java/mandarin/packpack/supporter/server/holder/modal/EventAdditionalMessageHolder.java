@@ -25,7 +25,11 @@ public class EventAdditionalMessageHolder extends ModalHolder {
 
         String message = getValueFromMap(event.getValues(), "message").strip();
 
-        holder.eventMessage.put(locale, message);
+        if (message.isBlank()) {
+            holder.eventMessage.remove(locale);
+        } else {
+            holder.eventMessage.put(locale, message);
+        }
 
         goBack(event);
     }

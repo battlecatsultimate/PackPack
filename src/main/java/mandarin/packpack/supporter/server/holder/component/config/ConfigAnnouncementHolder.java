@@ -58,8 +58,8 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
             case "additional" -> {
                 TextInput input = TextInput.create("message", LangID.getStringByID("sercon_channeladditionalinput", lang), TextInputStyle.PARAGRAPH)
                         .setPlaceholder(LangID.getStringByID("sercon_channeladditionalinputplace", lang))
-                        .setRequired(true)
-                        .setMaxLength(500)
+                        .setRequired(false)
+                        .setRequiredRange(0, 500)
                         .build();
 
                 Modal modal = Modal.create("additional", LangID.getStringByID("sercon_channeladditionalmodal", lang))
