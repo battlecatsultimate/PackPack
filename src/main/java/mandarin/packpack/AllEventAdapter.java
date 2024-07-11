@@ -54,8 +54,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class AllEventAdapter extends ListenerAdapter {
     private static boolean readyDone = false;
@@ -88,32 +88,19 @@ public class AllEventAdapter extends ListenerAdapter {
 
             StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getId()+")"+"\nSize : "+g.getMemberCount());
 
-            IDHolder id = StaticStore.idHolder.get(g.getId());
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
 
-            AtomicReference<Boolean> warned = new AtomicReference<>(false);
-
-            if(id == null) {
-                final IDHolder idh = new IDHolder();
-
-                handleInitialModRole(g, idh, warned);
-
-                StaticStore.idHolder.put(g.getId(), idh);
-            } else {
-                String mod = id.MOD;
-
-                if (mod != null) {
-                    List<Role> roles = g.getRoles();
-
-                    for (Role r : roles) {
-                        if (r.getId().equals(mod))
-                            return;
-                    }
-                }
-
-                handleInitialModRole(g, id, warned);
-            }
+            StaticStore.saveServerInfo();
 
             StaticStore.updateStatus();
+
+            findInviter(g).queue(m ->
+                m.getUser().openPrivateChannel().queue(ch ->
+                        ch.sendMessage(LangID.getStringByID("first_join", holder.config.lang).formatted(g.getName())).queue(),
+                    e ->
+                        StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Failed to open private channel to inviter")
+                )
+            );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Error happened");
         }
@@ -125,40 +112,23 @@ public class AllEventAdapter extends ListenerAdapter {
 
         try {
             Guild g = event.getGuild();
+            String roleID = event.getRole().getId();
 
-            IDHolder holder = StaticStore.idHolder.get(g.getId());
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
 
-            AtomicReference<Boolean> warned = new AtomicReference<>(false);
-
-            if(holder != null) {
-                String mod = holder.MOD;
-
-                if(mod == null) {
-                    reassignTempModRole(g, holder, warned);
-                } else {
-                    if(event.getRole().getId().equals(mod)) {
-                        String modID = StaticStore.getRoleIDByName("PackPackMod", g);
-
-                        if(modID == null) {
-                            reassignTempModRole(g, holder, warned);
-                        } else {
-                            holder.MOD = modID;
-                        }
-                    }
-                }
-            } else {
-                final IDHolder idh = new IDHolder();
-
-                String modID = StaticStore.getRoleIDByName("PackPackMod", g);
-
-                if(modID == null) {
-                    reassignTempModRole(g, idh, warned);
-                } else {
-                    idh.MOD = modID;
-                }
-
-                StaticStore.idHolder.put(g.getId(), idh);
+            if (roleID.equals(holder.moderator)) {
+                holder.moderator = null;
             }
+
+            if (roleID.equals(holder.member)) {
+                holder.member = null;
+            }
+
+            if (roleID.equals(holder.booster)) {
+                holder.booster = null;
+            }
+
+            holder.ID.entrySet().removeIf(entry -> roleID.equals(entry.getValue()));
 
             StaticStore.saveServerInfo();
         } catch (Exception e) {
@@ -377,33 +347,40 @@ public class AllEventAdapter extends ListenerAdapter {
                     msg.delete().queue();
                 }
 
-                IDHolder idh = StaticStore.idHolder.get(g.getId());
+                IDHolder idh = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
 
-                if(idh == null || idh.MOD == null)
-                    return;
+                boolean isMod;
 
-                boolean isMod = StaticStore.rolesToString(m.getRoles()).contains(idh.MOD);
-                boolean canGo = false;
+                String moderatorID = idh.moderator;
+                List<Role> roles = m.getRoles();
+
+                if (moderatorID != null) {
+                    isMod = roles.stream().anyMatch(r -> r.getId().equals(moderatorID));
+                } else {
+                    isMod = m.hasPermission(Permission.MANAGE_SERVER) || m.hasPermission(Permission.ADMINISTRATOR) || m.isOwner();
+                }
+
+                boolean channelPermitted = false;
 
                 ArrayList<String> channels = idh.getAllAllowedChannels(m);
 
                 if(channels == null)
-                    canGo = true;
+                    channelPermitted = true;
                 else if(!channels.isEmpty()) {
                     if (mc instanceof ThreadChannel tc) {
                         IThreadContainerUnion parent = tc.getParentChannel();
 
-                        canGo = channels.contains(tc.getId());
+                        channelPermitted = channels.contains(tc.getId());
 
                         if (parent instanceof ForumChannel) {
-                            canGo |= channels.contains(parent.getId());
+                            channelPermitted |= channels.contains(parent.getId());
                         }
                     } else {
-                        canGo = channels.contains(mc.getId());
+                        channelPermitted = channels.contains(mc.getId());
                     }
                 }
 
-                if(!mandarin && !isMod && !canGo)
+                if(!mandarin && !isMod && !channelPermitted)
                     return;
 
                 if(!mandarin && idh.banned.contains(u.getId()))
@@ -731,105 +708,6 @@ public class AllEventAdapter extends ListenerAdapter {
         StaticStore.logger.uploadLog("Bot ready to be used for shard " + client.getShardInfo().getShardString() + "!");
     }
 
-    private static void handleInitialModRole(Guild g, IDHolder id, AtomicReference<Boolean> warned) {
-        String modID = StaticStore.getRoleIDByName("PackPackMod", g);
-
-        findInviter(g).queue(inviter -> {
-            if(modID == null) {
-                if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-                    if(g.getRoles().size() == 250) {
-                        if(!warned.get()) {
-                            if(inviter != null) {
-                                inviter.getUser().openPrivateChannel()
-                                        .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", id.config.lang).replace("_", g.getName())))
-                                        .queue();
-
-                                warned.set(true);
-                            }
-                        }
-
-                        return;
-                    }
-
-                    g.createRole()
-                            .setName("PackPackMod")
-                            .queue(r -> {
-                                id.MOD = r.getId();
-
-                                if(inviter != null) {
-                                    inviter.getUser().openPrivateChannel()
-                                            .flatMap(pc -> {
-                                                String message = LangID.getStringByID("first_join", id.config.lang)
-                                                        .replace("_SSS_", g.getName());
-
-                                                return pc.sendMessage(message);
-                                            }).queue();
-                                }
-                            }, e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::handleInitialModRole - Error happened while trying to create role"));
-                } else {
-                    if(!warned.get()) {
-                        if(inviter != null) {
-                            inviter.getUser().openPrivateChannel()
-                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", id.config.lang).replace("_", g.getName())))
-                                    .queue();
-                        }
-
-                        warned.set(true);
-                    }
-                }
-
-            } else {
-                id.MOD = modID;
-
-                if(inviter != null) {
-                    inviter.getUser().openPrivateChannel()
-                            .flatMap(pc -> {
-                                String message = LangID.getStringByID("first_join", id.config.lang)
-                                        .replace("_SSS_", g.getName());
-
-                                return pc.sendMessage(message);
-                            }).queue();
-                }
-            }
-        });
-    }
-
-    private static void reassignTempModRole(Guild g, IDHolder holder, AtomicReference<Boolean> warned) {
-        if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-            if(g.getRoles().size() == 250) {
-                if(!warned.get()) {
-                    findInviter(g).queue(inviter -> {
-                        if(inviter != null) {
-                            inviter.getUser().openPrivateChannel()
-                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.config.lang).replace("_", g.getName())))
-                                    .queue(null, e -> { });
-
-                            warned.set(true);
-                        }
-                    });
-                }
-
-                return;
-            }
-
-            g.createRole()
-                    .setName("PackPackMod")
-                    .queue(r -> holder.MOD = r.getId(), e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::reassignTempModRole - Error happened while trying to create role"));
-        } else {
-            if(!warned.get()) {
-                findInviter(g).queue(inviter -> {
-                    if(inviter != null) {
-                        inviter.getUser().openPrivateChannel()
-                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.config.lang).replace("_", g.getName())))
-                                .queue(null, e -> { });
-
-                        warned.set(true);
-                    }
-                });
-            }
-        }
-    }
-
     private static void notifyModerators(JDA client, User u, String content) {
         List<Guild> guilds = client.getGuilds();
 
@@ -889,63 +767,26 @@ public class AllEventAdapter extends ListenerAdapter {
     private static void performClientReady(JDA client) {
         System.out.println("Validating roles for shard " + client.getShardInfo() + "...");
 
-        List<Guild> l = client.getGuilds();
+        List<Guild> l = client.getGuilds().stream().filter(Objects::nonNull).toList();
 
         for (Guild guild : l) {
-            if (guild != null) {
-                IDHolder id = StaticStore.idHolder.get(guild.getId());
+            IDHolder id = StaticStore.idHolder.computeIfAbsent(guild.getId(), k -> new IDHolder(guild));
+            List<Role> roles = guild.getRoles();
 
-                AtomicReference<Boolean> warned = new AtomicReference<>(false);
-
-                if (id == null) {
-                    final IDHolder idh = new IDHolder();
-
-                    String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
-
-                    if(modID == null) {
-                        reassignTempModRole(guild, idh, warned);
-                    } else {
-                        idh.MOD = modID;
-                    }
-
-                    StaticStore.idHolder.put(guild.getId(), idh);
-                } else {
-                    //Validate Role
-                    String mod = id.MOD;
-
-                    if(mod == null) {
-                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
-
-                        if(modID == null) {
-                            reassignTempModRole(guild, id, warned);
-                        } else {
-                            id.MOD = modID;
-                        }
-                    } else {
-                        List<Role> roles = guild.getRoles();
-
-                        boolean found = false;
-
-                        for(Role r : roles) {
-                            if(r.getId().equals(mod)) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if(found)
-                            continue;
-
-                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
-
-                        if(modID == null) {
-                            reassignTempModRole(guild, id, warned);
-                        } else {
-                            id.MOD = modID;
-                        }
-                    }
-                }
+            //Validate Role
+            if (roles.stream().noneMatch(r -> r.getId().equals(id.moderator))) {
+                id.moderator = null;
             }
+
+            if (roles.stream().noneMatch(r -> r.getId().equals(id.member))) {
+                id.moderator = null;
+            }
+
+            if (roles.stream().noneMatch(r -> r.getId().equals(id.booster))) {
+                id.booster = null;
+            }
+
+            id.ID.entrySet().removeIf(entry -> roles.stream().noneMatch(r -> r.getId().equals(entry.getValue())));
         }
 
         System.out.println("Sending online status for shard " + client.getShardInfo() + "...");

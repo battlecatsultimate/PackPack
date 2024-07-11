@@ -39,27 +39,30 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
                 List<Role> roles = ee.getMentions().getRoles();
 
-                if (roles.isEmpty())
-                    return;
+                if (roles.isEmpty()) {
+                    holder.moderator = null;
 
-                Role role = roles.getFirst();
+                    applyResult(event);
+                } else {
+                    Role role = roles.getFirst();
 
-                if (role == null)
-                    return;
+                    if (role == null)
+                        return;
 
-                if (roleAlreadyRegistered(event, role)) {
-                    return;
+                    if (roleAlreadyRegistered(event, role)) {
+                        return;
+                    }
+
+                    holder.moderator = role.getId();
+
+                    event.deferReply()
+                            .setContent(LangID.getStringByID("sercon_modset", lang).formatted("<@&" + role.getId() + ">"))
+                            .setAllowedMentions(new ArrayList<>())
+                            .setEphemeral(true)
+                            .queue();
+
+                    applyResult(event);
                 }
-
-                holder.MOD = role.getId();
-
-                event.deferReply()
-                        .setContent(LangID.getStringByID("sercon_modset", lang).formatted("<@&" + role.getId() + ">"))
-                        .setAllowedMentions(new ArrayList<>())
-                        .setEphemeral(true)
-                        .queue();
-
-                applyResult();
             }
             case "member", "booster" -> {
                 if (!(event instanceof EntitySelectInteractionEvent ee))
@@ -199,11 +202,19 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
+        String moderatorRole;
+
+        if (holder.moderator == null) {
+            moderatorRole = LangID.getStringByID("sercon_rolemanager", lang);
+        } else {
+            moderatorRole = "<@&" + holder.moderator + ">";
+        }
+
         StringBuilder builder = new StringBuilder(LangID.getStringByID("sercon_roletit", lang).formatted(EmojiStore.ROLE.getFormatted()))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_roledesc", lang))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), "<@&" + holder.MOD + ">"))
+                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_rolemoddesc", lang))
                 .append("\n");
@@ -240,22 +251,23 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         List<LayoutComponent> result = new ArrayList<>();
 
         Guild g = getAuthorMessage().getGuild();
+        List<Role> roles = g.getRoles();
 
-        EntitySelectMenu.DefaultValue moderator = g.getRoles()
+        EntitySelectMenu.DefaultValue moderator = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.MOD))
+                .filter(r -> r.getId().equals(holder.moderator))
                 .findAny()
                 .map(role -> EntitySelectMenu.DefaultValue.role(role.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue member = g.getRoles()
+        EntitySelectMenu.DefaultValue member = roles
                 .stream()
                 .filter(r -> r.getId().equals(holder.member))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue booster = g.getRoles()
+        EntitySelectMenu.DefaultValue booster = roles
                 .stream()
                 .filter(r -> r.getId().equals(holder.booster))
                 .findAny()
@@ -265,8 +277,8 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("moderator", EntitySelectMenu.SelectTarget.ROLE)
-                                .setDefaultValues(moderator)
-                                .setRequiredRange(1, 1)
+                                .setDefaultValues(moderator == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { moderator })
+                                .setRequiredRange(0, 1)
                                 .build()
                 )
         );
@@ -320,7 +332,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
     private boolean roleAlreadyRegistered(GenericComponentInteractionCreateEvent event, Role role) {
         String id = role.getId();
 
-        if (id.equals(holder.MOD)) {
+        if (id.equals(holder.moderator)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
                     .setAllowedMentions(new ArrayList<>())

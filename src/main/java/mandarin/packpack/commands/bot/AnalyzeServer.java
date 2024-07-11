@@ -89,10 +89,16 @@ public class AnalyzeServer extends ConstraintCommand {
                             break;
                     }
 
-                    Role role = g.getRoleById(idHolder.MOD);
+                    Role role;
+
+                    if (idHolder.moderator == null) {
+                        role = null;
+                    } else {
+                        role = g.getRoleById(idHolder.moderator);
+                    }
 
                     if(role == null) {
-                        builder.append("\nisProperlySet? : Unknown\n\n");
+                        builder.append("\nisProperlySet? : No moderator role\n\n");
                     } else {
                         builder.append("isProperlySet? : ")
                                 .append(!role.getName().equals("PackPackMod"))

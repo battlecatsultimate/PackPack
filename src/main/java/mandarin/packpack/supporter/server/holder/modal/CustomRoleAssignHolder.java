@@ -90,7 +90,7 @@ public class CustomRoleAssignHolder extends ModalHolder {
             return;
         }
 
-        if (holder.MOD.equals(r.getId())) {
+        if (holder.moderator != null && holder.moderator.equals(r.getId())) {
             event.reply(LangID.getStringByID("idset_modalready", lang))
                     .setEphemeral(true)
                     .queue();

@@ -206,7 +206,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
         CommonStatic.Lang.Locale lang = holder.config.lang;
 
         String[] data = { "moderator", "member", "booster" };
-        String[] ids = { holder.MOD, holder.member, holder.booster};
+        String[] ids = { holder.moderator, holder.member, holder.booster};
 
         StringBuilder result = new StringBuilder();
 

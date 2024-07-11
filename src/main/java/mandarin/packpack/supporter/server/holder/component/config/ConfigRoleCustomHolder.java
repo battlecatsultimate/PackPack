@@ -354,7 +354,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
     private boolean roleAlreadyRegistered(GenericComponentInteractionCreateEvent event, Role role) {
         String id = role.getId();
 
-        if (id.equals(holder.MOD)) {
+        if (id.equals(holder.moderator)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
                     .setAllowedMentions(new ArrayList<>())

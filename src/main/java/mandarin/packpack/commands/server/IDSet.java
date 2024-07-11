@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.config.ConfigRoleRegistrationHolder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -45,11 +46,19 @@ public class IDSet extends ConstraintCommand {
         if (holder == null)
             return "";
 
+        String moderatorRole;
+
+        if (holder.moderator == null) {
+            moderatorRole = LangID.getStringByID("sercon_rolemanager", lang);
+        } else {
+            moderatorRole = "<@&" + holder.moderator + ">";
+        }
+
         StringBuilder builder = new StringBuilder(LangID.getStringByID("sercon_roletit", lang).formatted(EmojiStore.ROLE.getFormatted()))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_roledesc", lang))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), "<@&" + holder.MOD + ">"))
+                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_rolemoddesc", lang))
                 .append("\n");
@@ -88,21 +97,23 @@ public class IDSet extends ConstraintCommand {
         if (holder == null)
             return result;
 
-        EntitySelectMenu.DefaultValue moderator = g.getRoles()
+        List<Role> roles = g.getRoles();
+
+        EntitySelectMenu.DefaultValue moderator = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.MOD))
+                .filter(r -> r.getId().equals(holder.moderator))
                 .findAny()
                 .map(role -> EntitySelectMenu.DefaultValue.role(role.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue member = g.getRoles()
+        EntitySelectMenu.DefaultValue member = roles
                 .stream()
                 .filter(r -> r.getId().equals(holder.member))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue booster = g.getRoles()
+        EntitySelectMenu.DefaultValue booster = roles
                 .stream()
                 .filter(r -> r.getId().equals(holder.booster))
                 .findAny()
@@ -112,8 +123,8 @@ public class IDSet extends ConstraintCommand {
         result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("moderator", EntitySelectMenu.SelectTarget.ROLE)
-                                .setDefaultValues(moderator)
-                                .setRequiredRange(1, 1)
+                                .setDefaultValues(moderator == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { moderator })
+                                .setRequiredRange(0, 1)
                                 .build()
                 )
         );

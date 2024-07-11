@@ -8,10 +8,7 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -33,13 +30,17 @@ public abstract class ConstraintCommand extends Command {
     final String constRole;
     protected final IDHolder holder;
 
+    private final ConstraintCommand.ROLE role;
+
     public ConstraintCommand(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id, boolean requireGuild) {
         super(lang, requireGuild);
+
+        this.role = role;
 
         switch (role) {
             case MOD -> {
                 if (id != null) {
-                    constRole = id.MOD;
+                    constRole = id.moderator;
                 } else {
                     constRole = null;
                 }
@@ -79,9 +80,6 @@ public abstract class ConstraintCommand extends Command {
                 return;
             }
 
-            boolean hasRole;
-            boolean isMod = false;
-
             User u = msg.getAuthor();
 
             SpamPrevent spam;
@@ -95,28 +93,6 @@ public abstract class ConstraintCommand extends Command {
                 spam = new SpamPrevent();
 
                 StaticStore.spamData.put(u.getId(), spam);
-            }
-
-            if(constRole == null) {
-                hasRole = true;
-            } else if(constRole.equals("MANDARIN")) {
-                hasRole = u.getId().equals(StaticStore.MANDARIN_SMELL);
-            } else if(constRole.equals("TRUSTED")) {
-                hasRole = StaticStore.contributors.contains(u.getId());
-
-                if (hasRole && !u.getId().equals(StaticStore.MANDARIN_SMELL)) {
-                    StaticStore.logger.uploadLog("User " + loader.getUser().getAsMention() + " called command : \n\n" + loader.getContent());
-                }
-            } else {
-                Member me = loader.getMember();
-
-                String role = StaticStore.rolesToString(me.getRoles());
-
-                hasRole = role.contains(constRole) || u.getId().equals(StaticStore.MANDARIN_SMELL);
-
-                if(!hasRole) {
-                    isMod = holder != null && holder.MOD != null && role.contains(holder.MOD);
-                }
             }
 
             if(ch instanceof GuildMessageChannel tc) {
@@ -148,45 +124,94 @@ public abstract class ConstraintCommand extends Command {
                 }
             }
 
-            if(!hasRole && !isMod) {
-                if(constRole.equals("MANDARIN")) {
-                    replyToMessageSafely(ch, LangID.getStringByID("const_man", lang), loader.getMessage(), a -> a);
-                } else if(constRole.equals("TRUSTED")) {
-                    replyToMessageSafely(ch, LangID.getStringByID("const_con", lang), loader.getMessage(), a -> a);
-                } else {
-                    if (ch instanceof GuildChannel) {
-                        Guild g = loader.getGuild();
+            String denialMessage = null;
+            boolean isMandarin = u.getId().equals(StaticStore.MANDARIN_SMELL);
+            boolean hasRole;
 
-                        replyToMessageSafely(ch, LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole)), loader.getMessage(), a -> a);
+            switch (role) {
+                case MOD -> {
+                    Member m = loader.getMember();
+
+                    if (constRole != null) {
+                        hasRole = m.getRoles().stream().anyMatch(r -> r.getId().equals(constRole));
+
+                        if (!hasRole) {
+                            denialMessage = LangID.getStringByID("command_denialmod", lang).formatted(constRole);
+                        }
+                    } else {
+                        //Find if user has server manage permission
+                        hasRole = m.getRoles().stream().anyMatch(r -> r.hasPermission(Permission.MANAGE_SERVER) || r.hasPermission(Permission.ADMINISTRATOR));
+
+                        if (!hasRole) {
+                            //Maybe role isn't existing, check if owner
+                            hasRole = m.isOwner();
+                        }
+
+                        if (!hasRole) {
+                            denialMessage = LangID.getStringByID("command_denialnomod", lang);
+                        }
                     }
                 }
-            } else {
-                StaticStore.executed++;
+                case MEMBER -> {
+                    if (constRole != null) {
+                        Member m = loader.getMember();
+                        List<Role> roles = m.getRoles();
 
-                try {
-                    RecordableThread t = new RecordableThread(() -> doSomething(loader), e -> {
-                        String data = "Command : " + loader.getContent() + "\n\n" +
-                                "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                                "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+                        boolean isModerator = false;
 
-                        if (ch instanceof GuildChannel) {
-                            Guild g = loader.getGuild();
+                        if (holder != null) {
+                            String moderatorID = holder.moderator;
 
-                            data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                            if (moderatorID != null) {
+                                isModerator = roles.stream().anyMatch(r -> r.getId().equals(moderatorID));
+                            } else {
+                                isModerator = m.getRoles().stream().anyMatch(r -> r.hasPermission(Permission.MANAGE_SERVER) || r.hasPermission(Permission.ADMINISTRATOR));
+
+                                if (!isModerator) {
+                                    //Maybe role isn't existing, check if owner
+                                    isModerator = m.isOwner();
+                                }
+                            }
                         }
 
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
+                        hasRole = isModerator || roles.stream().anyMatch(r -> r.getId().equals(constRole));
 
-                        if(e instanceof ErrorResponseException) {
-                            onFail(loader, SERVER_ERROR);
-                        } else {
-                            onFail(loader, DEFAULT_ERROR);
+                        if (!hasRole) {
+                            denialMessage = LangID.getStringByID("command_denialnorole", lang).formatted(constRole);
                         }
-                    }, loader);
+                    } else {
+                        hasRole = true;
+                    }
+                }
+                case TRUSTED -> {
+                    hasRole = StaticStore.contributors.contains(u.getId());
 
-                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
-                    t.start();
-                } catch (Exception e) {
+                    if (!hasRole) {
+                        denialMessage = LangID.getStringByID("command_denialtrusted", lang).formatted(loader.getClient().getSelfUser().getId(), StaticStore.MANDARIN_SMELL);
+                    }
+                }
+                case MANDARIN -> {
+                    hasRole = isMandarin;
+
+                    if (!hasRole) {
+                        denialMessage = LangID.getStringByID("command_denialdev", lang).formatted(StaticStore.MANDARIN_SMELL);
+                    }
+                }
+                default -> throw new IllegalStateException("E/ConstraintCommand::execute - Unknown value : %s".formatted(role));
+            }
+
+            if(!hasRole) {
+                if (denialMessage != null) {
+                    replyToMessageSafely(ch, denialMessage, loader.getMessage(), a -> a);
+                }
+
+                return;
+            }
+
+            StaticStore.executed++;
+
+            try {
+                RecordableThread t = new RecordableThread(() -> doSomething(loader), e -> {
                     String data = "Command : " + loader.getContent() + "\n\n" +
                             "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                             "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
@@ -204,13 +229,34 @@ public abstract class ConstraintCommand extends Command {
                     } else {
                         onFail(loader, DEFAULT_ERROR);
                     }
+                }, loader);
+
+                t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
+                t.start();
+            } catch (Exception e) {
+                String data = "Command : " + loader.getContent() + "\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                if (ch instanceof GuildChannel) {
+                    Guild g = loader.getGuild();
+
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
                 }
 
-                try {
-                    onSuccess(loader);
-                } catch (Exception e) {
-                    StaticStore.logger.uploadErrorLog(e, "Failed to perform onSuccess process");
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
+
+                if(e instanceof ErrorResponseException) {
+                    onFail(loader, SERVER_ERROR);
+                } else {
+                    onFail(loader, DEFAULT_ERROR);
                 }
+            }
+
+            try {
+                onSuccess(loader);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform onSuccess process");
             }
         });
     }

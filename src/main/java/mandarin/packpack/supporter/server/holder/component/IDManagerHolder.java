@@ -77,7 +77,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                                     .mentionRepliedUser(false)
                                     .queue();
                         } else {
-                            holder.MOD = r.getId();
+                            holder.moderator = r.getId();
 
                             event.deferReply(true)
                                     .setContent(String.format(LangID.getStringByID("idset_modset", lang), r.getAsMention(), r.getId()))
@@ -299,7 +299,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
         StringBuilder result = new StringBuilder();
 
         String[] data = { "moderator", "member", "booster" };
-        String[] ids = { holder.MOD, holder.member, holder.booster};
+        String[] ids = { holder.moderator, holder.member, holder.booster};
 
         for(int i = page * 3; i < (page + 1) * 3; i++) {
             switch (i) {
@@ -613,7 +613,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
         if(id.equals("none"))
             return false;
 
-        boolean res = id.equals(holder.MOD) || id.equals(holder.member) || id.equals(holder.booster);
+        boolean res = id.equals(holder.moderator) || id.equals(holder.member) || id.equals(holder.booster);
 
         if(res)
             return true;

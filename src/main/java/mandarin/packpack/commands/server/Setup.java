@@ -78,8 +78,8 @@ public class Setup extends ConstraintCommand {
         if(holder == null)
             throw new IllegalStateException("E/Setup::alreadySet - IDHolder must not be null");
 
-        if(holder.MOD != null) {
-            Role r = g.getRoleById(holder.MOD);
+        if(holder.moderator != null) {
+            Role r = g.getRoleById(holder.moderator);
 
             if(r == null) {
                 StaticStore.logger.uploadLog("W/Setup::alreadySet | Role was null");
