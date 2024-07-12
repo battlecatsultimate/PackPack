@@ -3,10 +3,13 @@ package mandarin.packpack.supporter.server.data;
 import com.google.gson.*;
 import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -21,15 +24,15 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("mod")) {
-            id.MOD = id.setOrNull(obj.get("mod").getAsString());
+            id.moderator = id.setOrNull(obj.get("mod").getAsString());
         }
 
         if(obj.has("mem")) {
-            id.MEMBER = id.setOrNull(obj.get("mem").getAsString());
+            id.member = id.setOrNull(obj.get("mem").getAsString());
         }
 
         if(obj.has("ann")) {
-            id.ANNOUNCE = id.setOrNull(obj.get("ann").getAsString());
+            id.announceChannel = id.setOrNull(obj.get("ann").getAsString());
         }
 
         if(obj.has("status")) {
@@ -41,7 +44,7 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("bo")) {
-            id.BOOSTER = id.setOrNull(obj.get("bo").getAsString());
+            id.booster = id.setOrNull(obj.get("bo").getAsString());
         }
 
         if(obj.has("channel")) {
@@ -115,20 +118,21 @@ public class IDHolder implements Cloneable {
     /**
      * Moderator role ID, this must not be null value
      */
-    public String MOD;
+    @Nullable
+    public String moderator;
     /**
      * Member role ID, nullable value. If this value is null, it means member will be
      * everyone
      */
-    public String MEMBER;
+    public String member;
     /**
      * Booster role ID, nullable value
      */
-    public String BOOSTER;
+    public String booster;
     /**
      * Channel where bot will post announcements, nullable value
      */
-    public String ANNOUNCE;
+    public String announceChannel;
     /**
      * Channel where bot will post random link posts in bot's DM from other user. This is
      *  for monitoring compromised accounts sending scam link to everyone
@@ -225,10 +229,10 @@ public class IDHolder implements Cloneable {
      * @param me Member role ID
      * @param bo Booster roel ID
      */
-    public IDHolder(String m, String me, String bo) {
-        this.MOD = m;
-        this.MEMBER = me;
-        this.BOOSTER = bo;
+    public IDHolder(@Nonnull String m, String me, String bo) {
+        this.moderator = m;
+        this.member = me;
+        this.booster = bo;
 
         config.lang = CommonStatic.Lang.Locale.EN;
     }
@@ -236,8 +240,26 @@ public class IDHolder implements Cloneable {
     /**
      * Default IDHolder constructor for any server
      */
-    public IDHolder() {
-        config.lang = CommonStatic.Lang.Locale.EN;
+    public IDHolder(Guild guild) {
+        switch (guild.getLocale()) {
+            case CHINESE_TAIWAN, CHINESE_CHINA -> config.lang = CommonStatic.Lang.Locale.ZH;
+            case KOREAN -> config.lang = CommonStatic.Lang.Locale.KR;
+            case JAPANESE -> config.lang = CommonStatic.Lang.Locale.JP;
+            case RUSSIAN ->  config.lang = CommonStatic.Lang.Locale.RU;
+            case FRENCH -> config.lang = CommonStatic.Lang.Locale.FR;
+            case SPANISH, SPANISH_LATAM -> config.lang = CommonStatic.Lang.Locale.ES;
+            case ITALIAN -> config.lang = CommonStatic.Lang.Locale.IT;
+            case GERMAN -> config.lang = CommonStatic.Lang.Locale.DE;
+            case THAI -> config.lang = CommonStatic.Lang.Locale.TH;
+            default -> config.lang = CommonStatic.Lang.Locale.EN;
+        }
+    }
+
+    /**
+     * Empty constructor used for reading files
+     */
+    private IDHolder() {
+
     }
 
     /**
@@ -247,16 +269,16 @@ public class IDHolder implements Cloneable {
      */
     public void inject(IDHolder holder) {
         publish = holder.publish;
-        MOD = holder.MOD;
-        MEMBER = holder.MEMBER;
-        ANNOUNCE = holder.ANNOUNCE;
+        moderator = holder.moderator;
+        member = holder.member;
+        announceChannel = holder.announceChannel;
         status = holder.status;
-        BOOSTER = holder.BOOSTER;
+        booster = holder.booster;
         channel = holder.channel;
         ID = holder.ID;
         logDM = holder.logDM;
         eventMap = holder.eventMap;
-        config.inject(holder.config);
+        config.inject(config);
         banned = holder.banned;
         channelException = holder.channelException;
         forceCompact = holder.forceCompact;
@@ -276,11 +298,11 @@ public class IDHolder implements Cloneable {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("publish", publish);
-        obj.addProperty("mod", getOrNull(MOD));
-        obj.addProperty("mem", getOrNull(MEMBER));
-        obj.addProperty("ann", getOrNull(ANNOUNCE));
+        obj.addProperty("mod", getOrNull(moderator));
+        obj.addProperty("mem", getOrNull(member));
+        obj.addProperty("ann", getOrNull(announceChannel));
         obj.add("status", StaticStore.listToJsonString(status));
-        obj.addProperty("bo", getOrNull(BOOSTER));
+        obj.addProperty("bo", getOrNull(booster));
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", getOrNull(logDM));
@@ -302,7 +324,7 @@ public class IDHolder implements Cloneable {
     /**
      * Get allowed channels where this {@code member} can use bot's commands
      *
-     * @param member Member data who is in this {@link net.dv8tion.jda.api.entities.Guild}
+     * @param member Data of member who is in this {@link net.dv8tion.jda.api.entities.Guild}
      *
      * @return List of channel ID where {@code member} can use the commands
      */
@@ -312,7 +334,7 @@ public class IDHolder implements Cloneable {
 
         ArrayList<String> result = new ArrayList<>();
 
-        if(MEMBER == null) {
+        if(this.member == null) {
             List<String> channels = channel.get("Member");
 
             if(channels == null)
@@ -345,7 +367,7 @@ public class IDHolder implements Cloneable {
     }
 
     private boolean isSetAsRole(String id) {
-        return id.equals(MOD) || id.equals(MEMBER) || id.equals(BOOSTER) || hasIDasRole(id);
+        return id.equals(moderator) || id.equals(member) || id.equals(booster) || hasIDasRole(id);
     }
 
     private String getOrNull(String id) {
@@ -538,11 +560,11 @@ public class IDHolder implements Cloneable {
         try {
             IDHolder id = (IDHolder) super.clone();
 
-            id.MOD = MOD;
-            id.MEMBER = MEMBER;
-            id.BOOSTER = BOOSTER;
+            id.moderator = moderator;
+            id.member = member;
+            id.booster = booster;
 
-            id.ANNOUNCE = ANNOUNCE;
+            id.announceChannel = announceChannel;
             id.logDM = logDM;
 
             id.publish = publish;

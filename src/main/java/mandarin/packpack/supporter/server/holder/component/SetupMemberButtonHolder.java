@@ -67,8 +67,8 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                 
                 StaticStore.removeHolder(userID, this);
                 
-                holder.MOD = modID;
-                holder.MEMBER = roleID;
+                holder.moderator = modID;
+                holder.member = roleID;
                 
                 StaticStore.idHolder.put(g.getId(), holder);
                 

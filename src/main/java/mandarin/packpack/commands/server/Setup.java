@@ -78,8 +78,8 @@ public class Setup extends ConstraintCommand {
         if(holder == null)
             throw new IllegalStateException("E/Setup::alreadySet - IDHolder must not be null");
 
-        if(holder.MOD != null) {
-            Role r = g.getRoleById(holder.MOD);
+        if(holder.moderator != null) {
+            Role r = g.getRoleById(holder.moderator);
 
             if(r == null) {
                 StaticStore.logger.uploadLog("W/Setup::alreadySet | Role was null");
@@ -87,7 +87,7 @@ public class Setup extends ConstraintCommand {
                 return false;
             }
 
-            return !r.getName().equals("PackPackMod") || holder.MEMBER != null;
+            return !r.getName().equals("PackPackMod") || holder.member != null;
         } else {
             StaticStore.logger.uploadLog("Invalid ID holder data found, moderator role ID was null\nServer ID : "+g.getId()+" | "+g.getName()+"\n-----ID Holder-----\n\n"+holder);
         }

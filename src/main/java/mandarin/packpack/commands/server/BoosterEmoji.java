@@ -43,7 +43,7 @@ public class BoosterEmoji extends ConstraintCommand {
         MessageChannel ch = loader.getChannel();
         Message me = loader.getMessage();
 
-        if(holder.BOOSTER == null) {
+        if(holder.booster == null) {
             createMessageWithNoPings(ch, LangID.getStringByID("boorole_norole", lang));
             return;
         }
@@ -71,8 +71,8 @@ public class BoosterEmoji extends ConstraintCommand {
 
         if(m != null) {
             try {
-                if(!StaticStore.rolesToString(m.getRoles()).contains(holder.BOOSTER)) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boorole_noboost", lang).replace("_RRR_", holder.BOOSTER));
+                if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
+                    createMessageWithNoPings(ch, LangID.getStringByID("boorole_noboost", lang).replace("_RRR_", holder.booster));
                     return;
                 }
 

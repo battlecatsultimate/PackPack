@@ -10,10 +10,7 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -37,22 +34,30 @@ public abstract class GlobalTimedConstraintCommand extends Command {
     @Nullable
     protected final IDHolder holder;
 
+    private final ConstraintCommand.ROLE role;
+
     private boolean timerStart = true;
 
     public GlobalTimedConstraintCommand(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id, String mainID, long millis, boolean requireGuild) {
         super(lang, requireGuild);
 
+        if (!requireGuild && role == ConstraintCommand.ROLE.MOD) {
+            throw new IllegalStateException("E/GlobalTimedConstraintCommand::init - Invalid condition found for command for %s : Moderator level is required while server isn't required".formatted(this.getClass().getName()));
+        }
+
+        this.role = role;
+
         switch (role) {
             case MOD -> {
                 if (id != null) {
-                    constRole = id.MOD;
+                    constRole = id.moderator;
                 } else {
                     constRole = null;
                 }
             }
             case MEMBER -> {
                 if (id != null) {
-                    constRole = id.MEMBER;
+                    constRole = id.member;
                 } else {
                     constRole = null;
                 }
@@ -107,29 +112,6 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                 StaticStore.spamData.put(u.getId(), spam);
             }
 
-            boolean hasRole;
-            boolean isMandarin = u.getId().equals(StaticStore.MANDARIN_SMELL);
-
-            if(constRole == null) {
-                hasRole = true;
-            } else if(constRole.equals("MANDARIN")) {
-                hasRole = u.getId().equals(StaticStore.MANDARIN_SMELL);
-            } else if(constRole.equals("TRUSTED")) {
-                hasRole = StaticStore.contributors.contains(u.getId());
-
-                if (hasRole && !u.getId().equals(StaticStore.MANDARIN_SMELL)) {
-                    StaticStore.logger.uploadLog("User " + loader.getUser().getAsMention() + " called command : \n\n" + loader.getContent());
-                }
-            } else {
-                Member me = loader.getMember();
-
-                String role = StaticStore.rolesToString(me.getRoles());
-
-                boolean isMod = holder != null && holder.MOD != null && role.contains(holder.MOD);
-
-                hasRole = isMod || role.contains(constRole) || u.getId().equals(StaticStore.MANDARIN_SMELL);
-            }
-
             if(ch instanceof GuildMessageChannel tc) {
                 Guild g = loader.getGuild();
 
@@ -159,112 +141,182 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                 }
             }
 
-            if(!hasRole && !isMandarin) {
-                if(constRole.equals("MANDARIN")) {
-                    replyToMessageSafely(ch, LangID.getStringByID("const_man", lang), loader.getMessage(), a -> a);
-                } else if(constRole.equals("TRUSTED")) {
-                    replyToMessageSafely(ch, LangID.getStringByID("const_con", lang), loader.getMessage(), a -> a);
-                } else {
-                    if (ch instanceof GuildChannel) {
-                        Guild g = loader.getGuild();
+            String denialMessage = null;
+            boolean isMandarin = u.getId().equals(StaticStore.MANDARIN_SMELL);
+            boolean hasRole;
 
-                        replyToMessageSafely(ch, LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole)), loader.getMessage(), a -> a);
-                    }
-                }
-            } else {
-                setOptionalID(loader);
+            switch (role) {
+                case MOD -> {
+                    Member m = loader.getMember();
 
-                String id = mainID+optionalID;
+                    if (constRole != null) {
+                        hasRole = m.getRoles().stream().anyMatch(r -> r.getId().equals(constRole));
 
-                try {
-                    TimeBoolean bool = StaticStore.canDo.get(id);
-
-                    if(!isMandarin && bool != null && !bool.canDo && System.currentTimeMillis() - bool.time < bool.totalTime) {
-                        ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((bool.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).queue();
+                        if (!hasRole) {
+                            denialMessage = LangID.getStringByID("command_denialmod", lang).formatted(constRole);
+                        }
                     } else {
-                        if(!aborts.contains(optionalID)) {
-                            System.out.println("Added process : "+id);
+                        //Find if user has server manage permission
+                        hasRole = m.getRoles().stream().anyMatch(r -> r.hasPermission(Permission.MANAGE_SERVER) || r.hasPermission(Permission.ADMINISTRATOR));
 
-                            StaticStore.canDo.put(id, new TimeBoolean(false, time));
+                        if (!hasRole) {
+                            //Maybe role isn't existing, check if owner
+                            hasRole = m.isOwner();
+                        }
 
-                            StaticStore.executed++;
-
-                            RecordableThread t = new RecordableThread(() -> {
-                                doSomething(loader);
-
-                                if(timerStart && time != 0) {
-                                    StaticStore.executorHandler.postDelayed(time, () -> {
-                                        System.out.println("Remove Process : "+id+" | "+time);
-
-                                        StaticStore.canDo.put(id, new TimeBoolean(true));
-                                    });
-                                } else {
-                                    StaticStore.canDo.put(id, new TimeBoolean(true));
-                                }
-                            }, e -> {
-                                String data = "Command : " + loader.getContent() + "\n\n" +
-                                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
-
-                                if (ch instanceof GuildChannel) {
-                                    Guild g = loader.getGuild();
-
-                                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
-                                }
-
-                                StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
-
-                                if(e instanceof ErrorResponseException) {
-                                    onFail(loader, SERVER_ERROR);
-                                } else {
-                                    onFail(loader, DEFAULT_ERROR);
-                                }
-
-                                StaticStore.canDo.put(id, new TimeBoolean(true));
-                            }, loader);
-
-                            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
-                            t.start();
-                        } else {
-                            onAbort(loader);
+                        if (!hasRole) {
+                            denialMessage = LangID.getStringByID("command_denialnomod", lang);
                         }
                     }
-                } catch (Exception e) {
-                    String data = "Command : " + loader.getContent() + "\n\n" +
-                            "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+                }
+                case MEMBER -> {
+                    if (constRole != null) {
+                        Member m = loader.getMember();
+                        List<Role> roles = m.getRoles();
 
-                    if (ch instanceof GuildChannel) {
-                        Guild g = loader.getGuild();
+                        boolean isModerator = false;
 
-                        data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
-                    }
+                        if (holder != null) {
+                            String moderatorID = holder.moderator;
 
-                    StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
-                    StaticStore.canDo.put(id, new TimeBoolean(true));
+                            if (moderatorID != null) {
+                                isModerator = roles.stream().anyMatch(r -> r.getId().equals(moderatorID));
+                            } else {
+                                isModerator = m.getRoles().stream().anyMatch(r -> r.hasPermission(Permission.MANAGE_SERVER) || r.hasPermission(Permission.ADMINISTRATOR));
 
-                    if(e instanceof ErrorResponseException) {
-                        onFail(loader, SERVER_ERROR);
+                                if (!isModerator) {
+                                    //Maybe role isn't existing, check if owner
+                                    isModerator = m.isOwner();
+                                }
+                            }
+                        }
+
+                        hasRole = isModerator || roles.stream().anyMatch(r -> r.getId().equals(constRole));
+
+                        if (!hasRole) {
+                            denialMessage = LangID.getStringByID("command_denialnorole", lang).formatted(constRole);
+                        }
                     } else {
-                        onFail(loader, DEFAULT_ERROR);
+                        hasRole = true;
                     }
                 }
+                case TRUSTED -> {
+                    hasRole = StaticStore.contributors.contains(u.getId());
 
-                try {
-                    onSuccess(loader);
-                } catch (Exception e) {
-                    String data = "Command : " + loader.getContent() + "\n\n" +
-                            "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
-
-                    if (ch instanceof GuildChannel) {
-                        Guild g = loader.getGuild();
-
-                        data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                    if (!hasRole) {
+                        denialMessage = LangID.getStringByID("command_denialtrusted", lang).formatted(loader.getClient().getSelfUser().getId(), StaticStore.MANDARIN_SMELL);
                     }
-
-                    StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
                 }
+                case MANDARIN -> {
+                    hasRole = isMandarin;
+
+                    if (!hasRole) {
+                        denialMessage = LangID.getStringByID("command_denialdev", lang).formatted(StaticStore.MANDARIN_SMELL);
+                    }
+                }
+                default -> throw new IllegalStateException("E/GlobalTimedConstraintCommand::execute - Unknown value : %s".formatted(role));
+            }
+
+            if(!hasRole) {
+                if (denialMessage != null) {
+                    replyToMessageSafely(ch, denialMessage, loader.getMessage(), a -> a);
+                }
+
+                return;
+            }
+
+            setOptionalID(loader);
+
+            String id = mainID+optionalID;
+
+            try {
+                TimeBoolean bool = StaticStore.canDo.get(id);
+
+                if(!isMandarin && bool != null && !bool.canDo && System.currentTimeMillis() - bool.time < bool.totalTime) {
+                    ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((bool.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).queue();
+                } else {
+                    if(!aborts.contains(optionalID)) {
+                        System.out.println("Added process : "+id);
+
+                        StaticStore.canDo.put(id, new TimeBoolean(false, time));
+
+                        StaticStore.executed++;
+
+                        RecordableThread t = new RecordableThread(() -> {
+                            doSomething(loader);
+
+                            if(timerStart && time != 0) {
+                                StaticStore.executorHandler.postDelayed(time, () -> {
+                                    System.out.println("Remove Process : "+id+" | "+time);
+
+                                    StaticStore.canDo.put(id, new TimeBoolean(true));
+                                });
+                            } else {
+                                StaticStore.canDo.put(id, new TimeBoolean(true));
+                            }
+                        }, e -> {
+                            String data = "Command : " + loader.getContent() + "\n\n" +
+                                    "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                                    "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                            if (ch instanceof GuildChannel) {
+                                Guild g = loader.getGuild();
+
+                                data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                            }
+
+                            StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
+
+                            if(e instanceof ErrorResponseException) {
+                                onFail(loader, SERVER_ERROR);
+                            } else {
+                                onFail(loader, DEFAULT_ERROR);
+                            }
+
+                            StaticStore.canDo.put(id, new TimeBoolean(true));
+                        }, loader);
+
+                        t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
+                        t.start();
+                    } else {
+                        onAbort(loader);
+                    }
+                }
+            } catch (Exception e) {
+                String data = "Command : " + loader.getContent() + "\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                if (ch instanceof GuildChannel) {
+                    Guild g = loader.getGuild();
+
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                }
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
+                StaticStore.canDo.put(id, new TimeBoolean(true));
+
+                if(e instanceof ErrorResponseException) {
+                    onFail(loader, SERVER_ERROR);
+                } else {
+                    onFail(loader, DEFAULT_ERROR);
+                }
+            }
+
+            try {
+                onSuccess(loader);
+            } catch (Exception e) {
+                String data = "Command : " + loader.getContent() + "\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                if (ch instanceof GuildChannel) {
+                    Guild g = loader.getGuild();
+
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                }
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
             }
         });
     }

@@ -68,7 +68,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                 String code = es.getValues().getFirst();
 
-                if (code.isBlank()) {
+                if (code.equals("auto")) {
                     config.lang = null;
                 } else {
                     config.lang = CommonStatic.Lang.Locale.valueOf(code);
@@ -288,7 +288,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                 case 2 -> {
                     List<SelectOption> languages = new ArrayList<>();
 
-                    languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(config.lang == null));
+                    languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "auto").withDefault(config.lang == null));
 
                     for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
                         String l = LangID.getStringByID("lang_" + locale.code, lang);

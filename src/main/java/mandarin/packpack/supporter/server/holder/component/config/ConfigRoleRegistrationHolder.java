@@ -39,27 +39,30 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
                 List<Role> roles = ee.getMentions().getRoles();
 
-                if (roles.isEmpty())
-                    return;
+                if (roles.isEmpty()) {
+                    holder.moderator = null;
 
-                Role role = roles.getFirst();
+                    applyResult(event);
+                } else {
+                    Role role = roles.getFirst();
 
-                if (role == null)
-                    return;
+                    if (role == null)
+                        return;
 
-                if (roleAlreadyRegistered(event, role)) {
-                    return;
+                    if (roleAlreadyRegistered(event, role)) {
+                        return;
+                    }
+
+                    holder.moderator = role.getId();
+
+                    event.deferReply()
+                            .setContent(LangID.getStringByID("sercon_modset", lang).formatted("<@&" + role.getId() + ">"))
+                            .setAllowedMentions(new ArrayList<>())
+                            .setEphemeral(true)
+                            .queue();
+
+                    applyResult(event);
                 }
-
-                holder.MOD = role.getId();
-
-                event.deferReply()
-                        .setContent(LangID.getStringByID("sercon_modset", lang).formatted("<@&" + role.getId() + ">"))
-                        .setAllowedMentions(new ArrayList<>())
-                        .setEphemeral(true)
-                        .queue();
-
-                applyResult();
             }
             case "member", "booster" -> {
                 if (!(event instanceof EntitySelectInteractionEvent ee))
@@ -91,33 +94,33 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 String mention;
 
                 if (event.getComponentId().equals("member")) {
-                    String oldID = holder.MEMBER;
-                    holder.MEMBER = roleID;
+                    String oldID = holder.member;
+                    holder.member = roleID;
                     id = "sercon_memset";
 
-                    if (holder.MEMBER == null)
+                    if (holder.member == null)
                         mention = "@everyone";
                     else
                         mention = "<@&" + roleID + ">";
 
-                    if (holder.MEMBER != null && holder.channel.containsKey("Member")) {
-                        holder.channel.put(holder.MEMBER, holder.channel.get("Member"));
+                    if (holder.member != null && holder.channel.containsKey("Member")) {
+                        holder.channel.put(holder.member, holder.channel.get("Member"));
                         holder.channel.remove("Member");
-                    } else if (holder.MEMBER == null && oldID != null && holder.channel.containsKey(oldID)) {
+                    } else if (holder.member == null && oldID != null && holder.channel.containsKey(oldID)) {
                         holder.channel.put("Member", holder.channel.get(oldID));
                         holder.channel.remove(oldID);
                     }
                 } else {
-                    String oldID = holder.BOOSTER;
-                    holder.BOOSTER = roleID;
+                    String oldID = holder.booster;
+                    holder.booster = roleID;
                     id = "sercon_booset";
 
-                    if (holder.BOOSTER == null)
+                    if (holder.booster == null)
                         mention = LangID.getStringByID("data_none", lang);
                     else
                         mention = "<@&" + roleID + ">";
 
-                    if (oldID != null && holder.BOOSTER == null) {
+                    if (oldID != null && holder.booster == null) {
                         holder.channel.remove(oldID);
                     }
                 }
@@ -199,21 +202,29 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
+        String moderatorRole;
+
+        if (holder.moderator == null) {
+            moderatorRole = LangID.getStringByID("sercon_rolemanager", lang);
+        } else {
+            moderatorRole = "<@&" + holder.moderator + ">";
+        }
+
         StringBuilder builder = new StringBuilder(LangID.getStringByID("sercon_roletit", lang).formatted(EmojiStore.ROLE.getFormatted()))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_roledesc", lang))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), "<@&" + holder.MOD + ">"))
+                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_rolemoddesc", lang))
                 .append("\n");
 
         String memberRole;
 
-        if (holder.MEMBER == null) {
+        if (holder.member == null) {
             memberRole = "@everyone";
         } else {
-            memberRole = "<@&" + holder.MEMBER + ">";
+            memberRole = "<@&" + holder.member + ">";
         }
 
         builder.append(LangID.getStringByID("sercon_rolemem", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
@@ -223,10 +234,10 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
         String boosterRole;
 
-        if (holder.BOOSTER == null) {
+        if (holder.booster == null) {
             boosterRole = LangID.getStringByID("data_none", lang);
         } else {
-            boosterRole = "<@&" + holder.BOOSTER + ">";
+            boosterRole = "<@&" + holder.booster + ">";
         }
 
         builder.append(LangID.getStringByID("sercon_roleboo", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
@@ -240,24 +251,25 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         List<LayoutComponent> result = new ArrayList<>();
 
         Guild g = getAuthorMessage().getGuild();
+        List<Role> roles = g.getRoles();
 
-        EntitySelectMenu.DefaultValue moderator = g.getRoles()
+        EntitySelectMenu.DefaultValue moderator = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.MOD))
+                .filter(r -> r.getId().equals(holder.moderator))
                 .findAny()
                 .map(role -> EntitySelectMenu.DefaultValue.role(role.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue member = g.getRoles()
+        EntitySelectMenu.DefaultValue member = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.MEMBER))
+                .filter(r -> r.getId().equals(holder.member))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue booster = g.getRoles()
+        EntitySelectMenu.DefaultValue booster = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.BOOSTER))
+                .filter(r -> r.getId().equals(holder.booster))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);
@@ -265,8 +277,8 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("moderator", EntitySelectMenu.SelectTarget.ROLE)
-                                .setDefaultValues(moderator)
-                                .setRequiredRange(1, 1)
+                                .setDefaultValues(moderator == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { moderator })
+                                .setRequiredRange(0, 1)
                                 .build()
                 )
         );
@@ -320,7 +332,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
     private boolean roleAlreadyRegistered(GenericComponentInteractionCreateEvent event, Role role) {
         String id = role.getId();
 
-        if (id.equals(holder.MOD)) {
+        if (id.equals(holder.moderator)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
                     .setAllowedMentions(new ArrayList<>())
@@ -328,7 +340,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.MEMBER)) {
+        } else if (id.equals(holder.member)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolememalready", lang))
                     .setAllowedMentions(new ArrayList<>())
@@ -336,7 +348,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.BOOSTER)) {
+        } else if (id.equals(holder.booster)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
                     .setAllowedMentions(new ArrayList<>())

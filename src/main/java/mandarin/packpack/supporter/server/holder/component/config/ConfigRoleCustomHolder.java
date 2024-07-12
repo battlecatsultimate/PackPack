@@ -354,7 +354,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
     private boolean roleAlreadyRegistered(GenericComponentInteractionCreateEvent event, Role role) {
         String id = role.getId();
 
-        if (id.equals(holder.MOD)) {
+        if (id.equals(holder.moderator)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
                     .setAllowedMentions(new ArrayList<>())
@@ -362,7 +362,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.MEMBER)) {
+        } else if (id.equals(holder.member)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolememalready", lang))
                     .setAllowedMentions(new ArrayList<>())
@@ -370,7 +370,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.BOOSTER)) {
+        } else if (id.equals(holder.booster)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
                     .setAllowedMentions(new ArrayList<>())

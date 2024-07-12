@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.config.ConfigRoleRegistrationHolder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -45,21 +46,29 @@ public class IDSet extends ConstraintCommand {
         if (holder == null)
             return "";
 
+        String moderatorRole;
+
+        if (holder.moderator == null) {
+            moderatorRole = LangID.getStringByID("sercon_rolemanager", lang);
+        } else {
+            moderatorRole = "<@&" + holder.moderator + ">";
+        }
+
         StringBuilder builder = new StringBuilder(LangID.getStringByID("sercon_roletit", lang).formatted(EmojiStore.ROLE.getFormatted()))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_roledesc", lang))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), "<@&" + holder.MOD + ">"))
+                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
                 .append("\n")
                 .append(LangID.getStringByID("sercon_rolemoddesc", lang))
                 .append("\n");
 
         String memberRole;
 
-        if (holder.MEMBER == null) {
+        if (holder.member == null) {
             memberRole = "@everyone";
         } else {
-            memberRole = "<@&" + holder.MEMBER + ">";
+            memberRole = "<@&" + holder.member + ">";
         }
 
         builder.append(LangID.getStringByID("sercon_rolemem", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
@@ -69,10 +78,10 @@ public class IDSet extends ConstraintCommand {
 
         String boosterRole;
 
-        if (holder.BOOSTER == null) {
+        if (holder.booster == null) {
             boosterRole = LangID.getStringByID("data_none", lang);
         } else {
-            boosterRole = "<@&" + holder.BOOSTER + ">";
+            boosterRole = "<@&" + holder.booster + ">";
         }
 
         builder.append(LangID.getStringByID("sercon_roleboo", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
@@ -88,23 +97,25 @@ public class IDSet extends ConstraintCommand {
         if (holder == null)
             return result;
 
-        EntitySelectMenu.DefaultValue moderator = g.getRoles()
+        List<Role> roles = g.getRoles();
+
+        EntitySelectMenu.DefaultValue moderator = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.MOD))
+                .filter(r -> r.getId().equals(holder.moderator))
                 .findAny()
                 .map(role -> EntitySelectMenu.DefaultValue.role(role.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue member = g.getRoles()
+        EntitySelectMenu.DefaultValue member = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.MEMBER))
+                .filter(r -> r.getId().equals(holder.member))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);
 
-        EntitySelectMenu.DefaultValue booster = g.getRoles()
+        EntitySelectMenu.DefaultValue booster = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.BOOSTER))
+                .filter(r -> r.getId().equals(holder.booster))
                 .findAny()
                 .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
                 .orElse(null);
@@ -112,8 +123,8 @@ public class IDSet extends ConstraintCommand {
         result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("moderator", EntitySelectMenu.SelectTarget.ROLE)
-                                .setDefaultValues(moderator)
-                                .setRequiredRange(1, 1)
+                                .setDefaultValues(moderator == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { moderator })
+                                .setRequiredRange(0, 1)
                                 .build()
                 )
         );

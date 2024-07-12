@@ -32,14 +32,14 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
 
         roles = new ArrayList<>();
 
-        if (holder.MEMBER != null) {
-            roles.add("MEMBER|" + holder.MEMBER);
+        if (holder.member != null) {
+            roles.add("MEMBER|" + holder.member);
         } else {
             roles.add("MEMBER|");
         }
 
-        if (holder.BOOSTER != null) {
-            roles.add("BOOSTER|" + holder.BOOSTER);
+        if (holder.booster != null) {
+            roles.add("BOOSTER|" + holder.booster);
         }
 
         roles.addAll(holder.ID.values());
@@ -50,14 +50,14 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
 
         roles = new ArrayList<>();
 
-        if (holder.MEMBER != null) {
-            roles.add("MEMBER|" + holder.MEMBER);
+        if (holder.member != null) {
+            roles.add("MEMBER|" + holder.member);
         } else {
             roles.add("MEMBER|");
         }
 
-        if (holder.BOOSTER != null) {
-            roles.add("BOOSTER|" + holder.BOOSTER);
+        if (holder.booster != null) {
+            roles.add("BOOSTER|" + holder.booster);
         }
 
         roles.addAll(holder.ID.values());

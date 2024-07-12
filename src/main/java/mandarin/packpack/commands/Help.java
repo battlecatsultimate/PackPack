@@ -46,7 +46,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemydps, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formdps, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, eventmessage, fixrole, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, clearcache, eventmessage, fixrole, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
@@ -56,8 +56,6 @@ public class Help extends Command {
 
     public void createEmbedOfSpecificCommand(String command, MessageChannel ch, Message reference) {
         switch (command) {
-            case "checkbcu" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkbcu", true, false, false)));
             case "serverstat", "ss" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverstat", false, false, false)));
             case "analyze" ->

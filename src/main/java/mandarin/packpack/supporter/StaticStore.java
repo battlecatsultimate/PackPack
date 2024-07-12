@@ -29,7 +29,6 @@ import mandarin.packpack.supporter.server.holder.HolderHub;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -45,7 +44,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class StaticStore {
@@ -182,8 +180,6 @@ public class StaticStore {
             "1246002716480639086"
     };
 
-    public static boolean checkingBCU = false;
-
     public static final Random random = new Random();
 
     public static final BigInteger intMax = new BigInteger(Integer.toString(Integer.MAX_VALUE));
@@ -196,8 +192,6 @@ public class StaticStore {
     public static final BigDecimal doubleMin = new BigDecimal(Double.toString(Double.MIN_VALUE));
 
     public static final String MANDARIN_SMELL = "460409259021172781";
-
-    public static final String BCU_SERVER = "490262537527623692";
 
     public static final String UDP_LINK = "https://api.github.com/repos/ThanksFeanor/UDP-Data/contents";
 
@@ -233,15 +227,6 @@ public class StaticStore {
         }
 
         return builder.toString();
-    }
-
-    public static String roleNameFromID(Guild g, String id) {
-        Role r = g.getRoleById(id);
-
-        if(r == null)
-            return "NULL";
-        else
-            return r.getAsMention();
     }
 
     public static File getDownPackFile() {
@@ -1150,21 +1135,6 @@ public class StaticStore {
         File temp = new File(container, att.getFileName()+".tmp");
 
         return new UpdateCheck.Downloader(target, temp, "", false, url);
-    }
-
-    public static String getRoleIDByName(String name, Guild g) {
-        AtomicReference<String> id = new AtomicReference<>(null);
-
-        List<Role> l = g.getRoles();
-
-        for(Role r : l) {
-            if(r.getName().equals(name)) {
-                id.set(r.getId());
-                break;
-            }
-        }
-
-        return id.get();
     }
 
     synchronized public static void putHolder(String id, Holder holder) {
