@@ -44,8 +44,8 @@ class TransferCatFood : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val thisInventory = Inventory.getInventory(m.idLong)
 
-        if (thisInventory.catFoods - amount < 0) {
-            replyToMessageSafely(loader.channel, "You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${thisInventory.catFoods}. You can't transfer ${EmojiStore.ABILITY["CF"]?.formatted} $amount to others!", loader.message) { a -> a }
+        if (thisInventory.actualCatFood - amount < 0) {
+            replyToMessageSafely(loader.channel, "You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${thisInventory.actualCatFood}. You can't transfer ${EmojiStore.ABILITY["CF"]?.formatted} $amount to others!", loader.message) { a -> a }
 
             return
         }
