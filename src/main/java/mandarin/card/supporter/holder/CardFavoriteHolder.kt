@@ -185,10 +185,10 @@ class CardFavoriteHolder(author: Message, channelID: String, message: Message, p
 
         val equippedSkin = inventory.equippedSkins[card]
 
-        if (equippedSkin == null) {
-            builder = builder.setFiles(FileUpload.fromData(card.cardImage, "card.png"))
+        builder = if (equippedSkin == null) {
+            builder.setFiles(FileUpload.fromData(card.cardImage, "card.png"))
         } else {
-            builder = builder.setFiles()
+            builder.setFiles()
         }
 
         builder.queue()
@@ -241,7 +241,13 @@ class CardFavoriteHolder(author: Message, channelID: String, message: Message, p
         }
 
         if (equippedSkin != null) {
-            embedBuilder.addField("Skin", equippedSkin.name, false)
+            val skinName = if (equippedSkin.creator != -1L) {
+                "`${equippedSkin.name}` by <@${equippedSkin.creator}>"
+            } else {
+                "`${equippedSkin.name}`"
+            }
+
+            embedBuilder.addField("Skin", skinName, false)
 
             if (equippedSkin.cacheLink.isEmpty())
                 equippedSkin.cache(authorMessage.jda, true)
