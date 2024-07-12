@@ -124,11 +124,11 @@ public class RawPointGetter {
     public P getSize(EPart p) {
         float mi = 1f / p.getModel().ints[0];
 
-        if(p.getFa() == null) {
-            return new P(p.getVal(9), p.getVal(10)).times(p.getVal(8) * mi * mi);
+        if (p.getFa() == null) {
+            return P.newP(p.getSca()).times(mi);
         }
 
-        return getSize(p.getFa()).times(new P(p.getVal(9), p.getVal(10))).times(p.getVal(8) * mi * mi);
+        return getSize(p.getFa()).times(p.getSca()).times(mi);
     }
 
     public P getBaseSize(EPart p, MaModel model, boolean parent) {
