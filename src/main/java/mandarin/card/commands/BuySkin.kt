@@ -21,7 +21,12 @@ import kotlin.math.min
 
 class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val cards = CardData.skins.map { s -> s.card }.toHashSet().sortedWith(CardComparator()).toMutableList()
+        val cards = CardData.skins
+            .filter { s -> s.public }
+            .map { s -> s.card }
+            .toSet()
+            .sortedWith(CardComparator())
+            .toMutableList()
 
         if (cards.isEmpty()) {
             replyToMessageSafely(loader.channel, "There's no skin to purchase at the moment! Please wait for new releases!", loader.message) { a -> a }
