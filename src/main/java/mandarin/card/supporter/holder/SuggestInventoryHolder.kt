@@ -461,12 +461,21 @@ class SuggestInventoryHolder(
         val dataSize = cards.size
 
         val cardCategoryElements = ArrayList<SelectOption>()
+        var wasEmpty = false
 
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
             for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
+            }
+
+            if (cardCategoryElements.isEmpty()) {
+                wasEmpty = true
+
+                StaticStore.logger.uploadLog("W/SuggestInventoryHolder::assignComponents - Bot thought that there were card list for page ${page + 1}, but there was no cards\nNumber of Cards : ${cards.size}\nPage : $page\n\nCards : $cards")
+
+                cardCategoryElements.add(SelectOption.of("a", "a"))
             }
         }
 
@@ -475,12 +484,12 @@ class SuggestInventoryHolder(
             .setPlaceholder(
                 if (backup.cards.size == CardData.MAX_CARD_TYPE)
                     "You can't suggest more than ${CardData.MAX_CARD_TYPE} cards!"
-                else if (cards.isEmpty())
+                else if (cards.isEmpty() || wasEmpty)
                     "No Cards To Select"
                 else
                     "Select Card To Suggest"
             )
-            .setDisabled(backup.cards.size >= CardData.MAX_CARD_TYPE || cards.isEmpty())
+            .setDisabled(backup.cards.size >= CardData.MAX_CARD_TYPE || cards.isEmpty() || wasEmpty)
             .build()
 
         rows.add(ActionRow.of(cardCategory))
