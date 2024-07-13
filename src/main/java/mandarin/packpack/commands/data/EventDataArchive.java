@@ -107,7 +107,7 @@ public class EventDataArchive extends ConstraintCommand {
                 case "-jp" -> {
                     return CommonStatic.Lang.Locale.JP;
                 }
-                case "-zh" -> {
+                case "-tw", "-zh" -> {
                     return CommonStatic.Lang.Locale.ZH;
                 }
                 case "-kr" -> {
