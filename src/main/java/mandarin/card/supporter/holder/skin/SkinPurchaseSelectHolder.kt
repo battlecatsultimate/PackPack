@@ -154,10 +154,22 @@ class SkinPurchaseSelectHolder(author: Message, channelID: String, message: Mess
             options.add(SelectOption.of("A", "A"))
         } else {
             for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-                val purchasable = if (skins[0].cost.affordable(inventory)) {
-                    "Purchasable"
+                val skin = skins[i]
+
+                val purchasedSize = CardData.inventories.values.count { i -> skin in i.skins }
+
+                val purchaseText = if (purchasedSize > 2) {
+                    "$purchasedSize Users Purchased"
+                } else if (purchasedSize == 1) {
+                    "1 User Purchased"
                 } else {
-                    "Can't Be Purchased"
+                    ""
+                }
+
+                val purchasable = if (skins[i].cost.affordable(inventory)) {
+                    "Purchasable | $purchaseText"
+                } else {
+                    "Can't Be Purchased | $purchaseText"
                 }
 
                 options.add(SelectOption.of(skins[i].name, i.toString()).withDescription("${skins[i].skinID} | $purchasable"))
