@@ -59,10 +59,9 @@ public class Locale extends ConstraintCommand {
         localeOptions.add(SelectOption.of(LangID.getStringByID("locale_server", lang), "auto").withDescription(LangID.getStringByID("locale_serverdesc", lang)).withEmoji(Emoji.fromUnicode("⚙️")).withDefault(config.lang == null));
 
         for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
-            String localeCode = locale.code;
             Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
-            localeOptions.add(SelectOption.of(LangID.getStringByID("lang_" + localeCode, lang), localeCode).withEmoji(emoji).withDefault(config.lang == locale));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("lang_" + locale.code, lang), locale.name()).withEmoji(emoji).withDefault(config.lang == locale));
         }
 
         result.add(ActionRow.of(
