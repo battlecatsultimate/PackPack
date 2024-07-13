@@ -65,7 +65,7 @@ public class PrintEvent extends ConstraintCommand {
 
                 if(!eventDone) {
                     eventDone = true;
-                    ch.sendMessage(LangID.getStringByID("event_loc"+loc, l)).queue();
+                    ch.sendMessage(LangID.getStringByID("event_loc" + loc.code, l)).queue();
                 }
 
                 boolean started = false;
@@ -158,7 +158,7 @@ public class PrintEvent extends ConstraintCommand {
                 if(!eventDone) {
                     eventDone = true;
 
-                    ch.sendMessage(LangID.getStringByID("event_loc"+loc, l)).queue();
+                    ch.sendMessage(LangID.getStringByID("event_loc" + loc.code, l)).queue();
                 }
 
                 boolean started = false;
