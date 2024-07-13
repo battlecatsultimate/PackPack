@@ -140,6 +140,8 @@ class SkinPurchaseCardHolder(author: Message, channelID: String, message: Messag
     }
 
     override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+        filterCards()
+
         applyResult(event)
     }
 
@@ -155,7 +157,13 @@ class SkinPurchaseCardHolder(author: Message, channelID: String, message: Messag
     private fun filterCards() {
         cards.clear()
 
-        val tempCards = CardData.skins.map { skin -> skin.card }.toSet().sortedWith(CardComparator()).toMutableList()
+        val tempCards = CardData.skins
+            .filter { s -> s.public }
+            .filter { s -> s !in inventory.skins }
+            .map { skin -> skin.card }
+            .toSet()
+            .sortedWith(CardComparator())
+            .toMutableList()
 
         if (tier != CardData.Tier.NONE) {
             if (banner[0] == -1) {
