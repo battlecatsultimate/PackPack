@@ -317,6 +317,7 @@ object CardData {
     private val allowedChannel = ServerData.getArray("allowedChannel")
 
     val notifierGroup = HashMap<Long, BooleanArray>()
+    val purchaseNotifier = ArrayList<Long>()
 
     val df = run {
         val nf = NumberFormat.getInstance(Locale.US)

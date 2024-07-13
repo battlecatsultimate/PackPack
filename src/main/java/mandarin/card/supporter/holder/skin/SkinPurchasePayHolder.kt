@@ -55,7 +55,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                     registerPopUp(event, content)
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        skin.purchase(purchaser, inventory, containers)
+                        skin.purchase(authorMessage.jda, purchaser, inventory, containers)
 
                         e.deferReply()
                             .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
@@ -65,7 +65,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                         goBack()
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
-                    skin.purchase(purchaser, inventory, containers)
+                    skin.purchase(authorMessage.jda, purchaser, inventory, containers)
 
                     event.deferReply()
                         .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")

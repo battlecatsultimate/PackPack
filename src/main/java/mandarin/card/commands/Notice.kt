@@ -56,10 +56,18 @@ class Notice : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(
-            Button.secondary("card", "Notify Available Card Pack").withEmoji(if (notifyGroup[0]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
-            Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
-        ))
+        if (CardData.skins.any { s -> s.creator == userID }) {
+            result.add(ActionRow.of(
+                Button.secondary("card", "Notify Available Card Pack").withEmoji(if (notifyGroup[0]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
+                Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+            ))
+        } else {
+            result.add(ActionRow.of(
+                Button.secondary("card", "Notify Available Card Pack").withEmoji(if (notifyGroup[0]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
+                Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
+                Button.secondary("skin", "Notify Skin Purchase").withEmoji(if (userID in CardData.purchaseNotifier) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+            ))
+        }
 
         result.add(ActionRow.of(Button.secondary("test", "Test Sending DM").withEmoji(Emoji.fromUnicode("📢"))))
 

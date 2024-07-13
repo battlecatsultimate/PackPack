@@ -166,7 +166,7 @@ class Skin {
         return builder.toString().trim()
     }
 
-    fun purchase(purchaser: Long, inventory: Inventory, containers: Array<CardPayContainer>) {
+    fun purchase(client: JDA, purchaser: Long, inventory: Inventory, containers: Array<CardPayContainer>) {
         inventory.catFoods -= cost.catFoods
         inventory.platinumShard -= cost.platinumShards
 
@@ -181,6 +181,20 @@ class Skin {
             creatorInventory.platinumShard += cost.platinumShards
 
             containers.forEach { container -> creatorInventory.addCards(container.pickedCards) }
+
+            if (creator in CardData.purchaseNotifier) {
+                val purchaseSize = CardData.inventories.values.count { i -> this in i.skins }
+
+                val message = "User <@$purchaser> has purchased your skin!\n\n### Skin Name : $name [$skinID]\n### Total Purchase Count : $purchaseSize"
+
+                client.retrieveUserById(creator).queue { u ->
+                    u.openPrivateChannel().queue { ch ->
+                        ch.sendMessage(message)
+                            .setAllowedMentions(ArrayList())
+                            .queue()
+                    }
+                }
+            }
         }
 
         CardBot.saveCardData()
