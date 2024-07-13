@@ -2,6 +2,7 @@ package mandarin.card.commands
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.skin.SkinPurchaseCardHolder
@@ -21,8 +22,11 @@ import kotlin.math.min
 
 class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
+        val inventory = Inventory.getInventory(loader.user.idLong)
+
         val cards = CardData.skins
             .filter { s -> s.public }
+            .filter { s -> s !in inventory.skins }
             .map { s -> s.card }
             .toSet()
             .sortedWith(CardComparator())
