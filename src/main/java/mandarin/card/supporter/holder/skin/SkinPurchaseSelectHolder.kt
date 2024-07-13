@@ -167,12 +167,18 @@ class SkinPurchaseSelectHolder(author: Message, channelID: String, message: Mess
                 }
 
                 val purchasable = if (skins[i].cost.affordable(inventory)) {
-                    "Purchasable | $purchaseText"
+                    "Purchasable"
                 } else {
-                    "Can't Be Purchased | $purchaseText"
+                    "Can't Be Purchased"
                 }
 
-                options.add(SelectOption.of(skins[i].name, i.toString()).withDescription("${skins[i].skinID} | $purchasable"))
+                val description = if (purchaseText.isBlank()) {
+                    "${skin.skinID} | $purchasable"
+                } else {
+                    "${skin.skinID} | $purchasable | $purchasable"
+                }
+
+                options.add(SelectOption.of(skins[i].name, i.toString()).withDescription(description))
             }
         }
 
