@@ -48,6 +48,16 @@ class Notice : Command(CommonStatic.Lang.Locale.EN, true) {
             builder.append(EmojiStore.SWITCHOFF.formatted).append(" Off")
         }
 
+        if (CardData.skins.any { s -> s.creator == userID }) {
+            builder.append("\n- **Notify Skin Purchase** : ")
+
+            if (userID in CardData.purchaseNotifier) {
+                builder.append(EmojiStore.SWITCHON.formatted).append(" On")
+            } else {
+                builder.append(EmojiStore.SWITCHOFF.formatted).append(" Off")
+            }
+        }
+
         return builder.toString()
     }
 
@@ -59,13 +69,13 @@ class Notice : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.skins.any { s -> s.creator == userID }) {
             result.add(ActionRow.of(
                 Button.secondary("card", "Notify Available Card Pack").withEmoji(if (notifyGroup[0]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
-                Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+                Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
+                Button.secondary("skin", "Notify Skin Purchase").withEmoji(if (userID in CardData.purchaseNotifier) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
             ))
         } else {
             result.add(ActionRow.of(
                 Button.secondary("card", "Notify Available Card Pack").withEmoji(if (notifyGroup[0]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
-                Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
-                Button.secondary("skin", "Notify Skin Purchase").withEmoji(if (userID in CardData.purchaseNotifier) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+                Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
             ))
         }
 

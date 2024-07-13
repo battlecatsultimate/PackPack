@@ -1079,6 +1079,12 @@ object CardBot : ListenerAdapter() {
                 CardData.optOut.add(e.asLong)
             }
         }
+
+        if (obj.has("purchaseNotifier")) {
+            obj.getAsJsonArray("purchaseNotifier").forEach { e ->
+                CardData.purchaseNotifier.add(e.asLong)
+            }
+        }
     }
 
     @Synchronized
@@ -1332,6 +1338,14 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("optOut", optOut)
+
+        val purchaseNotifier = JsonArray()
+
+        CardData.purchaseNotifier.forEach { id ->
+            purchaseNotifier.add(id)
+        }
+
+        obj.add("purchaseNotifier", purchaseNotifier)
 
         try {
             val folder = File("./data/")
