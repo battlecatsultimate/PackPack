@@ -213,8 +213,6 @@ class SkinModifyHolder(
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
 
-        println("APPLY : " + message.attachments)
-
         if (message.attachments.isEmpty()) {
             builder = builder.setFiles(FileUpload.fromData(skin.file))
         }
@@ -228,8 +226,6 @@ class SkinModifyHolder(
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
-
-        println("APPLY : " + message.attachments)
 
         if (event.message.attachments.isEmpty()) {
             builder = builder.setFiles(FileUpload.fromData(skin.file))
