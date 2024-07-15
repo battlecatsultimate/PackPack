@@ -2518,6 +2518,16 @@ public class DataToString extends Data {
 
         int max = (int) Math.round(map.info.multiplier[star] * ((DefStageInfo) st.info).maxMaterial);
 
+        double possibleChance = 100.0 - map.info.materialDrop[0];
+        int totalChanceSum = 0;
+
+        for (int i = 1; i < map.info.materialDrop.length; i++) {
+            if (map.info.materialDrop[i] <= 0)
+                continue;
+
+            totalChanceSum += map.info.materialDrop[i];
+        }
+
         for(int i = 1; i < map.info.materialDrop.length; i++) {
             if(map.info.materialDrop[i] <= 0)
                 continue;
@@ -2530,7 +2540,7 @@ public class DataToString extends Data {
 
             result.append(name)
                     .append(" : ")
-                    .append(map.info.materialDrop[i])
+                    .append(df.format(possibleChance * map.info.materialDrop[i] / totalChanceSum))
                     .append("%")
                     .append("\n");
         }
