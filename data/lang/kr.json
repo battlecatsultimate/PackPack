@@ -1657,6 +1657,7 @@
   "sercon_booset" : "성공적으로 %s 역할을 부스터 역할로 등록하였습니다!",
   "sercon_rolenone" : "미선택 시 등록 해제",
   "sercon_roleevery" : "미선택 시 @everyone으로 등록",
+  "sercon_rolemanager" : "서버 관리 권한을 가진 모든 유저",
   "sercon_custom" : "커스텀 역할 등록",
   "sercon_prefixsuc" : "성공적으로 접두사를 %s 접두사로 설정하였습니다!",
   "sercon_customreg" : "역할 등록",
