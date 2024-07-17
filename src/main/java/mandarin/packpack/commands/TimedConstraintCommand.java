@@ -205,7 +205,7 @@ public abstract class TimedConstraintCommand extends Command {
                 default -> throw new IllegalStateException("E/TimedConstraintCommand::execute - Unknown value : %s".formatted(role));
             }
 
-            if(!hasRole) {
+            if(!hasRole && !isMandarin) {
                 if (denialMessage != null) {
                     replyToMessageSafely(ch, denialMessage, loader.getMessage(), a -> a);
                 }

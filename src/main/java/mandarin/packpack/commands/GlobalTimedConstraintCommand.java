@@ -217,7 +217,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                 default -> throw new IllegalStateException("E/GlobalTimedConstraintCommand::execute - Unknown value : %s".formatted(role));
             }
 
-            if(!hasRole) {
+            if(!hasRole && !isMandarin) {
                 if (denialMessage != null) {
                     replyToMessageSafely(ch, denialMessage, loader.getMessage(), a -> a);
                 }
