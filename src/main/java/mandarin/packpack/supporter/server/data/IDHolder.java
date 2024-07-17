@@ -24,15 +24,54 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("mod")) {
-            id.moderator = id.setOrNull(obj.get("mod").getAsString());
+            JsonElement element = obj.get("mod");
+            String moderator;
+
+            if (element instanceof JsonNull) {
+                moderator = null;
+            } else {
+                moderator = element.getAsString();
+
+                if (moderator.equals("null")) {
+                    moderator = null;
+                }
+            }
+
+            id.moderator = moderator;
         }
 
         if(obj.has("mem")) {
-            id.member = id.setOrNull(obj.get("mem").getAsString());
+            JsonElement element = obj.get("mem");
+            String member;
+
+            if (element instanceof JsonNull) {
+                member = null;
+            } else {
+                member = element.getAsString();
+
+                if (member.equals("null")) {
+                    member = null;
+                }
+            }
+
+            id.member = member;
         }
 
         if(obj.has("ann")) {
-            id.announceChannel = id.setOrNull(obj.get("ann").getAsString());
+            JsonElement element = obj.get("ann");
+            String announceChannel;
+
+            if (element instanceof JsonNull) {
+                announceChannel = null;
+            } else {
+                announceChannel = element.getAsString();
+
+                if (announceChannel.equals("null")) {
+                    announceChannel = null;
+                }
+            }
+
+            id.announceChannel = announceChannel;
         }
 
         if(obj.has("status")) {
@@ -44,7 +83,20 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("bo")) {
-            id.booster = id.setOrNull(obj.get("bo").getAsString());
+            JsonElement element = obj.get("bo");
+            String booster;
+
+            if (element instanceof JsonNull) {
+                booster = null;
+            } else {
+                booster = element.getAsString();
+
+                if (booster.equals("null")) {
+                    booster = null;
+                }
+            }
+
+            id.booster = booster;
         }
 
         if(obj.has("channel")) {
@@ -62,7 +114,20 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("logDM")) {
-            id.logDM = id.setOrNull(obj.get("logDM").getAsString());
+            JsonElement element = obj.get("logDM");
+            String logDM;
+
+            if (element instanceof JsonNull) {
+                logDM = null;
+            } else {
+                logDM = element.getAsString();
+
+                if (logDM.equals("null")) {
+                    logDM = null;
+                }
+            }
+
+            id.logDM = logDM;
         }
 
         if(obj.has("config")) {
@@ -298,14 +363,14 @@ public class IDHolder implements Cloneable {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("publish", publish);
-        obj.addProperty("mod", getOrNull(moderator));
-        obj.addProperty("mem", getOrNull(member));
-        obj.addProperty("ann", getOrNull(announceChannel));
+        obj.addProperty("mod", moderator);
+        obj.addProperty("mem", member);
+        obj.addProperty("ann", announceChannel);
         obj.add("status", StaticStore.listToJsonString(status));
-        obj.addProperty("bo", getOrNull(booster));
+        obj.addProperty("bo", booster);
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
-        obj.addProperty("logDM", getOrNull(logDM));
+        obj.addProperty("logDM", logDM);
         obj.add("eventMap", mapLocaleStringToJsonArray(eventMap));
         obj.add("config", config.jsonfy());
         obj.add("banned", listStringToJsonObject(banned));
@@ -368,14 +433,6 @@ public class IDHolder implements Cloneable {
 
     private boolean isSetAsRole(String id) {
         return id.equals(moderator) || id.equals(member) || id.equals(booster) || hasIDasRole(id);
-    }
-
-    private String getOrNull(String id) {
-        return id == null ? "null" : id;
-    }
-
-    private String setOrNull(String id) {
-        return id.equals("null") ? null : id;
     }
 
     private JsonElement listStringToJsonObject(List<String> arr) {
