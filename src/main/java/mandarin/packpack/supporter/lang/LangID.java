@@ -1,8 +1,11 @@
 package mandarin.packpack.supporter.lang;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -38,80 +41,32 @@ public class LangID {
         if (locale == null)
             locale = CommonStatic.Lang.Locale.EN;
 
-        switch (locale) {
-            case EN -> {
-                if (EN_OBJ == null)
-                    return id;
+        JsonObject obj = switch (locale) {
+            case JP -> JP_OBJ;
+            case KR -> KR_OBJ;
+            case ZH -> ZH_OBJ;
+            case RU -> RU_OBJ;
+            default -> EN_OBJ;
+        };
 
-                if (EN_OBJ.has(id))
-                    return EN_OBJ.get(id).getAsString();
-            }
-            case JP -> {
-                if (JP_OBJ == null || !JP_OBJ.has(id)) {
-                    if (EN_OBJ == null)
-                        return id;
-
-                    if (EN_OBJ.has(id))
-                        return EN_OBJ.get(id).getAsString();
-                    else
-                        return id;
-                }
-
-                if (JP_OBJ.has(id))
-                    return JP_OBJ.get(id).getAsString();
-            }
-            case KR -> {
-                if (KR_OBJ == null || !KR_OBJ.has(id)) {
-                    if (EN_OBJ == null)
-                        return id;
-
-                    if (EN_OBJ.has(id))
-                        return EN_OBJ.get(id).getAsString();
-                    else
-                        return id;
-                }
-
-                if (KR_OBJ.has(id))
-                    return KR_OBJ.get(id).getAsString();
-            }
-            case ZH -> {
-                if (ZH_OBJ == null || !ZH_OBJ.has(id)) {
-                    if (EN_OBJ == null)
-                        return id;
-
-                    if (EN_OBJ.has(id))
-                        return EN_OBJ.get(id).getAsString();
-                    else
-                        return id;
-                }
-
-                if (ZH_OBJ.has(id))
-                    return ZH_OBJ.get(id).getAsString();
-            }
-            case RU -> {
-                if (RU_OBJ == null || !RU_OBJ.has(id)) {
-                    if (EN_OBJ == null)
-                        return id;
-
-                    if (EN_OBJ.has(id))
-                        return EN_OBJ.get(id).getAsString();
-                    else
-                        return id;
-                }
-
-                if (RU_OBJ.has(id))
-                    return RU_OBJ.get(id).getAsString();
-            }
-            default -> {
-                if (EN_OBJ == null)
-                    return id;
-
-                if (EN_OBJ.has(id))
-                    return EN_OBJ.get(id).getAsString();
+        if (obj == null) {
+            if (locale == CommonStatic.Lang.Locale.EN) {
+                return id;
+            } else {
+                obj = EN_OBJ;
             }
         }
 
-        return id;
+        if (obj == null)
+            return id;
+
+        String value = getStringFromPath(obj, id, locale);
+
+        if (value.equals(id) && obj != EN_OBJ) {
+            value = getStringFromPath(EN_OBJ, id, locale);
+        }
+
+        return value;
     }
 
     public static boolean hasID(String id, CommonStatic.Lang.Locale locale) {
@@ -165,5 +120,56 @@ public class LangID {
 
             System.out.println("------------------------");
         }
+    }
+
+    @NotNull
+    private static String getStringFromPath(JsonObject obj, String path, CommonStatic.Lang.Locale locale) {
+        JsonObject currentPath = obj;
+
+        String[] segments = path.split("\\.");
+
+        for (int i = 0; i < segments.length; i++) {
+            if (!currentPath.has(segments[i])) {
+                StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+
+                return path;
+            }
+
+            JsonElement e = currentPath.get(segments[i]);
+
+            if (i < segments.length - 1) {
+                if (!(e instanceof JsonObject o)) {
+                    StaticStore.logger.uploadLog("W/LangID::getStringFromPath - Invalid path found in " + locale + " : " + path);
+
+                    return path;
+                }
+
+                currentPath = o;
+            } else {
+                if (!(e instanceof JsonPrimitive p)) {
+                    StaticStore.logger.uploadLog("W/LangID::getStringFromPath - Invalid path found in " + locale + " : " + path);
+
+                    return path;
+                }
+
+                return p.getAsString();
+            }
+        }
+
+        if (!obj.has(path)) {
+            StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+
+            return path;
+        }
+
+        JsonElement e = obj.get(path);
+
+        if (!(e instanceof JsonPrimitive p)) {
+            StaticStore.logger.uploadLog("W/LangID::getStringFromPath - Invalid path found in " + locale + " : " + path);
+
+            return path;
+        }
+
+        return p.getAsString();
     }
 }
