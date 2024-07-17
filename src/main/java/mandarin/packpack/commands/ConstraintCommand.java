@@ -133,7 +133,7 @@ public abstract class ConstraintCommand extends Command {
                     Member m = loader.getMember();
 
                     if (constRole != null) {
-                        hasRole = m.getRoles().stream().anyMatch(r -> r.getId().equals(constRole));
+                        hasRole = m.getRoles().stream().anyMatch(r -> r.getId().equals(constRole)) || m.isOwner();
 
                         if (!hasRole) {
                             denialMessage = LangID.getStringByID("command_denialmod", lang).formatted(constRole);
@@ -163,7 +163,7 @@ public abstract class ConstraintCommand extends Command {
                             String moderatorID = holder.moderator;
 
                             if (moderatorID != null) {
-                                isModerator = roles.stream().anyMatch(r -> r.getId().equals(moderatorID));
+                                isModerator = roles.stream().anyMatch(r -> r.getId().equals(moderatorID)) || m.isOwner();
                             } else {
                                 isModerator = m.getRoles().stream().anyMatch(r -> r.hasPermission(Permission.MANAGE_SERVER) || r.hasPermission(Permission.ADMINISTRATOR));
 

@@ -329,7 +329,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 List<Role> roles = m.getRoles();
 
                 if (moderatorID != null) {
-                    isMod = roles.stream().anyMatch(r -> r.getId().equals(moderatorID));
+                    isMod = roles.stream().anyMatch(r -> r.getId().equals(moderatorID)) || m.isOwner();
                 } else {
                     isMod = m.hasPermission(Permission.MANAGE_SERVER) || m.hasPermission(Permission.ADMINISTRATOR) || m.isOwner();
                 }
