@@ -188,9 +188,19 @@ public class DownloadApk extends ConstraintCommand {
 
         File apkFile = null;
 
+        File[] apkFiles = tempApkFolder.listFiles();
+
+        if(apkFiles == null) {
+            ch.sendMessage("Something went wrong while checking downloaded apk file...").queue();
+
+            StaticStore.apkDownloading = false;
+
+            return;
+        }
+
         List<String> foundFile = new ArrayList<>();
 
-        for(File f : tempFolderList) {
+        for(File f : apkFiles) {
             if(f.getName().equals(packageName + "-InstallPack-" + versionCode +".apk")) {
                 apkFile = f;
             } else if (f.getName().endsWith(".apk")) {
@@ -200,8 +210,6 @@ public class DownloadApk extends ConstraintCommand {
         }
 
         if(apkFile == null) {
-            System.out.println("!!!!!!!!!!!!!!!!!!");
-
             ch.sendMessage("It seems that apk downloading was unsuccessful, analyzing process aborted\n\n" + String.join("\n", foundFile.stream().map(s -> "- " + s).toArray(String[]::new))).queue();
 
             StaticStore.apkDownloading = false;
