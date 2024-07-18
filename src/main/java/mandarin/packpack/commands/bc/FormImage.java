@@ -93,7 +93,7 @@ public class FormImage extends TimedConstraintCommand {
                         fName = forms.getFirst().names.toString();
 
                     if(fName.isBlank())
-                        fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.getFirst().uid.id)+" "+Data.trio(forms.getFirst().fid);
+                        fName = LangID.getStringByID("data.stage.limit.unit", lang)+" "+ Data.trio(forms.getFirst().uid.id)+" "+Data.trio(forms.getFirst().fid);
 
                     sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.getFirst().anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", loader.getMessage());
                 }

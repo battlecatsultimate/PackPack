@@ -148,7 +148,7 @@ public class ComboFormMessageHolder extends SearchHolder {
         StringBuilder builder = new StringBuilder();
 
         if(cName != null) {
-            builder.append(LangID.getStringByID("data_combo", lang)).append(" : `").append(cName).append("`");
+            builder.append(LangID.getStringByID("data.combo.combo", lang)).append(" : `").append(cName).append("`");
         }
 
         if(fName != null) {
@@ -156,7 +156,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 builder.append(", ");
             }
 
-            builder.append(LangID.getStringByID("data_unit", lang)).append(" : `").append(fName).append("`");
+            builder.append(LangID.getStringByID("data.stage.limit.unit", lang)).append(" : `").append(fName).append("`");
         }
 
         return builder.toString();

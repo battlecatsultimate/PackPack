@@ -53,72 +53,72 @@ public class DataToString extends Data {
 
     public static void initialize() {
         addTalentData(0, "??", "");
-        addTalentData(1, "data_weaken", "WEAK");
-        addTalentData(2, "data_freeze", "STOP");
-        addTalentData(3, "data_slow", "SLOW");
-        addTalentData(4, "data_attackon", "data_attackon");
-        addTalentData(5, "data_strong", "data_strong");
-        addTalentData(6, "data_resistant", "data_resistant");
-        addTalentData(7, "data_massive", "data_massive");
-        addTalentData(8, "data_knockback", "KB");
-        addTalentData(9, "data_warp", "WARP");
-        addTalentData(10, "data_strength", "STRONG");
-        addTalentData(11, "data_survive", "LETHAL");
-        addTalentData(12, "data_basedest", "data_basedest");
-        addTalentData(13, "data_critical", "CRIT");
-        addTalentData(14, "data_zombiekill", "data_zombiekill");
-        addTalentData(15, "data_barrierbreak", "BREAK");
-        addTalentData(16, "data_extramon", "BOUNTY");
-        addTalentData(17, "data_wave", "WAVE");
-        addTalentData(18, "data_resweak", "RESWEAK");
-        addTalentData(19, "data_resfreeze", "RESSTOP");
-        addTalentData(20, "data_resslow", "RESSLOW");
-        addTalentData(21, "data_reskb", "RESKB");
-        addTalentData(22, "data_reswave", "RESWAVE");
-        addTalentData(23, "data_waveshie", "data_waveshie");
-        addTalentData(24, "data_reswarp", "RESWARP");
-        addTalentData(25, "data_cost", "COSTDEC");
-        addTalentData(26, "data_cooldown", "CDDEC");
-        addTalentData(27, "data_speed", "SPEEDUP");
+        addTalentData(1, "data.abilities.weaken", "WEAK");
+        addTalentData(2, "data.abilities.freeze", "STOP");
+        addTalentData(3, "data.abilities.slow", "SLOW");
+        addTalentData(4, "data.abilities.targetsOnly", "data.abilities.targetsOnly");
+        addTalentData(5, "data.abilities.strong", "data.abilities.strong");
+        addTalentData(6, "data.abilities.resistant", "data.abilities.resistant");
+        addTalentData(7, "data.abilities.massiveDamage", "data.abilities.massiveDamage");
+        addTalentData(8, "data.abilities.kb", "KB");
+        addTalentData(9, "data.abilities.warp", "WARP");
+        addTalentData(10, "data.abilities.strengthen", "STRONG");
+        addTalentData(11, "data.abilities.survive", "LETHAL");
+        addTalentData(12, "data.abilities.baseDestroyer", "data.abilities.baseDestroyer");
+        addTalentData(13, "data.abilities.critical", "CRIT");
+        addTalentData(14, "data.abilities.zombieKiller", "data.abilities.zombieKiller");
+        addTalentData(15, "data.abilities.barrierBreaker", "BREAK");
+        addTalentData(16, "data.abilities.doubleBounty", "BOUNTY");
+        addTalentData(17, "data.abilities.wave", "WAVE");
+        addTalentData(18, "data.abilities.resists.weaken", "RESWEAK");
+        addTalentData(19, "data.abilities.resists.freeze", "RESSTOP");
+        addTalentData(20, "data.abilities.resists.slow", "RESSLOW");
+        addTalentData(21, "data.abilities.resists.kb", "RESKB");
+        addTalentData(22, "data.abilities.resists.wave", "RESWAVE");
+        addTalentData(23, "data.abilities.waveBlocker", "data.abilities.waveBlocker");
+        addTalentData(24, "data.abilities.resists.warp", "RESWARP");
+        addTalentData(25, "data.unit.cost", "COSTDEC");
+        addTalentData(26, "data.unit.cooldown", "CDDEC");
+        addTalentData(27, "data.speed", "SPEEDUP");
         addTalentData(28, "??", "");
-        addTalentData(29, "data_imucurse", "IMUCURSE");
-        addTalentData(30, "data_rescurse", "RESCURSE");
-        addTalentData(31, "data_atk", "ATKUP");
-        addTalentData(32, "data_hp", "HPUP");
-        addTalentData(33, "data_red", "T_RED");
-        addTalentData(34, "data_float", "T_FLOAT");
-        addTalentData(35, "data_black", "T_BLACK");
-        addTalentData(36, "data_metal", "T_METAL");
-        addTalentData(37, "data_angel", "T_ANGEL");
-        addTalentData(38, "data_alien", "T_ALIEN");
-        addTalentData(39, "data_zombie", "T_ZOMBIE");
-        addTalentData(40, "data_relic", "T_RELIC");
-        addTalentData(41, "data_white", "T_WHITE");
+        addTalentData(29, "data.abilities.immunities.curse", "IMUCURSE");
+        addTalentData(30, "data.abilities.resists.curse", "RESCURSE");
+        addTalentData(31, "data.damage", "ATKUP");
+        addTalentData(32, "data.hp", "HPUP");
+        addTalentData(33, "data.traits.red", "T_RED");
+        addTalentData(34, "data.traits.floating", "T_FLOAT");
+        addTalentData(35, "data.traits.black", "T_BLACK");
+        addTalentData(36, "data.traits.metal", "T_METAL");
+        addTalentData(37, "data.traits.angel", "T_ANGEL");
+        addTalentData(38, "data.traits.alien", "T_ALIEN");
+        addTalentData(39, "data.traits.zombie", "T_ZOMBIE");
+        addTalentData(40, "data.traits.relic", "T_RELIC");
+        addTalentData(41, "data.traits.white", "T_WHITE");
         addTalentData(42, "??", "");
         addTalentData(43, "??", "");
-        addTalentData(44, "data_imuweak", "IMUWEAK");
-        addTalentData(45, "data_imufreeze", "IMUSTOP");
-        addTalentData(46, "data_imuslow", "IMUSLOW");
-        addTalentData(47, "data_imukb", "IMUKB");
-        addTalentData(48, "data_imuwave", "IMUWAVE");
-        addTalentData(49, "data_imuwarp", "IMUWARP");
-        addTalentData(50, "data_savage", "SATK");
-        addTalentData(51, "data_invinci", "IMUATK");
-        addTalentData(52, "data_respoison", "RESPOIATK");
-        addTalentData(53, "data_imupoison", "IMUPOIATK");
-        addTalentData(54, "data_ressurge", "RESVOLC");
-        addTalentData(55, "data_imusurge", "IMUVOLC");
-        addTalentData(56, "data_surge", "VOLC");
-        addTalentData(57, "data_demon", "T_AKU");
-        addTalentData(58, "data_shieldbreak", "SHIELDBREAK");
-        addTalentData(59, "data_corpsekiller", "data_corpsekiller");
-        addTalentData(60, "data_curse", "CURSE");
-        addTalentData(61, "data_tba", "TBA");
-        addTalentData(62, "data_miniwave", "MINIWAVE");
-        addTalentData(63, "data_baronkiller", "data_baronkiller");
-        addTalentData(64, "data_beastkiller", "BSTHUNT");
-        addTalentData(65, "data_minisurge", "MINIVOLC");
-        addTalentData(66, "data_sageslayer", "data_sageslayer");
+        addTalentData(44, "data.abilities.immunities.weaken", "IMUWEAK");
+        addTalentData(45, "data.abilities.immunities.freeze", "IMUSTOP");
+        addTalentData(46, "data.abilities.immunities.slow", "IMUSLOW");
+        addTalentData(47, "data.abilities.immunities.kb", "IMUKB");
+        addTalentData(48, "data.abilities.immunities.wave", "IMUWAVE");
+        addTalentData(49, "data.abilities.immunities.warp", "IMUWARP");
+        addTalentData(50, "data.abilities.savageBlow", "SATK");
+        addTalentData(51, "data.abilities.invincibility", "IMUATK");
+        addTalentData(52, "data.abilities.resists.toxic", "RESPOIATK");
+        addTalentData(53, "data.abilities.immunities.toxic", "IMUPOIATK");
+        addTalentData(54, "data.abilities.resists.surge", "RESVOLC");
+        addTalentData(55, "data.abilities.immunities.surge", "IMUVOLC");
+        addTalentData(56, "data.abilities.surge", "VOLC");
+        addTalentData(57, "data.traits.aku", "T_AKU");
+        addTalentData(58, "data.abilities.shieldBreaker", "SHIELDBREAK");
+        addTalentData(59, "data.abilities.soulStrike", "data.abilities.soulStrike");
+        addTalentData(60, "data.abilities.curse", "CURSE");
+        addTalentData(61, "data.tba", "TBA");
+        addTalentData(62, "data.abilities.miniWave", "MINIWAVE");
+        addTalentData(63, "data.abilities.colossusSlayer", "data.abilities.colossusSlayer");
+        addTalentData(64, "data.abilities.behemothSlayer", "BSTHUNT");
+        addTalentData(65, "data.abilities.miniSurge", "MINIVOLC");
+        addTalentData(66, "data.abilities.sageSlayer", "data.abilities.sageSlayer");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -178,17 +178,17 @@ public class DataToString extends Data {
         String rarity;
 
         if(f.unit.rarity == 0)
-            rarity = LangID.getStringByID("data_basic", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.basic", lang);
         else if(f.unit.rarity == 1)
-            rarity = LangID.getStringByID("data_ex", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.ex", lang);
         else if(f.unit.rarity == 2)
-            rarity = LangID.getStringByID("data_rare", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.rare", lang);
         else if(f.unit.rarity == 3)
-            rarity = LangID.getStringByID("data_sr", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.superRare", lang);
         else if(f.unit.rarity == 4)
-            rarity = LangID.getStringByID("data_ur", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.uberRare", lang);
         else if(f.unit.rarity == 5)
-            rarity = LangID.getStringByID("data_lr", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.legendRare", lang);
         else
             rarity = "Unknown";
 
@@ -214,17 +214,17 @@ public class DataToString extends Data {
         String rarity;
 
         if(type == 0)
-            rarity = LangID.getStringByID("data_basic", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.basic", lang);
         else if(type == 1)
-            rarity = LangID.getStringByID("data_ex", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.ex", lang);
         else if(type == 2)
-            rarity = LangID.getStringByID("data_rare", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.rare", lang);
         else if(type == 3)
-            rarity = LangID.getStringByID("data_sr", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.superRare", lang);
         else if(type == 4)
-            rarity = LangID.getStringByID("data_ur", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.uberRare", lang);
         else if(type == 5)
-            rarity = LangID.getStringByID("data_lr", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.legendRare", lang);
         else
             rarity = "Unknown";
 
@@ -271,9 +271,9 @@ public class DataToString extends Data {
 
         for(int i = 0; i < raw.length; i++) {
             if(raw[i][2] == 1)
-                sb.append(LangID.getStringByID("data_true", lang));
+                sb.append(LangID.getStringByID("data.true", lang));
             else
-                sb.append(LangID.getStringByID("data_false", lang));
+                sb.append(LangID.getStringByID("data.false", lang));
 
             if(i != raw.length-1) {
                 sb.append(" / ");
@@ -293,9 +293,9 @@ public class DataToString extends Data {
 
         for(int i = 0; i < raw.length; i++) {
             if(raw[i][2] == 1)
-                sb.append(LangID.getStringByID("data_true",lang));
+                sb.append(LangID.getStringByID("data.true",lang));
             else
-                sb.append(LangID.getStringByID("data_false", lang));
+                sb.append(LangID.getStringByID("data.false", lang));
 
             if(i != raw.length - 1)
                 sb.append(" / ");
@@ -442,21 +442,21 @@ public class DataToString extends Data {
 
     public static String getRangeTitle(MaskEntity e, CommonStatic.Lang.Locale lang) {
         if(e == null)
-            return LangID.getStringByID("data_range", lang);
+            return LangID.getStringByID("data.range", lang);
 
         if(e.isOmni()) {
             Emoji emoji = EmojiStore.TRAIT.getCont("OMNI", lang);
 
-            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
+            return LangID.getStringByID("data.range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
         }
 
         if(e.isLD()) {
             Emoji emoji = EmojiStore.TRAIT.getCont("LD", lang);
 
-            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
+            return LangID.getStringByID("data.range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
         }
 
-        return LangID.getStringByID("data_range", lang);
+        return LangID.getStringByID("data.range", lang);
     }
 
     public static String getRange(MaskUnit f) {
@@ -915,18 +915,18 @@ public class DataToString extends Data {
 
             allTrait.append(LangID.getStringByID(Interpret.TRAIT[i], lang)).append(", ");
         }
-        allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
+        allTrait.append(LangID.getStringByID("data.traits.white", lang)).append(", ").append(allColor);
 
         String trait = Interpret.getTrait(du.getTraits(), 0, icon, lang);
 
         if(trait.isBlank())
-            trait = LangID.getStringByID("data_none", lang);
+            trait = LangID.getStringByID("data.none", lang);
 
         if(trait.contentEquals(allColor))
-            trait = LangID.getStringByID("data_allcolor", lang);
+            trait = LangID.getStringByID("data.traits.allColor", lang);
 
         if(trait.contentEquals(allTrait))
-            trait = LangID.getStringByID("data_alltrait", lang);
+            trait = LangID.getStringByID("data.traits.allTrait", lang);
 
         if(trait.endsWith(", "))
             trait = trait.substring(0, trait.length()-2);
@@ -947,18 +947,18 @@ public class DataToString extends Data {
 
             allTrait.append(LangID.getStringByID(Interpret.TRAIT[i], lang)).append(", ");
         }
-        allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
+        allTrait.append(LangID.getStringByID("data.traits.white", lang)).append(", ").append(allColor);
 
         String trait = Interpret.getTrait(e.getTraits(), e.getStar(), icon, lang);
 
         if(trait.isBlank())
-            trait = LangID.getStringByID("data_none", lang);
+            trait = LangID.getStringByID("data.none", lang);
 
         if(trait.contentEquals(allColor))
-            trait = LangID.getStringByID("data_allcolor", lang);
+            trait = LangID.getStringByID("data.traits.allColor", lang);
 
         if(trait.contentEquals(allTrait))
-            trait = LangID.getStringByID("data_alltrait", lang);
+            trait = LangID.getStringByID("data.traits.allTrait", lang);
 
         if(trait.endsWith(", "))
             trait = trait.substring(0, trait.length()-2);
@@ -995,9 +995,9 @@ public class DataToString extends Data {
             return "";
 
         if(Interpret.isType(f, 1))
-            return LangID.getStringByID("data_area", lang);
+            return LangID.getStringByID("data.attackTypes.area", lang);
         else
-            return LangID.getStringByID("data_single", lang);
+            return LangID.getStringByID("data.unit.attackType.single", lang);
     }
 
     public static String getSiMu(MaskEnemy e, CommonStatic.Lang.Locale lang) {
@@ -1005,18 +1005,18 @@ public class DataToString extends Data {
             return "";
 
         if(Interpret.isType(e, 1))
-            return LangID.getStringByID("data_area", lang);
+            return LangID.getStringByID("data.attackTypes.area", lang);
         else
-            return LangID.getStringByID("data_single", lang);
+            return LangID.getStringByID("data.unit.attackType.single", lang);
     }
 
     public static String getTalent(MaskUnit f, Level lv, CommonStatic.Lang.Locale lang) {
         if(f == null || f.getPCoin() == null)
-            return LangID.getStringByID("data_notalent", lang);
+            return LangID.getStringByID("data.unit.talent.noTalent", lang);
 
         ArrayList<int[]> info = f.getPCoin().info;
 
-        StringBuilder sb = new StringBuilder(LangID.getStringByID("data_talen", lang));
+        StringBuilder sb = new StringBuilder(LangID.getStringByID("data.unit.talent.list", lang));
 
         if(!f.getPCoin().trait.isEmpty()) {
             sb.append("[");
@@ -1051,7 +1051,7 @@ public class DataToString extends Data {
         }
 
         if(sb.toString().contains("*")) {
-            sb.append("\n\n").append(LangID.getStringByID("data_supertalentdesc", lang));
+            sb.append("\n\n").append(LangID.getStringByID("data.talent.ultraTalent", lang));
         }
 
         return sb.toString();
@@ -1062,7 +1062,7 @@ public class DataToString extends Data {
             return "";
 
         if(e.getProc().BARRIER.health == 0)
-            return LangID.getStringByID("data_none", lang);
+            return LangID.getStringByID("data.none", lang);
         else
             return String.valueOf(e.getProc().BARRIER.health);
     }
@@ -1077,7 +1077,7 @@ public class DataToString extends Data {
 
     public static String getPackName(String id, CommonStatic.Lang.Locale lang) {
         if(mapIds.contains(id))
-            return LangID.getStringByID("data_default", lang);
+            return LangID.getStringByID("data.default", lang);
 
         PackData pack = UserProfile.getPack(id);
 
@@ -1086,7 +1086,7 @@ public class DataToString extends Data {
                 return id;
             }
             case PackData.DefPack ignored -> {
-                return LangID.getStringByID("data_default", lang);
+                return LangID.getStringByID("data.default", lang);
             }
             case PackData.UserPack userPack -> {
                 String p = userPack.desc.name;
@@ -1123,7 +1123,7 @@ public class DataToString extends Data {
 
     public static String getEnergy(Stage st, CommonStatic.Lang.Locale lang) {
         if(!(st.info instanceof DefStageInfo info))
-            return LangID.getStringByID("data_none", lang);
+            return LangID.getStringByID("data.none", lang);
 
         StageMap stm = st.getCont();
 
@@ -1137,11 +1137,11 @@ public class DataToString extends Data {
 
         if(mc.getSID().equals("000014")) {
             if(info.energy < 1000) {
-                return LangID.getStringByID("data_catamina", lang).replace("_", String.valueOf(info.energy))+"!!drink!!";
+                return LangID.getStringByID("data.stage.catamin.a", lang).replace("_", String.valueOf(info.energy))+"!!drink!!";
             } else if(info.energy < 2000) {
-                return LangID.getStringByID("data_cataminb", lang).replace("_", String.valueOf(info.energy - 1000))+"!!drink!!";
+                return LangID.getStringByID("data.stage.catamin.b", lang).replace("_", String.valueOf(info.energy - 1000))+"!!drink!!";
             } else {
-                return LangID.getStringByID("data_cataminc", lang).replace("_", String.valueOf(info.energy - 2000))+"!!drink!!";
+                return LangID.getStringByID("data.stage.catamin.c", lang).replace("_", String.valueOf(info.energy - 2000))+"!!drink!!";
             }
         } else {
             return String.valueOf(info.energy);
@@ -1166,16 +1166,16 @@ public class DataToString extends Data {
 
     public static String getDifficulty(Stage st, CommonStatic.Lang.Locale lang) {
         if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).diff == -1)
-            return LangID.getStringByID("data_none", lang);
+            return LangID.getStringByID("data.none", lang);
         else
             return "★"+((DefStageInfo) st.info).diff;
     }
 
     public static String getContinuable(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.non_con) {
-            return LangID.getStringByID("data_false", lang);
+            return LangID.getStringByID("data.false", lang);
         } else {
-            return LangID.getStringByID("data_true", lang);
+            return LangID.getStringByID("data.true", lang);
         }
     }
 
@@ -1203,7 +1203,7 @@ public class DataToString extends Data {
 
     public static String getMusic(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.mus0 == null || st.mus0.id == -1) {
-            return LangID.getStringByID("data_none", lang);
+            return LangID.getStringByID("data.none", lang);
         } else {
             return Data.trio(st.mus0.id);
         }
@@ -1215,7 +1215,7 @@ public class DataToString extends Data {
 
     public static String getMusic1(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.mus1 == null || st.mus1.id == -1) {
-            return LangID.getStringByID("data_none", lang);
+            return LangID.getStringByID("data.none", lang);
         } else {
             return Data.trio(st.mus1.id);
         }
@@ -1223,7 +1223,7 @@ public class DataToString extends Data {
 
     public static String getBackground(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.bg == null || st.bg.id == -1) {
-            return LangID.getStringByID("data_none", lang);
+            return LangID.getStringByID("data.none", lang);
         } else {
             return Data.trio(st.bg.id);
         }
@@ -1231,7 +1231,7 @@ public class DataToString extends Data {
 
     public static String getCastle(Stage st, CommonStatic.Lang.Locale lang) {
         if(st.castle == null || st.castle.id == -1) {
-            return LangID.getStringByID("data_none", lang);
+            return LangID.getStringByID("data.none", lang);
         } else {
             return Data.trio(st.castle.id);
         }
@@ -1255,9 +1255,9 @@ public class DataToString extends Data {
 
     public static String getBossGuard(Stage st, CommonStatic.Lang.Locale lang) {
         if (st.bossGuard) {
-            return LangID.getStringByID("data_active", lang);
+            return LangID.getStringByID("data.active", lang);
         } else {
-            return LangID.getStringByID("data_inactive", lang);
+            return LangID.getStringByID("data.inactive", lang);
         }
     }
 
@@ -1268,19 +1268,19 @@ public class DataToString extends Data {
             return res;
 
         if(l.line != 0) {
-            res.add(LangID.getStringByID("data_linelim", lang)+"\n"+LangID.getStringByID("data_firstline", lang));
+            res.add(LangID.getStringByID("data.stage.limit.lineLimit.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.lineLimit.description", lang));
         }
 
         if(l.max != 0) {
-            res.add(LangID.getStringByID("data_maxcolim", lang)+"\n"+LangID.getStringByID("data_costmax", lang).replace("_", String.valueOf(l.max)));
+            res.add(LangID.getStringByID("data.stage.limit.maxCost.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.maxCost.description", lang).replace("_", String.valueOf(l.max)));
         }
 
         if(l.min != 0) {
-            res.add(LangID.getStringByID("data_mincolim", lang)+"\n"+LangID.getStringByID("data_costmin", lang).replace("_", String.valueOf(l.min)));
+            res.add(LangID.getStringByID("data.stage.limit.minCost.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.minCost.description", lang).replace("_", String.valueOf(l.min)));
         }
 
         if(l.rare != 0) {
-            String[] rid = {"data_basic", "data_ex", "data_rare", "data_sr", "data_ur", "data_lr"};
+            String[] rid = {"data.unit.rarity.basic", "data.unit.rarity.ex", "data.unit.rarity.rare", "data.unit.rarity.superRare", "data.unit.rarity.uberRare", "data.unit.rarity.legendRare"};
             StringBuilder rare = new StringBuilder();
 
             for(int i = 0; i < rid.length; i++) {
@@ -1288,11 +1288,11 @@ public class DataToString extends Data {
                     rare.append(LangID.getStringByID(rid[i], lang)).append(", ");
             }
 
-            res.add(LangID.getStringByID("data_rarelim", lang)+"\n"+ rare.substring(0, rare.length() - 2));
+            res.add(LangID.getStringByID("data.stage.limit.rarity", lang)+"\n"+ rare.substring(0, rare.length() - 2));
         }
 
         if(l.num != 0) {
-            res.add(LangID.getStringByID("data_maxunitlim", lang)+"\n"+l.num);
+            res.add(LangID.getStringByID("data.stage.limit.maxUnit", lang)+"\n"+l.num);
         }
 
         if(l.group != null && !l.group.set.isEmpty()) {
@@ -1310,7 +1310,7 @@ public class DataToString extends Data {
                     f = u.get(i).forms[0].names.toString();
 
                 if(f.isBlank())
-                    f = LangID.getStringByID("data_unit", lang)+Data.trio(u.get(i).id.id);
+                    f = LangID.getStringByID("data.stage.limit.unit", lang)+Data.trio(u.get(i).id.id);
 
                 if(i == l.group.set.size() - 1) {
                     units.append(f);
@@ -1322,9 +1322,9 @@ public class DataToString extends Data {
             String result;
 
             if(l.group.type == 0) {
-                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_only", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data.stage.limit.characterGroup.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.characterGroup.allow", lang).replace("_", units.toString());
             } else {
-                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_cantuse", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data.stage.limit.characterGroup.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.characterGroup.disallow", lang).replace("_", units.toString());
             }
 
             res.add(result);
@@ -1342,17 +1342,17 @@ public class DataToString extends Data {
                     time = df.format(map.stageLimit.globalCooldown / 30.0) + "s";
                 }
 
-                res.add(LangID.getStringByID("data_cooldownlimit", lang) + "\n" + LangID.getStringByID("data_globalcool", lang).formatted(time));
+                res.add(LangID.getStringByID("data.stage.limit.cooldown.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.description", lang).formatted(time));
             }
 
             if (map.stageLimit.maxMoney != -1) {
-                res.add(LangID.getStringByID("data_moneylimit", lang) + "\n" + LangID.getStringByID("data_maxmoney", lang).formatted(map.stageLimit.maxMoney));
+                res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(map.stageLimit.maxMoney));
             }
 
             if (!map.stageLimit.bannedCatCombo.isEmpty()) {
                 String comboList = String.join(", ", map.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
 
-                res.add(LangID.getStringByID("data_combolimit", lang) + "\n" + LangID.getStringByID("data_comboban", lang).formatted(comboList));
+                res.add(LangID.getStringByID("data.stage.limit.combo.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.combo.description", lang).formatted(comboList));
             }
         }
 
@@ -1366,19 +1366,19 @@ public class DataToString extends Data {
             return res;
 
         if(l.line != 0) {
-            res.add(LangID.getStringByID("data_linelim", lang)+"\n"+LangID.getStringByID("data_firstline", lang));
+            res.add(LangID.getStringByID("data.stage.limit.lineLimit.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.lineLimit.description", lang));
         }
 
         if(l.max != 0) {
-            res.add(LangID.getStringByID("data_maxcolim", lang)+"\n"+LangID.getStringByID("data_costmax", lang).replace("_", String.valueOf(l.max)));
+            res.add(LangID.getStringByID("data.stage.limit.maxCost.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.maxCost.description", lang).replace("_", String.valueOf(l.max)));
         }
 
         if(l.min != 0) {
-            res.add(LangID.getStringByID("data_mincolim", lang)+"\n"+LangID.getStringByID("data_costmin", lang).replace("_", String.valueOf(l.min)));
+            res.add(LangID.getStringByID("data.stage.limit.minCost.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.minCost.description", lang).replace("_", String.valueOf(l.min)));
         }
 
         if(l.rare != 0) {
-            String[] rid = {"data_basic", "data_ex", "data_rare", "data_sr", "data_ur", "data_lr"};
+            String[] rid = {"data.unit.rarity.basic", "data.unit.rarity.ex", "data.unit.rarity.rare", "data.unit.rarity.superRare", "data.unit.rarity.uberRare", "data.unit.rarity.legendRare"};
             StringBuilder rare = new StringBuilder();
 
             for(int i = 0; i < rid.length; i++) {
@@ -1386,11 +1386,11 @@ public class DataToString extends Data {
                     rare.append(LangID.getStringByID(rid[i], lang)).append(", ");
             }
 
-            res.add(LangID.getStringByID("data_rarelim", lang)+"\n"+ rare.substring(0, rare.length() - 2));
+            res.add(LangID.getStringByID("data.stage.limit.rarity", lang)+"\n"+ rare.substring(0, rare.length() - 2));
         }
 
         if(l.num != 0) {
-            res.add(LangID.getStringByID("data_maxunitlim", lang)+"\n"+l.num);
+            res.add(LangID.getStringByID("data.stage.limit.maxUnit", lang)+"\n"+l.num);
         }
 
         if(l.group instanceof CustomCharaGroup && !((CustomCharaGroup) l.group).identifiers.isEmpty()) {
@@ -1408,7 +1408,7 @@ public class DataToString extends Data {
                     f = map.unitNames.get(u.get(i).id);
 
                     if(f == null || f.isBlank())
-                        f = LangID.getStringByID("data_unit", lang)+Data.trio(u.get(i).id);
+                        f = LangID.getStringByID("data.stage.limit.unit", lang)+Data.trio(u.get(i).id);
                 } else {
                     Unit unit = u.get(i).get();
 
@@ -1431,9 +1431,9 @@ public class DataToString extends Data {
             String result;
 
             if(l.group.type == 0) {
-                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_only", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data.stage.limit.characterGroup.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.characterGroup.allow", lang).replace("_", units.toString());
             } else {
-                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_cantuse", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data.stage.limit.characterGroup.title", lang)+"\n"+LangID.getStringByID("data.stage.limit.characterGroup.disallow", lang).replace("_", units.toString());
             }
 
             res.add(result);
@@ -1449,17 +1449,17 @@ public class DataToString extends Data {
                     time = df.format(map.stageLimit.globalCooldown / 30.0) + "s";
                 }
 
-                res.add(LangID.getStringByID("data_cooldownlimit", lang) + "\n" + LangID.getStringByID("data_globalcool", lang).formatted(time));
+                res.add(LangID.getStringByID("data.stage.limit.cooldown.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.description", lang).formatted(time));
             }
 
             if (map.stageLimit.maxMoney != -1) {
-                res.add(LangID.getStringByID("data_moneylimit", lang) + "\n" + LangID.getStringByID("data_maxmoney", lang).formatted(map.stageLimit.maxMoney));
+                res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(map.stageLimit.maxMoney));
             }
 
             if (!map.stageLimit.bannedCatCombo.isEmpty()) {
                 String comboList = String.join(", ", map.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
 
-                res.add(LangID.getStringByID("data_combolimit", lang) + "\n" + LangID.getStringByID("data_comboban", lang).formatted(comboList));
+                res.add(LangID.getStringByID("data.stage.limit.combo.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.combo.description", lang).formatted(comboList));
             }
         }
 
@@ -1636,12 +1636,12 @@ public class DataToString extends Data {
             String reward = MultiLangCont.getStageDrop(info.drop[i][1], lang);
 
             if(reward == null || reward.isBlank())
-                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(info.drop[i][1]));
+                reward = LangID.getStringByID("data.stage.reward.format", lang).replace("_", Data.trio(info.drop[i][1]));
 
             builder.append(chance).append("  |  ").append(reward);
 
             if(i == 0 && (info.rand == 1 || (info.drop[i][1] >= 1000 && info.drop[i][1] < 30000)))
-                builder.append(LangID.getStringByID("data_once", lang));
+                builder.append(LangID.getStringByID("data.stage.reward.once", lang));
 
             if(i == 0 && info.drop[i][0] != 100 && info.rand != -4 && !chances.isEmpty())
                 builder.append(EmojiStore.TREASURE_RADAR.getFormatted());
@@ -1692,10 +1692,10 @@ public class DataToString extends Data {
                 reward = map.rewardNames.get(info.drop[i][1]);
 
             if(reward == null || reward.isBlank())
-                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(info.drop[i][1]));
+                reward = LangID.getStringByID("data.stage.reward.format", lang).replace("_", Data.trio(info.drop[i][1]));
 
             if(i == 0 && (info.rand == 1 || (info.drop[i][1] >= 1000 && info.drop[i][1] < 30000)))
-                reward += " " + LangID.getStringByID("data_once", lang);
+                reward += " " + LangID.getStringByID("data.stage.reward.once", lang);
 
             data[1] = reward;
 
@@ -1864,7 +1864,7 @@ public class DataToString extends Data {
             String reward = MultiLangCont.getStageDrop(data[i][1], lang);
 
             if(reward == null || reward.isBlank())
-                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(data[i][1]));
+                reward = LangID.getStringByID("data.stage.reward.format", lang).replace("_", Data.trio(data[i][1]));
 
             builder.append(data[i][0]).append("  |  ").append(reward).append("  |  ").append(data[i][2]);
 
@@ -1892,7 +1892,7 @@ public class DataToString extends Data {
                 reward = map.rewardNames.get(data[i][1]);
 
             if (reward == null || reward.isBlank())
-                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(data[i][1]));
+                reward = LangID.getStringByID("data.stage.reward.format", lang).replace("_", Data.trio(data[i][1]));
 
             drop[0] = String.valueOf(data[i][0]);
             drop[1] = reward;
@@ -1910,7 +1910,7 @@ public class DataToString extends Data {
         String desc;
 
         if(c.type == 14) {
-            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(c.type)+".description", lang).formatted(
                     factor,
                     df.format(0.5 * (100 - factor) / 100.0),
                     df.format(0.4 * (100 - factor) / 100.0),
@@ -1918,30 +1918,30 @@ public class DataToString extends Data {
                     df.format(1.8 * (100 + factor) / 100.0)
             );
         } else if(c.type == 15) {
-            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(c.type)+".description", lang).formatted(
                     factor,
                     df.format(3.0 * (100 + factor) / 100.0),
                     df.format(4.0 * (100 + factor) / 100.0)
             );
         } else if(c.type == 16) {
-            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(c.type)+".description", lang).formatted(
                     factor,
                     df.format(0.25 * (100 - factor) / 100.0),
                     df.format(0.2 * (100 - factor) / 100.0)
             );
         } else if(c.type == 22 || c.type == 23) {
-            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(c.type)+".description", lang).formatted(
                     factor,
                     df.format(0.2 / ((100 + factor) / 100.0)),
                     df.format(5 * (100 + factor) / 100.0)
             );
         } else if(c.type == 7 || c.type == 11) {
-            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(c.type)+".description", lang).formatted(
                     factor,
                     df.format(factor / 30.0)
             );
         } else {
-            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(factor);
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(c.type)+".description", lang).formatted(factor);
         }
 
         StringBuilder builder = new StringBuilder("[");
@@ -1956,7 +1956,7 @@ public class DataToString extends Data {
 
         for(int i = 0; i < c.forms.length; i++) {
             if(c.forms[i] == null && i < lastIndex) {
-                builder.append(LangID.getStringByID("data_none", lang)).append(", ");
+                builder.append(LangID.getStringByID("data.none", lang)).append(", ");
             } else {
                 String name = StaticStore.safeMultiLangGet(c.forms[i], lang);
 
@@ -1981,7 +1981,7 @@ public class DataToString extends Data {
     public static String getComboDescription(int type, int lv, CommonStatic.Lang.Locale lang) {
         int factor = getComboFactor(type, lv);
 
-        String desc = LangID.getStringByID("data_"+getComboKeyword(type)+"combodesc", lang).replace("_", String.valueOf(factor));
+        String desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).replace("_", String.valueOf(factor));
 
         if(type == 14) {
             desc = desc.replace("ttt", df.format(0.5 * (100 - factor) / 100.0))
@@ -2005,19 +2005,19 @@ public class DataToString extends Data {
     }
 
     public static String getComboType(Combo c, CommonStatic.Lang.Locale lang) {
-        return LangID.getStringByID("data_"+getComboKeyword(c.type)+"combo", lang) + " [" + getComboLevel(c.lv, lang)+"]";
+        return LangID.getStringByID("data.combo."+getComboKeyword(c.type)+".title", lang) + " [" + getComboLevel(c.lv, lang)+"]";
     }
 
     public static String getComboType(int type, CommonStatic.Lang.Locale lang) {
-        return LangID.getStringByID("data_"+getComboKeyword(type)+"combo", lang);
+        return LangID.getStringByID("data.combo."+getComboKeyword(type)+".title", lang);
     }
 
     public static String getComboLevel(int lv, CommonStatic.Lang.Locale lang) {
         return switch (lv) {
-            case 0 -> LangID.getStringByID("data_combosm", lang);
-            case 1 -> LangID.getStringByID("data_combom", lang);
-            case 2 -> LangID.getStringByID("data_combol", lang);
-            case 3 -> LangID.getStringByID("data_comboxl", lang);
+            case 0 -> LangID.getStringByID("data.combo.size.sm", lang);
+            case 1 -> LangID.getStringByID("data.combo.size.m", lang);
+            case 2 -> LangID.getStringByID("data.combo.size.l", lang);
+            case 3 -> LangID.getStringByID("data.combo.size.xl", lang);
             default -> "Lv. " + lv;
         };
     }
@@ -2075,30 +2075,30 @@ public class DataToString extends Data {
 
     private static String getComboKeyword(int type) {
         return switch (type) {
-            case 0 -> "atk";
+            case 0 -> "attack";
             case 1 -> "health";
             case 2 -> "speed";
-            case 3 -> "caninitchar";
+            case 3 -> "initialCharge";
             case 4 -> "worker";
-            case 5 -> "initmon";
-            case 6 -> "canatk";
-            case 7 -> "canchar";
+            case 5 -> "initialMoney";
+            case 6 -> "cannonDamage";
+            case 7 -> "cannonCharge";
             case 8 -> "efficiency";
             case 9 -> "wallet";
-            case 10 -> "basehp";
+            case 10 -> "baseHealth";
             case 11 -> "cooldown";
-            case 12 -> "acc";
+            case 12 -> "accountant";
             case 13 -> "study";
             case 14 -> "strong";
-            case 15 -> "massive";
+            case 15 -> "massiveDamage";
             case 16 -> "resistant";
             case 17 -> "kb";
             case 18 -> "slow";
             case 19 -> "freeze";
             case 20 -> "weaken";
             case 21 -> "strengthen";
-            case 23 -> "eva";
-            case 22 -> "witch";
+            case 23 -> "evaAngelKiller";
+            case 22 -> "witchKiller";
             case 24 -> "critical";
             default -> throw new IllegalStateException("Invalid Combo Type : " + type);
         };
@@ -2167,30 +2167,30 @@ public class DataToString extends Data {
             if(info.resetMode > 0 && info.resetMode < 4)
                 result.add(LangID.getStringByID("data_reset"+info.resetMode, lang));
             else
-                result.add(LangID.getStringByID("data_resetx", lang));
+                result.add(LangID.getStringByID("data.stage.misc.resetFlag.unknown", lang));
         }
 
         if(info.clearLimit != -1) {
-            result.add(LangID.getStringByID("data_numberplay", lang).replace("_", String.valueOf(info.clearLimit)));
+            result.add(LangID.getStringByID("data.stage.misc.numberOfPlay", lang).replace("_", String.valueOf(info.clearLimit)));
         }
 
         if(info.waitTime != -1) {
             String min;
 
             if(info.waitTime > 1)
-                min = LangID.getStringByID("smins", lang);
+                min = LangID.getStringByID("date.minute.lowercase.plural", lang);
             else
-                min = LangID.getStringByID("smin", lang);
+                min = LangID.getStringByID("date.minute.lowercase.singular", lang);
 
-            result.add(LangID.getStringByID("data_waittime", lang).replace("_NNN_", String.valueOf(info.waitTime)).replace("_TTT_", min));
+            result.add(LangID.getStringByID("data.stage.misc.waitingTime", lang).replace("_NNN_", String.valueOf(info.waitTime)).replace("_TTT_", min));
         }
 
         if(info.hiddenUponClear) {
-            result.add(LangID.getStringByID("data_hiddenclear", lang));
+            result.add(LangID.getStringByID("data.stage.misc.clearHidden", lang));
         }
 
         if(info.cantUseGoldCPU) {
-            result.add(LangID.getStringByID("data_nocpu", lang));
+            result.add(LangID.getStringByID("data.stage.misc.noCPU", lang));
         }
 
         for(int i = 0; i < result.size(); i++) {
@@ -2269,17 +2269,17 @@ public class DataToString extends Data {
         String rarity;
 
         if(f.unit.rarity == 0)
-            rarity = LangID.getStringByID("data_basic", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.basic", lang);
         else if(f.unit.rarity == 1)
-            rarity = LangID.getStringByID("data_ex", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.ex", lang);
         else if(f.unit.rarity == 2)
-            rarity = LangID.getStringByID("data_rare", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.rare", lang);
         else if(f.unit.rarity == 3)
-            rarity = LangID.getStringByID("data_sr", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.superRare", lang);
         else if(f.unit.rarity == 4)
-            rarity = LangID.getStringByID("data_ur", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.uberRare", lang);
         else if(f.unit.rarity == 5)
-            rarity = LangID.getStringByID("data_lr", lang);
+            rarity = LangID.getStringByID("data.unit.rarity.legendRare", lang);
         else
             rarity = "Unknown";
 
@@ -2546,7 +2546,7 @@ public class DataToString extends Data {
         }
 
         result.append("\n")
-                .append(String.format(LangID.getStringByID("data_maxmat", lang), max));
+                .append(String.format(LangID.getStringByID("data.stage.material.maxAmount", lang), max));
 
         return result.toString();
     }

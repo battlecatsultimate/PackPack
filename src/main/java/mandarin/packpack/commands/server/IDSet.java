@@ -79,7 +79,7 @@ public class IDSet extends ConstraintCommand {
         String boosterRole;
 
         if (holder.booster == null) {
-            boosterRole = LangID.getStringByID("data_none", lang);
+            boosterRole = LangID.getStringByID("data.none", lang);
         } else {
             boosterRole = "<@&" + holder.booster + ">";
         }

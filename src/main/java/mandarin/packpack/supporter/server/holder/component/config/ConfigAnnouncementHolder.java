@@ -143,7 +143,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
         String channel;
 
         if (holder.announceChannel == null) {
-            channel = LangID.getStringByID("data_none", lang);
+            channel = LangID.getStringByID("data.none", lang);
         } else {
             channel = "<#" + holder.announceChannel + ">";
         }

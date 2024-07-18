@@ -78,7 +78,7 @@ public abstract class TimedConstraintCommand extends Command {
             Message msg = loader.getMessage();
 
             if(requireGuild && !(ch instanceof GuildChannel)) {
-                replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("sendFailure.reason.serverRequired", lang), msg, a -> a);
 
                 return;
             }
@@ -96,7 +96,7 @@ public abstract class TimedConstraintCommand extends Command {
 
                     String content;
 
-                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                    content = LangID.getStringByID("sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
                     u.openPrivateChannel()
                             .flatMap(pc -> pc.sendMessage(content))

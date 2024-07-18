@@ -172,11 +172,11 @@ public class EntityHandler {
         String desc = "";
 
         if(talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
-            desc += LangID.getStringByID("data_talent", lang) + "\n";
+            desc += LangID.getStringByID("data.unit.talent.info", lang) + "\n";
         }
 
         if(holder.differentFromGlobal()) {
-            desc += LangID.getStringByID("data_customtrea", lang);
+            desc += LangID.getStringByID("data.unit.treasure", lang);
         }
 
         if(!desc.isBlank()) {
@@ -185,8 +185,8 @@ public class EntityHandler {
 
         spec.setColor(c);
         spec.setThumbnail("attachment://icon.png");
-        spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
-        spec.addField(LangID.getStringByID("data_level", lang), l, true);
+        spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(f.uid.id, f.fid), true);
+        spec.addField(LangID.getStringByID("data.unit.level", lang), l, true);
 
         String hpNormal = DataToString.getHP(f.du, f.unit.lv, talent, lv, false, holder);
         String hpWithTreasure;
@@ -198,21 +198,21 @@ public class EntityHandler {
         }
 
         if(hpWithTreasure.isBlank() || hpNormal.equals(hpWithTreasure)) {
-            spec.addField(LangID.getStringByID("data_hp", lang), hpNormal, true);
+            spec.addField(LangID.getStringByID("data.hp", lang), hpNormal, true);
         } else {
-            spec.addField(LangID.getStringByID("data_hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
+            spec.addField(LangID.getStringByID("data.hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
         }
 
-        spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, lv), true);
-        spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
-        spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
-        spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
+        spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(f.du, talent, lv), true);
+        spec.addField(LangID.getStringByID("data.unit.cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
+        spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
+        spec.addField(LangID.getStringByID("data.unit.cost", lang), DataToString.getCost(f.du, talent, lv), true);
         spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-        spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
-        spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
-        spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
-        spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
-        spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
+        spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
+        spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(f.du, isFrame), true);
+        spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(f.du, isFrame), true);
+        spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
+        spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(f.du, lang), true);
 
         String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, talent, lv, false, holder);
         String dpsWithTreasure;
@@ -224,14 +224,14 @@ public class EntityHandler {
         }
 
         if(dpsWithTreasure.isBlank() || dpsNormal.equals(dpsWithTreasure)) {
-            spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal, true);
+            spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal, true);
         } else {
-            spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
+            spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
         }
 
-        spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
-        spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
+        spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(f.du, lang), true);
+        spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
+        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
 
         MaskUnit du;
 
@@ -258,7 +258,7 @@ public class EntityHandler {
         String res = sb.toString();
 
         if(res.isBlank())
-            res = LangID.getStringByID("data_none", lang);
+            res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
             abis = Interpret.getAbi(du, false, lang, treasure ? du.getTraits() : null, holder);
             abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
@@ -275,18 +275,18 @@ public class EntityHandler {
             res = sb.toString();
         }
 
-        spec.addField(LangID.getStringByID("data_ability", lang), res, false);
+        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
         if(extra) {
             String explanation = DataToString.getDescription(f, lang);
 
             if(explanation != null)
-                spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
+                spec.addField(LangID.getStringByID("data.unit.description", lang), explanation, false);
 
             String catfruit = DataToString.getCatFruitEvolve(f, lang);
 
             if(catfruit != null)
-                spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
+                spec.addField(LangID.getStringByID("data.unit.evolve", lang), catfruit, false);
 
             spec.setImage("attachment://cf.png");
         }
@@ -422,9 +422,9 @@ public class EntityHandler {
         }
 
         if(talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
-            desc += LangID.getStringByID("data_talent", lang) + "\n";
+            desc += LangID.getStringByID("data.unit.talent.info", lang) + "\n";
         } else if(talent && f.du.getPCoin() == null) {
-            desc += LangID.getStringByID("data_notalent", lang) + "\n";
+            desc += LangID.getStringByID("data.unit.talent.noTalent", lang) + "\n";
         }
 
         if(isTrueForm && !trueFormPossible) {
@@ -432,7 +432,7 @@ public class EntityHandler {
         }
 
         if(holder.differentFromGlobal()) {
-            desc += LangID.getStringByID("data_customtrea", lang);
+            desc += LangID.getStringByID("data.unit.treasure", lang);
         }
 
         if(!desc.isBlank()) {
@@ -445,17 +445,17 @@ public class EntityHandler {
         if(compact) {
             spec.setTitle(DataToString.getCompactTitle(f, lang));
 
-            spec.addField(LangID.getStringByID("data_level", lang), l, false);
-            spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, lv, treasure, holder), false);
-            spec.addField(LangID.getStringByID("data_cocosp", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, lv, holder), true);
+            spec.addField(LangID.getStringByID("data.unit.level", lang), l, false);
+            spec.addField(LangID.getStringByID("data.compact.healthKb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, lv, treasure, holder), false);
+            spec.addField(LangID.getStringByID("data.compact.costCooldownSpeed", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, lv, holder), true);
             spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(f.du, talent, lv, isFrame), false);
-            spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, lv, treasure, holder), false);
+            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(f.du, talent, lv, isFrame), false);
+            spec.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, lv, treasure, holder), false);
         } else {
             spec.setTitle(DataToString.getTitle(f, lang));
 
-            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
-            spec.addField(LangID.getStringByID("data_level", lang), l, true);
+            spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(f.uid.id, f.fid), true);
+            spec.addField(LangID.getStringByID("data.unit.level", lang), l, true);
 
             String hpNormal = DataToString.getHP(f.du, f.unit.lv, talent, lv, false, holder);
             String hpWithTreasure;
@@ -467,21 +467,21 @@ public class EntityHandler {
             }
 
             if(hpWithTreasure.isBlank() || hpNormal.equals(hpWithTreasure)) {
-                spec.addField(LangID.getStringByID("data_hp", lang), hpNormal, true);
+                spec.addField(LangID.getStringByID("data.hp", lang), hpNormal, true);
             } else {
-                spec.addField(LangID.getStringByID("data_hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
+                spec.addField(LangID.getStringByID("data.hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
             }
 
-            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, lv), true);
-            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
-            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
-            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
+            spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(f.du, talent, lv), true);
+            spec.addField(LangID.getStringByID("data.unit.cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
+            spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
+            spec.addField(LangID.getStringByID("data.unit.cost", lang), DataToString.getCost(f.du, talent, lv), true);
             spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
-            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
-            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
-            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
-            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
+            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
+            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
+            spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(f.du, lang), true);
 
             String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, talent, lv, false, holder);
             String dpsWithTreasure;
@@ -493,16 +493,16 @@ public class EntityHandler {
             }
 
             if(dpsWithTreasure.isBlank() || dpsNormal.equals(dpsWithTreasure)) {
-                spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal, true);
+                spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal, true);
             } else {
-                spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
+                spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
             }
 
-            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
+            spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(f.du, lang), true);
+            spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
         }
 
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
+        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
 
         MaskUnit du;
 
@@ -533,7 +533,7 @@ public class EntityHandler {
         String res = sb.toString();
 
         if(res.isBlank())
-            res = LangID.getStringByID("data_none", lang);
+            res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
             abis = Interpret.getAbi(du, false, lang, treasure ? du.getTraits() : null, holder);
             abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
@@ -554,18 +554,18 @@ public class EntityHandler {
             res = sb.toString();
         }
 
-        spec.addField(LangID.getStringByID("data_ability", lang), res, false);
+        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
         if(extra) {
             String explanation = DataToString.getDescription(f, lang);
 
             if(explanation != null)
-                spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
+                spec.addField(LangID.getStringByID("data.unit.description", lang), explanation, false);
 
             String catfruit = DataToString.getCatFruitEvolve(f, lang);
 
             if(catfruit != null)
-                spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
+                spec.addField(LangID.getStringByID("data.unit.evolve", lang), catfruit, false);
 
             spec.setImage("attachment://cf.png");
         }
@@ -783,39 +783,39 @@ public class EntityHandler {
         spec.setThumbnail("attachment://icon.png");
 
         if(holder.differentFromGlobal()) {
-            spec.setDescription(LangID.getStringByID("data_customtrea", lang));
+            spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
         }
 
         if(compact) {
             spec.setTitle(DataToString.getCompactTitle(e, lang));
 
-            spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), false);
-            spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(e.de, mag[0]), false);
-            spec.addField(LangID.getStringByID("data_drbasp", lang), DataToString.getDropBarrierSpeed(e.de, holder, lang), true);
+            spec.addField(LangID.getStringByID("data.enemy.magnification", lang), DataToString.getMagnification(mag, 100), false);
+            spec.addField(LangID.getStringByID("data.compact.healthKb", lang), DataToString.getHealthHitback(e.de, mag[0]), false);
+            spec.addField(LangID.getStringByID("data.compact.dropBarrierSpeed", lang), DataToString.getDropBarrierSpeed(e.de, holder, lang), true);
             spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
-            spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(e.de, isFrame), false);
-            spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(e.de, lang)), DataToString.getCompactAtk(e.de, mag[1]), false);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), false);
+            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(e.de, isFrame), false);
+            spec.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", DataToString.getSiMu(e.de, lang)), DataToString.getCompactAtk(e.de, mag[1]), false);
+            spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), false);
         } else {
             spec.setTitle(DataToString.getTitle(e, lang));
 
-            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), true);
-            spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
-            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e.de, mag[0]), true);
-            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e.de), true);
-            spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
-            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
-            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de, holder), true);
+            spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(e.id.id), true);
+            spec.addField(LangID.getStringByID("data.enemy.magnification", lang), DataToString.getMagnification(mag, 100), true);
+            spec.addField(LangID.getStringByID("data.hp", lang), DataToString.getHP(e.de, mag[0]), true);
+            spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(e.de), true);
+            spec.addField(LangID.getStringByID("data.enemy.barrier", lang), DataToString.getBarrier(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(e.de), true);
+            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data.enemy.drop", lang), DataToString.getDrop(e.de, holder), true);
             spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
-            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
-            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
-            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), true);
+            spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data.dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+            spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(e.de, mag[1]), true);
+            spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), true);
         }
 
         List<String> abis = Interpret.getAbi(e.de, true, lang, null, null);
@@ -837,7 +837,7 @@ public class EntityHandler {
         String res = sb.toString();
 
         if(res.isBlank())
-            res = LangID.getStringByID("data_none", lang);
+            res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
             abis = Interpret.getAbi(e.de, false, lang, null, null);
             abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
@@ -858,13 +858,13 @@ public class EntityHandler {
             res = sb.toString();
         }
 
-        spec.addField(LangID.getStringByID("data_ability", lang), res, false);
+        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
         if(extra) {
             String explanation = DataToString.getDescription(e, lang);
 
             if(explanation != null) {
-                spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
+                spec.addField(LangID.getStringByID("data.enemy.description", lang), explanation, false);
             }
         }
 
@@ -920,29 +920,29 @@ public class EntityHandler {
         }
 
         if(holder.differentFromGlobal()) {
-            spec.setDescription(LangID.getStringByID("data_customtrea", lang));
+            spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
         }
 
         spec.setTitle(DataToString.getTitle(e, lang));
         spec.setColor(c);
         spec.setThumbnail("attachment://icon.png");
-        spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), true);
-        spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
-        spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e.de, mag[0]), true);
-        spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e.de), true);
-        spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
-        spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
-        spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de, holder), true);
+        spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(e.id.id), true);
+        spec.addField(LangID.getStringByID("data.enemy.magnification", lang), DataToString.getMagnification(mag, 100), true);
+        spec.addField(LangID.getStringByID("data.hp", lang), DataToString.getHP(e.de, mag[0]), true);
+        spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(e.de), true);
+        spec.addField(LangID.getStringByID("data.enemy.barrier", lang), DataToString.getBarrier(e.de, lang), true);
+        spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(e.de), true);
+        spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(e.de, isFrame), true);
+        spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(e.de, isFrame), true);
+        spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(e.de, isFrame), true);
+        spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(e.de, isFrame), true);
+        spec.addField(LangID.getStringByID("data.enemy.drop", lang), DataToString.getDrop(e.de, holder), true);
         spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
-        spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
-        spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
-        spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
-        spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), true);
+        spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(e.de, lang), true);
+        spec.addField(LangID.getStringByID("data.dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+        spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(e.de, lang), true);
+        spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(e.de, mag[1]), true);
+        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), true);
 
         List<String> abis = Interpret.getAbi(e.de, true, lang, null, null);
         abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
@@ -959,7 +959,7 @@ public class EntityHandler {
         String res = sb.toString();
 
         if(res.isBlank())
-            res = LangID.getStringByID("data_none", lang);
+            res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
             abis = Interpret.getAbi(e.de, false, lang, null, null);
             abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
@@ -976,13 +976,13 @@ public class EntityHandler {
             res = sb.toString();
         }
 
-        spec.addField(LangID.getStringByID("data_ability", lang), res, false);
+        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
         if(extra) {
             String explanation = DataToString.getDescription(e, lang);
 
             if(explanation != null) {
-                spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
+                spec.addField(LangID.getStringByID("data.enemy.description", lang), explanation, false);
             }
         }
 
@@ -1327,50 +1327,50 @@ public class EntityHandler {
         spec.setTitle(name);
 
         if(holder.differentFromGlobal()) {
-            spec.setDescription(LangID.getStringByID("data_customtrea", lang));
+            spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
         }
 
         if(isCompact) {
-            spec.addField(LangID.getStringByID("data_iddile", lang), DataToString.getIdDifficultyLevel(st, sta, lang), false);
+            spec.addField(LangID.getStringByID("data.compact.idDifficultyLevel", lang), DataToString.getIdDifficultyLevel(st, sta, lang), false);
 
             String secondField = DataToString.getEnergyBaseXP(st, holder, lang);
 
             if(secondField.contains("!!drink!!")) {
                 secondField = secondField.replace("!!drink!!", "");
 
-                spec.addField(LangID.getStringByID("data_cabaxp", lang), secondField, false);
+                spec.addField(LangID.getStringByID("data.compact.cataminBaseXP", lang), secondField, false);
             } else {
-                spec.addField(LangID.getStringByID("data_enbaxp", lang), secondField, false);
+                spec.addField(LangID.getStringByID("data.compact.energyBaseXP", lang), secondField, false);
             }
 
-            spec.addField(LangID.getStringByID("data_encole", lang), DataToString.getEnemyContinuableLength(st, lang), false);
-            spec.addField(LangID.getStringByID("data_mubaca", lang).replace("_BBB_", String.valueOf(st.mush)), DataToString.getMusciBackgroundCastle(st, lang), false);
-            spec.addField(LangID.getStringByID("data_guard", lang), DataToString.getBossGuard(st, lang), false);
-            spec.setFooter(LangID.getStringByID("data_minres", lang).replace("_RRR_", DataToString.getMinSpawn(st, isFrame)));
+            spec.addField(LangID.getStringByID("data.compact.limitContinuableLength", lang), DataToString.getEnemyContinuableLength(st, lang), false);
+            spec.addField(LangID.getStringByID("data.compact.musicBackgroundCastle", lang).replace("_BBB_", String.valueOf(st.mush)), DataToString.getMusciBackgroundCastle(st, lang), false);
+            spec.addField(LangID.getStringByID("data.stage.guardBarrier", lang), DataToString.getBossGuard(st, lang), false);
+            spec.setFooter(LangID.getStringByID("data.compact.minimumRespawn", lang).replace("_RRR_", DataToString.getMinSpawn(st, isFrame)));
         } else {
-            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), true);
-            spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
+            spec.addField(LangID.getStringByID("data.id", lang), DataToString.getStageCode(st), true);
+            spec.addField(LangID.getStringByID("data.unit.level", lang), DataToString.getStar(st, sta), true);
 
             String energy = DataToString.getEnergy(st, lang);
 
             if(energy.endsWith("!!drink!!")) {
-                spec.addField(LangID.getStringByID("data_catamin", lang), energy.replace("!!drink!!", ""), true);
+                spec.addField(LangID.getStringByID("data.stage.catamin.title", lang), energy.replace("!!drink!!", ""), true);
             } else {
-                spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
+                spec.addField(LangID.getStringByID("data.stage.energy", lang), energy, true);
             }
 
-            spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
-            spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st, holder), true);
-            spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
-            spec.addField(LangID.getStringByID("data_continuable", lang), DataToString.getContinuable(st, lang), true);
-            spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
+            spec.addField(LangID.getStringByID("data.stage.baseHealth", lang), DataToString.getBaseHealth(st), true);
+            spec.addField(LangID.getStringByID("data.stage.xp", lang), DataToString.getXP(st, holder), true);
+            spec.addField(LangID.getStringByID("data.stage.difficulty", lang), DataToString.getDifficulty(st, lang), true);
+            spec.addField(LangID.getStringByID("data.stage.continuable", lang), DataToString.getContinuable(st, lang), true);
+            spec.addField(LangID.getStringByID("data.stage.music", lang), DataToString.getMusic(st, lang), true);
             spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
-            spec.addField(LangID.getStringByID("data_maxenem", lang), DataToString.getMaxEnemy(st), true);
-            spec.addField(LangID.getStringByID("data_bg", lang), DataToString.getBackground(st, lang),true);
-            spec.addField(LangID.getStringByID("data_castle", lang), DataToString.getCastle(st, lang), true);
-            spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
-            spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
-            spec.addField(LangID.getStringByID("data_guard", lang), DataToString.getBossGuard(st, lang), true);
+            spec.addField(LangID.getStringByID("data.stage.enemyLimit", lang), DataToString.getMaxEnemy(st), true);
+            spec.addField(LangID.getStringByID("data.stage.background", lang), DataToString.getBackground(st, lang),true);
+            spec.addField(LangID.getStringByID("data.stage.castle", lang), DataToString.getCastle(st, lang), true);
+            spec.addField(LangID.getStringByID("data.stage.length", lang), DataToString.getLength(st), true);
+            spec.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), DataToString.getMinSpawn(st, isFrame), true);
+            spec.addField(LangID.getStringByID("data.stage.guardBarrier", lang), DataToString.getBossGuard(st, lang), true);
         }
 
         ArrayList<String> limit = DataToString.getLimit(st, st.getLim(sta), isFrame, lang);
@@ -1385,7 +1385,7 @@ public class EntityHandler {
                     sb.append("\n");
             }
 
-            spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+            spec.addField(LangID.getStringByID("data.stage.limit.title", lang), sb.toString(), false);
         }
 
         if(isExtra) {
@@ -1402,19 +1402,19 @@ public class EntityHandler {
                     }
                 }
 
-                spec.addField(LangID.getStringByID("data_misc", lang), sbuilder.toString(), false);
+                spec.addField(LangID.getStringByID("data.stage.misc.title", lang), sbuilder.toString(), false);
             }
 
             String exData = DataToString.getEXStage(st, lang);
 
             if(exData != null) {
-                spec.addField(LangID.getStringByID("data_exstage", lang), exData, false);
+                spec.addField(LangID.getStringByID("data.stage.misc.exStage", lang), exData, false);
             }
 
             String materials = DataToString.getMaterialDrop(st, sta, lang);
 
             if(materials != null) {
-                spec.addField(LangID.getStringByID("data_material", lang), materials, false);
+                spec.addField(LangID.getStringByID("data.stage.material.title", lang), materials, false);
             }
         }
 
@@ -1422,22 +1422,22 @@ public class EntityHandler {
 
         if(drops != null) {
             if(drops.endsWith("!!number!!")) {
-                spec.addField(LangID.getStringByID("data_numreward", lang), drops.replace("!!number!!", ""), false);
+                spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
             } else if(drops.endsWith("!!nofail!!")) {
-                spec.addField(LangID.getStringByID("data_chanrewardnofail", lang), drops.replace("!!nofail!!", ""), false);
+                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!nofail!!", ""), false);
             } else {
-                spec.addField(LangID.getStringByID("data_chanreward", lang), drops, false);
+                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
             }
         }
 
         String score = DataToString.getScoreDrops(st, lang);
 
         if(score != null) {
-            spec.addField(LangID.getStringByID("data_score", lang), score, false);
+            spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
         }
 
         if(img != null) {
-            spec.addField(LangID.getStringByID("data_scheme", lang), "** **", false);
+            spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
             spec.setImage("attachment://scheme.png");
         }
 
@@ -1545,28 +1545,28 @@ public class EntityHandler {
         name += stName;
 
         spec.setTitle(name);
-        spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), true);
-        spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
+        spec.addField(LangID.getStringByID("data.id", lang), DataToString.getStageCode(st), true);
+        spec.addField(LangID.getStringByID("data.unit.level", lang), DataToString.getStar(st, sta), true);
 
         String energy = DataToString.getEnergy(st, lang);
 
         if(energy.endsWith("!!drink!!")) {
-            spec.addField(LangID.getStringByID("data_catamin", lang), energy.replace("!!drink!!", ""), true);
+            spec.addField(LangID.getStringByID("data.stage.catamin.title", lang), energy.replace("!!drink!!", ""), true);
         } else {
-            spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
+            spec.addField(LangID.getStringByID("data.stage.energy", lang), energy, true);
         }
 
-        spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
-        spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st, holder), true);
-        spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
-        spec.addField(LangID.getStringByID("data_continuable", lang), DataToString.getContinuable(st, lang), true);
-        spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
+        spec.addField(LangID.getStringByID("data.stage.baseHealth", lang), DataToString.getBaseHealth(st), true);
+        spec.addField(LangID.getStringByID("data.stage.xp", lang), DataToString.getXP(st, holder), true);
+        spec.addField(LangID.getStringByID("data.stage.difficulty", lang), DataToString.getDifficulty(st, lang), true);
+        spec.addField(LangID.getStringByID("data.stage.continuable", lang), DataToString.getContinuable(st, lang), true);
+        spec.addField(LangID.getStringByID("data.stage.music", lang), DataToString.getMusic(st, lang), true);
         spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
-        spec.addField(LangID.getStringByID("data_maxenem", lang), DataToString.getMaxEnemy(st), true);
-        spec.addField(LangID.getStringByID("data_bg", lang), DataToString.getBackground(st, lang),true);
-        spec.addField(LangID.getStringByID("data_castle", lang), DataToString.getCastle(st, lang), true);
-        spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
-        spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
+        spec.addField(LangID.getStringByID("data.stage.enemyLimit", lang), DataToString.getMaxEnemy(st), true);
+        spec.addField(LangID.getStringByID("data.stage.background", lang), DataToString.getBackground(st, lang),true);
+        spec.addField(LangID.getStringByID("data.stage.castle", lang), DataToString.getCastle(st, lang), true);
+        spec.addField(LangID.getStringByID("data.stage.length", lang), DataToString.getLength(st), true);
+        spec.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), DataToString.getMinSpawn(st, isFrame), true);
 
         ArrayList<String> limit = DataToString.getLimit(st, st.getLim(sta), isFrame, lang);
 
@@ -1580,7 +1580,7 @@ public class EntityHandler {
                     sb.append("\n");
             }
 
-            spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+            spec.addField(LangID.getStringByID("data.stage.limit.title", lang), sb.toString(), false);
         }
 
         if(isExtra) {
@@ -1597,13 +1597,13 @@ public class EntityHandler {
                     }
                 }
 
-                spec.addField(LangID.getStringByID("data_misc", lang), sbuilder.toString(), false);
+                spec.addField(LangID.getStringByID("data.stage.misc.title", lang), sbuilder.toString(), false);
             }
 
             String exData = DataToString.getEXStage(st, lang);
 
             if(exData != null) {
-                spec.addField(LangID.getStringByID("data_exstage", lang), exData, false);
+                spec.addField(LangID.getStringByID("data.stage.misc.exStage", lang), exData, false);
             }
         }
 
@@ -1611,22 +1611,22 @@ public class EntityHandler {
 
         if(drops != null) {
             if(drops.endsWith("!!number!!")) {
-                spec.addField(LangID.getStringByID("data_numreward", lang), drops.replace("!!number!!", ""), false);
+                spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
             } else if(drops.endsWith("!!nofail!!")) {
-                spec.addField(LangID.getStringByID("data_chanrewardnofail", lang), drops.replace("!!nofail!!", ""), false);
+                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!nofail!!", ""), false);
             } else {
-                spec.addField(LangID.getStringByID("data_chanreward", lang), drops, false);
+                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
             }
         }
 
         String score = DataToString.getScoreDrops(st, lang);
 
         if(score != null) {
-            spec.addField(LangID.getStringByID("data_score", lang), score, false);
+            spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
         }
 
         if(img != null) {
-            spec.addField(LangID.getStringByID("data_scheme", lang), "** **", false);
+            spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
             spec.setImage("attachment://scheme.png");
         }
 
@@ -1762,7 +1762,7 @@ public class EntityHandler {
             String number;
 
             if(line.number == 0)
-                number = LangID.getStringByID("data_infinite", lang);
+                number = LangID.getStringByID("data.stage.infinite", lang);
             else
                 number = String.valueOf(line.number);
 
@@ -1855,15 +1855,15 @@ public class EntityHandler {
                 if(line.boss == 0)
                     boss = "";
                 else if(line.boss == 1)
-                    boss = LangID.getStringByID("data_boss", lang);
+                    boss = LangID.getStringByID("data.stage.boss.normal", lang);
                 else
-                    boss = LangID.getStringByID("data_bossshake", lang);
+                    boss = LangID.getStringByID("data.stage.boss.shake", lang);
 
                 isBoss.add(boss);
             }
 
             if(needRespect) {
-                String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+                String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data.true", lang) : "";
 
                 respects.add(respect);
             }
@@ -1873,15 +1873,15 @@ public class EntityHandler {
             }
         }
 
-        double eMax = font.textWidth(LangID.getStringByID("data_enemy", lang));
-        double nMax = font.textWidth(LangID.getStringByID("data_number", lang));
-        double mMax = font.textWidth(LangID.getStringByID("data_magnif", lang));
-        double iMax = font.textWidth(LangID.getStringByID("data_isboss", lang));
-        double bMax = font.textWidth(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang));
-        double sMax = font.textWidth(LangID.getStringByID("data_startres", lang));
-        double lMax = font.textWidth(LangID.getStringByID("data_layer", lang));
-        double rMax = font.textWidth(LangID.getStringByID("data_respect", lang));
-        double kMax = font.textWidth(LangID.getStringByID("data_killcount", lang));
+        double eMax = font.textWidth(LangID.getStringByID("data.stage.enemy", lang));
+        double nMax = font.textWidth(LangID.getStringByID("data.stage.number", lang));
+        double mMax = font.textWidth(LangID.getStringByID("data.enemy.magnification", lang));
+        double iMax = font.textWidth(LangID.getStringByID("data.stage.isBoss", lang));
+        double bMax = font.textWidth(LangID.getStringByID(st.trail ? "data.stage.totalDamage" : "data.stage.basePercentage", lang));
+        double sMax = font.textWidth(LangID.getStringByID("data.stage.start", lang));
+        double lMax = font.textWidth(LangID.getStringByID("data.stage.layer", lang));
+        double rMax = font.textWidth(LangID.getStringByID("data.stage.respectStart", lang));
+        double kMax = font.textWidth(LangID.getStringByID("data.stage.killCount", lang));
 
         for(int i = 0; i < enemies.size(); i++) {
             eMax = Math.max(eMax, font.textWidth(enemies.get(i)));
@@ -2018,34 +2018,34 @@ public class EntityHandler {
 
                 int initX = (int) (finalEMax / 2);
 
-                g.drawText(LangID.getStringByID("data_enemy", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(LangID.getStringByID("data.stage.enemy", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                 initX += (int) (finalEMax / 2 + finalNMax / 2);
 
-                g.drawText(LangID.getStringByID("data_number", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(LangID.getStringByID("data.stage.number", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                 initX += (int) (finalNMax / 2 + finalBMax / 2);
 
-                g.drawText(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(LangID.getStringByID(st.trail ? "data.stage.totalDamage" : "data.stage.basePercentage", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                 initX += (int) (finalBMax / 2 + finalMMax / 2);
 
-                g.drawText(LangID.getStringByID("data_magnif", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(LangID.getStringByID("data.enemy.magnification", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                 initX += (int) (finalMMax / 2 + finalSMax / 2);
 
-                g.drawText(LangID.getStringByID("data_startres", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(LangID.getStringByID("data.stage.start", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                 initX += (int) (finalSMax / 2 + finalLMax / 2);
 
-                g.drawText(LangID.getStringByID("data_layer", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(LangID.getStringByID("data.stage.layer", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                 initX += (int) (finalLMax / 2);
 
                 if(finalNeedRespect) {
                     initX += (int) (finalRMax / 2);
 
-                    g.drawText(LangID.getStringByID("data_respect", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                    g.drawText(LangID.getStringByID("data.stage.respectStart", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                     initX += (int) (finalRMax / 2);
                 }
@@ -2053,7 +2053,7 @@ public class EntityHandler {
                 if(finalNeedCount) {
                     initX += (int) (finalKMax / 2);
 
-                    g.drawText(LangID.getStringByID("data_killcount", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                    g.drawText(LangID.getStringByID("data.stage.killCount", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                     initX += (int) (finalKMax / 2);
                 }
@@ -2061,7 +2061,7 @@ public class EntityHandler {
                 if(finalNeedBoss) {
                     initX += (int) (finalIMax / 2);
 
-                    g.drawText(LangID.getStringByID("data_isboss", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                    g.drawText(LangID.getStringByID("data.stage.isBoss", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                 }
 
                 for(int i = 0; i < enemies.size(); i++) {
@@ -2162,7 +2162,7 @@ public class EntityHandler {
                 fName = f.names.toString();
 
             if(fName.isBlank())
-                fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
+                fName = LangID.getStringByID("data.stage.limit.unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
 
             Command.sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
         }
@@ -2187,7 +2187,7 @@ public class EntityHandler {
                 eName = en.names.toString();
 
             if(eName.isBlank())
-                eName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(en.id.id);
+                eName = LangID.getStringByID("data.stage.enemy", lang)+" "+ Data.trio(en.id.id);
 
             Command.sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", eName).replace(":::", getModeName(mode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
         }
@@ -4322,11 +4322,11 @@ public class EntityHandler {
             }
 
             if (treasureSetting.differentFromGlobal()) {
-                desc = "\n\n" + LangID.getStringByID("data_customtrea", lang);
+                desc = "\n\n" + LangID.getStringByID("data.unit.treasure", lang);
             }
 
             if (talent && f.du.getPCoin() != null) {
-                desc += "\n\n" + LangID.getStringByID("data_customtalent", lang);
+                desc += "\n\n" + LangID.getStringByID("data.unit.talent.embed", lang);
             }
 
             if (treasure && !identical) {
@@ -4754,7 +4754,7 @@ public class EntityHandler {
             String desc = String.format(LangID.getStringByID("edps_mag", lang), adjustedMagnification);
 
             if (treasureSetting.differentFromGlobal()) {
-                desc += "\n\n" + LangID.getStringByID("data_customtrea", lang);
+                desc += "\n\n" + LangID.getStringByID("data.unit.treasure", lang);
             }
 
             spec.setTitle(String.format(LangID.getStringByID("fdps_title", lang), name));
@@ -5161,19 +5161,19 @@ public class EntityHandler {
         lvs.setLevel(lv);
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_hp", lang), LangID.getStringByID("data_hb", lang), LangID.getStringByID("data_speed", lang)},
+                new String[] {LangID.getStringByID("data.hp", lang), LangID.getStringByID("data.kb", lang), LangID.getStringByID("data.speed", lang)},
                 new String[] {DataToString.getHP(u, u.curve, false, lvs, false, TreasureHolder.global), DataToString.getHitback(u, false, lvs), DataToString.getSpeed(u, false , lvs)}
         ));
 
-        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data_atk", lang)}, new String[] {DataToString.getAtk(u, u.curve, false, lvs, false, TreasureHolder.global)}));
+        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data.damage", lang)}, new String[] {DataToString.getAtk(u, u.curve, false, lvs, false, TreasureHolder.global)}));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_dps", lang), LangID.getStringByID("data_atktime", lang), LangID.getStringByID("data_abilt", lang)},
+                new String[] {LangID.getStringByID("data.dps", lang), LangID.getStringByID("data.attackTime", lang), LangID.getStringByID("data.useAbility", lang)},
                 new String[] {DataToString.getDPS(u, u.curve, false, lvs, false, TreasureHolder.global), DataToString.getAtkTime(u, false, isFrame, lvs), DataToString.getAbilT(u, lang)}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_preatk", lang), LangID.getStringByID("data_postatk", lang), LangID.getStringByID("data_tba", lang)},
+                new String[] {LangID.getStringByID("data.foreswing", lang), LangID.getStringByID("data.backswing", lang), LangID.getStringByID("data.tba", lang)},
                 new String[] {DataToString.getPre(u, isFrame), DataToString.getPost(u, isFrame), DataToString.getTBA(u, false, lvs, isFrame)}
         ));
 
@@ -5188,17 +5188,17 @@ public class EntityHandler {
         }
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_trait", lang)},
+                new String[] {LangID.getStringByID("data.trait", lang)},
                 new String[] {trait.toString()}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_atktype", lang), LangID.getStringByID("data_cost", lang), LangID.getStringByID("data_range", lang)},
+                new String[] {LangID.getStringByID("data.attackType", lang), LangID.getStringByID("data.unit.cost", lang), LangID.getStringByID("data.range", lang)},
                 new String[] {DataToString.getSiMu(u, lang), DataToString.getCost(u, false, lvs), DataToString.getRange(u)}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_cooldown", lang)},
+                new String[] {LangID.getStringByID("data.unit.cooldown", lang)},
                 new String[] {DataToString.getCD(u, isFrame, false, lvs, TreasureHolder.global)}
         ));
 
@@ -5247,7 +5247,7 @@ public class EntityHandler {
                 String c = group.get(j).dataToString(u.data, isFrame);
 
                 if(c.isBlank()) {
-                    contents[j] = LangID.getStringByID("data_none", lang);
+                    contents[j] = LangID.getStringByID("data.none", lang);
                 } else {
                     contents[j] = c;
                 }
@@ -5277,7 +5277,7 @@ public class EntityHandler {
         }
 
         if(abil.isEmpty()) {
-            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), new String[] {LangID.getStringByID("data_none", lang)}));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), new String[] {LangID.getStringByID("data.none", lang)}));
         } else {
             List<String> finalAbil = new ArrayList<>();
 
@@ -5285,7 +5285,7 @@ public class EntityHandler {
                 finalAbil.add(" · " + abil.get(i));
             }
 
-            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), finalAbil.toArray(new String[0])));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), finalAbil.toArray(new String[0])));
         }
 
         return cells;
@@ -5295,19 +5295,19 @@ public class EntityHandler {
         List<CellDrawer> cells = new ArrayList<>();
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_hp", lang), LangID.getStringByID("data_hb", lang), LangID.getStringByID("data_speed", lang)},
+                new String[] {LangID.getStringByID("data.hp", lang), LangID.getStringByID("data.kb", lang), LangID.getStringByID("data.speed", lang)},
                 new String[] {DataToString.getHP(e, m), DataToString.getHitback(e), DataToString.getSpeed(e)}
         ));
 
-        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data_atk", lang)}, new String[] {DataToString.getAtk(e, m)}));
+        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data.damage", lang)}, new String[] {DataToString.getAtk(e, m)}));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_dps", lang), LangID.getStringByID("data_atktime", lang), LangID.getStringByID("data_abilt", lang)},
+                new String[] {LangID.getStringByID("data.dps", lang), LangID.getStringByID("data.attackTime", lang), LangID.getStringByID("data.useAbility", lang)},
                 new String[] {DataToString.getDPS(e, m), DataToString.getAtkTime(e, isFrame), DataToString.getAbilT(e, lang)}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_preatk", lang), LangID.getStringByID("data_postatk", lang), LangID.getStringByID("data_tba", lang)},
+                new String[] {LangID.getStringByID("data.foreswing", lang), LangID.getStringByID("data.backswing", lang), LangID.getStringByID("data.tba", lang)},
                 new String[] {DataToString.getPre(e, isFrame), DataToString.getPost(e, isFrame), DataToString.getTBA(e, isFrame)}
         ));
 
@@ -5322,17 +5322,17 @@ public class EntityHandler {
         }
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_trait", lang)},
+                new String[] {LangID.getStringByID("data.trait", lang)},
                 new String[] {trait.toString()}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_atktype", lang), LangID.getStringByID("data_drop", lang), LangID.getStringByID("data_range", lang)},
+                new String[] {LangID.getStringByID("data.attackType", lang), LangID.getStringByID("data.enemy.drop", lang), LangID.getStringByID("data.range", lang)},
                 new String[] {DataToString.getSiMu(e, lang), DataToString.getDrop(e, TreasureHolder.global), DataToString.getRange(e)}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_barrier", lang)},
+                new String[] {LangID.getStringByID("data.enemy.barrier", lang)},
                 new String[] {DataToString.getBarrier(e, lang)}
         ));
 
@@ -5381,7 +5381,7 @@ public class EntityHandler {
                 String c = group.get(j).dataToString(e.data, isFrame);
 
                 if(c.isBlank()) {
-                    contents[j] = LangID.getStringByID("data_none", lang);
+                    contents[j] = LangID.getStringByID("data.none", lang);
                 } else {
                     contents[j] = c;
                 }
@@ -5411,7 +5411,7 @@ public class EntityHandler {
         }
 
         if(abil.isEmpty()) {
-            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), new String[] {LangID.getStringByID("data_none", lang)}));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), new String[] {LangID.getStringByID("data.none", lang)}));
         } else {
             List<String> finalAbil = new ArrayList<>();
 
@@ -5419,7 +5419,7 @@ public class EntityHandler {
                 finalAbil.add(" · " + abil.get(i));
             }
 
-            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), finalAbil.toArray(new String[0])));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), finalAbil.toArray(new String[0])));
         }
 
         return cells;
@@ -5431,29 +5431,29 @@ public class EntityHandler {
         Stage st = map.list.get(index);
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_energy", lang), LangID.getStringByID("data_base", lang), LangID.getStringByID("data_xp", lang), LangID.getStringByID("data_level", lang)},
+                new String[] {LangID.getStringByID("data.stage.energy", lang), LangID.getStringByID("data.stage.baseHealth", lang), LangID.getStringByID("data.stage.xp", lang), LangID.getStringByID("data.unit.level", lang)},
                 new String[] {DataToString.getEnergy(st, lang), DataToString.getBaseHealth(st), DataToString.getXP(st, TreasureHolder.global), DataToString.getLevelMagnification(map)},
                 new FakeImage[] {null, null, null, drawLevelImage(map.stars.length, lv)},
                 new boolean[] {false, false ,false, true}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_music", lang), DataToString.getMusicChange(st), LangID.getStringByID("data_bg", lang), LangID.getStringByID("data_castle", lang)},
+                new String[] {LangID.getStringByID("data.stage.music", lang), DataToString.getMusicChange(st), LangID.getStringByID("data.stage.background", lang), LangID.getStringByID("data.stage.castle", lang)},
                 new String[] {DataToString.getMusic(st, lang), DataToString.getMusic1(st, lang), DataToString.getBackground(st, lang), DataToString.getCastle(st, lang)}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {LangID.getStringByID("data_continuable", lang), LangID.getStringByID("data_maxenem", lang), LangID.getStringByID("data_minspawn", lang), LangID.getStringByID("data_length", lang)},
+                new String[] {LangID.getStringByID("data.stage.continuable", lang), LangID.getStringByID("data.stage.enemyLimit", lang), LangID.getStringByID("data.stage.minimumRespawn", lang), LangID.getStringByID("data.stage.length", lang)},
                 new String[] {DataToString.getContinuable(st, lang), DataToString.getMaxEnemy(st), DataToString.getMinSpawn(st, isFrame), DataToString.getLength(st)}
         ));
 
         List<String> limits = DataToString.getLimit(st.lim, map, isFrame, lang);
 
         if(limits.isEmpty())
-            limits.add(LangID.getStringByID("data_none", lang));
+            limits.add(LangID.getStringByID("data.none", lang));
 
         cells.add(new AbilityCellDrawer(
-                LangID.getStringByID("data_limit", lang),
+                LangID.getStringByID("data.stage.limit.title", lang),
                 limits.toArray(new String[0])
         ));
 
@@ -5462,10 +5462,10 @@ public class EntityHandler {
         misc.replaceAll(s -> " - " + s);
 
         if(misc.isEmpty())
-            misc.add(LangID.getStringByID("data_none", lang));
+            misc.add(LangID.getStringByID("data.none", lang));
 
         cells.add(new AbilityCellDrawer(
-                LangID.getStringByID("data_misc", lang),
+                LangID.getStringByID("data.stage.misc.title", lang),
                 misc.toArray(new String[0])
         ));
 
@@ -5670,14 +5670,14 @@ public class EntityHandler {
 
             switch (lang) {
                 case KR, JP -> {
-                    if (actualName.endsWith(LangID.getStringByID("data_immune", lang))) {
+                    if (actualName.endsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
                         immunes.add(actualName);
                     } else {
                         result.add(abilities.get(i));
                     }
                 }
                 case EN -> {
-                    if (actualName.startsWith(LangID.getStringByID("data_immune", lang))) {
+                    if (actualName.startsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
                         immunes.add(actualName);
                     } else {
                         result.add(abilities.get(i));
@@ -5695,12 +5695,12 @@ public class EntityHandler {
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < immunes.size(); i++) {
-            String segment = immunes.get(i).replace(LangID.getStringByID("data_immune", lang), "");
+            String segment = immunes.get(i).replace(LangID.getStringByID("data.abilities.immuneTo", lang), "");
 
             sb.append(segment);
 
             if(i < immunes.size() - 1)
-                sb.append(LangID.getStringByID("data_comma", lang));
+                sb.append(LangID.getStringByID("data.comma", lang));
         }
 
         Emoji emoji = EmojiStore.ABILITY.get("IMMUNITY");
@@ -5708,8 +5708,8 @@ public class EntityHandler {
         String e = emoji == null ? "" : emoji.getFormatted() + " ";
 
         switch (lang) {
-            case KR, JP -> result.add(e + sb + LangID.getStringByID("data_immune", lang));
-            default -> result.add(e + LangID.getStringByID("data_immune", lang) + sb);
+            case KR, JP -> result.add(e + sb + LangID.getStringByID("data.abilities.immuneTo", lang));
+            default -> result.add(e + LangID.getStringByID("data.abilities.immuneTo", lang) + sb);
         }
 
         return result;

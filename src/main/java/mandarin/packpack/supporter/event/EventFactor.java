@@ -288,32 +288,32 @@ public class EventFactor {
 
     public static String getMonth(int mon, CommonStatic.Lang.Locale lang) {
         return switch (mon) {
-            case 1 -> LangID.getStringByID("january", lang);
-            case 2 -> LangID.getStringByID("february", lang);
-            case 3 -> LangID.getStringByID("march", lang);
-            case 4 -> LangID.getStringByID("april", lang);
-            case 5 -> LangID.getStringByID("may", lang);
-            case 6 -> LangID.getStringByID("june", lang);
-            case 7 -> LangID.getStringByID("july", lang);
-            case 8 -> LangID.getStringByID("august", lang);
-            case 9 -> LangID.getStringByID("september", lang);
-            case 10 -> LangID.getStringByID("october", lang);
-            case 11 -> LangID.getStringByID("november", lang);
-            case 12 -> LangID.getStringByID("december", lang);
+            case 1 -> LangID.getStringByID("date.monthOfYear.january", lang);
+            case 2 -> LangID.getStringByID("date.monthOfYear.february", lang);
+            case 3 -> LangID.getStringByID("date.monthOfYear.march", lang);
+            case 4 -> LangID.getStringByID("date.monthOfYear.april", lang);
+            case 5 -> LangID.getStringByID("date.monthOfYear.may", lang);
+            case 6 -> LangID.getStringByID("date.monthOfYear.june", lang);
+            case 7 -> LangID.getStringByID("date.monthOfYear.july", lang);
+            case 8 -> LangID.getStringByID("date.monthOfYear.august", lang);
+            case 9 -> LangID.getStringByID("date.monthOfYear.september", lang);
+            case 10 -> LangID.getStringByID("date.monthOfYear.october", lang);
+            case 11 -> LangID.getStringByID("date.monthOfYear.november", lang);
+            case 12 -> LangID.getStringByID("date.monthOfYear.december", lang);
             default -> "Unknown Month " + mon;
         };
     }
 
     public String getWhichDay(int data, CommonStatic.Lang.Locale lang) {
         return switch (data) {
-            case MONDAY -> LangID.getStringByID("monday", lang);
-            case TUESDAY -> LangID.getStringByID("tuesday", lang);
-            case WEDNESDAY -> LangID.getStringByID("wednesday", lang);
-            case THURSDAY -> LangID.getStringByID("thursday", lang);
-            case FRIDAY -> LangID.getStringByID("friday", lang);
-            case SATURDAY -> LangID.getStringByID("saturday", lang);
-            case SUNDAY -> LangID.getStringByID("sunday", lang);
-            case WEEKEND -> LangID.getStringByID("weekend", lang);
+            case MONDAY -> LangID.getStringByID("date.dayOfWeek.monday", lang);
+            case TUESDAY -> LangID.getStringByID("date.dayOfWeek.tuesday", lang);
+            case WEDNESDAY -> LangID.getStringByID("date.dayOfWeek.wednesday", lang);
+            case THURSDAY -> LangID.getStringByID("date.dayOfWeek.thursday", lang);
+            case FRIDAY -> LangID.getStringByID("date.dayOfWeek.friday", lang);
+            case SATURDAY -> LangID.getStringByID("date.dayOfWeek.saturday", lang);
+            case SUNDAY -> LangID.getStringByID("date.dayOfWeek.sunday", lang);
+            case WEEKEND -> LangID.getStringByID("date.dayOfWeek.weekend", lang);
             default -> "Unknown day " + data;
         };
     }

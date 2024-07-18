@@ -81,29 +81,29 @@ public class DateComparator implements Comparator<String> {
     }
 
     private int monthToNumber(String month, CommonStatic.Lang.Locale lang) {
-        if(month.equals(LangID.getStringByID("january", lang)))
+        if(month.equals(LangID.getStringByID("date.monthOfYear.january", lang)))
             return 1;
-        else if(month.equals(LangID.getStringByID("february", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.february", lang)))
             return 2;
-        else if(month.equals(LangID.getStringByID("march", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.march", lang)))
             return 3;
-        else if(month.equals(LangID.getStringByID("april", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.april", lang)))
             return 4;
-        else if(month.equals(LangID.getStringByID("may", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.may", lang)))
             return 5;
-        else if(month.equals(LangID.getStringByID("june", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.june", lang)))
             return 6;
-        else if(month.equals(LangID.getStringByID("july", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.july", lang)))
             return 7;
-        else if(month.equals(LangID.getStringByID("august", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.august", lang)))
             return 8;
-        else if(month.equals(LangID.getStringByID("september", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.september", lang)))
             return 9;
-        else if(month.equals(LangID.getStringByID("october", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.october", lang)))
             return 10;
-        else if(month.equals(LangID.getStringByID("november", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.november", lang)))
             return 11;
-        else if(month.equals(LangID.getStringByID("december", lang)))
+        else if(month.equals(LangID.getStringByID("date.monthOfYear.december", lang)))
             return 12;
         else
             return -1;

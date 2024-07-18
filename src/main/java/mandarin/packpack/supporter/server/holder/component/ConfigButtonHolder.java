@@ -280,9 +280,9 @@ public class ConfigButtonHolder extends ComponentHolder {
                 case 0 -> m.add(ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))));
                 case 1 -> {
                     if(config.extra) {
-                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON)));
                     } else {
-                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                     }
                 }
                 case 2 -> {
@@ -303,16 +303,16 @@ public class ConfigButtonHolder extends ComponentHolder {
                 }
                 case 3 -> {
                     if(config.compact) {
-                        m.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                        m.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON)));
                     } else {
-                        m.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                        m.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                     }
                 }
                 case 4 -> {
                     if(config.trueForm) {
-                        m.add(ActionRow.of(Button.secondary("trueForm", String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                        m.add(ActionRow.of(Button.secondary("trueForm", String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON)));
                     } else {
-                        m.add(ActionRow.of(Button.secondary("trueForm", String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                        m.add(ActionRow.of(Button.secondary("trueForm", String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                     }
                 }
                 case 5 -> {
@@ -330,9 +330,9 @@ public class ConfigButtonHolder extends ComponentHolder {
                 }
                 case 6 -> {
                     if(config.treasure) {
-                        m.add(ActionRow.of(Button.secondary("treasure", String.format(LangID.getStringByID("config_treasure", lang), LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                        m.add(ActionRow.of(Button.secondary("treasure", String.format(LangID.getStringByID("config_treasure", lang), LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON)));
                     } else {
-                        m.add(ActionRow.of(Button.secondary("treasure", String.format(LangID.getStringByID("config_treasure", lang), LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                        m.add(ActionRow.of(Button.secondary("treasure", String.format(LangID.getStringByID("config_treasure", lang), LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                     }
                 }
             }
@@ -341,14 +341,14 @@ public class ConfigButtonHolder extends ComponentHolder {
         List<ActionComponent> pages = new ArrayList<>();
 
         if(page == 0) {
-            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+            pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+            pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
         } else if((page + 1) * 3 >= TOTAL_CONFIG) {
-            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS));
-            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT).asDisabled());
+            pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS));
+            pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT).asDisabled());
         } else {
-            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS));
-            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+            pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS));
+            pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
         }
 
         m.add(ActionRow.of(pages));
@@ -379,7 +379,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                         .append(LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)));
                 case 1 -> {
                     String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
-                    String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
+                    String bool = LangID.getStringByID(config.extra ? "data.true" : "data.false", lang);
 
                     message.append("**")
                             .append(LangID.getStringByID("config_extra", lang).replace("_", bool))
@@ -411,7 +411,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                             .append("**");
                 }
                 case 3 -> {
-                    String compact = LangID.getStringByID(config.compact ? "data_true" : "data_false", lang);
+                    String compact = LangID.getStringByID(config.compact ? "data.true" : "data.false", lang);
                     String comp = LangID.getStringByID(config.compact ? "config_comtrue" : "config_comfalse", lang);
 
                     message.append("**")
@@ -420,7 +420,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                             .append(comp);
                 }
                 case 4 -> {
-                    String trueForm = LangID.getStringByID(config.trueForm ? "data_true" : "data_false", lang);
+                    String trueForm = LangID.getStringByID(config.trueForm ? "data.true" : "data.false", lang);
                     String tr = LangID.getStringByID(config.trueForm ? "config_truetrue" : "config_truefalse", lang);
 
                     message.append("**")
@@ -437,7 +437,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                             .append(LangID.getStringByID("config_unitdesc", lang));
                 }
                 case 6 -> {
-                    String treasure = LangID.getStringByID(config.treasure ? "data_true" : "data_false", lang);
+                    String treasure = LangID.getStringByID(config.treasure ? "data.true" : "data.false", lang);
                     String trea = LangID.getStringByID(config.treasure ? "config_treasuretrue" : "config_treasurefalse", lang);
 
                     message.append("**")

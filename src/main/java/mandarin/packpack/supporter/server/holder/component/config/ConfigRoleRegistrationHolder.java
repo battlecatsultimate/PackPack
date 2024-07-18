@@ -116,7 +116,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                     id = "sercon_booset";
 
                     if (holder.booster == null)
-                        mention = LangID.getStringByID("data_none", lang);
+                        mention = LangID.getStringByID("data.none", lang);
                     else
                         mention = "<@&" + roleID + ">";
 
@@ -235,7 +235,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         String boosterRole;
 
         if (holder.booster == null) {
-            boosterRole = LangID.getStringByID("data_none", lang);
+            boosterRole = LangID.getStringByID("data.none", lang);
         } else {
             boosterRole = "<@&" + holder.booster + ">";
         }

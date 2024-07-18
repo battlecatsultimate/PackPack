@@ -308,7 +308,7 @@ public class StageSchedule extends EventFactor implements Schedule {
 
         if(date.dateStart.year != currentYear || lang == CommonStatic.Lang.Locale.ZH) {
             result.append(date.dateStart.year)
-                    .append(LangID.getStringByID("year", lang));
+                    .append(LangID.getStringByID("date.year", lang));
 
             if(lang != CommonStatic.Lang.Locale.ZH) {
                 result.append(" ");
@@ -331,7 +331,7 @@ public class StageSchedule extends EventFactor implements Schedule {
 
             if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                 result.append(date.dateEnd.year)
-                        .append(LangID.getStringByID("year", lang));
+                        .append(LangID.getStringByID("date.year", lang));
 
                 if(lang != CommonStatic.Lang.Locale.ZH) {
                     result.append(" ");
@@ -364,7 +364,7 @@ public class StageSchedule extends EventFactor implements Schedule {
 
         if(date.dateStart.year != currentYear) {
             result.append(date.dateStart.year)
-                    .append(LangID.getStringByID("year", lang));
+                    .append(LangID.getStringByID("date.year", lang));
 
             if(lang != CommonStatic.Lang.Locale.ZH) {
                 result.append(" ");
@@ -393,7 +393,7 @@ public class StageSchedule extends EventFactor implements Schedule {
             if(!date.dateEnd.equals(END)) {
                 if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                     result.append(date.dateEnd.year)
-                            .append(LangID.getStringByID("year", lang));
+                            .append(LangID.getStringByID("date.year", lang));
 
                     if(lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");

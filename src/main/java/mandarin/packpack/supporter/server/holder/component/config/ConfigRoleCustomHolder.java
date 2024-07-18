@@ -222,7 +222,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                 .append("\n");
 
         if (holder.ID.isEmpty()) {
-            builder.append("- ").append(LangID.getStringByID("data_none", lang));
+            builder.append("- ").append(LangID.getStringByID("data.none", lang));
         } else {
             int i = page * SearchHolder.PAGE_CHUNK + 1;
 
@@ -327,14 +327,14 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
             List<Button> buttons = new ArrayList<>();
 
             if(totalPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0));
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS).withDisabled(page - 1 < 0));
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT).withDisabled(page + 1 >= totalPage));
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).withDisabled(page - 1 < 0));
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).withDisabled(page + 1 >= totalPage));
 
             if(totalPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage));
             }
 
             result.add(ActionRow.of(buttons));

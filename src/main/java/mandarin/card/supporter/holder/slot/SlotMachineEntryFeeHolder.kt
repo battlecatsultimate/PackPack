@@ -57,7 +57,7 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
 
                 applyResult()
             }
-            "min" -> {
+            "date.minute.uppercase.singular" -> {
                 val input = TextInput.create("entryFee", "Entry Fee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
 
                 val modal = Modal.create("minMax", "Slot Machine Minimum Entry Fee")
@@ -170,7 +170,7 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
         result.add(ActionRow.of(Button.secondary("type", "Entry Fee Type : $entryType").withEmoji(emoji)))
 
         result.add(ActionRow.of(
-            Button.secondary("min", "Minimum Entry Fee").withEmoji(Emoji.fromUnicode("📤")),
+            Button.secondary("date.minute.uppercase.singular", "Minimum Entry Fee").withEmoji(Emoji.fromUnicode("📤")),
             Button.secondary("max", "Maximum Entry Fee").withEmoji(Emoji.fromUnicode("📥"))
         ))
 

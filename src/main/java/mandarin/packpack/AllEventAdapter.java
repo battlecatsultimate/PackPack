@@ -94,7 +94,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
             findInviter(g).queue(m ->
                 m.getUser().openPrivateChannel().queue(ch ->
-                        ch.sendMessage(LangID.getStringByID("first_join", holder.config.lang).formatted(g.getName())).queue(),
+                        ch.sendMessage(LangID.getStringByID("directMessage.invitation", holder.config.lang).formatted(g.getName())).queue(),
                     e ->
                         StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Failed to open private channel to inviter")
                 )
@@ -784,11 +784,11 @@ public class AllEventAdapter extends ListenerAdapter {
                         continue;
 
                     if(StaticStore.wasSafeClose) {
-                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("botStatus.online.normal", holder.config.lang), client.getSelfUser().getAsMention()))
                                 .setAllowedMentions(new ArrayList<>())
                                 .queue();
                     } else {
-                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_issue", holder.config.lang), client.getSelfUser().getAsMention()))
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("botStatus.online.unknown", holder.config.lang), client.getSelfUser().getAsMention()))
                                 .setAllowedMentions(new ArrayList<>())
                                 .queue();
                     }

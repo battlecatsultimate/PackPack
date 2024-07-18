@@ -173,9 +173,9 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                 String extra;
 
                 if (holder.config.extra) {
-                    extra = LangID.getStringByID("data_true", lang);
+                    extra = LangID.getStringByID("data.true", lang);
                 } else {
-                    extra = LangID.getStringByID("data_false", lang);
+                    extra = LangID.getStringByID("data.false", lang);
                 }
 
                 return LangID.getStringByID("sercon_commandtitle", lang) + "\n" +
@@ -190,28 +190,28 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                 String compacted;
 
                 if (holder.config.compact) {
-                    compacted = LangID.getStringByID("data_true", lang);
+                    compacted = LangID.getStringByID("data.true", lang);
                 } else {
-                    compacted = LangID.getStringByID("data_false", lang);
+                    compacted = LangID.getStringByID("data.false", lang);
                 }
 
                 String forceCompacted;
                 Emoji forceCompactedSwitch;
 
                 if (holder.forceCompact) {
-                    forceCompacted = LangID.getStringByID("data_true", lang);
+                    forceCompacted = LangID.getStringByID("data.true", lang);
                     forceCompactedSwitch = EmojiStore.SWITCHON;
                 } else {
-                    forceCompacted = LangID.getStringByID("data_false", lang);
+                    forceCompacted = LangID.getStringByID("data.false", lang);
                     forceCompactedSwitch = EmojiStore.SWITCHOFF;
                 }
 
                 String trueFormSearch;
 
                 if (holder.config.trueForm) {
-                    trueFormSearch = LangID.getStringByID("data_true", lang);
+                    trueFormSearch = LangID.getStringByID("data.true", lang);
                 } else {
-                    trueFormSearch = LangID.getStringByID("data_false", lang);
+                    trueFormSearch = LangID.getStringByID("data.false", lang);
                 }
 
                 return LangID.getStringByID("sercon_commandtitle", lang) + "\n" +
@@ -226,19 +226,19 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                 String treasure;
 
                 if (holder.config.treasure) {
-                    treasure = LangID.getStringByID("data_true", lang);
+                    treasure = LangID.getStringByID("data.true", lang);
                 } else {
-                    treasure = LangID.getStringByID("data_false", lang);
+                    treasure = LangID.getStringByID("data.false", lang);
                 }
 
                 String forceTreasure;
                 Emoji forceTreasureSwitch;
 
                 if (holder.forceFullTreasure) {
-                    forceTreasure = LangID.getStringByID("data_true", lang);
+                    forceTreasure = LangID.getStringByID("data.true", lang);
                     forceTreasureSwitch = EmojiStore.SWITCHON;
                 } else {
-                    forceTreasure = LangID.getStringByID("data_false", lang);
+                    forceTreasure = LangID.getStringByID("data.false", lang);
                     forceTreasureSwitch = EmojiStore.SWITCHOFF;
                 }
 
@@ -334,8 +334,8 @@ public class ConfigCommandHolder extends ServerConfigHolder {
         }
 
         result.add(ActionRow.of(
-                Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0),
-                Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= PAGE_SIZE)
+                Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0),
+                Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= PAGE_SIZE)
         ));
 
         result.add(ActionRow.of(

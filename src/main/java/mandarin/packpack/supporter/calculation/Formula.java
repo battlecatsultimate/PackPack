@@ -1155,7 +1155,7 @@ public class Formula {
                                             type = NestedFunction.FUNC.CSC;
 
                                             break;
-                                        case "sec":
+                                        case "date.second.singular":
                                             type = NestedFunction.FUNC.SEC;
 
                                             break;

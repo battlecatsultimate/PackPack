@@ -58,7 +58,7 @@ public class Config extends ConstraintCommand {
         }
 
         String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
-        String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
+        String bool = LangID.getStringByID(config.extra ? "data.true" : "data.false", lang);
 
         String message = "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
                 LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
@@ -79,9 +79,9 @@ public class Config extends ConstraintCommand {
         Button extra;
 
         if(config.extra) {
-            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON);
+            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON);
         } else {
-            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF);
+            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF);
         }
 
         List<ActionComponent> components = new ArrayList<>();
@@ -91,8 +91,8 @@ public class Config extends ConstraintCommand {
 
         List<ActionComponent> pages = new ArrayList<>();
 
-        pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-        pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+        pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+        pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
 
         replyToMessageSafely(ch, message, loader.getMessage(), a -> a.setComponents(
                 ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),

@@ -203,7 +203,7 @@ public class CatCombo extends TimedConstraintCommand {
         StringBuilder builder = new StringBuilder();
 
         if(cName != null) {
-            builder.append(LangID.getStringByID("data_combo", lang)).append(" : ").append(cName);
+            builder.append(LangID.getStringByID("data.combo.combo", lang)).append(" : ").append(cName);
         }
 
         if(fName != null) {
@@ -211,7 +211,7 @@ public class CatCombo extends TimedConstraintCommand {
                 builder.append(", ");
             }
 
-            builder.append(LangID.getStringByID("data_unit", lang)).append(" : ").append(fName);
+            builder.append(LangID.getStringByID("data.stage.limit.unit", lang)).append(" : ").append(fName);
         }
 
         return builder.toString();

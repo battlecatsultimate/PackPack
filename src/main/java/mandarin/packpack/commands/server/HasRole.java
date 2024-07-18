@@ -143,15 +143,15 @@ public class HasRole extends ConstraintCommand {
             List<Button> buttons = new ArrayList<>();
 
             if (totalPage > 10) {
-                buttons.add(Button.secondary("prev10", LangID.getStringByID("search_prev10", lang)).withEmoji(EmojiStore.TWO_PREVIOUS).asDisabled());
+                buttons.add(Button.secondary("prev10", LangID.getStringByID("ui.search.10Previous", lang)).withEmoji(EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
-            buttons.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
 
-            buttons.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+            buttons.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
 
             if (totalPage > 10) {
-                buttons.add(Button.secondary("next10", LangID.getStringByID("search_next10", lang)).withEmoji(EmojiStore.TWO_NEXT));
+                buttons.add(Button.secondary("next10", LangID.getStringByID("ui.search.10Next", lang)).withEmoji(EmojiStore.TWO_NEXT));
             }
 
             result.add(ActionRow.of(buttons));

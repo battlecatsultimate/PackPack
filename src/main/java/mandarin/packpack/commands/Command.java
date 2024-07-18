@@ -57,14 +57,14 @@ public abstract class Command {
             List<Button> buttons = new ArrayList<>();
 
             if(totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS).asDisabled());
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT));
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
 
             if(totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
             }
 
             rows.add(ActionRow.of(buttons));
@@ -88,7 +88,7 @@ public abstract class Command {
             }
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectData", lang)).build()));
 
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
 
@@ -265,7 +265,7 @@ public abstract class Command {
             Message msg = loader.getMessage();
 
             if(requireGuild && !(ch instanceof GuildChannel)) {
-                replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("sendFailure.reason.serverRequired", lang), msg, a -> a);
 
                 return;
             }
@@ -300,7 +300,7 @@ public abstract class Command {
 
                     String content;
 
-                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                    content = LangID.getStringByID("sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
                     u.openPrivateChannel()
                             .flatMap(pc -> pc.sendMessage(content))
@@ -379,7 +379,7 @@ public abstract class Command {
         if(error == DEFAULT_ERROR) {
             ch.sendMessage(StaticStore.ERROR_MSG).queue();
         } else if(error == SERVER_ERROR) {
-            ch.sendMessage(LangID.getStringByID("error_api", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("sendFailure.reason.apiError", lang)).queue();
         }
     }
 

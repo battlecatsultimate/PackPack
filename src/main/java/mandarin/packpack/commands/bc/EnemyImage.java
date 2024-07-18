@@ -95,7 +95,7 @@ public class EnemyImage extends TimedConstraintCommand {
                         fName = enemies.getFirst().names.toString();
 
                     if(fName.isBlank())
-                        fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(Objects.requireNonNull(enemies.getFirst().id).id);
+                        fName = LangID.getStringByID("data.stage.enemy", lang)+" "+ Data.trio(Objects.requireNonNull(enemies.getFirst().id).id);
 
                     sendMessageWithFile(
                             ch,

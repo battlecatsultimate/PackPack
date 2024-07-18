@@ -21,9 +21,9 @@ import java.util.function.Function;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Interpret extends Data {
     public static final String[] TRAIT = {
-            "data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie",
-            "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baron", "data_beast", "data_sage",
-            "data_baset"
+            "data.traits.red", "data.traits.floating", "data.traits.black", "data.traits.metal", "data.traits.angel", "data.traits.alien", "data.traits.zombie",
+            "data.traits.aku", "data.traits.relic", "data.traits.white", "data.traits.evaAngel", "data.traits.witch", "data.traits.colossus", "data.traits.behemoth", "data.traits.sage",
+            "data.traits.base"
     };
 
     public static final String[] TRAITICON = {
@@ -32,10 +32,10 @@ public class Interpret extends Data {
     };
 
     public static final String[] ABIS = {
-            "data_strong", "data_resistant", "data_massive", "data_attackon", "data_abimetal", "data_waveshie",
-            "data_imusnipe", "data_imustoptt", "data_ghost", "data_zombiekill", "data_witchkill", "data_suicide",
-            "data_imutheme", "data_evakill", "data_imuboss", "data_insanetou", "data_insanedmg", "data_baronkiller",
-            "data_corpsekiller", "data_countersurge", "data_sageslayer"
+            "data.abilities.strong", "data.abilities.resistant", "data.abilities.massiveDamage", "data.abilities.targetsOnly", "data.abilities.metal", "data.abilities.waveBlocker",
+            "data.abilities.immunities.sniperKb", "data.abilities.immunities.stopTime", "data.abilities.ghost", "data.abilities.zombieKiller", "data.abilities.witchKiller", "data.abilities.selfDestruct",
+            "data.abilities.immunities.themeChange", "data.abilities.evaAngelKiller", "data.abilities.immunities.bossWave", "data.abilities.insanelyTough", "data.abilities.insaneDamage", "data.abilities.colossusSlayer",
+            "data.abilities.soulStrike", "data.abilities.counterSurge", "data.abilities.sageSlayer"
     };
 
     public static final String[] PROCIND = {
@@ -69,7 +69,7 @@ public class Interpret extends Data {
                 if(trait.id.id == 5 && star == 1) {
                     res.append(LangID.getStringByID(TRAIT[trait.id.id], lang))
                             .append(" (")
-                            .append(LangID.getStringByID("data_starred", lang))
+                            .append(LangID.getStringByID("data.traits.starred", lang))
                             .append("), ");
                 } else {
                     res.append(LangID.getStringByID(TRAIT[trait.id.id], lang))
@@ -110,43 +110,43 @@ public class Interpret extends Data {
                     switch (i) {
                         case 0 -> {
                             if(traits != null && holder != null) {
-                                ab += String.format(LangID.getStringByID("data_add0t", lang), DataToString.df.format(holder.getStrongHealthMultiplier(traits)), DataToString.df.format(holder.getStrongAttackMultiplier(traits)));
+                                ab += String.format(LangID.getStringByID("data.abilities.description.strong.withTreasure", lang), DataToString.df.format(holder.getStrongHealthMultiplier(traits)), DataToString.df.format(holder.getStrongAttackMultiplier(traits)));
                             } else {
-                                ab += LangID.getStringByID("data_add0", lang);
+                                ab += LangID.getStringByID("data.abilities.description.strong.normal", lang);
                             }
                         }
                         case 1 -> {
                             if(traits != null && holder != null) {
-                                ab += String.format(LangID.getStringByID("data_add1t", lang), DataToString.df.format(holder.getResistHealthMultiplier(traits)));
+                                ab += String.format(LangID.getStringByID("data.abilities.description.resistant.withTreasure", lang), DataToString.df.format(holder.getResistHealthMultiplier(traits)));
                             } else {
-                                ab += LangID.getStringByID("data_add1", lang);
+                                ab += LangID.getStringByID("data.abilities.description.resistant.normal", lang);
                             }
                         }
                         case 2 -> {
                             if(traits != null && holder != null) {
-                                ab += String.format(LangID.getStringByID("data_add2t", lang), DataToString.df.format(holder.getMassiveAttackMultiplier(traits)));
+                                ab += String.format(LangID.getStringByID("data.abilities.description.massiveDamage.withTreasure", lang), DataToString.df.format(holder.getMassiveAttackMultiplier(traits)));
                             } else {
-                                ab += LangID.getStringByID("data_add2", lang);
+                                ab += LangID.getStringByID("data.abilities.description.massiveDamage.normal", lang);
                             }
                         }
-                        case 10 -> ab += LangID.getStringByID("data_add3", lang);
-                        case 13 -> ab += LangID.getStringByID("data_add4", lang);
+                        case 10 -> ab += LangID.getStringByID("data.abilities.description.witchKiller", lang);
+                        case 13 -> ab += LangID.getStringByID("data.abilities.description.evaAngelKiller", lang);
                         case 15 -> {
                             if(traits != null && holder != null) {
-                                ab += String.format(LangID.getStringByID("data_add5t", lang), DataToString.df.format(holder.getInsaneResistHealthMultiplier(traits)));
+                                ab += String.format(LangID.getStringByID("data.abilities.description.insanelyTough.withTreasure", lang), DataToString.df.format(holder.getInsaneResistHealthMultiplier(traits)));
                             } else {
-                                ab += LangID.getStringByID("data_add5", lang);
+                                ab += LangID.getStringByID("data.abilities.description.insanelyTough.normal", lang);
                             }
                         }
                         case 16 -> {
                             if(traits != null && holder != null) {
-                                ab += String.format(LangID.getStringByID("data_add6t", lang), DataToString.df.format(holder.getInsaneMassiveAttackMultiplier(traits)));
+                                ab += String.format(LangID.getStringByID("data.abilities.description.insaneDamage.withTreasure", lang), DataToString.df.format(holder.getInsaneMassiveAttackMultiplier(traits)));
                             } else {
-                                ab += LangID.getStringByID("data_add6", lang);
+                                ab += LangID.getStringByID("data.abilities.description.insaneDamage.normal", lang);
                             }
                         }
-                        case 17 -> ab += LangID.getStringByID("data_add7", lang);
-                        case 20 -> ab += LangID.getStringByID("data_add8", lang);
+                        case 17 -> ab += LangID.getStringByID("data.abilities.description.colossusSlayer", lang);
+                        case 20 -> ab += LangID.getStringByID("data.abilities.description.sageSlayer", lang);
                     }
 
                 if(!l.contains(ab))

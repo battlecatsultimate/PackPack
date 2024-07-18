@@ -450,7 +450,7 @@ public class Equation {
 
                                             elements.add(new Number(BigDecimal.ONE.divide(check, Equation.context)));
                                         }
-                                        case "sec" -> {
+                                        case "date.second.singular" -> {
                                             if (zeroEnough(inner.remainder(PI2, context)) && !zeroEnough(inner.remainder(PI, context))) {
                                                 error.add(String.format(LangID.getStringByID("calc_sec", lang), "sec(" + builder + ")"));
 

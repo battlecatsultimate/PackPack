@@ -195,7 +195,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         if (holder.eventMap.containsKey(locale)) {
             channel = "<#" + holder.eventMap.get(locale) + ">";
         } else {
-            channel = LangID.getStringByID("data_none", lang);
+            channel = LangID.getStringByID("data.none", lang);
         }
 
         String additional;

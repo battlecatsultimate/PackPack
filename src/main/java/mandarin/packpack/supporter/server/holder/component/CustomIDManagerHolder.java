@@ -216,12 +216,12 @@ public class CustomIDManagerHolder extends ComponentHolder {
                     .append("** : ");
 
             if(ids[i] == null) {
-                result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
+                result.append(LangID.getStringByID(i == 1 ? "data.everyone" : "data.none", lang));
             } else {
                 Role r = getRoleSafelyWithID(ids[i]);
 
                 if (r == null) {
-                    result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
+                    result.append(LangID.getStringByID(i == 1 ? "data.everyone" : "data.none", lang));
                 } else {
                     result.append(r.getId())
                             .append(" [")
@@ -292,29 +292,29 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
             if(totalPage > 10) {
                 if(page - 10 < 0) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
                 } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS));
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS));
                 }
             }
 
             if(page - 1 < 0) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
             } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS));
             }
 
             if(page + 1 >= totalPage) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).asDisabled());
             } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
             }
 
             if(totalPage > 10) {
                 if(page + 10 >= totalPage) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT).asDisabled());
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).asDisabled());
                 } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT));
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
                 }
             }
 
@@ -333,8 +333,8 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
         List<ActionComponent> pages = new ArrayList<>();
 
-        pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-        pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+        pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+        pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
 
         result.add(ActionRow.of(
                 EntitySelectMenu.create("mod", EntitySelectMenu.SelectTarget.ROLE)
