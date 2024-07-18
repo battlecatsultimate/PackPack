@@ -38,7 +38,7 @@ public class DownloadApk extends ConstraintCommand {
 
         StaticStore.apkDownloading = true;
 
-        File googlePlay = new File("./googlePlay/cmd/googleplay");
+        File googlePlay = new File("./googlePlay/internal/play/");
 
         if(!googlePlay.exists() || googlePlay.isFile()) {
             ch.sendMessage("Failed to find apk downloader scripts. Download process aborted").queue();
@@ -106,9 +106,26 @@ public class DownloadApk extends ConstraintCommand {
             }
         }
 
+        File tempApkFolder = new File("./");
+        File[] tempFolderList = tempApkFolder.listFiles();
+
+        if(tempFolderList == null) {
+            ch.sendMessage("Something went wrong while checking downloaded apk file...").queue();
+
+            StaticStore.apkDownloading = false;
+
+            return;
+        }
+
+        for(File f : tempFolderList) {
+            if(f.getName().endsWith(".apk")) {
+                StaticStore.deleteFile(f, true);
+            }
+        }
+
         ch.sendMessage("Getting apk version code...").queue();
 
-        ProcessBuilder builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-d", packageName);
+        ProcessBuilder builder = new ProcessBuilder("./googlePlay/internal/play/play", "-i", packageName);
         builder.redirectErrorStream(true);
 
         Process pro = builder.start();
@@ -126,12 +143,13 @@ public class DownloadApk extends ConstraintCommand {
         pro.waitFor();
 
         reader.close();
+        pro.destroy();
 
         String versionCode = null;
 
         for(int i = 0; i < lines.size(); i++) {
-            if(lines.get(i).startsWith("version code:")) {
-                String[] data = lines.get(i).split(": ");
+            if(lines.get(i).startsWith("version code = ")) {
+                String[] data = lines.get(i).split(" = ");
 
                 if(data.length != 2) {
                     ch.sendMessage("Failed to get version code, aborted downloading process").queue();
@@ -159,38 +177,45 @@ public class DownloadApk extends ConstraintCommand {
             ch.sendMessage("Downloading apk file...").queue();
         }
 
-        builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-d", packageName, "-v", versionCode, "-s");
-        builder.redirectErrorStream(false);
+        builder = new ProcessBuilder("./googlePlay/internal/play/play", "-i", packageName, "-c", versionCode);
+        builder.redirectErrorStream(true);
 
         pro = builder.start();
 
-        reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+        BufferedReader downloaderReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+        StringBuilder sender = new StringBuilder();
+        long lastTime = System.currentTimeMillis();
 
-        while((line = reader.readLine()) != null) {
-            System.out.println(line);
+        while((line = downloaderReader.readLine()) != null) {
+            if (line.contains("GET URL"))
+                continue;
+
+            if (sender.length() + line.length() >= Message.MAX_CONTENT_LENGTH || System.currentTimeMillis() - lastTime > 5000) {
+                ch.sendMessage(sender.toString()).setAllowedMentions(new ArrayList<>()).queue();
+
+                sender.setLength(0);
+                lastTime = System.currentTimeMillis();
+
+                sender.append(line).append("\n");
+            } else {
+                sender.append(line).append("\n");
+            }
+
+            ch.sendMessage(line.substring(0, Math.min(line.length(), Message.MAX_CONTENT_LENGTH))).setAllowedMentions(new ArrayList<>()).queue();
         }
 
         pro.waitFor();
-        reader.close();
 
-        File tempApkFolder = new File("./");
+        downloaderReader.close();
+        pro.destroy();
 
         File apkFile = null;
-        File[] tempFolderList = tempApkFolder.listFiles();
-
-        if(tempFolderList == null) {
-            ch.sendMessage("Something went wrong while checking downloaded apk file...").queue();
-
-            StaticStore.apkDownloading = false;
-
-            return;
-        }
 
         for(File f : tempFolderList) {
-            if(f.getName().endsWith(".apk")) {
+            if(f.getName().equals(packageName + "-InstallPack-" + versionCode +".apk")) {
                 apkFile = f;
-
-                break;
+            } else if (f.getName().endsWith(".apk")) {
+                StaticStore.deleteFile(f, true);
             }
         }
 
