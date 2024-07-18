@@ -61,7 +61,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                             .setEphemeral(true)
                             .queue();
 
-                    applyResult(event);
+                    applyResult();
                 }
             }
             case "member", "booster" -> {
