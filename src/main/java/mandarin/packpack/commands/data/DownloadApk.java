@@ -178,49 +178,31 @@ public class DownloadApk extends ConstraintCommand {
         }
 
         builder = new ProcessBuilder("./googlePlay/internal/play/play", "-i", packageName, "-c", versionCode);
-        builder.redirectErrorStream(true);
+        builder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        builder.redirectError(ProcessBuilder.Redirect.DISCARD);
 
         pro = builder.start();
 
-        BufferedReader downloaderReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-        StringBuilder sender = new StringBuilder();
-        long lastTime = System.currentTimeMillis();
-
-        while((line = downloaderReader.readLine()) != null) {
-            if (line.contains("GET URL"))
-                continue;
-
-            if (sender.length() + line.length() >= Message.MAX_CONTENT_LENGTH || System.currentTimeMillis() - lastTime > 5000) {
-                ch.sendMessage(sender.toString()).setAllowedMentions(new ArrayList<>()).queue();
-
-                sender.setLength(0);
-                lastTime = System.currentTimeMillis();
-
-                sender.append(line).append("\n");
-            } else {
-                sender.append(line).append("\n");
-            }
-
-            ch.sendMessage(line.substring(0, Math.min(line.length(), Message.MAX_CONTENT_LENGTH))).setAllowedMentions(new ArrayList<>()).queue();
-        }
-
         pro.waitFor();
-
-        downloaderReader.close();
         pro.destroy();
 
         File apkFile = null;
+
+        List<String> foundFile = new ArrayList<>();
 
         for(File f : tempFolderList) {
             if(f.getName().equals(packageName + "-InstallPack-" + versionCode +".apk")) {
                 apkFile = f;
             } else if (f.getName().endsWith(".apk")) {
                 StaticStore.deleteFile(f, true);
+                foundFile.add(f.getName());
             }
         }
 
         if(apkFile == null) {
-            ch.sendMessage("It seems that apk downloading was unsuccessful, analyzing process aborted").queue();
+            System.out.println("!!!!!!!!!!!!!!!!!!");
+
+            ch.sendMessage("It seems that apk downloading was unsuccessful, analyzing process aborted\n\n" + String.join("\n", foundFile.stream().map(s -> "- " + s).toArray(String[]::new))).queue();
 
             StaticStore.apkDownloading = false;
 
