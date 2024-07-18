@@ -284,11 +284,14 @@ public class ConfigCommandHolder extends ServerConfigHolder {
             }
             case 1 -> {
                 Emoji extraSwitch;
+                String extraInfo;
 
-                if (holder.config.extra) {
+                if (holder.config.compact) {
                     extraSwitch = EmojiStore.SWITCHON;
+                    extraInfo = LangID.getStringByID("data_true", lang);
                 } else {
                     extraSwitch = EmojiStore.SWITCHOFF;
+                    extraInfo = LangID.getStringByID("data_false", lang);
                 }
 
                 Emoji forceCompactSwitch;
@@ -307,7 +310,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     trueFormSwitch = EmojiStore.SWITCHOFF;
                 }
 
-                result.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("sercon_commandcompactbutton", lang)).withEmoji(extraSwitch)));
+                result.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("sercon_commandcompactbutton", lang).formatted(extraInfo)).withEmoji(extraSwitch)));
                 result.add(ActionRow.of(Button.secondary("forceCompact", LangID.getStringByID("sercon_commandforcombutton", lang)).withEmoji(forceCompactSwitch)));
                 result.add(ActionRow.of(Button.secondary("trueForm", LangID.getStringByID("sercon_commandtruebutton", lang)).withEmoji(trueFormSwitch)));
             }
