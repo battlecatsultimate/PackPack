@@ -119,7 +119,7 @@ object CardBot : ListenerAdapter() {
                                         cooldown.forEach { (uuid, cd) ->
                                             val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
 
-                                            if (pack != null && cd > 0 && cd - currentTime <= 0) {
+                                            if (pack != null && cd > 0 && cd - currentTime <= 0 && pack.activated) {
                                                 packList.append("- ")
                                                     .append(pack.packName)
                                                     .append("\n")
@@ -140,7 +140,7 @@ object CardBot : ListenerAdapter() {
                                         cooldown.forEach { (uuid, cd) ->
                                             val slot = CardData.slotMachines.filter { slot -> slot.cooldown >= CardData.MINIMUM_NOTIFY_TIME }.find { slot -> slot.uuid == uuid }
 
-                                            if (slot != null && cd > 0 && cd - currentTime <= 0) {
+                                            if (slot != null && cd > 0 && cd - currentTime <= 0 && slot.activate) {
                                                 slotList.append("- ")
                                                     .append(slot.name)
                                                     .append("\n")
@@ -162,7 +162,9 @@ object CardBot : ListenerAdapter() {
                                             pc.sendMessage(messageContent).queue {
                                                 CardData.cooldown.forEach { (_, cooldownMap) ->
                                                     cooldownMap.forEach { (uuid, cd) ->
-                                                        if (cd > 0 && cd - currentTime <= 0) {
+                                                        val pack = CardData.cardPacks.find { p -> p.uuid == uuid } ?: return@forEach
+
+                                                        if (cd > 0 && cd - currentTime <= 0 && pack.activated) {
                                                             cooldownMap[uuid] = 0
                                                         }
                                                     }
@@ -170,7 +172,9 @@ object CardBot : ListenerAdapter() {
 
                                                 CardData.slotCooldown.forEach { (_, cooldownMap) ->
                                                     cooldownMap.forEach { (uuid, cd) ->
-                                                        if (cd > 0 && cd - currentTime <= 0) {
+                                                        val slot = CardData.slotMachines.find { s -> s.uuid == uuid } ?: return@forEach
+
+                                                        if (cd > 0 && cd - currentTime <= 0 && slot.activate) {
                                                             cooldownMap[uuid] = 0
                                                         }
                                                     }
