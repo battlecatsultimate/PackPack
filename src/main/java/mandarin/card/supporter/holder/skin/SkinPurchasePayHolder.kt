@@ -135,10 +135,6 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
 
-        if (event.message.attachments.isEmpty()) {
-            builder = builder.setFiles(FileUpload.fromData(skin.file))
-        }
-
         builder.queue()
     }
 
@@ -148,17 +144,13 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
 
-        if (message.attachments.isEmpty()) {
-            builder = builder.setFiles(FileUpload.fromData(skin.file))
-        }
-
         builder.queue()
     }
 
     private fun getContent() : String {
         val builder = StringBuilder()
 
-        builder.append(skin.displayInfo(false))
+        builder.append(skin.displayInfo(authorMessage.jda, false, true))
 
         if (!skin.cost.affordable(inventory)) {
             builder.append("\n\nYou can't afford this skin. Check reason below :\n\n").append(skin.cost.getReason(inventory))
