@@ -175,11 +175,11 @@ public class RawPointGetter {
             siz = getSize(p.getFa());
         }
 
-        P tPos = new P(p.getVal(4), p.getVal(5)).times(siz);
+        P tPos = new P(p.getValRaw(4), p.getValRaw(5)).times(siz);
 
         if(p.getParts()[0] != p) {
             translate(tPos.x, tPos.y);
-            size(p.getVal(13), p.getVal(14));
+            size(p.getValRaw(13), p.getValRaw(14));
         } else {
             if(p.getModel().confs.length > 0) {
                 int[] data = p.getModel().confs[0];
@@ -192,7 +192,7 @@ public class RawPointGetter {
             }
 
             P p0 = getSize(p);
-            P p1 = P.newP(p.getVal(6), p.getVal(7)).times(p0).times(siz);
+            P p1 = P.newP(p.getValRaw(6), p.getValRaw(7)).times(p0).times(siz);
 
             translate(p1.x, p1.y);
 
@@ -200,12 +200,12 @@ public class RawPointGetter {
             P.delete(p1);
         }
 
-        if(p.getVal(11) != 0) {
-            rotate((float) (flipX * flipY * Math.PI * 2 * p.getVal(11) / p.getModel().ints[1]));
+        if(p.getValRaw(11) != 0) {
+            rotate((float) (flipX * flipY * Math.PI * 2 * p.getValRaw(11) / p.getModel().ints[1]));
         }
 
         if(!parent) {
-            P piv = P.newP(p.getVal(6), p.getVal(7));
+            P piv = P.newP(p.getValRaw(6), p.getValRaw(7));
             P scale = getSize(p);
 
             translatePivot(piv.x, piv.y);
