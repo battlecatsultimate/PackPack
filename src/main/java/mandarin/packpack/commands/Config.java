@@ -70,7 +70,7 @@ public class Config extends ConstraintCommand {
 
         languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "auto").withDefault(config.lang == null));
 
-        for (CommonStatic.Lang.Locale loc : CommonStatic.Lang.supportedLanguage) {
+        for (CommonStatic.Lang.Locale loc : CommonStatic.Lang.Locale.values()) {
             String l = LangID.getStringByID("lang_" + loc.code, config.lang);
 
             languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), loc.name()).withDefault(config.lang == loc));
