@@ -67,7 +67,7 @@ public class EnemyStatAnalyzerHolder extends FileAnalyzerHolder {
             return;
         }
 
-        MaAnim ma = MaAnim.newIns(anim.getData());
+        MaAnim ma = MaAnim.newIns(anim.getData(), false);
 
         CustomMaskEnemy data = new CustomMaskEnemy(statReader.readLine().split(","), ma);
 

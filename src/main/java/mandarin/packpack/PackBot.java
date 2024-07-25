@@ -344,7 +344,7 @@ public class PackBot {
                                                     builder.append("** **\n");
                                                 }
 
-                                                builder.append(LangID.getStringByID("event.stage", holder.config.lang)).append("\n\n");
+                                                builder.append(LangID.getStringByID("event.section.stage", holder.config.lang)).append("\n\n");
                                             }
 
                                             if(!initial) {
@@ -362,7 +362,7 @@ public class PackBot {
                                                     case YEARLY ->
                                                             builder.append(LangID.getStringByID("event.permanentSchedule.yearly", holder.config.lang)).append("\n\n```ansi\n");
                                                     case MISSION ->
-                                                            builder.append(LangID.getStringByID("event.mission", holder.config.lang)).append("\n\n```ansi\n");
+                                                            builder.append(LangID.getStringByID("event.section.mission", holder.config.lang)).append("\n\n```ansi\n");
                                                     default -> builder.append("```ansi\n");
                                                 }
                                             } else {
@@ -431,9 +431,9 @@ public class PackBot {
                                             }
 
                                             if(j == EventFactor.GATYA) {
-                                                builder.append(LangID.getStringByID("event.gacha", holder.config.lang)).append("\n\n");
+                                                builder.append(LangID.getStringByID("event.section.gacha", holder.config.lang)).append("\n\n");
                                             } else {
-                                                builder.append(LangID.getStringByID("event.item", holder.config.lang)).append("\n\n");
+                                                builder.append(LangID.getStringByID("event.section.item", holder.config.lang)).append("\n\n");
                                             }
                                         }
 

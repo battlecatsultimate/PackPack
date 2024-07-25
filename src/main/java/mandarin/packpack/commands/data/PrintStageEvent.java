@@ -77,7 +77,7 @@ public class PrintStageEvent extends ConstraintCommand {
                 if(!started) {
                     started = true;
 
-                    builder.append(LangID.getStringByID("event.stage", lang)).append("\n\n");
+                    builder.append(LangID.getStringByID("event.section.stage", lang)).append("\n\n");
                 }
 
                 if(!initial) {
@@ -95,7 +95,7 @@ public class PrintStageEvent extends ConstraintCommand {
                         case YEARLY ->
                                 builder.append(LangID.getStringByID("event.permanentSchedule.yearly", lang)).append("\n\n```ansi\n");
                         case MISSION ->
-                                builder.append(LangID.getStringByID("event.mission", lang)).append("\n\n```ansi\n");
+                                builder.append(LangID.getStringByID("event.section.mission", lang)).append("\n\n```ansi\n");
                         default -> builder.append("```ansi\n");
                     }
                 } else {

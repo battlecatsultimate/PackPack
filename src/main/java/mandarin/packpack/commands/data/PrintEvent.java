@@ -88,7 +88,7 @@ public class PrintEvent extends ConstraintCommand {
                                 builder.append("** **\n");
                             }
 
-                            builder.append(LangID.getStringByID("event.stage", l)).append("\n\n");
+                            builder.append(LangID.getStringByID("event.section.stage", l)).append("\n\n");
                         }
 
                         if(!initial) {
@@ -106,7 +106,7 @@ public class PrintEvent extends ConstraintCommand {
                                 case YEARLY ->
                                         builder.append(LangID.getStringByID("event.permanentSchedule.yearly", l)).append("\n\n```ansi\n");
                                 case MISSION ->
-                                        builder.append(LangID.getStringByID("event.mission", l)).append("\n\n```ansi\n");
+                                        builder.append(LangID.getStringByID("event.section.mission", l)).append("\n\n```ansi\n");
                                 default -> builder.append("```ansi\n");
                             }
                         } else {
@@ -174,9 +174,9 @@ public class PrintEvent extends ConstraintCommand {
                         }
 
                         if(j == EventFactor.GATYA) {
-                            builder.append(LangID.getStringByID("event.gacha", l)).append("\n\n");
+                            builder.append(LangID.getStringByID("event.section.gacha", l)).append("\n\n");
                         } else {
-                            builder.append(LangID.getStringByID("event.item", l)).append("\n\n");
+                            builder.append(LangID.getStringByID("event.section.item", l)).append("\n\n");
                         }
                     }
 
