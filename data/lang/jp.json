@@ -1472,28 +1472,28 @@
     "noCommand" : "_ というコマンドは存在しません。",
     "alias" : {
       "description" : "名前からデータを取得してエイリアスを取得します。代替コマンドは`al`です。",
-      "exam" : "`p!al -f ウルフとウルルン`\n`p!al -s 47階 -stm 風雲にゃんこ塔`",
+      "example" : "`p!al -f ウルフとウルルン`\n`p!al -s 47階 -stm 風雲にゃんこ塔`",
       "parameter" : "- `-f`\nにゃんこモード\n- `-e`\n敵モード\n- `-s`\nステージモード\n- `-stm`\nステージマップの名前を指定します。タイプがステージモードの場合にのみ使用できます\n- `-mc`\nマップコレクションの名前を指定します。タイプがステージモードの場合にのみ使用できます。",
       "tip" : "コマンドのすぐ横にタイプを指定する必要があります。 例えば、`p!al -f`や`p!al -e`のように。 次に、検索する名前を指定する必要があります。 ボットは検索結果から登録されたエイリアスを提供します。",
       "usage" : "`p!alias [タイプ] [名前]`"
     },
     "aliasAdd" : {
       "description" : "指定された名前から取得したデータからエイリアスを追加します。代替コマンドは`ala`です。**PackPackの開発者から直接与えられた許可がない限り、このコマンドを使用することはできません**",
-      "exam" : "`p!ala -e ウルフとウルルン -> ウルルンとわんこ`\n`p!ala -s 47階 -stm 風雲にゃんこ塔 -> 47F`",
+      "example" : "`p!ala -e ウルフとウルルン -> ウルルンとわんこ`\n`p!ala -s 47階 -stm 風雲にゃんこ塔 -> 47F`",
       "parameter" : "- `-f`\nにゃんこモード\n`-e`\n敵モード\n`-s`\nステージモード\n`-stm`\nステージマップの名前を指定します。タイプがステージモードの場合にのみ使用できます\n`-mc`\nマップコレクションの名前を指定します。タイプがステージモードの場合にのみ使用できます。",
       "tip" : "コマンドのすぐ横にタイプを指定する必要があります。 例えば、`p!al -f`や`p!al -e`のように。\n\n`->`と入力してエイリアス名を指定できます。`-> `の間にスペースを入れる必要があります。 たとえば、 `p!ala -u ウルフとウルルン -> ウルフとわんこ`の場合、エイリアス名は`ウルフとわんこ`として指定されます。",
       "usage" : "`p!aliasadd [タイプ] [名前] -> [エイリアスの名前]`"
     },
     "aliasRemove" : {
       "description" : "指定された名前から取得したデータからエイリアスを削除します。 代替コマンドは'alr'です。 **PackPackの開発者から直接与えられた許可がない限り、このコマンドを使用することはできません**",
-      "exam" : "`p!alr -f ウルフとウルルン -> ウルルンとわんこ`\n`p!alr -s 47階 -stm 風雲にゃんこ塔 -> 47F`",
+      "example" : "`p!alr -f ウルフとウルルン -> ウルルンとわんこ`\n`p!alr -s 47階 -stm 風雲にゃんこ塔 -> 47F`",
       "parameter" : "- `-f`\nにゃんこモード\n`-e`\n敵モード\n`-s`\nステージモード\n- `-stm`\nステージマップの名前を指定します。タイプがステージモードの場合にのみ使用できます\n- `-mc`\nマップコレクションの名前を指定します。タイプがステージモードの場合にのみ使用できます。",
       "tip" : "コマンドのすぐ横にタイプを指定する必要があります。 例えば、`p!alr -f`や`p!alr -e`のように。\n\n`->`と入力してエイリアス名を指定できます。`-> `の間にスペースを入れる必要があります。 たとえば、 `p!alr -u ウルフとウルルン -> ウルフとわんこ`の場合、エイリアス名は`ウルフとわんこ`として指定されます。",
       "usage" : "`p!aliasremove [タイプ] [名前] -> [エイリアスの名前]`"
     },
     "allowchannelpermission" : {
       "description" : "Make bot consider specific channel permission set for this user back. **Only moderators can use this command.** `achannelpermission`, `allowchp`, `achp` are also valid commands",
-      "exam" : "`p!ichp @USER -me -c \"Test Role\"",
+      "example" : "`p!ichp @USER -me -c \"Test Role\"",
       "parameter" : "- `-me` or `-member`\nAllow channel permission set of assigned Member role\n- `-c` or `-custom`\nAllow channel permission set of assigned custom role. Must come with custom role name, wrapped with \"",
       "tip" : "Channel permission system is that moderators can make users able to use commands only in specific channel when having satisfying role. You can make bot consider assigned channel permission set back for this user",
       "usage" : "`p!allowchannelpermission [User ID] [Permission Set]`"
@@ -1510,7 +1510,7 @@
     },
     "announcement" : {
       "description" : "5分間見られるにゃんこのお知らせリンクを表示します(これはにゃんこ大戦争で\"i\"ボタンを押したときに見られるものです。)。 引数が指定されていない場合は、自動で判別しリンクをアップロードします。 代替コマンドは`ann`です。",
-      "exam" : "`p!ann`\n`p!ann -en`",
+      "example" : "`p!ann`\n`p!ann -en`",
       "parameter" : "- `-en`\nBCENのリンク\n- `-jp`\nBCJPのリンク\n- `-kr`\nBCKRのリンク\n- `-tw`\nBCTWのリンク",
       "usage" : "`p!announcement <言語>`"
     },
@@ -1520,13 +1520,13 @@
     },
     "background" : {
       "description" : "IDから背景を表示します。 代替コマンドは`bg`です。",
-      "exam" : "`p!bg 000`\n`p!bg 0 -w 1920`\n`p!bg 23 -w 500 -h 400`\n`p!bg -a 128` (If user isn't trusted, then `-a` will be ignored)",
+      "example" : "`p!bg 000`\n`p!bg 0 -w 1920`\n`p!bg 23 -w 500 -h 400`\n`p!bg -a 128` (If user isn't trusted, then `-a` will be ignored)",
       "parameter" : "- `-w`\n画像の幅を指定します。 (Max 1920)\n- `-h`\n画像の高さを指定します。 (Max 1080)\n- `-e` or `-effect`\nエフェクトと共に組み立てます。\n- `-a`もしくは`-anim`\nアニメーションエフェクトを含めた背景の15秒のmp4ファイルを組み立てます。 **これは非常に重い操作なので信頼されたユーザーのみが使用できます。**",
       "usage" : "`_background [背景 ID]`"
     },
     "boosterEmoji" : {
       "description" : "Boosterのスペシャルカスタム絵文字を追加します。 このコマンドを使うには管理者が `p!idset`コマンドでBoosterロールを設定している必要があります。管理者のみがこのコマンドを使用できます。 代替コマンドは`boostere`, `bemoji`, `be`です。",
-      "exam" : "`p!be @ユーザーネーム 絵文字の名前`",
+      "example" : "`p!be @ユーザーネーム 絵文字の名前`",
       "tip" : "カスタム絵文字システムでは、ユーザーのサーバーブーストの有効期限が切れるまで、Boosterに独自のカスタム絵文字を設定できます。 このコマンドは、このようなカスタム絵文字の管理を自動化できるため、ブーストが終了すると、これらの絵文字は自動的に削除されます\n\n絵文字名は何でもかまいませんが、名前の間のスペースを削除することをお勧めします。 管理者は画像ファイルを一緒にアップロードする必要があり、ボットはpng / gifファイルのみを受け入れます",
       "usage" : "`p!boosteremoji [ユーザーのID] [絵文字の名前] [絵文字ファイル(PngもしくはGif)]`"
     },
@@ -1537,12 +1537,12 @@
     },
     "boosterPin" : {
       "description" : "If moderator allowed boosters to pin/unpin messages, they can make bot pin/unpin messages for them even though boosters don't have message manage permission. Message must be specified via either message ID, message link, or reply. `bp` is also valid command",
-      "exam" : "`p!bp 12367890123456`\n`p!bp https://cdn.discord.com/....`",
+      "example" : "`p!bp 12367890123456`\n`p!bp https://cdn.discord.com/....`",
       "usage" : "`p!boosterpin [Message]`"
     },
     "boosterRole" : {
       "description" : "Boosterのカスタムロールを設定します。このコマンドを使うには管理者が `p!idset`コマンドでBoosterロールを設定している必要があります。 Moderetorのみがこのコマンドを使用できます。 代替コマンドは`boosterr`, `brole`, `br`です。",
-      "exam" : "`p!br @ユーザー名 \"Name can be anything allowing \" in middle\" -h 8dd145`\n`p!br @メンバー名 \"ロールの名前\" -r 141 -g 209 -b 69`",
+      "example" : "`p!br @ユーザー名 \"Name can be anything allowing \" in middle\" -h 8dd145`\n`p!br @メンバー名 \"ロールの名前\" -r 141 -g 209 -b 69`",
       "parameter" : "- `-h`もしくは`-hex`\n色をHex形式で指定します。\n- `-r`もしくは`-red`\n赤色\n- `-g`もしくは`-green`\n緑色\n- `-b`もしくは`-blue`\n青色",
       "tip" : "カスタムロールシステムでは、サーバーブーストがそのユーザーに対して期限切れになるまで、ブースターに独自のカスタムロールを許可します。 このコマンドは、このようなカスタムロールの管理を自動化できます。ブーストが終了すると、これらのロールは自動的に削除されます。\n\nロール名は`\"`で囲む必要があります。色は`-h`もしくは`-r,-g,-b`引数で指定します。両方を指定すると、 `-h`が優先されます。\n\n`-r,-g,-b`引数はそれぞれ0~255で、`-h`引数はHex形式である必要があります。`-h`引数は`#`でを最初に入力しても問題ありません。\n\nメンバーにBoosterの役割がない場合、またはメンバーがすでにBoosterの役割を割り当てている場合、このコマンドは拒否されます。",
       "usage" : "`p!boosterrole [ユーザーID] \"ロールの名前\" [-h [Hex] / -r [赤] -g [緑] -b [青]]`"
@@ -1554,19 +1554,19 @@
     },
     "calculator" : {
       "description" : "Calculate the equation that is provided. `calc`, `c` are also valid command. It supports functions blow\n\n`Basic calculations`\n`sin/cos/tan`\n`csc/sec/cot`\n`arcsin/arccos/arctan`\n`arccsc/arcsec/arccot`\n`ln/log/logN`\n`sqrt/sqrtN`\n`nPr/nCr`",
-      "exam" : "`p!c ln(e) + sin(pi/2) * cos(pi/4) * sqrt(2) - log5(25) + cos(arcsin(1) * 2) + sqrt3(8)`",
+      "example" : "`p!c ln(e) + sin(pi/2) * cos(pi/4) * sqrt(2) - log5(25) + cos(arcsin(1) * 2) + sqrt3(8)`",
       "tip" : "`logN` means log whose base is `N`, so if you want to perform log with base of 2, then you have to call something like `log2(4)`\n\nSame for `sqrtN`, it's `sqrt`, but base is `N`, which is identical to `V^(1/N)` = `sqrtN(V)`. So if you want to perform `8^(1/3)`, then you have to call `sqrt3(8)`\n\nWhen you write number and parenthesis, you really don't need to put `*` manually. For example, `2(2+5)` will give you `14` automatically",
       "usage" : "`p!calculator [Equation]`"
     },
     "castle" : {
       "description" : "IDを指定して城の画像をアップロードします。引数を設定しなかった場合、ノーマルステージのIDとなります。 代替コマンドは`cas`です。",
-      "exam" : "`p!cas 000`\n`p!cas -ec 30`",
+      "example" : "`p!cas 000`\n`p!cas -ec 30`",
       "parameter" : "- `-rc`\n`ノーマルステージ`のID \n- `-ec`\n`日本編`のID\n- `-wc`\n`未来編`のID\n- `-sc`\n`宇宙編`のID",
       "usage" : "`_castle [ID]`"
     },
     "catCombo" : {
       "description" : "名前からコンボを検索し詳細を表示します。 代替コマンドは`combo`, `cc`です。`p!cc 昨日 -u ウルルン`は問題があってできないので引数は一つにしてください。",
-      "exam" : "`p!cc 今度こそ君を幸せに`\n`p!cc -u ウルルン`",
+      "example" : "`p!cc 今度こそ君を幸せに`\n`p!cc -u ウルルン`",
       "parameter" : "- `-u`\nにゃんこの名前からコンボを検索します。",
       "usage" : "`p!catcombo <コンボ名>`"
     },
@@ -1604,7 +1604,7 @@
     },
     "differentiate" : {
       "description" : "Get differentiated value by using numerical methods by provided formula and value. `diff` and `dx` are also valid command",
-      "exam" : "`p!dx sin(x) -v [pi + 2]` [This will have same value of `cos(pi + 2)`]",
+      "example" : "`p!dx sin(x) -v [pi + 2]` [This will have same value of `cos(pi + 2)`]",
       "parameter" : "- `-v` or `-value`\nDefine value, must be wrapped with square brackets (`[]`)\n- `-s` or `-step`\nDefine step size, must be wrapped with square brackets (`[]`)\n- `-f` or `-front`\nApply forward difference method algorithm\n- `-c` or `-center`\nApply central difference method algorithm\n- `-b` or `-back`\nApply backward difference method algorithm",
       "tip" : "When you writing value or step size, you hve to wrap them with `[]` square brackets. For example, `[3]`, `[0]`, etc. Also, you can put calculator function as ell, such as `[sqrt(2)]`, `[2 * pi]`, etc.\n\nBot allows 3 types of algorithm for differentiation; Forward/Central/Backward Difference Method. Keep in mind that central one has O(h²), while others have O(h) accuracy\n\nDeciding too small step size may rather result in bad accuracy. Default step size is 10⁻⁸",
       "usage" : "`p!differentiate [Formula] [-v [Value]] <-s [Step]> <Algorithm>`"
@@ -1615,52 +1615,52 @@
     },
     "downloadApk" : {
       "description" : "Download apk from server directly, and extracts data inside of it. This will be used when you need to analyze stat (`p!sa`) or animation (`p!aa`). `p!da` is also valid command. **Since this process is very heavy, only trusted users can use this command**",
-      "exam" : "`p!da -jp`\n`p!da -en`",
+      "example" : "`p!da -jp`\n`p!da -en`",
       "parameter" : "- `-en/jp/tw/kr`\nDecide BC version which bot will download and analyze",
       "usage" : "`p!downloadapk [Locale]`"
     },
     "enemyDps" : {
       "description" : "Show DPS graph of specified enemy depending on range. `edps`, `ed` are also valid command",
-      "exam" : "`p!ed Kappy Jr. -m 200`",
+      "example" : "`p!ed Kappy Jr. -m 200`",
       "parameter" : "- `-m`\nSet attack magnification of this enemy",
       "usage" : "`p!enemydps [Enemy Name]`"
     },
     "enemyGif" : {
       "description" : "名前から敵を検索しアニメーションをgifまたはmp3で生成します。 このコマンドを実行すると30秒もしくは1分使えなくなります。 代替コマンドは`egif`, `eg`です。",
-      "exam" : "`p!eg -d Doge -f 10`\n`p!eg -r 535 -m attack` [信頼された人でなければ`-r`は無視されます]",
+      "example" : "`p!eg -d Doge -f 10`\n`p!eg -r 535 -m attack` [信頼された人でなければ`-r`は無視されます]",
       "parameter" : "- `-d`\nデバッグモード\n- `-f`もしくは`-fr`\nフレーム数を設定します。\n- `-r`もしくは`-raw`\nmp4で生成します。 クールダウンが１分になります。 **これは非常に重い操作なので信頼されたユーザーのみが使用できます。**\n- `-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)\n- `-g` or `-gif`\ngifのリンクを表示します。",
       "tip" : "Modeは正確に指定する必要はありません。 例えば、`att`と入力すると`Attack`とこちらで変換します。 `attack`の中の文字が含まれていればいいのです。 同様に、`hit`は`hitback`に変換されます。\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
       "usage" : "`_enemygif [名前]`"
     },
     "enemyImage" : {
       "description" : "名前から敵を検索し複数ある場合は一覧を表示します。代替コマンドは`enemyimg`, `eimage`, `enemyimg`, `eimg`です。",
-      "exam" : "`p!eimg -t 土偶戦士ドグ丸 -m Attack -f 100` `p!eimg -t 284 -m bd -f 5`",
+      "example" : "`p!eimg -t 土偶戦士ドグ丸 -m Attack -f 100` `p!eimg -t 284 -m bd -f 5`",
       "parameter" : "- `-t`\n透過画像で表示します。\n- `-d`もしくは`-debug`\nデバッグモード(普通は使用しない)\n- `-f`もしくは`-fr`\nフレーム(F)\n- `-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)",
       "tip" : "Modeは正確に指定する必要はありません。 例えば、`att`と入力すると`Attack`とこちらで変換します。 `attack`の中の文字が含まれていればいいのです。同様に、`hit`は`hitback`に変換されます。\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
       "usage" : "`_enemyimage [名前]`"
     },
     "enemySprite" : {
       "description" : "名前から敵を検索しimgcut画像をアップロードします。引数を使うとアイコンをアップロードします。代替コマンドは`esprite`, `enemysp`, `esp`です。",
-      "exam" : "`p!esp わんこ`\n`p!esp -edi 真レジェンドブンブン`\n`p!esp 535`",
+      "example" : "`p!esp わんこ`\n`p!esp -edi 真レジェンドブンブン`\n`p!esp 535`",
       "parameter" : "- `-edi`\nアイコンをアップロードします。",
       "usage" : "`p!enemysprite [名前]`"
     },
     "enemyStat" : {
       "description" : "名前から敵を検索し複数ある場合は一覧を表示します。番号で検索するときは`ID(３桁)`で指定します。代替コマンドは`es`です。",
-      "exam" : "`p!es -s わんこ -m 200`\n`p!es -e 024 -m 200, 100`",
+      "example" : "`p!es -s わんこ -m 200`\n`p!es -e 024 -m 200, 100`",
       "parameter" : "- `-s`\nフレーム(F)ではなく秒で情報を表示します。\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-m`\n倍率の設定。体力と攻撃力の倍率を別々に設定する場合は`体力倍率, 攻撃力倍率`を引数にしてください。\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
       "usage" : "`_enemystat [名前]`"
     },
     "enemyStatAnalyzer" : {
       "description" : "Analyze stats of unit's true form from raw files and upload stat image with analyzed data. **This command brings quite heavy process and required basic knowledge of data mining of BC, so only trusted can use this command.** `estatanalyzer`, `enemysa`, `esa` are also valid command",
-      "exam" : "`p!esa -e 612 -s -m 200 -n Haniwanwan -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
+      "example" : "`p!esa -e 612 -s -m 200 -n Haniwanwan -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
       "parameter" : "- `-e` or `-eid`\nDecide ID of enemy\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of enemy\n- `-m`\nSet magnification of this enemy\n- `-p` or `-proc`\nAdd data of chance-related abilities\n- `-a` or `-abil`\nAdd data of passive abilities\n- `-t` or `-trait`\nAdd data of trait\n- `-c` or `-cell`\nAdd data which required to be analyzed\n- `-apk`\nUse analyzed apk data, so that you won't need to send raw files tediously\n- `-en/tw/kr/jp`\nDecide BC version which you will use, it will be used only when `-apk` is turned on",
       "tip" : "This will be the most complicated command and requires basic knowledge of data mining, and access to BC files. I made bot able to handle new data which bot can't catch as possible as I can\n\nIndex starts from 0. This index here means index of values in stat file\n\nData set must be wrapped with {} (i.e. {1, Test Trait})\n\nArrays must be wrapped with [] (i.e. [1,2,3], [t,t,f])\n\nIf array requires boolean data, you don't need to put full `true` or `false`. Just put `t` for `true`, and `f` for `false`, so you can reduce command writing time",
       "usage" : "`p!enemystatanalyzer -e [Enemy ID]`"
     },
     "eventDataArchive" : {
       "description" : "Bring archived event data on specific locale and file type, and upload file of it. `eventdataa`, `earchive`, `eda` are also valid command",
-      "exam" : "`p!eda -en -i`\n`p!eda -jp -s`",
+      "example" : "`p!eda -en -i`\n`p!eda -jp -s`",
       "parameter" : "- `-en/jp/tw/kr`\nDecide locale of BC\n- `-g` or `-gatya` or `-gacha`\nFind gacha event data archive\n- `-i` or `-item`\nFind item event data archive\n- `-s` or `-sale`\nFind sale event data archive",
       "usage" : "`p!eventdataarchive <Locale> <File>`"
     },
@@ -1672,13 +1672,13 @@
     },
     "findReward" : {
       "description" : "Try to search stage with specified reward name, and upload info of it if exists. `freward`, `findr`, `fr` are also valid command",
-      "exam" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
+      "example" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
       "parameter" : "- `-ch` or `-chance`\nFilter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n- `-a` or `-amount`\nFind reward whose amount is higher or same than specified value\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
       "usage" : "`p!findreward [Reward Name]`"
     },
     "findStage" : {
       "description" : "敵の名前からステージを検索し詳細を表示します。代替コマンドは`findst`, `fstage`, `fst`です。",
-      "exam" : "`p!fst -s 真レジェンドブンブン`\n`p!fst -s -lv 4 098`\n`p!fst -o -bg 0 -m 0 doge / snache`",
+      "example" : "`p!fst -s 真レジェンドブンブン`\n`p!fst -s -lv 4 098`\n`p!fst -o -bg 0 -m 0 doge / snache`",
       "parameter" : "- `-s`\nフレーム(F)ではなく秒で表示します。\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv`\n👑1,2,3,4を指定します。\n- `-e` or `-extra`\nShow extra stage information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-o` or `-or`\nActivate `OR` operation\n- `-a` or `-and`\nActivate `AND` operation\n- `-bg` or `-background`\nSet background ID to filter with\n- `-cs` or `-castle`\nSet castle ID to filter with\n- `-ms` or `-music`\nSet music ID to filter with\n- `-b` or `-boss`\nFind the stage which contains boss\n- `-m` or `-monthly`\nActivate monthly mission filter mode",
       "tip" : "You can provide multiple enemies to filter with. To perform this, provide enemy names, separated with `/` separator. For example, if you want to provide 2 names; `Doge` and `Snache`, then what you will have to write is `Doge/Snache`. **You can provide only up to 5 enemies**\n\n`Or` or `And` operation decides how bot will filter stage with provided enemy combinations. For example, if `Or` operation is activated, then bot will filter stage which contains this enemy **OR** that enemy. If it's `And` operation, then bot will filter stage which contains this enemy **AND** that enemy. `And` operation is turned on as default, and if you provide both `-o` and `-a` parameters, `-a` will have higher priority",
       "tip2" : "Crystal modifier can adjust status of crystal treasure. For example, you may have beaten only up to ItF Ch.2, so aliens in Ch.3 may have different magnification than full treasure. In this case, you can adjust crystal modifier by passing number of chapter that you finished\n\nFor example, if you are beating Itf Ch.1, then you can pass `-i0` parameter. If you are beating CotC Ch.3, then you can pass `-c2`, and so on",
@@ -1686,33 +1686,33 @@
     },
     "formDps" : {
       "description" : "Show DPS graph of specified unit depending on range. `catdps`, `unitdps`, `fdps`, `cdps`, `udps`, `fd`, `cd`, `ud` are also valid command",
-      "exam" : "`p!fdps Fabled Adventure Girl Kanna -lv 50`",
+      "example" : "`p!fdps Fabled Adventure Girl Kanna -lv 50`",
       "parameter" : "- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 8 level`\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
       "usage" : "`p!formdps [Unit Name]`"
     },
     "formGif" : {
       "description" : "名前からにゃんこを検索しアニメーションをgif,mp3で表示します。 このコマンドを実行すると30秒もしくは1分使えなくなります。 代替コマンドは`fgif`, `fg`, `cg`, `ug`です。 ",
-      "exam" : "`p!fg ネコ -f 10`\n`p!fg -r 493001 -m attack` [信頼された人でなければ`-r`は無視されます]",
+      "example" : "`p!fg ネコ -f 10`\n`p!fg -r 493001 -m attack` [信頼された人でなければ`-r`は無視されます]",
       "parameter" : "- `-d`\nデバッグモード\n- `-f`もしくは`-fr`\nフレーム数を設定します。\n- `-r`もしくは`-raw`\nmp4で生成します。 クールダウンが１分になります。 **これは非常に重い操作なので信頼されたユーザーのみが使用できます。**\n- `-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)\n- `-g` or `-gif`\ngifのリンクを表示します。",
       "tip" : "Modeは正確に指定する必要はありません。 例えば、`att`と入力すると`Attack`とこちらで変換します。 `attack`の中の文字が含まれていればいいのです。 同様に、`hit`は`hitback`に変換されます。\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
       "usage" : "`_formgif [名前]`"
     },
     "formImage" : {
       "description" : "名前からにゃんこを検索しアニメーションを画像で表示します。複数ある場合は一覧を表示します。 代替コマンドは`formimg`, `fimage`, `formimg`, `fimg`, `cimg`, `uimg`です。",
-      "exam" : "`p!fimg -t 真田幸村 -m Attack -f 8`\n`p!fimg -t -d 天城龍バベル -m att -f 120`\n`p!fimg 閃雷輝兵ウイングレイ  -m hitback` or `p!fimg 閃雷輝兵ウイングレイ  -m hb`",
+      "example" : "`p!fimg -t 真田幸村 -m Attack -f 8`\n`p!fimg -t -d 天城龍バベル -m att -f 120`\n`p!fimg 閃雷輝兵ウイングレイ  -m hitback` or `p!fimg 閃雷輝兵ウイングレイ  -m hb`",
       "parameter" : "- `-t`\n透過画像で表示します。\n`-d`もしくは`-debug`\nデバッグモード(普通は使用しない)\n`-f`もしくは`-fr`\nフレーム(F)の設定\n`-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)",
       "tip" : "Modeは正確に指定する必要はありません。 例えば、`att`と入力すると`Attack`とこちらで変換します。 `attack`の中の文字が含まれていればいいのです。 同様に、`hit`は`hitback`に変換されます。\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n- `-m burrowup` = `-m bu`",
       "usage" : "`_formimage [名前]`"
     },
     "formSprite" : {
       "description" : "名前からにゃんこを検索しimgcut画像をアップロードします。引数を使うとアイコンをアップロードします。 代替コマンドは`fsprite`, `formsp`, `fsp`, `csp`, `usp`です。",
-      "exam" : "`p!fsp ネコ`\n`p!fsp -uni 天城龍バベル`\n`p!fsp 071-002`",
+      "example" : "`p!fsp ネコ`\n`p!fsp -uni 天城龍バベル`\n`p!fsp 071-002`",
       "parameter" : "- `-uni`\nにゃんこのuniアイコン(戦闘画面など)をアップロードします。\n- `-udi`\nにゃんこのudiアイコン(切り取り)をアップロードします。\n- `-edi`\nにゃんこのediアイコン(枠あり)をアップロードします。",
       "usage" : "`p!formsprite [名前]`"
     },
     "formStat" : {
       "description" : "名前からにゃんこを検索し複数ある場合は一覧を表示します。 番号で検索するときは`ID(３桁)` `形態(000,001,002)`で指定します。代替コマンドは`catstat`, `unitstat`, `fs`, `cs`, `us`です。",
-      "exam" : "`p!fs -s -t ネコ -lv 30`\n`p!fs -t -e 071002 -lv 50, 1, 1, 1, 1, 1`",
+      "example" : "`p!fs -s -t ネコ -lv 30`\n`p!fs -t -e 071002 -lv 50, 1, 1, 1, 1, 1`",
       "parameter" : "- `-s`\nフレーム(F)ではなく秒で情報を表示します。\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-t`\n本能がある場合に本能の情報も混ぜて表示します。\n- `-lv`もしくは`-lvl`\nレベル、本能をセットします。`level, talent 1 level, talent 2 level, ..., talent 5 level`\n- `-e` or `-extra`\nShow extra information such as description, catfruit evolve information\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
       "usage" : "`_formstat [名前]`"
     },
@@ -1736,14 +1736,14 @@
     },
     "ignorechannelpermission" : {
       "description" : "Make bot ignore specific channel permission set for this user to prevent abusing privileges to use commands in wider channels. **Only moderators can use this command.** `ichannelpermission`, `ignorechp`, `ichp` are also valid commands",
-      "exam" : "`p!ichp @USER -me -c \"Test Role\"",
+      "example" : "`p!ichp @USER -me -c \"Test Role\"",
       "parameter" : "- `-me` or `-member`\nIgnore channel permission set of assigned Member role\n- `-c` or `-custom`\nIgnore channel permission set of assigned custom role. Must come with custom role name, wrapped with \"",
       "tip" : "Channel permission system is that moderators can make users able to use commands only in specific channel when having satisfying role. You can make bot ignore assigned channel permission set despite user having connected role with",
       "usage" : "`p!ignorechannelpermission [User ID] [Permission Set]`"
     },
     "integrate" : {
       "description" : "Get integrated value by using numerical methods with provided formula and range. `int` is also valid command",
-      "exam" : "`p!int sin(x) -r [0, pi]` (= 2)\n`p!int x^2 -r [0, 3] -b -s [4 * 20]` (= 9)",
+      "example" : "`p!int sin(x) -r [0, pi]` (= 2)\n`p!int x^2 -r [0, 3] -b -s [4 * 20]` (= 9)",
       "parameter" : "- `-r` or `-range`\nDefine range, must be wrapped with square brackets (`[]`)\n- `-s` or `-section`\nDefine number of section, must be wrapped with square brackets (`[]`)\n- `-t` or `-trapezoidal`\nApply trapezoidal rule algorithm\n- `-si` or `-simpson`\nApply Simpson's rule algorithm\n- `-s38` or `-simpson38`\nApply Simpson's 3/8 rule algorithm\n- `-b` or `-boole`\nApply Boole's rule algorithm",
       "tip" : "When you writing range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc.\nSame for number of section, such as `[25]`, `[3 * 30]`, etc. Max number of section is 1000\n\nBot provides 4 types of algorithm : Trapezoidal Rule, Simpson's Rule, Simpson's 3/8 Rule, Boole's Rule\n\nNumber of section must be multiples of 2 when using Simpson's Rule\nNumber of section must be multiples of 3 when using Simpson's 3/8 Rule\nNumber of sections must be multiple of 4 when using Boole's Rule\n\nIf algorithm isn't specified, it will perform Closed Newton-Cotes Rule",
       "usage" : "`p!integrate [Formula] [-r [Range Start, Range End]] <-s Number of Section> <Algorithm>`"
@@ -1766,7 +1766,7 @@
     },
     "medal" : {
       "description" : "名前からメダルを検索し詳細を表示します。 代替コマンドは`md`です。",
-      "exam" : "`p!medal 日本編3章`\n`p!medal 086`",
+      "example" : "`p!medal 日本編3章`\n`p!medal 086`",
       "usage" : "`p!medal [名前]`"
     },
     "memory" : {
@@ -1783,14 +1783,14 @@
     },
     "plot" : {
       "description" : "Draw graph image with provided formula and range data. `p` is also valid command",
-      "exam" : "`p!p x + 2`\n`p!p x^4 + x^3 - 2x^2 - x -xr [-10, 6]`\n`p!p sin(x^2)+sin(y^2)=1`",
+      "example" : "`p!p x + 2`\n`p!p x^4 + x^3 - 2x^2 - x -xr [-10, 6]`\n`p!p sin(x^2)+sin(y^2)=1`",
       "parameter" : "- `-xr`\nDecide X range, must be wrapped with square brackets (`[]`)\n- `-yr`\nDecide Y range, must be wrapped with square brackets (`[]`)\n- `-r` or `-ratio`\nKeep ratio between X range and Y range 1:1",
       "tip" : "When you writing x/y range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it. Default x range is `[-5, 5]` if not specified\n\nIt only accepts two variables as max. You don't need to use `x` as variable always, any set of letters can be variable like `a`, `b`, etc.",
       "usage" : "`p!plot [Formula] <-xr X Range> <-yr Y Range>`"
     },
     "plotRTheta" : {
       "description" : "Draw graph with provided f(r,θ) function. `plotrt`, `prtheta`, `prt`, `rt` are also valid command",
-      "exam" : "`p!rt r = 1`\n`p!rt r = sin(8 * t / 5) -tr [0, 10 * pi] -xr [-2 , 2]`",
+      "example" : "`p!rt r = 1`\n`p!rt r = sin(8 * t / 5) -tr [0, 10 * pi] -xr [-2 , 2]`",
       "parameter" : "- `-xr`\nDecide X range, must be wrapped with square brackets (`[]`)\n- `-yr`\nDecide Y range, must be wrapped with square brackets (`[]`)\n- `-rr`\nDecide r range, must be wrapped with square brackets (`[]`)\n- `-tr`\nDecide θ range, must be wrapped with square brackets (`[]`)",
       "tip" : "When you writing x/y/r/θ range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it\n\nIt's recommended to use `r`, and `t` as variable, `r` being r, and `t` being θ. Then bot will calculate variables with correct order",
       "usage" : "`p!plotrtheta [Formula] <-tr [θ Range]> <-rr [r Range]>`"
@@ -1801,25 +1801,25 @@
     },
     "printEvent" : {
       "description" : "Print all event data (gacha, stage, item). **This command may create long message, so only moderators can use this command to prevent spamming**. `pe` is also valid command",
-      "exam" : "`p!pe -s -jp`\n`p!pe -s -f -en`",
+      "example" : "`p!pe -s -jp`\n`p!pe -s -f -en`",
       "parameter" : "- `-en`\nBring BCEN event data\n- `-tw`\nBring BCTW event data\n- `-kr`\nBring BCKR event data\n- `-jp`\nBring BCJP event data\n- `-s`\nFollow server's locale data\n- `-f`\nUpload full event data instead of only newly caught ones",
       "usage" : "`p!printevent`"
     },
     "printGachaEvent" : {
       "description" : "Print analyzed gacha event data. If locale isn't specified, it will print use server's locale automatically. `pge` is also valid command",
-      "exam" : "`p!pge`\n`p!pge -en`\n`p!pge -f -r`\n`p!pge -r -n`",
+      "example" : "`p!pge`\n`p!pge -en`\n`p!pge -f -r`\n`p!pge -r -n`",
       "parameter" : "- `-en`\nBring BCEN gacha data\n- `-tw`\nBring BCTW gacha data\n- `-kr`\nBring BCKR gacha data\n- `-jp`\nBring BCJP gacha data\n- `-f` or `-full`\nBring full data list instead of newly caught event data\n- `-r` or `-raw`\nShow event data without sorting order of date\n- `-n` or `-now`\nShow only on-going event data considering timezone",
       "usage" : "`p!printgachaevent <Locale>`"
     },
     "printItemEvent" : {
       "description" : "Print analyzed item/sale event data. If locale isn't specified, it will print use server's locale automatically. `pie` is also valid command",
-      "exam" : "`p!pie`\n`p!pie -en`\n`p!pie -f -r`\n`p!pie -r -n`",
+      "example" : "`p!pie`\n`p!pie -en`\n`p!pie -f -r`\n`p!pie -r -n`",
       "parameter" : "- `-en`\nBring BCEN item/sale data\n- `-tw`\nBring BCTW item/sale data\n- `-kr`\nBring BCKR item/sale data\n- `-jp`\nBring BCJP item/sale data\n- `-f` or `-full`\nBring full data list instead of newly caught event data\n- `-r` or `-raw`\nShow event data without sorting order of date\n- `-n` or `-now`\nShow only on-going event data considering timezone",
       "usage" : "`p!printitemevent <Locale>`"
     },
     "printStageEvent" : {
       "description" : "Print analyzed stage/event event data. If locale isn't specified, it will print use server's locale automatically. `pse` is also valid command",
-      "exam" : "`p!pse`\n`p!pse -en`\n`p!pse -f -r`\n`p!pse -r -n`",
+      "example" : "`p!pse`\n`p!pse -en`\n`p!pse -f -r`\n`p!pse -r -n`",
       "parameter" : "- `-en`\nBring BCEN stage/event data\n- `-tw`\nBring BCTW stage/event data\n- `-kr`\nBring BCKR stage/event data\n- `-jp`\nBring BCJP stage/event data\n- `-f` or `-full`\nBring full data list instead of newly caught event data\n- `-r` or `-raw`\nShow event data without sorting order of date\n- `-n` or `-now`\nShow only on-going event data considering timezone",
       "usage" : "`p!printstageevent <Locale>`"
     },
@@ -1860,20 +1860,20 @@
     },
     "solve" : {
       "description" : "Find solution(s) for specified equation. Keep in mind that this isn't exact solution always, it approaches with numerical methods. `sv` is also valid command",
-      "exam" : "`p!sv sin(x)` [3 solutions will be found]\n`p!sv x - 2 = -x^2` [2 solutions will be found]",
+      "example" : "`p!sv sin(x)` [3 solutions will be found]\n`p!sv x - 2 = -x^2` [2 solutions will be found]",
       "parameter" : "- `-n` or `-newton`\nUse Newton-Raphson/Newton method algorithm\n- `-b` or `-bisection`\nApply bisection method algorithm\n- `-s` or `-secant`\nApply secant method algorithm\n- `-f` or `-false`\nApply false position method algorithm\n- `-r` or `-range`\nApply range for finding solutions\n- `-i` or `-iteration`\nDefine how many times bot will perform repeated-calculations\n- `-e` or `-error`\nDefine what margin error will be that will make bot stop repeated-calculations",
       "tip" : "Bot provides 4 numerical methods to perform root finding; Newton-Raphson Method, Bisection Method, Secant Method, False Position Method. Keep in mind that algorithm can diverge depending on situations\n\nMaximum iteration is limited as 100. 0% margin error is allowed, but most of time, it will fail to reach this error. If neither error nor iteration are defined, it will follow 0.001% default margin error\n\nYou can pass `f(x) = g(x)` format, or `f(x)` only. If only `f(x)` is passed, then it will assume `f(x) = 0`",
       "usage" : "`p!solve [Equation] <Algorithm> <Range> <Iteration|Margin Error>`"
     },
     "soul" : {
       "description" : "Upload animation of soul with specified ID. `sl` is also valid command",
-      "exam" : "`p!sl -d 0 -f 10`\n`p!sl -r 2` [Trusted only or `-r` will be ignored]",
+      "example" : "`p!sl -d 0 -f 10`\n`p!sl -r 2` [Trusted only or `-r` will be ignored]",
       "parameter" : "- `-d`\nEnable debug mode\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
       "usage" : "`p!soul [Soul ID]`"
     },
     "soulImage" : {
       "description" : "Upload image of soul with specified ID. `soulimg`, `simage`, `simg` are also valid command",
-      "exam" : "`p!simg -t 0 -f 30`",
+      "example" : "`p!simg -t 0 -f 30`",
       "parameter" : "- `-t`\nDisplay image with transparent mode\n- `-d` or `-debug`\nEnable debug mode\n- `-f` or `-fr`\nDecide frame of animation",
       "usage" : "`p!soulimage [Soul ID]`"
     },
@@ -1883,26 +1883,26 @@
     },
     "stageImage" : {
       "description" : "ステージ名を画像にして出力します。どんな画像であるかは試してみてください。 デフォルトで使用するフォントは、BCENフォントイメージです。 代替コマンドは`stimg`、` stimage`、 `stageimg`です。",
-      "exam" : "`p!stimg -f Noto Fontだあああ`\n`p!stimg -r にゃんこ大戦争のフォーマット`\n`p!stimg -r -f 両方入れてみた`",
+      "example" : "`p!stimg -f Noto Fontだあああ`\n`p!stimg -r にゃんこ大戦争のフォーマット`\n`p!stimg -r -f 両方入れてみた`",
       "parameter" : "- `-f`\nNotoフォントイメージを使用します。\n- `-r`\nにゃんこ大戦争のフォーマットに合わせて生成します。",
       "usage" : "`_stageimage [テキスト]`"
     },
     "stageInfo" : {
       "description" : "名前からステージを検索し複数ある場合は一覧を表示します。番号で検索するときは`ステージの種類ID` - `マップID` - `ステージID`で指定します。 代替コマンドは`si`です。",
-      "exam" : "`p!si -s -lv 3 DNAとDHA`\n`p!si -s 太古の力 -mc EXステージ`\n`p!si ジャマイカ -stm 未来編 1章 ゾンビ`\n`p!si -e -lv 3 2-128-2`",
+      "example" : "`p!si -s -lv 3 DNAとDHA`\n`p!si -s 太古の力 -mc EXステージ`\n`p!si ジャマイカ -stm 未来編 1章 ゾンビ`\n`p!si -e -lv 3 2-128-2`",
       "parameter" : "- `-s`\nフレーム(F)ではなく秒で情報を表示します。\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv`もしくは`-lvl`\n👑1,2,3,4を指定します。\n- `-stm`\nマップの名前を指定します。 最初にステージ名を指定した後に使用する必要があります。\n- `-mc`\nマップ名で絞り込みます。最初にステージ名を指定した後に使用する必要があります。\n- `-mc`\nマップコレクション名で絞り込みます。 最初にステージ名を指定した後に使用する必要があります。\n- `-e` or `-extra`\nShow extra stage information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-i0/1/2` or `-itf0/1/2`\nApply crystal modifier for ItF\n`-c0/1/2` or `-cotc0/1/2`\nApply crystal modifier for CotC",
       "tip" : "Crystal modifier can adjust status of crystal treasure. For example, you may have beaten only up to ItF Ch.2, so aliens in Ch.3 may have different magnification than full treasure. In this case, you can adjust crystal modifier by passing number of chapter that you finished\n\nFor example, if you are beating Itf Ch.1, then you can pass `-i0` parameter. If you are beating CotC Ch.3, then you can pass `-c2`, and so on",
       "usage" : "`_stageinfo [ステージの名前]`"
     },
     "stageMapImage" : {
       "description" : "ステージマップ名を画像にして出力します。どんな画像であるかは試してみてください。 代替コマンドは`stmimg`, `stagemapimg`, `stagemapimg`です。",
-      "exam" : "`p!stmimg -jpにゃんこ大戦争(日本版)のフォーマット`\n`p!stmimg -r  にゃんこ大戦争(共通)のフォーマット`\n`p!stmimg -r -jp 両方入れてみた`",
+      "example" : "`p!stmimg -jpにゃんこ大戦争(日本版)のフォーマット`\n`p!stmimg -r  にゃんこ大戦争(共通)のフォーマット`\n`p!stmimg -r -jp 両方入れてみた`",
       "parameter" : "- `-jp`\nにゃんこ大戦争(日本版)のフォーマットに合わせて生成します。\n- `-r`\nにゃんこ大戦争(共通)のフォーマットに合わせて生成します。",
       "usage" : "`_stmimage [テキスト]`"
     },
     "stageStatAnalyzer" : {
       "description" : "Analyze stats of stage from raw files and upload stat image with analyzed data. **This command brings qutie heavy process and requires basic knowledge of data mining of BC, so only trusted can use this command.** `sstatanalyzer`, `stagesa`, `ssa` are also valid command",
-      "exam" : "`p!ssa -m 1278 -c S`",
+      "example" : "`p!ssa -m 1278 -c S`",
       "parameter" : "- `-m` or `-mid`\nDecide ID of map, for example, 1278, 2180, etc.\n- `-c` or `-code`\nDecide code of map, such as `S`, `C`, etc.\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of stages\n- `-lv`\nSet level of these stages\n- `-en/tw/kr/jp`\nDecide BC version which you will use\n- `-r` or `-range`\nDecide which stages you will analyze specifically",
       "tip" : "This analyzer uses apk file automatically unlike other analyzers due to its complexity\n\nMap ID here isn't just index of map collection. Each map collection code has their own numeric value. For example, code `S` is 1000, `E` is 4000, etc. You have to include this numeric code value, so that ID's format becomes `Code value + Index value`\n\nIf code is same with map code of Gauntlet Stage (RA), or Collaboration Gauntlet Stage (CA), it will generate 10s stages only (1, 11, 21, ..., and max)\n\nWhen deciding range of stage that will be analyzed, you can pass stage ID, with `,` (i.e. `1, 2, 4`). Or, you can perform range with `-` (i.e. `1-3, 4-6` = `1, 2, 3, 4, 5, 6`). For example, combination of these two will be `1, 3, 5-8, 10`, then bot will analyze only stage `1, 3, 5, 6, 7, 8, 10`",
       "usage" : "`p!stagestatanalyzer -c [Code] -m [Map ID] -n <Name>`"
@@ -1912,7 +1912,7 @@
       "additionalDescription" : "This embed message explains detailed explanation of each parameter. Below is which types of variable you can put\n\n`int`\nInteger, aka number\n`string`\nString, aka sentence, words, etc\n`boolean`\nBoolean. You can put only true or false for this type of variable, bot accepts `t` as true, and `f` as false\n`array`\nData which can hold several elements. For example, if you want to put 2 elements, write like `[N₀, N₁]` where Nₓ are numbers or booleans you want to put\n`intArray`\nArray, but requires only integer as elements\n`booleanArray` Array, but requires only boolean as elements",
       "cell" : "Format : `{indexArray, name, isTimeUnit, oneLine, ignoreZero} <intArray, string, boolean, boolean, boolean>`\n\n - oneLine decides whether this cell data will be isolated from other data as single line or not\n\n - ignoreZero decides whether bot will exclude 0 numbers or not. For example, if data is [4, 5, 0] and ignoreZero is true, then bot will display data as `4, 5`. If not, `4, 5, 0` directly",
       "description" : "Analyze stats of unit(s) from raw files and upload stat image with analyzed data. **This command brings quite heavy process and required basic knowledge of data mining of BC, so only trusted can use this command.** `sa` is also valid command",
-      "exam" : "`p!sa -u 613 -l 2 -s -lv 50 -n Yamii, Yaminoir -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
+      "example" : "`p!sa -u 613 -l 2 -s -lv 50 -n Yamii, Yaminoir -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
       "name" : "You can decide names of this unit manually, or it will just use this unit's ID (i.e. `123-000`). You can pass several names by separating them with comma (`,`). For example, `Yamii, Yaminoir`, etc",
       "parameter" : "- `-u` or `-uid`\nDecide ID of unit\n- `-l` or `-len`\nDecide number of forms of this unit\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of this unit, must provide same number with number of forms. `,` is separator\n- `-lv`\nSet level of this unit\n- `-p` or `-proc`\nAdd data of chance-related abilities\n- `-a` or `-abil`\nAdd data of passive abilities\n- `-t` or `-trait`\nAdd data of trait\n- `-c` or `-cell`\nAdd data which required to be analyzed\n- `-apk`\nUse analyzed apk data, so that you won't need to send raw files tediously\n- `-en/tw/kr/jp`\nDecide BC version which you will use, it will be used only when `-apk` is turned on",
       "passive" : "Format : `{index, text} <int, string>`\n\nUse this parameter when bot can't handle specific new passive ability",
@@ -1936,21 +1936,21 @@
     },
     "suggest" : {
       "description" : "あなたの提案やPackPackのバグを直接開発者に送信します。 提案/レポートごとに1時間のクールダウンがあります。",
-      "exam" : "`p!suggest Xの機能をメンバーに使用できるようにすることはできますか？`\n`p!suggest Xという機能を追加してほしい -d Yをしているときに有用だと思います。`",
+      "example" : "`p!suggest Xの機能をメンバーに使用できるようにすることはできますか？`\n`p!suggest Xという機能を追加してほしい -d Yをしているときに有用だと思います。`",
       "parameter" : "- `-d`\nあなたの提案/レポートについての説明を追加してください。",
       "tip" : "このコマンドを使用すると、**ボットは提案した内容をDM経由で開発者に直接送信します!**  __このコマンドを悪用すると、提案が永久に禁止されます__ この機能は、ユーザーからの有意義なフィードバックのために実装されているため、スパムのケースが多すぎる場合、この機能は将来削除される可能性があります。",
       "usage" : "`p!suggest [提案]`"
     },
     "tPlot" : {
       "description" : "Draw graph image with provided x(t), y(t) functions and range data. `tp` is also valid command",
-      "exam" : "`p!tp -xt sin(t) -yt cos(t) -tr [0, 2 * pi]`\n`p!tp -xt 2 * cos(t) + sin(2t) * cos(60t) -yt sin(2t) + sin(60t) -tr [0, 2 * pi] -r`",
+      "example" : "`p!tp -xt sin(t) -yt cos(t) -tr [0, 2 * pi]`\n`p!tp -xt 2 * cos(t) + sin(2t) * cos(60t) -yt sin(2t) + sin(60t) -tr [0, 2 * pi] -r`",
       "parameter" : "- `-xt`\nDefine x(t)\n- `-yt`\nDefine y(t)\n- `-tr`\nDecide T range, must be wrapped with square brackets(`[]`)\n- `-r` or `-ratio`\nKeep ratio between X range and Y range 1:1",
       "tip" : "When you writing t range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it. Default x range is `[-5, 5]` if not specified",
       "usage" : "`p!tplot [-xt X Function] [-yt Y Function]`"
     },
     "talentAnalyzer" : {
       "description" : "Analyze talent data of specified unit from apk file, and upload image of analysis. **Only Trusted users can use this command.** `tala`, `ta` are also valid command",
-      "exam" : "`p!ta -u 534`\n`p!ta -u 417 -n Subterra Sentinels`",
+      "example" : "`p!ta -u 534`\n`p!ta -u 417 -n Subterra Sentinels`",
       "parameter" : "- `-u` or `-uid`\nDecide ID of unit\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of this unit\n- `-en/tw/kr/jp`\nDecide BC version which you will use",
       "usage" : "`p!talentanalyzer -u [Unit ID]`"
     },
@@ -1961,7 +1961,7 @@
     },
     "timezone" : {
       "description" : "Register your timezone, so bot can consider your time when using some commands. Timezone relies on GMT format. For example, if you passed 3, then it means GMT+3. If you passed -2, then it means GMT-2. Timezone range is from -12 to 12. `tz` is also valid command",
-      "exam" : "`p!tz 3`\n`p!tz -10`",
+      "example" : "`p!tz 3`\n`p!tz -10`",
       "usage" : "`p!timezone [Time]`"
     },
     "treasure" : {
@@ -1971,7 +1971,7 @@
     },
     "trueFormAnalyzer" : {
       "description" : "Analyze stats of unit's true form from raw files and upload stat image with analyzed data. **This command brings quite heavy process and required basic knowledge of data mining of BC, so only trusted can use this command.** `tfanalyzer`, 'trueforma', 'tfa' are also valid command",
-      "exam" : "`p!tfa -u 665 -s -lv 50 -n Exorcist Cat -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
+      "example" : "`p!tfa -u 665 -s -lv 50 -n Exorcist Cat -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
       "parameter" : "- `-u` or `-uid`\nDecide ID of unit\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of this unit, must provide same number with number of forms. `,` is separator\n- `-lv`\nSet level of this unit\n- `-p` or `-proc`\nAdd data of chance-related abilities\n- `-a` or `-abil`\nAdd data of passive abilities\n- `-t` or `-trait`\nAdd data of trait\n- `-c` or `-cell`\nAdd data which required to be analyzed\n- `-apk`\nUse analyzed apk data, so that you won't need to send raw files tediously\n- `-en/tw/kr/jp`\nDecide BC version which you will use, it will be used only when `-apk` is turned on",
       "tip" : "This will be the most complicated command and requires basic knowledge of data mining, and access to BC files. I made bot able to handle new data which bot can't catch as possible as I can\n\nIndex starts from 0. This index here means index of values in stat file\n\nData set must be wrapped with {} (i.e. {1, Test Trait})\n\nArrays must be wrapped with [] (i.e. [1,2,3], [t,t,f])\n\nIf array requires boolean data, you don't need to put full `true` or `false`. Just put `t` for `true`, and `f` for `false`, so you can reduce command writing time",
       "usage" : "`p!trueformanalyzer -u [Unit ID]`"
@@ -1983,6 +1983,10 @@
     "unsubscribeScamLinkDetector" : {
       "description" : "Unsubscribe from feature of bot, which detects scam link automatically and auto-moderate users who sent these kinds of links. **Only moderators can use this command**. `usld` or `usd` are also valid command",
       "usage" : "`p!unsubscribescamlinkdetector`"
+    },
+    "watchDM" : {
+      "description" : "Detect users sending potential compromised link to the bot's DM. **Only moderators can use this command.** `wd` is also valid command",
+      "usage" : "_watchdm"
     }
   },
   "hi" : {
