@@ -112,11 +112,7 @@ public class LangID {
                 }
             }
 
-            for(String key : EN_OBJ.keySet()) {
-                if (!target.has(key)) {
-                    System.out.println(key);
-                }
-            }
+            findMissingTexts("", EN_OBJ, target);
 
             System.out.println("------------------------");
         }
@@ -171,5 +167,27 @@ public class LangID {
         }
 
         return p.getAsString();
+    }
+
+    private static void findMissingTexts(String currentPath, JsonObject en, JsonObject target) {
+        for (String key : en.keySet()) {
+            JsonElement e = en.get(key);
+
+            if (!target.has(key)) {
+                if (e instanceof JsonObject) {
+                    System.out.println("O : " + currentPath + key);
+                } else {
+                    System.out.println("E : " + currentPath + key);
+                }
+            }
+
+            JsonElement te = target.get(key);
+
+            if (e instanceof JsonObject obj && te instanceof JsonObject tObj) {
+                findMissingTexts(currentPath + key + ".", obj, tObj);
+            } else if (e instanceof JsonObject || te instanceof JsonObject) {
+                throw new IllegalStateException("E/LangID::findMissingTexts - Desynced tag found : " + currentPath + key);
+            }
+        }
     }
 }
