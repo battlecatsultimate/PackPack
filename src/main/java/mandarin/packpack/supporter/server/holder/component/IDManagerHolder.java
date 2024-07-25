@@ -309,12 +309,12 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                             .append("** : ");
 
                     if(ids[i] == null) {
-                        result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
+                        result.append(LangID.getStringByID(i == 1 ? "data.everyone" : "data.none", lang));
                     } else {
                         Role r = getRoleSafelyWithID(ids[i]);
 
                         if (r == null) {
-                            result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
+                            result.append(LangID.getStringByID(i == 1 ? "data.everyone" : "data.none", lang));
                         } else {
                             result.append(r.getId())
                                     .append(" [")
@@ -330,7 +330,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
                     if (holder.ID.isEmpty()) {
                         result.append(" : ")
-                                .append(LangID.getStringByID("data_none", lang));
+                                .append(LangID.getStringByID("data.none", lang));
                     } else {
                         result.append("\n\n");
 
@@ -371,7 +371,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                             .append("** : ");
 
                     if (holder.announceChannel == null)
-                        result.append(LangID.getStringByID("data_none", lang));
+                        result.append(LangID.getStringByID("data.none", lang));
                     else {
                         GuildChannel ch = getChannelSafelyWithID(holder.announceChannel);
 
@@ -403,7 +403,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                             .append("** : ");
 
                     if (holder.logDM == null)
-                        result.append(LangID.getStringByID("data_none", lang));
+                        result.append(LangID.getStringByID("data.none", lang));
                     else {
                         GuildChannel ch = getChannelSafelyWithID(holder.logDM);
 
@@ -465,7 +465,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
             if(holder.ID.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+            builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
         }
 
         return builder.toString();
@@ -517,9 +517,9 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 );
                 case 7 -> {
                     if(holder.publish) {
-                        components.add(ActionRow.of(Button.secondary("announcePost", String.format(LangID.getStringByID("idset_announcepost", lang), LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                        components.add(ActionRow.of(Button.secondary("announcePost", String.format(LangID.getStringByID("idset_announcepost", lang), LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON)));
                     } else {
-                        components.add(ActionRow.of(Button.secondary("announcePost", String.format(LangID.getStringByID("idset_announcepost", lang), LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                        components.add(ActionRow.of(Button.secondary("announcePost", String.format(LangID.getStringByID("idset_announcepost", lang), LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                     }
                 }
                 case 8 -> components.add(
@@ -536,19 +536,19 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
         List<ActionComponent> pages = new ArrayList<>();
 
         if(page == 0) {
-            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+            pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+            pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
         } else if((page + 1) * 3 >= PAGE_SIZE) {
-            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS));
-            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT).asDisabled());
+            pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS));
+            pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT).asDisabled());
         } else {
-            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS));
-            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+            pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS));
+            pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
         }
 
         components.add(ActionRow.of(pages));
 
-        components.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("button_confirm", lang))));
+        components.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("ui.button.confirm", lang))));
 
         return components;
     }
@@ -591,20 +591,20 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
             List<ActionComponent> pages = new ArrayList<>();
 
             if (holder.ID.size() > SearchHolder.PAGE_CHUNK * 10) {
-                pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+                pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
-            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+            pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+            pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
 
             if (holder.ID.size() > SearchHolder.PAGE_CHUNK * 10) {
-                pages.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT).asDisabled());
+                pages.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).asDisabled());
             }
 
             result.add(ActionRow.of(pages));
         }
 
-        result.add(ActionRow.of(Button.primary("back", LangID.getStringByID("button_back", lang))));
+        result.add(ActionRow.of(Button.primary("back", LangID.getStringByID("ui.button.back", lang))));
 
         return result;
     }

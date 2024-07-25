@@ -40,7 +40,7 @@ public class PrintStageEvent extends ConstraintCommand {
             else
                 content = String.valueOf(t);
 
-            ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
+            ch.sendMessage(LangID.getStringByID("printEvent.timeZone", lang).replace("_", content)).queue();
         }
 
         boolean full = isFull(loader.getContent());
@@ -50,13 +50,13 @@ public class PrintStageEvent extends ConstraintCommand {
         if(full && !StaticStore.contributors.contains(u.getId())) {
             full = false;
 
-            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("event.ignoreFull", lang));
         }
 
         Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(getLocale(loader.getContent()), lang, full, isRaw(loader.getContent()), now, t);
 
         if(stage.isEmpty()) {
-            ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("checkEvent.noEvent", lang)).queue();
 
             return;
         }
@@ -77,7 +77,7 @@ public class PrintStageEvent extends ConstraintCommand {
                 if(!started) {
                     started = true;
 
-                    builder.append(LangID.getStringByID("event_stage", lang)).append("\n\n");
+                    builder.append(LangID.getStringByID("event.section.stage", lang)).append("\n\n");
                 }
 
                 if(!initial) {
@@ -87,15 +87,15 @@ public class PrintStageEvent extends ConstraintCommand {
 
                     switch (type) {
                         case DAILY ->
-                                builder.append(LangID.getStringByID("printstage_daily", lang)).append("\n\n```ansi\n");
+                                builder.append(LangID.getStringByID("event.permanentSchedule.daily", lang)).append("\n\n```ansi\n");
                         case WEEKLY ->
-                                builder.append(LangID.getStringByID("printstage_weekly", lang)).append("\n\n```ansi\n");
+                                builder.append(LangID.getStringByID("event.permanentSchedule.weekly", lang)).append("\n\n```ansi\n");
                         case MONTHLY ->
-                                builder.append(LangID.getStringByID("printstage_monthly", lang)).append("\n\n```ansi\n");
+                                builder.append(LangID.getStringByID("event.permanentSchedule.monthly", lang)).append("\n\n```ansi\n");
                         case YEARLY ->
-                                builder.append(LangID.getStringByID("printstage_yearly", lang)).append("\n\n```ansi\n");
+                                builder.append(LangID.getStringByID("event.permanentSchedule.yearly", lang)).append("\n\n```ansi\n");
                         case MISSION ->
-                                builder.append(LangID.getStringByID("event_mission", lang)).append("\n\n```ansi\n");
+                                builder.append(LangID.getStringByID("event.section.mission", lang)).append("\n\n```ansi\n");
                         default -> builder.append("```ansi\n");
                     }
                 } else {

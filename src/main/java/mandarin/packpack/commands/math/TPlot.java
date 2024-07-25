@@ -35,7 +35,7 @@ public class TPlot extends TimedConstraintCommand {
         String xt = getXt(command);
 
         if(xt == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("tplot_noxt", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("tPlot.failed.noFunction.x", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -51,7 +51,7 @@ public class TPlot extends TimedConstraintCommand {
         String yt = getYt(command);
 
         if(yt == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("tplot_noyt", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("tPlot.failed.noFunction.y", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -131,7 +131,7 @@ public class TPlot extends TimedConstraintCommand {
         Object[] plots = ImageDrawing.plotTGraph(coordinates, xRange, yRange, tRange, keepRatio(loader.getContent()), lang);
 
         if(plots == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noImage", lang), loader.getMessage(), a -> a);
         } else {
             sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", loader.getMessage());
         }

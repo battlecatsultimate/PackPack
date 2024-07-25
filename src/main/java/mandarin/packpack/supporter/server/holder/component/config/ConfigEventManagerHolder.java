@@ -62,7 +62,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                     if (!channel.canTalk()) {
                         event.deferReply()
-                                .setContent(LangID.getStringByID("sercon_channelcanttalk", lang))
+                                .setContent(LangID.getStringByID("serverConfig.eventData.cantTalk", lang))
                                 .setAllowedMentions(new ArrayList<>())
                                 .setEphemeral(true)
                                 .queue();
@@ -76,13 +76,13 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 }
             }
             case "additional" -> {
-                TextInput input = TextInput.create("message", LangID.getStringByID("sercon_channeladditionalinput", lang), TextInputStyle.PARAGRAPH)
-                        .setPlaceholder(LangID.getStringByID("sercon_channeladditionalinputplace", lang))
+                TextInput input = TextInput.create("message", LangID.getStringByID("serverConfig.eventData.message", lang), TextInputStyle.PARAGRAPH)
+                        .setPlaceholder(LangID.getStringByID("serverConfig.eventData.typeAdditional", lang))
                         .setRequired(false)
                         .setRequiredRange(0, 500)
                         .build();
 
-                Modal modal = Modal.create("additional", LangID.getStringByID("sercon_channeladditionalmodal", lang))
+                Modal modal = Modal.create("additional", LangID.getStringByID("serverConfig.eventData.additionalMessage", lang))
                         .addActionRow(input)
                         .build();
 
@@ -98,7 +98,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -107,11 +107,11 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -165,19 +165,19 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         switch (locale) {
             case EN -> {
                 emoji = Emoji.fromUnicode("🇺🇸");
-                bcVersion = LangID.getStringByID("sercon_channeleventen", lang);
+                bcVersion = LangID.getStringByID("serverConfig.eventData.version.en", lang);
             }
             case JP -> {
                 emoji = Emoji.fromUnicode("🇯🇵");
-                bcVersion = LangID.getStringByID("sercon_channeleventjp", lang);
+                bcVersion = LangID.getStringByID("serverConfig.eventData.version.jp", lang);
             }
             case ZH -> {
                 emoji = Emoji.fromUnicode("🇹🇼");
-                bcVersion = LangID.getStringByID("sercon_channeleventtw", lang);
+                bcVersion = LangID.getStringByID("serverConfig.eventData.version.tw", lang);
             }
             case KR -> {
                 emoji = Emoji.fromUnicode("🇰🇷");
-                bcVersion = LangID.getStringByID("sercon_channeleventkr", lang);
+                bcVersion = LangID.getStringByID("serverConfig.eventData.version.kr", lang);
             }
             default -> throw new IllegalStateException("E/ConfigEventManagerHolder::getComponents - Unknown locale type %s found".formatted(locale));
         }
@@ -185,9 +185,9 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         String sort;
 
         if (holder.eventRaw) {
-            sort = LangID.getStringByID("sercon_channeleventraw", lang);
+            sort = LangID.getStringByID("serverConfig.eventData.sortMethod.raw", lang);
         } else {
-            sort = LangID.getStringByID("sercon_channeleventdate", lang);
+            sort = LangID.getStringByID("serverConfig.eventData.sortMethod.date", lang);
         }
 
         String channel;
@@ -195,32 +195,32 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         if (holder.eventMap.containsKey(locale)) {
             channel = "<#" + holder.eventMap.get(locale) + ">";
         } else {
-            channel = LangID.getStringByID("data_none", lang);
+            channel = LangID.getStringByID("data.none", lang);
         }
 
         String additional;
 
         if (holder.eventMessage.containsKey(locale)) {
-            additional = LangID.getStringByID("sercon_channelcontents", lang);
+            additional = LangID.getStringByID("serverConfig.eventData.info.content.checkBelow", lang);
         } else {
-            additional = LangID.getStringByID("sercon_channelnone", lang);
+            additional = LangID.getStringByID("serverConfig.eventData.info.content.none", lang);
         }
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(LangID.getStringByID("sercon_channeltitle", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_channeleventtit", lang).formatted(Emoji.fromUnicode("🗓️"))).append("\n")
-                .append(LangID.getStringByID("sercon_channeleventmanagedesc", lang)).append("\n\n")
-                .append(LangID.getStringByID("sercon_channeleventbcver", lang).formatted(emoji.getFormatted(), bcVersion)).append("\n")
-                .append(LangID.getStringByID("sercon_channeleventsort", lang).formatted(sort)).append("\n")
-                .append(LangID.getStringByID("sercon_channeleventchannel", lang).formatted(channel)).append("\n")
-                .append(LangID.getStringByID("sercon_channeleventadditional", lang).formatted(additional));
+        builder.append(LangID.getStringByID("serverConfig.channel.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.channel.documentation.eventData.title", lang).formatted(Emoji.fromUnicode("🗓️"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.description", lang)).append("\n\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.version", lang).formatted(emoji.getFormatted(), bcVersion)).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.sortMethod", lang).formatted(sort)).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.channel", lang).formatted(channel)).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.additionalMessage", lang).formatted(additional));
 
         if (holder.eventMessage.containsKey(locale)) {
             String message = holder.eventMessage.get(locale);
 
             builder.append("\n\n```\n")
-                    .append(LangID.getStringByID("sercon_channelmessage", lang))
+                    .append(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang))
                     .append("\n```\n")
                     .append(message)
                     .append("\n\n```\n")
@@ -230,7 +230,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
             if (message.matches("(.+)?(<@&?\\d+>|@everyone|@here)(.+)?")) {
                 Emoji warning = Emoji.fromUnicode("⚠️");
 
-                builder.append("\n\n").append(LangID.getStringByID("sercon_channeleventwarn", lang).formatted(warning, warning));
+                builder.append("\n\n").append(LangID.getStringByID("serverConfig.eventData.info.content.warning", lang).formatted(warning, warning));
             }
         }
 
@@ -251,20 +251,20 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         String sortButton;
 
         if (holder.eventRaw) {
-            sortButton = LangID.getStringByID("sercon_channeleventraw", lang);
+            sortButton = LangID.getStringByID("serverConfig.eventData.sortMethod.raw", lang);
         } else {
-            sortButton = LangID.getStringByID("sercon_channeleventdate", lang);
+            sortButton = LangID.getStringByID("serverConfig.eventData.sortMethod.date", lang);
         }
 
         result.add(ActionRow.of(channelBuilder.build()));
-        result.add(ActionRow.of(Button.secondary("additional", LangID.getStringByID("sercon_channeladditional", lang)).withEmoji(Emoji.fromUnicode("💬"))));
-        result.add(ActionRow.of(Button.secondary("sort", LangID.getStringByID("sercon_channeleventsortbutton", lang).formatted(sortButton)).withEmoji(Emoji.fromUnicode("⚖️"))));
+        result.add(ActionRow.of(Button.secondary("additional", LangID.getStringByID("serverConfig.eventData.setAdditional", lang)).withEmoji(Emoji.fromUnicode("💬"))));
+        result.add(ActionRow.of(Button.secondary("sort", LangID.getStringByID("serverConfig.eventData.setSort", lang).formatted(sortButton)).withEmoji(Emoji.fromUnicode("⚖️"))));
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

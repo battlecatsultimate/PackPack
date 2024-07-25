@@ -41,7 +41,7 @@ public class Solve extends TimedConstraintCommand {
         String[] commands = loader.getContent().split(" ", 2);
 
         if(commands.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_formula", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noFormula", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -58,7 +58,7 @@ public class Solve extends TimedConstraintCommand {
             String[] side = formula.split("=");
 
             if(side.length > 2) {
-                replyToMessageSafely(ch, LangID.getStringByID("solve_wrong", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("solve.failed.invalidFormat", lang), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -120,7 +120,7 @@ public class Solve extends TimedConstraintCommand {
         }
 
         if(targetRanges.isEmpty()) {
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("solve_noroot", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1])), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("solve.noRoot", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1])), loader.getMessage(), a -> a);
 
             return;
         }
@@ -150,7 +150,7 @@ public class Solve extends TimedConstraintCommand {
                 }
             }
 
-            summary = String.format(LangID.getStringByID("solve_successerr", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, Equation.formatNumber(error), getAlgorithmName(ROOT));
+            summary = String.format(LangID.getStringByID("solve.success.error", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, Equation.formatNumber(error), getAlgorithmName(ROOT));
         } else {
             for(int i = 0; i < targetRanges.size(); i++) {
                 NumericalResult result = f.solveByIteration(targetRanges.get(i)[0], targetRanges.get(i)[1], iteration, ROOT, lang);
@@ -167,7 +167,7 @@ public class Solve extends TimedConstraintCommand {
                 }
             }
 
-            summary = String.format(LangID.getStringByID("solve_successiter", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, iteration, getAlgorithmName(ROOT));
+            summary = String.format(LangID.getStringByID("solve.success.iteration", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, iteration, getAlgorithmName(ROOT));
         }
 
         if(!targetRanges.isEmpty() && success == 0) {
@@ -195,7 +195,7 @@ public class Solve extends TimedConstraintCommand {
             if(solutions.size() % 5 != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
         }
 
         sb.append("```");
@@ -295,11 +295,11 @@ public class Solve extends TimedConstraintCommand {
 
     private String getAlgorithmName(Formula.ROOT ROOT) {
         return switch (ROOT) {
-            case NEWTON_RAPHSON -> LangID.getStringByID("calc_newton", lang);
-            case FALSE_POSITION -> LangID.getStringByID("calc_false", lang);
-            case SECANT -> LangID.getStringByID("calc_secant", lang);
-            case BISECTION -> LangID.getStringByID("calc_bisection", lang);
-            case SMART -> LangID.getStringByID("calc_auto", lang);
+            case NEWTON_RAPHSON -> LangID.getStringByID("calculator.algorithm.solve.newtonRaphson", lang);
+            case FALSE_POSITION -> LangID.getStringByID("calculator.algorithm.solve.falsePosition", lang);
+            case SECANT -> LangID.getStringByID("calculator.algorithm.solve.secant", lang);
+            case BISECTION -> LangID.getStringByID("calculator.algorithm.solve.bisection", lang);
+            case SMART -> LangID.getStringByID("calculator.algorithm.solve.auto", lang);
         };
     }
 
@@ -313,7 +313,7 @@ public class Solve extends TimedConstraintCommand {
             NumericalResult solution = solutions.get(i);
 
             result.add(String.format(
-                    LangID.getStringByID("solve_root", lang),
+                    LangID.getStringByID("solve.root", lang),
                     i + 1,
                     Equation.formatNumber(solution.value),
                     Equation.formatNumber(targetRanges.get(i)[0]),
@@ -337,15 +337,15 @@ public class Solve extends TimedConstraintCommand {
             List<Button> buttons = new ArrayList<>();
 
             if(totalPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT));
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
 
             if(totalPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
             }
 
             rows.add(ActionRow.of(buttons));

@@ -33,7 +33,7 @@ public class ConfigChannelHolder extends ServerConfigHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -42,11 +42,11 @@ public class ConfigChannelHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -85,30 +85,30 @@ public class ConfigChannelHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
-        return LangID.getStringByID("sercon_channeltitle", lang) + "\n" +
-                LangID.getStringByID("sercon_channeldesc", lang) + "\n" +
-                LangID.getStringByID("sercon_channeleventtit", lang).formatted(Emoji.fromUnicode("🗓️")) + "\n" +
-                LangID.getStringByID("sercon_channeleventdesc", lang) + "\n" +
-                LangID.getStringByID("sercon_channelanntit", lang).formatted(Emoji.fromUnicode("📢")) + "\n" +
-                LangID.getStringByID("sercon_channelanndesc", lang) + "\n" +
-                LangID.getStringByID("sercon_channelstatustit", lang).formatted(Emoji.fromUnicode("📡")) + "\n" +
-                LangID.getStringByID("sercon_channelstatusdesc", lang) + "\n" +
-                LangID.getStringByID("sercon_channelboosttit", lang).formatted(Emoji.fromUnicode("📌")) + "\n" +
-                LangID.getStringByID("sercon_channelboostdesc", lang);
+        return LangID.getStringByID("serverConfig.channel.documentation.title", lang) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.eventData.title", lang).formatted(Emoji.fromUnicode("🗓️")) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.eventData.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.announcement.title", lang).formatted(Emoji.fromUnicode("📢")) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.announcement.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.status.title", lang).formatted(Emoji.fromUnicode("📡")) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.status.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.boosterPin.title", lang).formatted(Emoji.fromUnicode("📌")) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.boosterPin.description", lang);
     }
 
     private List<LayoutComponent> getComponents() {
         List<LayoutComponent> result = new ArrayList<>();
 
-        result.add(ActionRow.of(Button.secondary("event", LangID.getStringByID("sercon_channeleventbutton", lang)).withEmoji(Emoji.fromUnicode("🗓️"))));
-        result.add(ActionRow.of(Button.secondary("announcement", LangID.getStringByID("sercon_channelannbutton", lang)).withEmoji(Emoji.fromUnicode("📢"))));
-        result.add(ActionRow.of(Button.secondary("status", LangID.getStringByID("sercon_channelstatusbutton", lang)).withEmoji(Emoji.fromUnicode("📡"))));
-        result.add(ActionRow.of(Button.secondary("booster", LangID.getStringByID("sercon_channelboostbutton", lang)).withEmoji(Emoji.fromUnicode("📌"))));
+        result.add(ActionRow.of(Button.secondary("event", LangID.getStringByID("serverConfig.channel.button.eventData", lang)).withEmoji(Emoji.fromUnicode("🗓️"))));
+        result.add(ActionRow.of(Button.secondary("announcement", LangID.getStringByID("serverConfig.channel.button.announcement", lang)).withEmoji(Emoji.fromUnicode("📢"))));
+        result.add(ActionRow.of(Button.secondary("status", LangID.getStringByID("serverConfig.channel.button.status", lang)).withEmoji(Emoji.fromUnicode("📡"))));
+        result.add(ActionRow.of(Button.secondary("booster", LangID.getStringByID("serverConfig.channel.button.boosterPin", lang)).withEmoji(Emoji.fromUnicode("📌"))));
 
         result.add(ActionRow.of(
-                Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
         ));
 
         return result;

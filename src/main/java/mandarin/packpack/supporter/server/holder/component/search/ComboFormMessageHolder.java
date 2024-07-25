@@ -75,7 +75,7 @@ public class ComboFormMessageHolder extends SearchHolder {
             if(combos.isEmpty()) {
                 message.delete().queue();
 
-                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(fName, cName, lang))));
+                createMessageWithNoPings(ch, LangID.getStringByID("combo.failed.noCombo", lang).replace("_", validateKeyword(getSearchKeywords(fName, cName, lang))));
             } else if(combos.size() == 1) {
                 User u = event.getUser();
 
@@ -97,7 +97,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                     StaticStore.logger.uploadErrorLog(e, "E/ComboFormMessageHolder::onSelected - Failed to upload combo embed");
                 }
             } else {
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateCombo(combos);
 
@@ -111,7 +111,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                     if(combos.size() % PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -125,7 +125,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                     if(formName.isBlank())
                         formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
 
-                    message.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
+                    message.editMessage(LangID.getStringByID("combo.selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
 
                     if(res != null) {
                         User u = event.getUser();
@@ -148,7 +148,7 @@ public class ComboFormMessageHolder extends SearchHolder {
         StringBuilder builder = new StringBuilder();
 
         if(cName != null) {
-            builder.append(LangID.getStringByID("data_combo", lang)).append(" : `").append(cName).append("`");
+            builder.append(LangID.getStringByID("data.combo.combo", lang)).append(" : `").append(cName).append("`");
         }
 
         if(fName != null) {
@@ -156,7 +156,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 builder.append(", ");
             }
 
-            builder.append(LangID.getStringByID("data_unit", lang)).append(" : `").append(fName).append("`");
+            builder.append(LangID.getStringByID("data.stage.limit.unit", lang)).append(" : `").append(fName).append("`");
         }
 
         return builder.toString();
@@ -179,9 +179,9 @@ public class ComboFormMessageHolder extends SearchHolder {
             comboName += " | " + DataToString.getComboType(c, lang) + " ";
 
             if(c.forms.length == 1) {
-                comboName += LangID.getStringByID("combo_slot", lang);
+                comboName += LangID.getStringByID("combo.slot.singular", lang);
             } else {
-                comboName += String.format(LangID.getStringByID("combo_slots", lang), c.forms.length);
+                comboName += String.format(LangID.getStringByID("combo.slot.plural", lang), c.forms.length);
             }
 
             data.add(comboName);

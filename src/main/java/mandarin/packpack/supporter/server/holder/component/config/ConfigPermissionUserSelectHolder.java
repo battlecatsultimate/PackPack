@@ -41,7 +41,7 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
                 String id = e.getValues().getFirst().getId();
 
                 if (id.equals(userID)) {
-                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("sercon_permissionuserself", lang)).queue();
+                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("serverConfig.permissionBan.user.cantBan.reason.self", lang)).queue();
 
                     return;
                 }
@@ -49,7 +49,7 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
                 User u = e.getMentions().getUsers().getFirst();
 
                 if (u.isBot()) {
-                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("sercon_permissionuserbot", lang)).queue();
+                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("serverConfig.permissionBan.user.cantBan.reason.bot", lang)).queue();
 
                     return;
                 }
@@ -58,7 +58,7 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
             }
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -67,11 +67,11 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -111,9 +111,9 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
-        return LangID.getStringByID("sercon_permission", lang) + "\n" +
-                LangID.getStringByID("sercon_permissionmanage", lang).formatted(Emoji.fromUnicode("🔧")) + "\n" +
-                LangID.getStringByID("sercon_permissiondeactivateuser", lang);
+        return LangID.getStringByID("serverConfig.permission.documentation.title", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.permissionBan.title", lang).formatted(Emoji.fromUnicode("🔧")) + "\n" +
+                LangID.getStringByID("serverConfig.permissionBan.description", lang);
     }
 
     private List<LayoutComponent> getComponents() {
@@ -121,16 +121,16 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
 
         result.add(ActionRow.of(
                 EntitySelectMenu.create("user", EntitySelectMenu.SelectTarget.USER)
-                        .setPlaceholder(LangID.getStringByID("sercon_permissiondeactivateselect", lang))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.permissionBan.selectUser", lang))
                         .setRequiredRange(1, 1)
                         .build()
         ));
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

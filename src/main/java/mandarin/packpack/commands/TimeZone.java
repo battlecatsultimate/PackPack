@@ -21,13 +21,13 @@ public class TimeZone extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("timezone_noval", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("timeZone.failed.noValue", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            replyToMessageSafely(ch, LangID.getStringByID("timezone_notnum", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("timeZone.failed.notNumber", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -39,9 +39,9 @@ public class TimeZone extends ConstraintCommand {
         StaticStore.timeZones.put(u.getId(), timeZone);
 
         if(timeZone >= 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("timezone_done", lang).replace("_", "+" + timeZone), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("timeZone.done", lang).replace("_", "+" + timeZone), loader.getMessage(), a -> a);
         } else {
-            replyToMessageSafely(ch, LangID.getStringByID("timezone_done", lang).replace("_", String.valueOf(timeZone)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("timeZone.done", lang).replace("_", String.valueOf(timeZone)), loader.getMessage(), a -> a);
         }
     }
 }

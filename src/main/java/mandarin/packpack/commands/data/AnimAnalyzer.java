@@ -117,7 +117,7 @@ public class AnimAnalyzer extends ConstraintCommand {
                     return;
                 }
 
-                mixer.anim[i] = MaAnim.newIns(maanim.getData());
+                mixer.anim[i] = MaAnim.newIns(maanim.getData(), false);
             }
 
             mixer.buildPng(new File(workspace, "NumberLocal/"+animCode+".png"));

@@ -38,42 +38,42 @@ public class Treasure extends ConstraintCommand {
         StringBuilder generator = new StringBuilder();
 
         generator.append("**")
-                .append(LangID.getStringByID("data_tbasic", lang))
+                .append(LangID.getStringByID("data.treasure.upgrades.title", lang))
                 .append("**\n\n");
 
         for(int i = 0; i < TreasureHolder.basicText.length; i++) {
             generator.append(LangID.getStringByID(TreasureHolder.basicText[i], lang))
-                    .append(String.format(LangID.getStringByID("treasure_level", lang), treasure.basic[i]))
+                    .append(String.format(LangID.getStringByID("treasure.value.level", lang), treasure.basic[i]))
                     .append("\n");
         }
 
         generator.append("\n**")
-                .append(LangID.getStringByID("data_teoc", lang))
+                .append(LangID.getStringByID("data.treasure.eoc.title", lang))
                 .append("**\n\n");
 
         for(int i = 0; i < TreasureHolder.eocText.length; i++) {
             generator.append(LangID.getStringByID(TreasureHolder.eocText[i], lang))
-                    .append(String.format(LangID.getStringByID("treasure_percent", lang), treasure.eoc[i]))
+                    .append(String.format(LangID.getStringByID("treasure.value.percent", lang), treasure.eoc[i]))
                     .append("\n");
         }
 
         generator.append("\n**")
-                .append(LangID.getStringByID("data_titf", lang))
+                .append(LangID.getStringByID("data.treasure.itf.title", lang))
                 .append("**\n\n");
 
         for(int i = 0; i < TreasureHolder.itfText.length; i++) {
             generator.append(LangID.getStringByID(TreasureHolder.itfText[i], lang))
-                    .append(String.format(LangID.getStringByID("treasure_percent", lang), treasure.itf[i]))
+                    .append(String.format(LangID.getStringByID("treasure.value.percent", lang), treasure.itf[i]))
                     .append("\n");
         }
 
         generator.append("\n**")
-                .append(LangID.getStringByID("data_tcotc", lang))
+                .append(LangID.getStringByID("data.treasure.cotc.title", lang))
                 .append("**\n\n");
 
         for(int i = 0; i < TreasureHolder.cotcText.length; i++) {
             generator.append(LangID.getStringByID(TreasureHolder.cotcText[i], lang))
-                    .append(String.format(LangID.getStringByID("treasure_percent", lang), treasure.cotc[i]))
+                    .append(String.format(LangID.getStringByID("treasure.value.percent", lang), treasure.cotc[i]))
                     .append("\n");
         }
 
@@ -82,11 +82,11 @@ public class Treasure extends ConstraintCommand {
 
     private MessageCreateAction attachUIComponents(MessageCreateAction a) {
         return a.setComponents(
-                ActionRow.of(Button.secondary("basic", LangID.getStringByID("treasure_basic", lang)).withEmoji(EmojiStore.ORB)),
-                ActionRow.of(Button.secondary("eoc", LangID.getStringByID("treasure_eoc", lang)).withEmoji(EmojiStore.DOGE)),
-                ActionRow.of(Button.secondary("itf", LangID.getStringByID("treasure_itf", lang)).withEmoji(EmojiStore.SHIBALIEN)),
-                ActionRow.of(Button.secondary("cotc", LangID.getStringByID("treasure_cotc", lang)).withEmoji(EmojiStore.SHIBALIENELITE)),
-                ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
+                ActionRow.of(Button.secondary("basic", LangID.getStringByID("treasure.adjust.basicLevels", lang)).withEmoji(EmojiStore.ORB)),
+                ActionRow.of(Button.secondary("eoc", LangID.getStringByID("treasure.adjust.EoC", lang)).withEmoji(EmojiStore.DOGE)),
+                ActionRow.of(Button.secondary("itf", LangID.getStringByID("treasure.adjust.ItF", lang)).withEmoji(EmojiStore.SHIBALIEN)),
+                ActionRow.of(Button.secondary("cotc", LangID.getStringByID("treasure.adjust.CotC", lang)).withEmoji(EmojiStore.SHIBALIENELITE)),
+                ActionRow.of(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)), Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)))
         );
     }
 }

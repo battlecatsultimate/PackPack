@@ -70,7 +70,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
         int uid = getUID(command);
 
         if(uid == -1) {
-            ch.sendMessage(LangID.getStringByID("stat_uid", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.noUnitID", lang)).queue();
 
             return;
         }
@@ -85,7 +85,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
         } else if(name.length != 1) {
             int nLen = name.length;
 
-            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", 1+"").replace("_PPP_", String.valueOf(nLen))).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.notEnoughName", lang).replace("_RRR_", 1+"").replace("_PPP_", String.valueOf(nLen))).queue();
 
             return;
         }
@@ -186,7 +186,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 return;
             }
 
-            MaAnim ma = MaAnim.newIns(anim.getData());
+            MaAnim ma = MaAnim.newIns(anim.getData(), false);
 
             statReader.readLine();
             statReader.readLine();

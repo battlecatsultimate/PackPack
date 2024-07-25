@@ -58,7 +58,7 @@ public class Music extends GlobalTimedConstraintCommand {
 
             event.deferReply()
                     .setAllowedMentions(new ArrayList<>())
-                    .setContent(LangID.getStringByID("music_upload", lang).replace("_", Data.trio(ms.id.id)))
+                    .setContent(LangID.getStringByID("music.uploaded", lang).replace("_", Data.trio(ms.id.id)))
                     .addFiles(FileUpload.fromData(file, Data.trio(ms.id.id) + ".ogg"))
                     .queue(m -> {
                         if(file.exists() && !file.delete()) {
@@ -76,7 +76,7 @@ public class Music extends GlobalTimedConstraintCommand {
 
     private static final String NOT_NUMBER = "notNumber";
     private static final String OUT_RANGE = "outRange";
-    private static final String ARGUMENT = "arguments";
+    private static final String ARGUMENT = "parameters";
 
     private common.util.stage.Music ms;
 
@@ -155,7 +155,7 @@ public class Music extends GlobalTimedConstraintCommand {
 
             MessageChannel ch = loader.getChannel();
 
-            sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", loader.getMessage());
+            sendMessageWithFile(ch, LangID.getStringByID("music.uploaded", lang).replace("_", optionalID), file, optionalID + ".ogg", loader.getMessage());
         } else if(ms == null) {
             int id = StaticStore.safeParseInt(optionalID);
 
@@ -184,7 +184,7 @@ public class Music extends GlobalTimedConstraintCommand {
 
             MessageChannel ch = loader.getChannel();
 
-            sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", loader.getMessage());
+            sendMessageWithFile(ch, LangID.getStringByID("music.uploaded", lang).replace("_", optionalID), file, optionalID + ".ogg", loader.getMessage());
         }
     }
 
@@ -193,10 +193,10 @@ public class Music extends GlobalTimedConstraintCommand {
         MessageChannel ch = loader.getChannel();
 
         switch (optionalID) {
-            case NOT_NUMBER -> ch.sendMessage(LangID.getStringByID("music_number", lang)).queue();
+            case NOT_NUMBER -> ch.sendMessage(LangID.getStringByID("music.fail.notNumber", lang)).queue();
             case OUT_RANGE ->
-                    ch.sendMessage(LangID.getStringByID("music_outrange", lang).replace("_", String.valueOf(UserProfile.getBCData().musics.getList().size() - 1))).queue();
-            case ARGUMENT -> ch.sendMessage(LangID.getStringByID("music_argu", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("music.fail.outOfRange", lang).replace("_", String.valueOf(UserProfile.getBCData().musics.getList().size() - 1))).queue();
+            case ARGUMENT -> ch.sendMessage(LangID.getStringByID("music.fail.noParameter", lang)).queue();
         }
     }
 }

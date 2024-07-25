@@ -49,9 +49,9 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
         if(!vf.getName().equals("org")) {
             if(onText) {
-                result.add(LangID.getStringByID("asset_goup", lang));
+                result.add(LangID.getStringByID("assetBrowser.parentFolder", lang));
             } else {
-                result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("asset_goup", lang));
+                result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
             }
         }
 
@@ -149,7 +149,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             fos.close();
             stream.close();
 
-            Command.sendMessageWithFile(ch, LangID.getStringByID("asset_file", lang).replace("_", file.getName()), f, file.getName());
+            Command.sendMessageWithFile(ch, LangID.getStringByID("assetBrowser.uploaded", lang).replace("_", file.getName()), f, file.getName());
 
             message.delete().queue();
         } catch (Exception e) {
@@ -204,12 +204,12 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     @Override
     protected String getPage() {
-        StringBuilder builder = new StringBuilder(LangID.getStringByID("asset_current", lang).replace("_", vf.getPath()))
+        StringBuilder builder = new StringBuilder(LangID.getStringByID("assetBrowser.currentPath", lang).replace("_", vf.getPath()))
                 .append("\n\n```md\n");
 
         List<String> data = accumulateListData(true);
 
-        builder.append(LangID.getStringByID("formst_pick", lang));
+        builder.append(LangID.getStringByID("ui.search.selectData", lang));
 
         for(int i = 0; i < data.size(); i++) {
             if(!vf.getName().equals("org")) {
@@ -229,7 +229,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             if(files.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
+            builder.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         builder.append("```");

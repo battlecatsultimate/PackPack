@@ -39,7 +39,7 @@ public class PrintItemEvent extends ConstraintCommand {
             else
                 content = String.valueOf(t);
 
-            ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
+            ch.sendMessage(LangID.getStringByID("printEvent.timeZone", lang).replace("_", content)).queue();
         }
 
         boolean full = isFull(loader.getContent());
@@ -49,13 +49,13 @@ public class PrintItemEvent extends ConstraintCommand {
         if(full && !StaticStore.contributors.contains(u.getId())) {
             full = false;
 
-            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("event.ignoreFull", lang));
         }
 
         List<String> result = StaticStore.event.printItemEvent(getLocale(loader.getContent()), lang, full, isRaw(loader.getContent()), now, t);
 
         if(result.isEmpty()) {
-            ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("checkEvent.noEvent", lang)).queue();
 
             return;
         }
@@ -68,7 +68,7 @@ public class PrintItemEvent extends ConstraintCommand {
             if(!started) {
                 started = true;
 
-                builder.append(LangID.getStringByID("event_item", lang)).append("\n\n");
+                builder.append(LangID.getStringByID("event.section.item", lang)).append("\n\n");
             }
 
             builder.append("```ansi\n");

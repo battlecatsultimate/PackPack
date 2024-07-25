@@ -1306,7 +1306,7 @@ public class StaticStore {
 
                 PackBot.statusMessage.queue(msg -> {
                     if (msg.getJDA().getSelfUser().getId().equals(msg.getAuthor().getId())) {
-                        msg.editMessage(LangID.getStringByID("stat_info", CommonStatic.Lang.Locale.EN)
+                        msg.editMessage(LangID.getStringByID("stat.info", CommonStatic.Lang.Locale.EN)
                                 .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
                                 .replace("_CCC_", String.valueOf(StaticStore.executed))
                                 .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +

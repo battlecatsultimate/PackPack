@@ -113,7 +113,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
                 return;
             }
 
-            MaAnim ma = MaAnim.newIns(vf.getData());
+            MaAnim ma = MaAnim.newIns(vf.getData(), false);
 
             units[i] = new CustomMaskUnit(statReader.readLine().split(","), curve, ma, rare);
         }

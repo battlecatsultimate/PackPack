@@ -52,11 +52,11 @@ public class LogOut extends ConstraintCommand {
                 String self = ch.getJDA().getSelfUser().getAsMention();
 
                 String code = switch (contents[1]) {
-                    case "-b" -> "bot_bug";
-                    case "-a" -> "bot_api";
-                    case "-p" -> "bot_end";
-                    case "-m" -> "bot_maintenance";
-                    default -> "bot_update";
+                    case "-b" -> "bot.status.offline.reason.bug";
+                    case "-a" -> "bot.status.offline.reason.api";
+                    case "-p" -> "bot.status.offline.reason.endOfService";
+                    case "-m" -> "bot.status.offline.reason.maintenance";
+                    default -> "bot.status.offline.reason.update";
                 };
 
                 for (String key : StaticStore.idHolder.keySet()) {
@@ -77,7 +77,7 @@ public class LogOut extends ConstraintCommand {
                             if (!(c instanceof MessageChannel) || !((MessageChannel) c).canTalk())
                                 continue;
 
-                            String fullMessage = String.format(LangID.getStringByID("bot_offline", id.config.lang), self, LangID.getStringByID(code, id.config.lang));
+                            String fullMessage = String.format(LangID.getStringByID("bot.status.offline.format", id.config.lang), self, LangID.getStringByID(code, id.config.lang));
 
                             AtomicBoolean running = new AtomicBoolean(true);
 

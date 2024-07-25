@@ -43,28 +43,28 @@ public class FormSprite extends TimedConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length == 1) {
-            replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("formImage.fail.noParameter", lang), loader.getMessage(), a -> a);
         } else {
             String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formImage.fail.noParameter", lang), loader.getMessage(), a -> a);
                 return;
             }
 
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, false, lang);
 
             if(forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameter(loader.getContent());
 
                 EntityHandler.getFormSprite(forms.getFirst(), ch, loader.getMessage(), getModeFromParam(param), lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateData(forms);
 
@@ -78,7 +78,7 @@ public class FormSprite extends TimedConstraintCommand {
                     if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");

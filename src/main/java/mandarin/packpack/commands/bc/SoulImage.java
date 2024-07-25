@@ -40,7 +40,7 @@ public class SoulImage extends TimedConstraintCommand {
         int id = findSoulID(loader.getContent());
 
         if(id == -1) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noParameter", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -48,7 +48,7 @@ public class SoulImage extends TimedConstraintCommand {
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", String.valueOf(soulLen - 1)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.outOfRange", lang).replace("_", String.valueOf(soulLen - 1)), loader.getMessage(), a -> a);
 
             disableTimer();
 
@@ -58,7 +58,7 @@ public class SoulImage extends TimedConstraintCommand {
         Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_nosoul", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("soul.failed.noSoul", lang));
 
             disableTimer();
 
@@ -89,12 +89,12 @@ public class SoulImage extends TimedConstraintCommand {
         if(img != null) {
             sendMessageWithFile(
                     ch,
-                    LangID.getStringByID("soulimg_result", lang).replace("_", Data.trio(s.getID().id)).replace("-", String.valueOf(frame)),
+                    LangID.getStringByID("soulImage.result", lang).replace("_", Data.trio(s.getID().id)).replace("-", String.valueOf(frame)),
                     img,
                     loader.getMessage()
             );
         } else {
-            createMessageWithNoPings(ch, LangID.getStringByID("soulimg_fail", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("soulImage.failed.unknown", lang));
 
             disableTimer();
         }

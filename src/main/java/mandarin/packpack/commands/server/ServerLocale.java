@@ -35,14 +35,14 @@ public class ServerLocale extends ConstraintCommand {
         Emoji emoji;
 
         if (holder.config.lang == null) {
-            localeName = LangID.getStringByID("locale_server", lang);
+            localeName = LangID.getStringByID("bot.language.auto", lang);
             emoji = Emoji.fromUnicode("⚙️");
         } else {
-            localeName = LangID.getStringByID("lang_" + holder.config.lang.code, lang);
+            localeName = LangID.getStringByID("bot.language." + holder.config.lang.code, lang);
             emoji = Emoji.fromUnicode(StaticStore.langUnicode[lang.ordinal()]);
         }
 
-        replyToMessageSafely(ch, LangID.getStringByID("locale_select", holder.config.lang).formatted(emoji, localeName), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
+        replyToMessageSafely(ch, LangID.getStringByID("locale.select", holder.config.lang).formatted(emoji, localeName), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
             StaticStore.putHolder(loader.getUser().getId(), new LocaleSettingHolder(loader.getMessage(), ch.getId(), msg, holder.config, holder, true, lang))
         );
     }
@@ -58,19 +58,19 @@ public class ServerLocale extends ConstraintCommand {
         for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
             Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
-            localeOptions.add(SelectOption.of(LangID.getStringByID("lang_" + locale.code, holder.config.lang), locale.name()).withEmoji(emoji).withDefault(holder.config.lang == locale));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("bot.language." + locale.code, holder.config.lang), locale.name()).withEmoji(emoji).withDefault(holder.config.lang == locale));
         }
         
         result.add(ActionRow.of(
                 StringSelectMenu.create("locale")
                         .addOptions(localeOptions)
-                        .setPlaceholder(LangID.getStringByID("locale_placeholder", holder.config.lang))
+                        .setPlaceholder(LangID.getStringByID("locale.selectList", holder.config.lang))
                         .setRequiredRange(1, 1)
                         .build()
         ));
         
         result.add(ActionRow.of(
-                Button.primary("confirm", LangID.getStringByID("button_confirm", holder.config.lang))
+                Button.primary("confirm", LangID.getStringByID("ui.button.confirm", holder.config.lang))
         ));
         
         return result;

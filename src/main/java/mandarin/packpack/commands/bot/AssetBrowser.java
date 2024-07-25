@@ -37,17 +37,17 @@ public class AssetBrowser extends ConstraintCommand {
         VFile vf = VFile.get("./org");
 
         if(vf == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("asset_no", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("assetBrowser.failed.noAsset", lang));
 
             return;
         }
 
         List<String> data = accumulateData(vf, false);
 
-        StringBuilder builder = new StringBuilder(LangID.getStringByID("asset_current", lang).replace("_", "./org"))
+        StringBuilder builder = new StringBuilder(LangID.getStringByID("assetBrowser.currentPath", lang).replace("_", "./org"))
                 .append("\n\n```md\n");
 
-        builder.append(LangID.getStringByID("formst_pick", lang));
+        builder.append(LangID.getStringByID("ui.search.selectData", lang));
 
         for(int i = 0; i < data.size(); i++) {
             builder.append(i + 1).append(". ").append(data.get(i)).append("\n");
@@ -59,7 +59,7 @@ public class AssetBrowser extends ConstraintCommand {
             if(data.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+            builder.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
         }
 
         builder.append("```");

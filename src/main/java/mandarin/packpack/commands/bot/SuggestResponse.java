@@ -64,7 +64,7 @@ public class SuggestResponse extends ConstraintCommand {
                 MessageEmbed embed = emb.getEmbeds().getFirst();
 
                 EmbedBuilder builder = new EmbedBuilder()
-                        .setTitle(LangID.getStringByID("response_title", lang))
+                        .setTitle(LangID.getStringByID("suggest.response.title", lang))
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
                 MessageEmbed.AuthorInfo info = embed.getAuthor();
@@ -77,7 +77,7 @@ public class SuggestResponse extends ConstraintCommand {
                 User user = client.getUserById(contents[3]);
 
                 if(user != null) {
-                    builder.setFooter(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", user.getEffectiveName()), user.getAvatarUrl());
+                    builder.setFooter(LangID.getStringByID("suggest.response.author", lang).replace("_UUU_", user.getEffectiveName()), user.getAvatarUrl());
 
                     user.openPrivateChannel()
                             .flatMap(pc -> pc.sendMessageEmbeds(builder.build()))

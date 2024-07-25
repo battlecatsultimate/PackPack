@@ -47,9 +47,9 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                     return;
                 
                 switch (es.getValues().getFirst()) {
-                    case "mute" -> action = ScamLinkHandler.ACTION.MUTE;
-                    case "kick" -> action = ScamLinkHandler.ACTION.KICK;
-                    case "ban" -> action = ScamLinkHandler.ACTION.BAN;
+                    case "scamDetector.action.mute" -> action = ScamLinkHandler.ACTION.MUTE;
+                    case "scamDetector.action.kick" -> action = ScamLinkHandler.ACTION.KICK;
+                    case "scamDetector.action.ban" -> action = ScamLinkHandler.ACTION.BAN;
                 }
                 
                 event.deferEdit()
@@ -80,7 +80,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
 
                     StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
 
-                    Command.replyToMessageSafely(ch, LangID.getStringByID("subscam_done", lang).replace("_", targetChannel), message, a -> a);
+                    Command.replyToMessageSafely(ch, LangID.getStringByID("subscribeScamDetector.done", lang).replace("_", targetChannel), message, a -> a);
 
                     event.deferEdit()
                             .setContent(parseMessage())
@@ -88,7 +88,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                             .queue();
                 } else {
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("subscam_nomute", lang))
+                            .setContent(LangID.getStringByID("subscribeScamDetector.failed.noMuteRole", lang))
                             .setComponents()
                             .queue();
                 }
@@ -97,7 +97,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                 expired = true;
                 StaticStore.removeHolder(userID, this);
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("subscam_cancel", lang))
+                        .setContent(LangID.getStringByID("subscribeScamDetector.canceled", lang))
                         .setComponents()
                         .queue();
             }
@@ -113,22 +113,22 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        message.editMessage(LangID.getStringByID("subscam_expire", lang)).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
+        message.editMessage(LangID.getStringByID("subscribeScamDetector.expired", lang)).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
     }
 
     private String parseMessage() {
-        String result = LangID.getStringByID("subscam_before", lang) + "\n\n";
+        String result = LangID.getStringByID("subscribeScamDetector.decision.explanation", lang) + "\n\n";
 
         switch (action) {
-            case MUTE -> result += LangID.getStringByID("subscam_actionmute", lang) + "\n\n";
-            case KICK -> result += LangID.getStringByID("subscam_actionkick", lang) + "\n\n";
-            case BAN -> result += LangID.getStringByID("subscam_actionban", lang) + "\n\n";
+            case MUTE -> result += LangID.getStringByID("subscribeScamDetector.decision.mute", lang) + "\n\n";
+            case KICK -> result += LangID.getStringByID("subscribeScamDetector.decision.kick", lang) + "\n\n";
+            case BAN -> result += LangID.getStringByID("subscribeScamDetector.decision.ban", lang) + "\n\n";
         }
 
         if(noticeAll) {
-            result += LangID.getStringByID("subscam_noticeall", lang);
+            result += LangID.getStringByID("subscribeScamDetector.notice.allUsers", lang);
         } else {
-            result += LangID.getStringByID("subscam_noticex", lang);
+            result += LangID.getStringByID("subscribeScamDetector.notice.onlyMember", lang);
         }
 
         return result;
@@ -140,21 +140,21 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
         List<SelectOption> options = new ArrayList<>();
 
         if(action == ScamLinkHandler.ACTION.MUTE) {
-            options.add(SelectOption.of(LangID.getStringByID("mute", lang), "mute").withDefault(true));
+            options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.mute", lang), "scamDetector.action.mute").withDefault(true));
         } else {
-            options.add(SelectOption.of(LangID.getStringByID("mute", lang), "mute"));
+            options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.mute", lang), "scamDetector.action.mute"));
         }
 
         if(action == ScamLinkHandler.ACTION.KICK) {
-            options.add(SelectOption.of(LangID.getStringByID("kick", lang), "kick").withDefault(true));
+            options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.kick", lang), "scamDetector.action.kick").withDefault(true));
         } else {
-            options.add(SelectOption.of(LangID.getStringByID("kick", lang), "kick"));
+            options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.kick", lang), "scamDetector.action.kick"));
         }
 
         if(action == ScamLinkHandler.ACTION.BAN) {
-            options.add(SelectOption.of(LangID.getStringByID("ban", lang), "ban").withDefault(true));
+            options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.ban", lang), "scamDetector.action.ban").withDefault(true));
         } else {
-            options.add(SelectOption.of(LangID.getStringByID("ban", lang), "ban"));
+            options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.ban", lang), "scamDetector.action.ban"));
         }
 
         m.add(ActionRow.of(StringSelectMenu.create("action").addOptions(options).build()));
@@ -162,19 +162,19 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
         List<SelectOption> notices = new ArrayList<>();
 
         if(!noticeAll) {
-            notices.add(SelectOption.of(LangID.getStringByID("noticex", lang), "noticeX").withDefault(true));
-            notices.add(SelectOption.of(LangID.getStringByID("noticeall", lang), "noticeAll"));
+            notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.onlyMember", lang), "noticeX").withDefault(true));
+            notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.allUsers", lang), "noticeAll"));
         } else {
-            notices.add(SelectOption.of(LangID.getStringByID("noticeall", lang), "noticeAll").withDefault(true));
-            notices.add(SelectOption.of(LangID.getStringByID("noticex", lang), "noticeX"));
+            notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.allUsers", lang), "noticeAll").withDefault(true));
+            notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.onlyMember", lang), "noticeX"));
         }
 
         m.add(ActionRow.of(StringSelectMenu.create("notice").addOptions(notices).build()));
 
         List<ActionComponent> components = new ArrayList<>();
 
-        components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
-        components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
+        components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
+        components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
 
         m.add(ActionRow.of(components));
 

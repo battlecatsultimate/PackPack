@@ -67,7 +67,7 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
         int eid = getEID(command);
 
         if(eid == -1) {
-            ch.sendMessage(LangID.getStringByID("stat_eid", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.noEnemyID", lang)).queue();
 
             return;
         }
@@ -159,7 +159,7 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
                 return;
             }
 
-            MaAnim ma = MaAnim.newIns(anim.getData());
+            MaAnim ma = MaAnim.newIns(anim.getData(), false);
 
             CustomMaskEnemy data = new CustomMaskEnemy(statReader.readLine().split(","), ma);
 

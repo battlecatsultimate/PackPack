@@ -41,7 +41,7 @@ public class Background extends TimedConstraintCommand {
         if(img != null) {
             event.deferReply()
                     .setAllowedMentions(new ArrayList<>())
-                    .setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
+                    .setContent(LangID.getStringByID("background.result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
                     .addFiles(FileUpload.fromData(img, "bg.png"))
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
@@ -82,18 +82,18 @@ public class Background extends TimedConstraintCommand {
             File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
 
             if(img != null) {
-                sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""), img, "bg.png", loader.getMessage());
+                sendMessageWithFile(ch, LangID.getStringByID("background.result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""), img, "bg.png", loader.getMessage());
             }
         } else {
             String[] msg = loader.getContent().split(" ");
 
             if(msg.length == 1) {
-                replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("background.fail.noParameter", lang), loader.getMessage(), a -> a);
             } else {
                 int id = getID(loader.getContent());
 
                 if(id == -1) {
-                    replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("background.fail.noParameter", lang), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -103,7 +103,7 @@ public class Background extends TimedConstraintCommand {
                 if(bg == null) {
                     int[] size = getBGSize();
 
-                    replyToMessageSafely(ch, LangID.getStringByID("bg_invalid", lang).replace("_", String.valueOf(size[0])).replace("-", String.valueOf(size[1])), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("background.fail.invalidID", lang).replace("_", String.valueOf(size[0])).replace("-", String.valueOf(size[1])), loader.getMessage(), a -> a);
                     return;
                 }
 
@@ -122,11 +122,11 @@ public class Background extends TimedConstraintCommand {
                 } else {
                     if(anim && bg.effect != -1) {
                         if(cache != null) {
-                            replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", cache), loader.getMessage(), a -> a);
+                            replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.cached", lang).replace("_", cache), loader.getMessage(), a -> a);
 
                             return;
                         } else {
-                            ch.sendMessage(LangID.getStringByID("bg_ignore", lang)).queue();
+                            ch.sendMessage(LangID.getStringByID("data.animation.background.ignore", lang)).queue();
                         }
                     }
 
@@ -136,7 +136,7 @@ public class Background extends TimedConstraintCommand {
                     File img = ImageDrawing.drawBGImage(bg, w, h, eff);
 
                     if(img != null) {
-                        sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", String.valueOf(w)).replace("HHH", String.valueOf(h)), img, "bg.png", loader.getMessage());
+                        sendMessageWithFile(ch, LangID.getStringByID("background.result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", String.valueOf(w)).replace("HHH", String.valueOf(h)), img, "bg.png", loader.getMessage());
                     }
                 }
             }

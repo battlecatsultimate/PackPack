@@ -26,12 +26,12 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "channel" -> connectTo(event, new ConfigChannelRoleSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "ban" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "scamDetector.action.ban" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "manage" -> connectTo(event, new ConfigPermissionUserSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -40,11 +40,11 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -83,27 +83,27 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
-        return LangID.getStringByID("sercon_permission", lang) + "\n" +
-                LangID.getStringByID("sercon_permissionchannel", lang).formatted(Emoji.fromUnicode("📜")) + "\n" +
-                LangID.getStringByID("sercon_permissionchanneldesc", lang) + "\n" +
-                LangID.getStringByID("sercon_permissionban", lang).formatted(Emoji.fromUnicode("🔨")) + "\n" +
-                LangID.getStringByID("sercon_permissionbandesc", lang) + "\n" +
-                LangID.getStringByID("sercon_permissionmanage", lang).formatted(Emoji.fromUnicode("🔧")) + "\n" +
-                LangID.getStringByID("sercon_permissionmanagedesc", lang);
+        return LangID.getStringByID("serverConfig.permission.documentation.title", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.channelPermission.title", lang).formatted(Emoji.fromUnicode("📜")) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.channelPermission.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.commandBan.title", lang).formatted(Emoji.fromUnicode("🔨")) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.commandBan.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.permissionBan.title", lang).formatted(Emoji.fromUnicode("🔧")) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.permissionBan.description", lang);
     }
 
     private List<LayoutComponent> getComponents() {
         List<LayoutComponent> result = new ArrayList<>();
 
-        result.add(ActionRow.of(Button.secondary("channel", LangID.getStringByID("sercon_permissionchannelbutton", lang)).withEmoji(Emoji.fromUnicode("📜"))));
-        result.add(ActionRow.of(Button.secondary("ban", LangID.getStringByID("sercon_permissionbanbutton", lang)).withEmoji(Emoji.fromUnicode("🔨"))));
-        result.add(ActionRow.of(Button.secondary("manage", LangID.getStringByID("sercon_permissionmanagebutton", lang)).withEmoji(Emoji.fromUnicode("🔧"))));
+        result.add(ActionRow.of(Button.secondary("channel", LangID.getStringByID("serverConfig.permission.button.channelPermission", lang)).withEmoji(Emoji.fromUnicode("📜"))));
+        result.add(ActionRow.of(Button.secondary("scamDetector.action.ban", LangID.getStringByID("serverConfig.permission.button.commandBan", lang)).withEmoji(Emoji.fromUnicode("🔨"))));
+        result.add(ActionRow.of(Button.secondary("manage", LangID.getStringByID("serverConfig.permission.button.permissionPan", lang)).withEmoji(Emoji.fromUnicode("🔧"))));
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

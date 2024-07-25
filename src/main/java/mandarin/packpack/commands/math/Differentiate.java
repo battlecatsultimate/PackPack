@@ -27,7 +27,7 @@ public class Differentiate extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ", 2);
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_noforval", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("differentiate.failed.noFormulaValue", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -37,7 +37,7 @@ public class Differentiate extends ConstraintCommand {
         String v = findValue(command);
 
         if(v == null || v.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_novalue", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("differentiate.failed.noValue", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -45,7 +45,7 @@ public class Differentiate extends ConstraintCommand {
         BigDecimal value = Equation.calculate(v, null, false, lang);
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_valuefail", lang)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("differentiate.failed.calculationFailed", lang)), loader.getMessage(), a -> a);
 
             return;
         }
@@ -61,13 +61,13 @@ public class Differentiate extends ConstraintCommand {
         }
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_stepfail", lang)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("differentiate.failed.stepFailed", lang)), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(step.compareTo(BigDecimal.ZERO) == 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_stepzero", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("differentiate.failed.zeroStep", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -75,7 +75,7 @@ public class Differentiate extends ConstraintCommand {
         String f = filterFormula(command).trim();
 
         if(f.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_noformula", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("differentiate.failed.noFormula", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -91,7 +91,7 @@ public class Differentiate extends ConstraintCommand {
         formula.substitute(value);
 
         if(formula.element.isCritical()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_cant", lang)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("differentiate.failed.invalidPoint", lang)), loader.getMessage(), a -> a);
 
             return;
         }
@@ -104,7 +104,7 @@ public class Differentiate extends ConstraintCommand {
             return;
         }
 
-        replyToMessageSafely(ch, String.format(LangID.getStringByID("diff_success", lang), Equation.formatNumber(value), Equation.formatNumber(result), getAlgorithmName(getSnap(command)), Equation.formatNumber(step)), loader.getMessage(), a -> a);
+        replyToMessageSafely(ch, String.format(LangID.getStringByID("differentiate.success", lang), Equation.formatNumber(value), Equation.formatNumber(result), getAlgorithmName(getSnap(command)), Equation.formatNumber(step)), loader.getMessage(), a -> a);
     }
 
     private String findValue(String command) {
@@ -161,9 +161,9 @@ public class Differentiate extends ConstraintCommand {
 
     private String getAlgorithmName(Formula.SNAP snap) {
         return switch (snap) {
-            case BACK -> LangID.getStringByID("calc_back", lang);
-            case CENTER -> LangID.getStringByID("calc_center", lang);
-            case FRONT -> LangID.getStringByID("calc_front", lang);
+            case BACK -> LangID.getStringByID("calculator.algorithm.differentiate.backward", lang);
+            case CENTER -> LangID.getStringByID("calculator.algorithm.differentiate.central", lang);
+            case FRONT -> LangID.getStringByID("calculator.algorithm.differentiate.forward", lang);
         };
     }
 }

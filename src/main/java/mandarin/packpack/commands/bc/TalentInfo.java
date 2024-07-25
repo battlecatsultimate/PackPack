@@ -46,7 +46,7 @@ public class TalentInfo extends ConstraintCommand {
         String[] list = loader.getContent().split(" ",2);
 
         if(list.length == 1 || filterCommand(loader.getContent()).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(loader.getContent()), false, lang);
 
@@ -56,7 +56,7 @@ public class TalentInfo extends ConstraintCommand {
                 Form f = forms.getFirst();
 
                 if(f.unit.forms.length < 3) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notf", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("talentInfo.failed.noTrueForm", lang));
 
                     return;
                 }
@@ -64,20 +64,20 @@ public class TalentInfo extends ConstraintCommand {
                 Form trueForm = f.unit.forms[2];
 
                 if(trueForm.du == null || trueForm.du.getPCoin() == null) {
-                    replyToMessageSafely(ch, LangID.getStringByID("talentinfo_notal", lang), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("talentInfo.failed.noTalent", lang), loader.getMessage(), a -> a);
 
                     return;
                 }
 
                 EntityHandler.showTalentEmbed(ch, loader.getMessage(), trueForm, isFrame, lang);
             } else if (forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
             } else {
                 boolean isFrame = isFrame(loader.getContent()) && config.useFrame;
 
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateListData(forms);
 
@@ -91,7 +91,7 @@ public class TalentInfo extends ConstraintCommand {
                     if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");

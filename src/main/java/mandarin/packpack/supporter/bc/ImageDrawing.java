@@ -358,8 +358,8 @@ public class ImageDrawing {
 
         eff.initialize(len, bgHeight, midH, bg);
 
-        String cont = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(w)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
-                LangID.getStringByID("bg_prog", lang)
+        String cont = LangID.getStringByID("data.animation.background.dimension", lang).replace("_WWW_", String.valueOf(w)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                LangID.getStringByID("data.animation.background.progress", lang)
                         .replace("_PPP_", "  0")
                         .replace("_LLL_", bgAnimTime + "")
                         .replace("_BBB_", getProgressBar(0, bgAnimTime))
@@ -385,8 +385,8 @@ public class ImageDrawing {
                         String prog = DataToString.df.format(finalI * 100.0 / bgAnimTime);
                         String eta = getETA(start.get(), System.currentTimeMillis(), finalI, bgAnimTime);
                         String ind = String.valueOf(finalI);
-                        String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
-                                LangID.getStringByID("bg_prog", lang)
+                        String content = LangID.getStringByID("data.animation.background.dimension", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                                LangID.getStringByID("data.animation.background.progress", lang)
                                         .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
                                         .replace("_LLL_", bgAnimTime+"")
                                         .replace("_BBB_", getProgressBar(finalI, bgAnimTime))
@@ -453,14 +453,14 @@ public class ImageDrawing {
             return null;
         }, progress -> new File("./temp/"+folderName+"/", quad(progress)+".png"), () -> {
             try {
-                String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
-                        LangID.getStringByID("bg_prog", lang)
+                String content = LangID.getStringByID("data.animation.background.dimension", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                        LangID.getStringByID("data.animation.background.progress", lang)
                                 .replace("_PPP_", bgAnimTime + "")
                                 .replace("_LLL_", bgAnimTime + "")
                                 .replace("_BBB_", getProgressBar(bgAnimTime, bgAnimTime))
                                 .replace("_VVV_", "100.00")
                                 .replace("_SSS_", "     0") + "\n"+
-                        LangID.getStringByID("bg_upload", lang);
+                        LangID.getStringByID("data.animation.background.uploading", lang);
 
                 msg.editMessage(content).queue();
 
@@ -708,8 +708,8 @@ public class ImageDrawing {
 
         float ratio;
 
-        String cont = LangID.getStringByID("gif_anbox", lang)+ "\n"
-                + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
+        String cont = LangID.getStringByID("data.animation.gif.analyzingBox", lang)+ "\n"
+                + LangID.getStringByID("data.animation.gif.analysis.result", lang).replace("_WWW_", String.valueOf(rect.width))
                 .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
                 .replace("_YYY_", String.valueOf(rect.x));
 
@@ -754,9 +754,9 @@ public class ImageDrawing {
         String baseContent = cont+"\n\n";
 
         if(ratio == 1.0) {
-            baseContent += LangID.getStringByID("gif_cango", lang)+"\n\n";
+            baseContent += LangID.getStringByID("data.animation.gif.analysis.canGo", lang)+"\n\n";
         } else {
-            baseContent += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
+            baseContent += LangID.getStringByID("data.animation.gif.analysis.adjust.gif", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
         }
 
         if(rect.height % 2 == 1) {
@@ -775,7 +775,7 @@ public class ImageDrawing {
         if(rect.height == 0)
             rect.height = 2;
 
-        baseContent += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
+        baseContent += LangID.getStringByID("data.animation.gif.analysis.final", lang).replace("_WWW_", String.valueOf(rect.width))
                 .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
                 .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
@@ -805,7 +805,7 @@ public class ImageDrawing {
                         String ind = String.valueOf(finalF);
                         String len = String.valueOf(finalFrame);
 
-                        content += LangID.getStringByID("bg_prog", lang)
+                        content += LangID.getStringByID("data.animation.background.progress", lang)
                                 .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
                                 .replace("_LLL_", len)
                                 .replace("_BBB_", getProgressBar(finalF, finalFrame))
@@ -853,8 +853,8 @@ public class ImageDrawing {
             return null;
         }, progress -> new File("./temp/"+folderName+"/", quad(progress)+".png"), () -> {
             try {
-                String content = finalBaseContent + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
-                        +"\n\n"+ LangID.getStringByID("gif_converting", lang);
+                String content = finalBaseContent + "\n\n" + LangID.getStringByID("data.animation.gif.making.png", lang).replace("_", "100")
+                        +"\n\n"+ LangID.getStringByID("data.animation.gif.converting", lang);
 
                 msg.editMessage(content).queue();
 
@@ -877,14 +877,14 @@ public class ImageDrawing {
                 StaticStore.deleteFile(folder, true);
 
                 content = finalBaseContent + "\n\n" +
-                        LangID.getStringByID("gif_makepng", lang).replace("_", "100") + "\n\n" +
-                        LangID.getStringByID("bg_prog", lang)
+                        LangID.getStringByID("data.animation.gif.making.png", lang).replace("_", "100") + "\n\n" +
+                        LangID.getStringByID("data.animation.background.progress", lang)
                                 .replace("_PPP_", String.valueOf(finalFrame))
                                 .replace("_LLL_", String.valueOf(finalFrame))
                                 .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
                                 .replace("_VVV_", "100.00")
                                 .replace("_SSS_", "     0") + "\n" +
-                        LangID.getStringByID("gif_uploadmp4", lang);
+                        LangID.getStringByID("data.animation.gif.uploading.mp4", lang);
 
                 msg.editMessage(content).queue();
             } catch (Exception e) {
@@ -999,18 +999,18 @@ public class ImageDrawing {
             ratio = 1f;
         }
 
-        String cont = LangID.getStringByID("gif_anbox", lang)+ "\n"
-                + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
+        String cont = LangID.getStringByID("data.animation.gif.analyzingBox", lang)+ "\n"
+                + LangID.getStringByID("data.animation.gif.analysis.result", lang).replace("_WWW_", String.valueOf(rect.width))
                 .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
                 .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
         if(ratio != 1.0) {
-            cont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n";
+            cont += LangID.getStringByID("data.animation.gif.analysis.adjust.gif", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n";
         } else {
-            cont += LangID.getStringByID("gif_cango", lang)+"\n";
+            cont += LangID.getStringByID("data.animation.gif.analysis.canGo", lang)+"\n";
         }
 
-        cont += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf((int) (ratio * rect.width)))
+        cont += LangID.getStringByID("data.animation.gif.analysis.final", lang).replace("_WWW_", String.valueOf((int) (ratio * rect.width)))
                 .replace("_HHH_", String.valueOf((int) (ratio * rect.height))).replace("_XXX_", String.valueOf((int) (ratio * rect.x)))
                 .replace("_YYY_", String.valueOf((int) (ratio * rect.y)));
 
@@ -1050,7 +1050,7 @@ public class ImageDrawing {
                         String ind = String.valueOf(finalF);
                         String len = String.valueOf(finalFrame);
 
-                        content += LangID.getStringByID("bg_prog", lang)
+                        content += LangID.getStringByID("data.animation.background.progress", lang)
                                 .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
                                 .replace("_LLL_", len)
                                 .replace("_BBB_", getProgressBar(finalF, finalFrame))
@@ -1100,13 +1100,13 @@ public class ImageDrawing {
             return null;
         }, null, () -> {
             String content = finalCont + "\n\n"+
-                    LangID.getStringByID("bg_prog", lang)
+                    LangID.getStringByID("data.animation.background.progress", lang)
                             .replace("_PPP_", String.valueOf(finalFrame))
                             .replace("_LLL_", String.valueOf(finalFrame))
                             .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
                             .replace("_VVV_", "100.00")
                             .replace("_SSS_", "     0") + "\n"+
-                    LangID.getStringByID("gif_uploading", lang);
+                    LangID.getStringByID("data.animation.gif.uploading.gif", lang);
 
             msg.editMessage(content).queue();
 
@@ -1247,8 +1247,8 @@ public class ImageDrawing {
 
         float ratio;
 
-        String cont = LangID.getStringByID("gif_anbox", lang) + "\n"
-                + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
+        String cont = LangID.getStringByID("data.animation.gif.analyzingBox", lang) + "\n"
+                + LangID.getStringByID("data.animation.gif.analysis.result", lang).replace("_WWW_", String.valueOf(rect.width))
                 .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
                 .replace("_YYY_", String.valueOf(rect.y));
 
@@ -1292,9 +1292,9 @@ public class ImageDrawing {
         String content = cont +"\n\n";
 
         if(ratio == 1f) {
-            content += LangID.getStringByID("gif_cango", lang)+"\n\n";
+            content += LangID.getStringByID("data.animation.gif.analysis.canGo", lang)+"\n\n";
         } else {
-            content += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
+            content += LangID.getStringByID("data.animation.gif.analysis.adjust.gif", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
         }
 
         if(rect.height % 2 == 1) {
@@ -1313,7 +1313,7 @@ public class ImageDrawing {
         if(rect.height == 0)
             rect.height = 2;
 
-        content += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
+        content += LangID.getStringByID("data.animation.gif.analysis.final", lang).replace("_WWW_", String.valueOf(rect.width))
                 .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
                 .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
@@ -1376,8 +1376,8 @@ public class ImageDrawing {
                                         String prog = DataToString.df.format(progress.get() * 100.0 / (performance ? finalTotalFrame * 2 : finalTotalFrame));
                                         String eta = getETA(start, System.currentTimeMillis(), progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame);
 
-                                        editContent += LangID.getStringByID("gif_makepng", lang) +
-                                                LangID.getStringByID("bg_prog", lang)
+                                        editContent += LangID.getStringByID("data.animation.gif.making.png", lang) +
+                                                LangID.getStringByID("data.animation.background.progress", lang)
                                                         .replace("_PPP_", DataToString.df.format(performance ? progress.get() / 2f : progress.get()))
                                                         .replace("_LLL_", String.valueOf(finalTotalFrame))
                                                         .replace("_BBB_", getProgressBar(progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame))
@@ -1415,8 +1415,8 @@ public class ImageDrawing {
                                     String prog = DataToString.df.format(progress.get() * 100.0 / (performance ? finalTotalFrame * 2 : finalTotalFrame));
                                     String eta = getETA(start, System.currentTimeMillis(), progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame);
 
-                                    editContent += LangID.getStringByID("gif_makepng", lang) +
-                                            LangID.getStringByID("bg_prog", lang)
+                                    editContent += LangID.getStringByID("data.animation.gif.making.png", lang) +
+                                            LangID.getStringByID("data.animation.background.progress", lang)
                                                     .replace("_PPP_", DataToString.df.format(performance ? progress.get() / 2f : progress.get()))
                                                     .replace("_LLL_", String.valueOf(finalTotalFrame))
                                                     .replace("_BBB_", getProgressBar(progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame))
@@ -1448,14 +1448,14 @@ public class ImageDrawing {
         }, progress -> new File(folder, quad(progress) + ".png"), () -> {
             try {
                 String editContent = finalContent + "\n\n" +
-                        LangID.getStringByID("gif_makepng", lang) +
-                        LangID.getStringByID("bg_prog", lang)
+                        LangID.getStringByID("data.animation.gif.making.png", lang) +
+                        LangID.getStringByID("data.animation.background.progress", lang)
                                 .replace("_PPP_", String.valueOf(finalTotalFrame))
                                 .replace("_LLL_", String.valueOf(finalTotalFrame))
                                 .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
                                 .replace("_VVV_", "100.00")
                                 .replace("_SSS_", "     0") + "\n" +
-                        LangID.getStringByID("gif_converting", lang);
+                        LangID.getStringByID("data.animation.gif.converting", lang);
 
                 msg.editMessage(editContent).queue();
 
@@ -1478,15 +1478,15 @@ public class ImageDrawing {
                 StaticStore.deleteFile(folder, true);
 
                 editContent = finalContent + "\n\n" +
-                        LangID.getStringByID("gif_makepng", lang) +
-                        LangID.getStringByID("bg_prog", lang)
+                        LangID.getStringByID("data.animation.gif.making.png", lang) +
+                        LangID.getStringByID("data.animation.background.progress", lang)
                                 .replace("_PPP_", String.valueOf(finalTotalFrame))
                                 .replace("_LLL_", String.valueOf(finalTotalFrame))
                                 .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
                                 .replace("_VVV_", "100.00")
                                 .replace("_SSS_", "     0") + "\n" +
-                        LangID.getStringByID("gif_converting", lang) + "\n\n" +
-                        LangID.getStringByID("gif_uploadmp4", lang);
+                        LangID.getStringByID("data.animation.gif.converting", lang) + "\n\n" +
+                        LangID.getStringByID("data.animation.gif.uploading.mp4", lang);
 
                 msg.editMessage(editContent).queue();
             } catch (Exception e) {
@@ -2220,8 +2220,8 @@ public class ImageDrawing {
 
                 g.setFontModel(nameFont);
 
-                g.drawText(LangID.getStringByID("data_rewarddrop", lang), bgMargin + statPanelMargin, bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
-                g.drawText(LangID.getStringByID("data_scoredrop", lang), bgMargin + statPanelMargin + finalUw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                g.drawText(LangID.getStringByID("data.stage.reward.drop.reward", lang), bgMargin + statPanelMargin, bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                g.drawText(LangID.getStringByID("data.stage.reward.drop.score", lang), bgMargin + statPanelMargin + finalUw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
                 int stack = bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin * 2 + finalUh - finalCh - CellDrawer.textMargin;
 
@@ -2237,7 +2237,7 @@ public class ImageDrawing {
                     g.setFontModel(contentFont);
                     g.setColor(239, 239, 239);
 
-                    g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin, stack + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                    g.drawText(LangID.getStringByID("data.none", lang), bgMargin + statPanelMargin, stack + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
                 }
 
                 if(scoreData != null) {
@@ -2252,7 +2252,7 @@ public class ImageDrawing {
                     g.setFontModel(contentFont);
                     g.setColor(239, 239, 239);
 
-                    g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin + finalUw * 2 + CellDrawer.lineOffset * 4, stack + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                    g.drawText(LangID.getStringByID("data.none", lang), bgMargin + statPanelMargin + finalUw * 2 + CellDrawer.lineOffset * 4, stack + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
                 }
 
                 try {
@@ -2327,13 +2327,13 @@ public class ImageDrawing {
             }
 
             if(data.cost.size() == 1) {
-                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.getFirst());
+                String cost = String.format(LangID.getStringByID("talentAnalyzer.npCost.single", lang), data.cost.getFirst());
 
                 float[] costRect = contentFont.measureDimension(cost);
 
                 maxCostWidth = Math.round(Math.max(maxCostWidth, costRect[2]));
             } else {
-                String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
+                String costTitle = LangID.getStringByID("talentAnalyzer.npCost.level", lang);
                 StringBuilder cost = new StringBuilder("[");
                 int costSummary = 0;
 
@@ -2357,7 +2357,7 @@ public class ImageDrawing {
 
         int talentIconDimension = (int) Math.round(maxTitleHeight * 1.5);
 
-        String totalCostText = LangID.getStringByID("talentinfo_total", lang).replace("_", String.valueOf(totalCost));
+        String totalCostText = LangID.getStringByID("data.talent.npCost.total", lang).replace("_", String.valueOf(totalCost));
         float[] totalRect = nameFont.measureDimension(totalCostText);
 
         int totalCostWidth = Math.round(totalRect[2]);
@@ -2386,13 +2386,13 @@ public class ImageDrawing {
             panelHeight += talentCostGap;
 
             if(data.cost.size() == 1) {
-                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.getFirst());
+                String cost = String.format(LangID.getStringByID("talentAnalyzer.npCost.single", lang), data.cost.getFirst());
 
                 float[] costRect = contentFont.measureDimension(cost);
 
                 panelHeight += Math.round(costRect[3]);
             } else {
-                String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
+                String costTitle = LangID.getStringByID("talentAnalyzer.npCost.level", lang);
                 StringBuilder cost = new StringBuilder("[");
                 int costSummary = 0;
 
@@ -2499,7 +2499,7 @@ public class ImageDrawing {
                     y += talentCostGap;
 
                     if(data.cost.size() == 1) {
-                        String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.getFirst());
+                        String cost = String.format(LangID.getStringByID("talentAnalyzer.npCost.single", lang), data.cost.getFirst());
 
                         g.setFontModel(contentFont);
                         g.setColor(238, 238, 238, 255);
@@ -2510,7 +2510,7 @@ public class ImageDrawing {
 
                         y += Math.round(costRect[3]);
                     } else {
-                        String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
+                        String costTitle = LangID.getStringByID("talentAnalyzer.npCost.level", lang);
                         StringBuilder cost = new StringBuilder("[");
                         int costSummary = 0;
 
@@ -2883,7 +2883,7 @@ public class ImageDrawing {
                 }
 
                 text.set(String.format(
-                        LangID.getStringByID("plot_success", lang),
+                        LangID.getStringByID("plot.success", lang),
                         Equation.formatNumber(centerX.subtract(xw.divide(BigDecimal.valueOf(2), Equation.context))),
                         Equation.formatNumber(centerX.add(xw.divide(BigDecimal.valueOf(2), Equation.context))),
                         Equation.formatNumber(centerY.subtract(yw.divide(BigDecimal.valueOf(2), Equation.context))),
@@ -3099,7 +3099,7 @@ public class ImageDrawing {
                 }
 
                 text.set(String.format(
-                        LangID.getStringByID("tplot_success", lang),
+                        LangID.getStringByID("tPlot.success", lang),
                         Equation.formatNumber(tRange[0]),
                         Equation.formatNumber(tRange[1]),
                         Equation.formatNumber(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
@@ -3426,7 +3426,7 @@ public class ImageDrawing {
                 }
 
                 text.set(String.format(
-                        LangID.getStringByID("plot_success", lang),
+                        LangID.getStringByID("plot.success", lang),
                         DataToString.df.format(centerX - xWidth / 2.0),
                         DataToString.df.format(centerX + xWidth / 2.0),
                         DataToString.df.format(centerY - yWidth / 2.0),
@@ -3880,7 +3880,7 @@ public class ImageDrawing {
                 }
 
                 text.set(String.format(
-                        LangID.getStringByID("rplot_success", lang),
+                        LangID.getStringByID("rPlot.success", lang),
                         DataToString.df.format(tRange[0]),
                         DataToString.df.format(tRange[1]),
                         DataToString.df.format(rRange[0]),
@@ -3954,8 +3954,8 @@ public class ImageDrawing {
         AtomicReference<BigDecimal> xPosition = new AtomicReference<>(xRange[0].divideToIntegralValue(xSegment).multiply(xSegment));
         AtomicReference<BigDecimal> yPosition = new AtomicReference<>(yRange[0].divideToIntegralValue(ySegment).multiply(ySegment));
 
-        int dpsWidth = Math.round(axisFont.measureDimension(LangID.getStringByID("data_dps", lang))[3]);
-        int rangeHeight = Math.round(axisFont.measureDimension(LangID.getStringByID("data_range", lang))[3]);
+        int dpsWidth = Math.round(axisFont.measureDimension(LangID.getStringByID("data.dps", lang))[3]);
+        int rangeHeight = Math.round(axisFont.measureDimension(LangID.getStringByID("data.range", lang))[3]);
 
         int xAxisNumberHeight = 0;
         int yAxisNumberWidth = 0;
@@ -4100,12 +4100,12 @@ public class ImageDrawing {
                 g.setFontModel(axisFont);
                 g.setColor(238, 238, 238, 255);
 
-                g.drawText(LangID.getStringByID("data_range", lang), (int) Math.round(offsetX + plotWidthHeight * 1.5 / 2.0), (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap + finalXAxisNumberHeight + axisTitleGap), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+                g.drawText(LangID.getStringByID("data.range", lang), (int) Math.round(offsetX + plotWidthHeight * 1.5 / 2.0), (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap + finalXAxisNumberHeight + axisTitleGap), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
 
                 g.translate(axisTitleGap, plotGraphOffset + plotWidthHeight / 2f);
                 g.rotate((float) (-Math.PI / 2.0));
 
-                g.drawText(LangID.getStringByID("data_dps", lang), 0f, 0f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+                g.drawText(LangID.getStringByID("data.dps", lang), 0f, 0f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
 
                 g.reset();
 
@@ -4268,14 +4268,14 @@ public class ImageDrawing {
         if(dropData.getLast().length == 1) {
             dropData.removeLast();
 
-            chance = LangID.getStringByID("data_rewardno", lang);
+            chance = LangID.getStringByID("data.stage.reward.number", lang);
         } else {
-            chance = LangID.getStringByID("data_chance", lang);
+            chance = LangID.getStringByID("data.stage.reward.chance", lang);
         }
 
         float cw = contentFont.textWidth(chance);
-        float rw = contentFont.textWidth(LangID.getStringByID("data_reward", lang));
-        float aw = contentFont.textWidth(LangID.getStringByID("data_amount", lang));
+        float rw = contentFont.textWidth(LangID.getStringByID("data.stage.reward.reward", lang));
+        float aw = contentFont.textWidth(LangID.getStringByID("data.stage.reward.amount", lang));
 
         for(int i = 0; i < dropData.size(); i++) {
             String[] data = dropData.get(i);
@@ -4307,15 +4307,15 @@ public class ImageDrawing {
     private static float[] measureEnemySchemeWidth(Stage st, CustomStageMap map, boolean isRanking, boolean isFrame, int lv, CommonStatic.Lang.Locale lang) {
         float[] result = new float[11];
         
-        float ew = contentFont.textWidth(LangID.getStringByID("data_enemy", lang));
-        float nw = contentFont.textWidth(LangID.getStringByID("data_number", lang));
-        float bw = contentFont.textWidth(LangID.getStringByID(isRanking ? "data_basedealt" : "data_basehealth", lang));
-        float mw = contentFont.textWidth(LangID.getStringByID("data_manif", lang));
-        float sw = contentFont.textWidth(LangID.getStringByID("data_startres", lang));
-        float lw = contentFont.textWidth(LangID.getStringByID("data_layer", lang));
-        float rw = contentFont.textWidth(LangID.getStringByID("data_respect", lang));
-        float kw = contentFont.textWidth(LangID.getStringByID("data_killcount", lang));
-        float bow = contentFont.textWidth(LangID.getStringByID("data_isboss", lang));
+        float ew = contentFont.textWidth(LangID.getStringByID("data.stage.enemy", lang));
+        float nw = contentFont.textWidth(LangID.getStringByID("data.stage.number", lang));
+        float bw = contentFont.textWidth(LangID.getStringByID(isRanking ? "data.stage.totalDamage" : "data.stage.basePercentage", lang));
+        float mw = contentFont.textWidth(LangID.getStringByID("data.stage.magnification", lang));
+        float sw = contentFont.textWidth(LangID.getStringByID("data.stage.start", lang));
+        float lw = contentFont.textWidth(LangID.getStringByID("data.stage.layer", lang));
+        float rw = contentFont.textWidth(LangID.getStringByID("data.stage.respectStart", lang));
+        float kw = contentFont.textWidth(LangID.getStringByID("data.stage.killCount", lang));
+        float bow = contentFont.textWidth(LangID.getStringByID("data.stage.isBoss", lang));
 
         for(int i = st.data.datas.length - 1; i >= 0; i--) {
             SCDef.Line line = st.data.datas[i];
@@ -4343,7 +4343,7 @@ public class ImageDrawing {
             }
 
             if(enemyName == null || enemyName.isBlank()) {
-                enemyName = LangID.getStringByID("data_enemy", lang)+" - "+Data.trio(id.id);
+                enemyName = LangID.getStringByID("data.stage.enemy", lang)+" - "+Data.trio(id.id);
             }
 
             ew = Math.max(ew, contentFont.textWidth(enemyName));
@@ -4351,7 +4351,7 @@ public class ImageDrawing {
             String number;
 
             if(line.number == 0)
-                number = LangID.getStringByID("data_infinite", lang);
+                number = LangID.getStringByID("data.stage.infinite", lang);
             else
                 number = String.valueOf(line.number);
 
@@ -4424,7 +4424,7 @@ public class ImageDrawing {
 
             lw = Math.max(lw, contentFont.textWidth(layer));
 
-            String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+            String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data.true", lang) : "";
 
             rw = Math.max(rw, contentFont.textWidth(respect));
 
@@ -4435,9 +4435,9 @@ public class ImageDrawing {
             if(line.boss == 0)
                 boss = "";
             else if(line.boss == 1)
-                boss = LangID.getStringByID("data_boss", lang);
+                boss = LangID.getStringByID("data.stage.boss.normal", lang);
             else
-                boss = LangID.getStringByID("data_bossshake", lang);
+                boss = LangID.getStringByID("data.stage.boss.shake", lang);
 
             bow = Math.max(bow, contentFont.textWidth(boss));
         }
@@ -4509,9 +4509,9 @@ public class ImageDrawing {
                         if (data.getLast().length == 1) {
                             data.removeLast();
 
-                            chance = LangID.getStringByID("data_rewardno", lang);
+                            chance = LangID.getStringByID("data.stage.reward.number", lang);
                         } else {
-                            chance = LangID.getStringByID("data_chance", lang);
+                            chance = LangID.getStringByID("data.stage.reward.chance", lang);
                         }
 
                         g.setColor(191, 191, 191);
@@ -4541,7 +4541,7 @@ public class ImageDrawing {
                     case REWARD_WIDTH -> {
                         g.setColor(191, 191, 191);
 
-                        g.drawText(LangID.getStringByID("data_reward", lang), x1 + (int) tx, y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                        g.drawText(LangID.getStringByID("data.stage.reward.reward", lang), x1 + (int) tx, y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                         g.setStroke(headerStroke, GLGraphics.LineEndMode.ROUND);
 
@@ -4583,7 +4583,7 @@ public class ImageDrawing {
                     }
                     case AMOUNT_WIDTH -> {
                         g.setColor(191, 191, 191);
-                        g.drawText(LangID.getStringByID("data_amount", lang), x1 + (int) tx, y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                        g.drawText(LangID.getStringByID("data.stage.reward.amount", lang), x1 + (int) tx, y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                         g.setStroke(headerStroke, GLGraphics.LineEndMode.ROUND);
                         int amountY = y + innerTableCellMargin;
                         for (int j = 0; j < data.size(); j++) {
@@ -4639,15 +4639,15 @@ public class ImageDrawing {
         g.fillRect(bgMargin, y + innerTableCellMargin, w, cornerRadius / 2f);
 
         String[] headerText = {
-                LangID.getStringByID("data_enemy", lang),
-                LangID.getStringByID("data_number", lang),
-                LangID.getStringByID(isRanking ? "data_basedealt" : "data_basehealth", lang),
-                LangID.getStringByID("data_manif", lang),
-                LangID.getStringByID("data_startres", lang),
-                LangID.getStringByID("data_layer", lang),
-                LangID.getStringByID("data_respect", lang),
-                LangID.getStringByID("data_killcount", lang),
-                LangID.getStringByID("data_isboss", lang)
+                LangID.getStringByID("data.stage.enemy", lang),
+                LangID.getStringByID("data.stage.number", lang),
+                LangID.getStringByID(isRanking ? "data.stage.totalDamage" : "data.stage.basePercentage", lang),
+                LangID.getStringByID("data.stage.magnification", lang),
+                LangID.getStringByID("data.stage.start", lang),
+                LangID.getStringByID("data.stage.layer", lang),
+                LangID.getStringByID("data.stage.respectStart", lang),
+                LangID.getStringByID("data.stage.killCount", lang),
+                LangID.getStringByID("data.stage.isBoss", lang)
         };
 
         int x1 = bgMargin;
@@ -4719,12 +4719,12 @@ public class ImageDrawing {
                         }
 
                         if (content == null || content.isBlank()) {
-                            content = LangID.getStringByID("data_enemy", lang) + " - " + Data.trio(id.id);
+                            content = LangID.getStringByID("data.stage.enemy", lang) + " - " + Data.trio(id.id);
                         }
                     }
                     case NUMBER -> {
                         if (line.number == 0)
-                            content = LangID.getStringByID("data_infinite", lang);
+                            content = LangID.getStringByID("data.stage.infinite", lang);
                         else
                             content = String.valueOf(line.number);
                     }
@@ -4790,13 +4790,13 @@ public class ImageDrawing {
                         }
                     }
                     case RESPECT ->
-                            content = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+                            content = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data.true", lang) : "";
                     case KILL -> content = String.valueOf(line.kill_count);
                     case BOSS -> {
                         if (line.boss == 0)
                             content = "";
                         else
-                            content = LangID.getStringByID("data_boss", lang);
+                            content = LangID.getStringByID("data.stage.boss.normal", lang);
                     }
                 }
 

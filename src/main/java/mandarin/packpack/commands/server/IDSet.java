@@ -49,18 +49,18 @@ public class IDSet extends ConstraintCommand {
         String moderatorRole;
 
         if (holder.moderator == null) {
-            moderatorRole = LangID.getStringByID("sercon_rolemanager", lang);
+            moderatorRole = LangID.getStringByID("serverConfig.general.role.anyManager", lang);
         } else {
             moderatorRole = "<@&" + holder.moderator + ">";
         }
 
-        StringBuilder builder = new StringBuilder(LangID.getStringByID("sercon_roletit", lang).formatted(EmojiStore.ROLE.getFormatted()))
+        StringBuilder builder = new StringBuilder(LangID.getStringByID("serverConfig.general.role.documentation.title", lang).formatted(EmojiStore.ROLE.getFormatted()))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_roledesc", lang))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.description", lang))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.moderator.title", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemoddesc", lang))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.moderator.description", lang))
                 .append("\n");
 
         String memberRole;
@@ -71,22 +71,22 @@ public class IDSet extends ConstraintCommand {
             memberRole = "<@&" + holder.member + ">";
         }
 
-        builder.append(LangID.getStringByID("sercon_rolemem", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
+        builder.append(LangID.getStringByID("serverConfig.general.role.documentation.member.title", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolememdesc", lang))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.member.description", lang))
                 .append("\n");
 
         String boosterRole;
 
         if (holder.booster == null) {
-            boosterRole = LangID.getStringByID("data_none", lang);
+            boosterRole = LangID.getStringByID("data.none", lang);
         } else {
             boosterRole = "<@&" + holder.booster + ">";
         }
 
-        builder.append(LangID.getStringByID("sercon_roleboo", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
+        builder.append(LangID.getStringByID("serverConfig.general.role.documentation.booster.title", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_roleboodesc", lang));
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.booster.description", lang));
 
         return builder.toString();
     }
@@ -132,7 +132,7 @@ public class IDSet extends ConstraintCommand {
         result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("member", EntitySelectMenu.SelectTarget.ROLE)
-                                .setPlaceholder(LangID.getStringByID("sercon_roleevery", lang))
+                                .setPlaceholder(LangID.getStringByID("serverConfig.general.role.selectNone.everyone", lang))
                                 .setDefaultValues(member == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { member })
                                 .setRequiredRange(0, 1)
                                 .build()
@@ -143,7 +143,7 @@ public class IDSet extends ConstraintCommand {
                 ActionRow.of(
                         EntitySelectMenu.create("booster", EntitySelectMenu.SelectTarget.ROLE)
                                 .setDefaultValues(booster == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { booster })
-                                .setPlaceholder(LangID.getStringByID("sercon_rolenone", lang))
+                                .setPlaceholder(LangID.getStringByID("serverConfig.general.role.selectNone.none", lang))
                                 .setRequiredRange(0, 1)
                                 .build()
                 )
@@ -151,14 +151,14 @@ public class IDSet extends ConstraintCommand {
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("custom", LangID.getStringByID("sercon_custom", lang)).withEmoji(Emoji.fromUnicode("⚙️"))
+                        Button.secondary("custom", LangID.getStringByID("serverConfig.general.role.custom", lang)).withEmoji(Emoji.fromUnicode("⚙️"))
                 )
         );
 
         result.add(
                 ActionRow.of(
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

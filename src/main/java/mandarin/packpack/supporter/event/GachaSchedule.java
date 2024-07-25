@@ -200,7 +200,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
         if(date.dateStart.year != currentYear) {
             result.append(date.dateStart.year)
-                    .append(LangID.getStringByID("year", lang));
+                    .append(LangID.getStringByID("date.year", lang));
 
             if(lang != CommonStatic.Lang.Locale.ZH) {
                 result.append(" ");
@@ -229,7 +229,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(!date.dateEnd.equals(END)) {
                 if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == CommonStatic.Lang.Locale.ZH)) {
                     result.append(date.dateEnd.year)
-                            .append(LangID.getStringByID("year", lang));
+                            .append(LangID.getStringByID("date.year", lang));
 
                     if(lang != CommonStatic.Lang.Locale.ZH) {
                         result.append(" ");
@@ -289,7 +289,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                     String unit = StaticStore.safeMultiLangGet(u.forms[0], lang);
 
                     if(unit == null || unit.isBlank()) {
-                        unit = LangID.getStringByID("printgacha_dummy", lang).replace("_", Data.trio(u.id.id));
+                        unit = LangID.getStringByID("event.dummy.unit", lang).replace("_", Data.trio(u.id.id));
                     }
 
                     result.append(unit);
@@ -306,7 +306,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 result.append("\u001B[0;36m [");
 
                 if(section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1) {
-                    result.append(LangID.getStringByID("printgacha_g", lang));
+                    result.append(LangID.getStringByID("event.gachaCode.guaranteed.code", lang));
 
                     if(!section.additional.isEmpty())
                         result.append("|");
@@ -341,7 +341,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                             String unitName = StaticStore.safeMultiLangGet(units.get(j).forms[0], lang);
 
                             if(unitName == null) {
-                                unitName = LangID.getStringByID("printgacha_dummy", lang).replace("_", Data.trio(units.get(j).id.id));
+                                unitName = LangID.getStringByID("event.dummy.unit", lang).replace("_", Data.trio(units.get(j).id.id));
                             }
 
                             builder.append(unitName);
@@ -351,7 +351,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                             }
                         }
 
-                        result.append(LangID.getStringByID("printgacha_buff", lang).replace("_BBB_", String.valueOf(param)).replace("_UUU_", builder.toString()));
+                        result.append(LangID.getStringByID("event.chanceBoost", lang).replace("_BBB_", String.valueOf(param)).replace("_UUU_", builder.toString()));
 
                         if(k < params.size() - 1) {
                             result.append(" | ");
@@ -373,7 +373,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
         }
 
         if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
-            result.append("\u001B[0;35m <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
+            result.append("\u001B[0;35m <").append(LangID.getStringByID("event.newVersion", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
         return result.toString();
@@ -561,7 +561,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(section.message != null && !section.message.trim().isBlank()) {
                 return section.message.trim();
             } else {
-                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+                return LangID.getStringByID("event.dummy.gacha", lang).replace("_", Data.trio(gachaID));
             }
         }
 
@@ -582,7 +582,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 if(section.message != null && !section.message.trim().isBlank()) {
                     return section.message.trim();
                 } else {
-                    return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+                    return LangID.getStringByID("event.dummy.gacha", lang).replace("_", Data.trio(gachaID));
                 }
             }
 
@@ -594,7 +594,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 if(section.message != null && !section.message.trim().isBlank()) {
                     return section.message.trim();
                 } else {
-                    return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+                    return LangID.getStringByID("event.dummy.gacha", lang).replace("_", Data.trio(gachaID));
                 }
             }
 
@@ -603,7 +603,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(section.message != null && !section.message.trim().isBlank()) {
                 return section.message.trim();
             } else {
-                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+                return LangID.getStringByID("event.dummy.gacha", lang).replace("_", Data.trio(gachaID));
             }
         }
     }
@@ -636,12 +636,12 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
     private String getAdditionalCode(GachaSection.ADDITIONAL a, CommonStatic.Lang.Locale lang) {
         return switch (a) {
-            case GRANDON -> LangID.getStringByID("printgacha_gr", lang);
-            case STEP -> LangID.getStringByID("printgacha_s", lang);
-            case LUCKY -> LangID.getStringByID("printgacha_l", lang);
-            case SHARD -> LangID.getStringByID("printgacha_p", lang);
-            case NENEKO -> LangID.getStringByID("printgacha_n", lang);
-            default -> LangID.getStringByID("printgacha_r", lang);
+            case GRANDON -> LangID.getStringByID("event.gachaCode.grandon.code", lang);
+            case STEP -> LangID.getStringByID("event.gachaCode.stepUp.code", lang);
+            case LUCKY -> LangID.getStringByID("event.gachaCode.luckyTicket.code", lang);
+            case SHARD -> LangID.getStringByID("event.gachaCode.platinumShard.code", lang);
+            case NENEKO -> LangID.getStringByID("event.gachaCode.nenekoGang.code", lang);
+            default -> LangID.getStringByID("event.gachaCode.reinforcement.code", lang);
         };
     }
 
@@ -683,17 +683,17 @@ public class GachaSchedule extends EventFactor implements Schedule {
     private String getWeirdChanceData(GachaSection section, CommonStatic.Lang.Locale lang) {
         String result = "\u001B[0;0m<";
 
-        result += LangID.getStringByID("printgacha_chance", lang);
+        result += LangID.getStringByID("event.specialDrop.title", lang);
 
         if(section.rarityChances[3] != 5) {
-            result += LangID.getStringByID("printgacha_uber", lang).replace("_", DataToString.df.format(section.rarityChances[3]));
+            result += LangID.getStringByID("event.specialDrop.uberRare", lang).replace("_", DataToString.df.format(section.rarityChances[3]));
 
             if(section.rarityChances.length > 4 && section.rarityChances[4] != 0 && section.rarityChances[4] != 0.3)
                 result += " | ";
         }
 
         if(section.rarityChances.length > 4 && section.rarityChances[4] != 0 && section.rarityChances[4] != 0.3)
-            result += LangID.getStringByID("printgacha_lr", lang).replace("_", DataToString.df.format(section.rarityChances[4]));
+            result += LangID.getStringByID("event.specialDrop.legendRare", lang).replace("_", DataToString.df.format(section.rarityChances[4]));
 
         return result + ">";
     }

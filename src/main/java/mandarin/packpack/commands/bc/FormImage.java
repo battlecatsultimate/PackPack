@@ -60,7 +60,7 @@ public class FormImage extends TimedConstraintCommand {
             String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formImage.fail.noParameter", lang), loader.getMessage(), a -> a);
                 disableTimer();
                 return;
             }
@@ -68,7 +68,7 @@ public class FormImage extends TimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, false, lang);
 
             if(forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(loader.getContent());
@@ -93,14 +93,14 @@ public class FormImage extends TimedConstraintCommand {
                         fName = forms.getFirst().names.toString();
 
                     if(fName.isBlank())
-                        fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.getFirst().uid.id)+" "+Data.trio(forms.getFirst().fid);
+                        fName = LangID.getStringByID("data.stage.limit.unit", lang)+" "+ Data.trio(forms.getFirst().uid.id)+" "+Data.trio(forms.getFirst().fid);
 
-                    sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.getFirst().anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", loader.getMessage());
+                    sendMessageWithFile(ch, LangID.getStringByID("formImage.result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.getFirst().anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", loader.getMessage());
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateData(forms);
 
@@ -114,7 +114,7 @@ public class FormImage extends TimedConstraintCommand {
                     if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -134,7 +134,7 @@ public class FormImage extends TimedConstraintCommand {
                 disableTimer();
             }
         } else {
-            ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("formImage.fail.noParameter", lang)).queue();
             disableTimer();
         }
     }
@@ -145,21 +145,21 @@ public class FormImage extends TimedConstraintCommand {
         for(int i = 0; i < msg.length; i++) {
             if(msg[i].equals("-m") || msg[i].equals("-mode")) {
                 if(i < msg.length - 1) {
-                    if(LangID.getStringByID("fimg_walk", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    if(LangID.getStringByID("data.animation.mode.walk", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 0;
-                    else if(LangID.getStringByID("fimg_idle", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.idle", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 1;
-                    else if(LangID.getStringByID("fimg_atk", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.attack", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 2;
-                    else if(LangID.getStringByID("fimg_hb", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.kb", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 3;
-                    else if(LangID.getStringByID("fimg_enter", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.enter", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 4;
-                    else if(LangID.getStringByID("fimg_burrdown", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.burrowDown", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 4;
-                    else if(LangID.getStringByID("fimg_burrmove", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.burrowMove", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 5;
-                    else if(LangID.getStringByID("fimg_burrup", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.burrowUp", lang).toLowerCase(Locale.ENGLISH).contains(msg[i+1].toLowerCase(Locale.ENGLISH)))
                         return 6;
                 } else {
                     return 0;
@@ -298,28 +298,28 @@ public class FormImage extends TimedConstraintCommand {
     private String getModeName(int mode, int max) {
         switch (mode) {
             case 1 -> {
-                return LangID.getStringByID("fimg_idle", lang);
+                return LangID.getStringByID("data.animation.mode.idle", lang);
             }
             case 2 -> {
-                return LangID.getStringByID("fimg_atk", lang);
+                return LangID.getStringByID("data.animation.mode.attack", lang);
             }
             case 3 -> {
-                return LangID.getStringByID("fimg_hitback", lang);
+                return LangID.getStringByID("formImage.mode.kb", lang);
             }
             case 4 -> {
                 if (max == 5)
-                    return LangID.getStringByID("fimg_enter", lang);
+                    return LangID.getStringByID("data.animation.mode.enter", lang);
                 else
-                    return LangID.getStringByID("fimg_burrowdown", lang);
+                    return LangID.getStringByID("formImage.mode.burrowDown", lang);
             }
             case 5 -> {
-                return LangID.getStringByID("fimg_burrowmove", lang);
+                return LangID.getStringByID("formImage.mode.burrowMove", lang);
             }
             case 6 -> {
-                return LangID.getStringByID("fimg_burrowup", lang);
+                return LangID.getStringByID("formImage.mode.burrowUp", lang);
             }
             default -> {
-                return LangID.getStringByID("fimg_walk", lang);
+                return LangID.getStringByID("data.animation.mode.walk", lang);
             }
         }
     }

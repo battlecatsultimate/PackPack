@@ -56,13 +56,13 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 applyResult(event);
             }
             case "additional" -> {
-                TextInput input = TextInput.create("message", LangID.getStringByID("sercon_channeladditionalinput", lang), TextInputStyle.PARAGRAPH)
-                        .setPlaceholder(LangID.getStringByID("sercon_channeladditionalinputplace", lang))
+                TextInput input = TextInput.create("message", LangID.getStringByID("serverConfig.eventData.message", lang), TextInputStyle.PARAGRAPH)
+                        .setPlaceholder(LangID.getStringByID("serverConfig.eventData.typeAdditional", lang))
                         .setRequired(false)
                         .setRequiredRange(0, 500)
                         .build();
 
-                Modal modal = Modal.create("additional", LangID.getStringByID("sercon_channeladditionalmodal", lang))
+                Modal modal = Modal.create("additional", LangID.getStringByID("serverConfig.eventData.additionalMessage", lang))
                         .addActionRow(input)
                         .build();
 
@@ -73,7 +73,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -82,11 +82,11 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -136,14 +136,14 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
     private String getContents() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(LangID.getStringByID("sercon_channeltitle", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_channelanntit", lang).formatted(Emoji.fromUnicode("📢"))).append("\n")
-                .append(LangID.getStringByID("sercon_channelannmanagedesc", lang)).append("\n\n");
+        builder.append(LangID.getStringByID("serverConfig.channel.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.channel.documentation.announcement.title", lang).formatted(Emoji.fromUnicode("📢"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.announcement.description", lang)).append("\n\n");
 
         String channel;
 
         if (holder.announceChannel == null) {
-            channel = LangID.getStringByID("data_none", lang);
+            channel = LangID.getStringByID("data.none", lang);
         } else {
             channel = "<#" + holder.announceChannel + ">";
         }
@@ -151,37 +151,37 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
         String post;
 
         if (holder.publish) {
-            post = LangID.getStringByID("button_yes", lang);
+            post = LangID.getStringByID("ui.button.yes", lang);
         } else {
-            post = LangID.getStringByID("button_no", lang);
+            post = LangID.getStringByID("ui.button.no", lang);
         }
 
         String additional;
 
         if (holder.announceMessage == null) {
-            additional = LangID.getStringByID("sercon_channelnone", lang);
+            additional = LangID.getStringByID("serverConfig.eventData.info.content.none", lang);
         } else {
-            additional = LangID.getStringByID("sercon_channelcontents", lang);
+            additional = LangID.getStringByID("serverConfig.eventData.info.content.checkBelow", lang);
         }
 
-        builder.append(LangID.getStringByID("sercon_channelannchannel", lang).formatted(channel)).append("\n")
-                .append(LangID.getStringByID("sercon_channelannpost", lang).formatted(post)).append("\n")
-                .append(LangID.getStringByID("sercon_channelannadditional", lang).formatted(additional));
+        builder.append(LangID.getStringByID("serverConfig.announcement.info.channel", lang).formatted(channel)).append("\n")
+                .append(LangID.getStringByID("serverConfig.announcement.info.publish", lang).formatted(post)).append("\n")
+                .append(LangID.getStringByID("serverConfig.announcement.info.additionalMessage", lang).formatted(additional));
 
         if (holder.announceMessage != null) {
             builder.append("\n\n```\n")
-                    .append(LangID.getStringByID("sercon_channelmessage", lang))
+                    .append(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang))
                     .append("\n```\n")
                     .append(holder.announceMessage)
                     .append("\n\n```\n")
-                    .append("=".repeat(LangID.getStringByID("sercon_channelmessage", lang).length()))
+                    .append("=".repeat(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang).length()))
                     .append("\n```");
 
             if (holder.announceMessage.matches("")) {
                 Emoji warn = Emoji.fromUnicode("⚠️");
 
                 builder.append("\n")
-                        .append(LangID.getStringByID("sercon_channelannwarn", lang).formatted(warn, warn));
+                        .append(LangID.getStringByID("serverConfig.announcement.info.content.warning", lang).formatted(warn, warn));
             }
         }
 
@@ -193,7 +193,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
 
         EntitySelectMenu.Builder channelBuilder = EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
                 .setChannelTypes(ChannelType.TEXT)
-                .setPlaceholder(LangID.getStringByID("sercon_channelannselect", lang));
+                .setPlaceholder(LangID.getStringByID("serverConfig.announcement.selectChannel", lang));
 
         if (holder.announceChannel != null) {
             EntitySelectMenu.DefaultValue value = EntitySelectMenu.DefaultValue.channel(holder.announceChannel);
@@ -213,14 +213,14 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
             publishSwitch = EmojiStore.SWITCHOFF;
         }
 
-        result.add(ActionRow.of(Button.secondary("publish", LangID.getStringByID("sercon_channelannpostbutotn", lang)).withEmoji(publishSwitch)));
-        result.add(ActionRow.of(Button.secondary("additional", LangID.getStringByID("sercon_channelannmodal", lang)).withEmoji(Emoji.fromUnicode("💬"))));
+        result.add(ActionRow.of(Button.secondary("publish", LangID.getStringByID("serverConfig.announcement.button.publish", lang)).withEmoji(publishSwitch)));
+        result.add(ActionRow.of(Button.secondary("additional", LangID.getStringByID("serverConfig.announcement.button.additional", lang)).withEmoji(Emoji.fromUnicode("💬"))));
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

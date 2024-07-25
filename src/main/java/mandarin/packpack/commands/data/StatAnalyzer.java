@@ -70,7 +70,7 @@ public class StatAnalyzer extends ConstraintCommand {
         int uid = getUID(command);
 
         if(uid == -1) {
-            ch.sendMessage(LangID.getStringByID("stat_uid", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.noUnitID", lang)).queue();
 
             return;
         }
@@ -90,7 +90,7 @@ public class StatAnalyzer extends ConstraintCommand {
         } else if(name.length != len) {
             int nLen = name.length;
 
-            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", String.valueOf(len)).replace("_PPP_", String.valueOf(nLen))).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.notEnoughName", lang).replace("_RRR_", String.valueOf(len)).replace("_PPP_", String.valueOf(nLen))).queue();
 
             return;
         }
@@ -201,7 +201,7 @@ public class StatAnalyzer extends ConstraintCommand {
                     return;
                 }
 
-                MaAnim ma = MaAnim.newIns(anim.getData());
+                MaAnim ma = MaAnim.newIns(anim.getData(), false);
 
                 data[i] = new CustomMaskUnit(statReader.readLine().split(","), curve, ma, rare);
             }

@@ -43,7 +43,7 @@ public class Alias extends ConstraintCommand {
         AliasHolder.TYPE type = getType(loader.getContent());
 
         if(type == AliasHolder.TYPE.UNSPECIFIED) {
-            ch.sendMessage(LangID.getStringByID("alias_specify", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("alias.failed.noType", lang)).queue();
             return;
         }
 
@@ -52,7 +52,7 @@ public class Alias extends ConstraintCommand {
                 String unitName = getName(loader.getContent());
 
                 if (unitName.isBlank()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias_formnoname", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noAlias.unit", lang));
 
                     return;
                 }
@@ -60,7 +60,7 @@ public class Alias extends ConstraintCommand {
                 ArrayList<Form> forms = EntityFilter.findUnitWithName(unitName, false, lang);
 
                 if (forms.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(unitName)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", validateName(unitName)));
                 } else if (forms.size() == 1) {
                     String fname = StaticStore.safeMultiLangGet(forms.getFirst(), lang);
 
@@ -80,9 +80,9 @@ public class Alias extends ConstraintCommand {
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", fname));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", fname));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_formalias", lang).replace("_FFF_", fname).replace("_NNN_", String.valueOf(alias.size())));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.unit", lang).replace("_FFF_", fname).replace("_NNN_", String.valueOf(alias.size())));
 
                         result.append("\n\n");
 
@@ -91,7 +91,7 @@ public class Alias extends ConstraintCommand {
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
-                                        .append(LangID.getStringByID("alias_etc", lang));
+                                        .append(LangID.getStringByID("alias.etc", lang));
 
                                 break;
                             }
@@ -105,16 +105,16 @@ public class Alias extends ConstraintCommand {
                         createMessageWithNoPings(ch, result.toString());
                     }
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(unitName)));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", validateName(unitName)));
 
                     String check;
 
                     if (forms.size() <= 20)
                         check = "";
                     else
-                        check = LangID.getStringByID("formst_next", lang);
+                        check = LangID.getStringByID("ui.search.old.page.nextOnly", lang);
 
-                    sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+                    sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang)).append(check);
 
                     for (int i = 0; i < 20; i++) {
                         if (i >= forms.size())
@@ -138,10 +138,10 @@ public class Alias extends ConstraintCommand {
                         if (forms.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+                        sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
                     }
 
-                    sb.append(LangID.getStringByID("formst_can", lang));
+                    sb.append(LangID.getStringByID("ui.search.old.page.cancel", lang));
                     sb.append("```");
 
                     createMessageWithNoPings(ch, sb.toString(), res -> {
@@ -155,7 +155,7 @@ public class Alias extends ConstraintCommand {
                 String enemyName = getName(loader.getContent());
 
                 if (enemyName.isBlank()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias_enemnoname", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noAlias.enemy", lang));
 
                     return;
                 }
@@ -163,7 +163,7 @@ public class Alias extends ConstraintCommand {
                 ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(enemyName, lang);
 
                 if (enemies.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(enemyName)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", validateName(enemyName)));
                 } else if (enemies.size() == 1) {
                     String eName = StaticStore.safeMultiLangGet(enemies.getFirst(), lang);
 
@@ -176,9 +176,9 @@ public class Alias extends ConstraintCommand {
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", eName));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", eName));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_enemalias", lang).replace("_EEE_", eName).replace("_NNN_", String.valueOf(alias.size())));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.enemy", lang).replace("_EEE_", eName).replace("_NNN_", String.valueOf(alias.size())));
 
                         result.append("\n\n");
 
@@ -187,7 +187,7 @@ public class Alias extends ConstraintCommand {
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
-                                        .append(LangID.getStringByID("alias_etc", lang));
+                                        .append(LangID.getStringByID("alias.etc", lang));
                                 break;
                             }
 
@@ -201,16 +201,16 @@ public class Alias extends ConstraintCommand {
                         createMessageWithNoPings(ch, result.toString());
                     }
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(enemyName)));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", validateName(enemyName)));
 
                     String check;
 
                     if (enemies.size() <= 20)
                         check = "";
                     else
-                        check = LangID.getStringByID("formst_next", lang);
+                        check = LangID.getStringByID("ui.search.old.page.nextOnly", lang);
 
-                    sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+                    sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang)).append(check);
 
                     for (int i = 0; i < 20; i++) {
                         if (i >= enemies.size())
@@ -234,10 +234,10 @@ public class Alias extends ConstraintCommand {
                         if (enemies.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+                        sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
                     }
 
-                    sb.append(LangID.getStringByID("formst_can", lang));
+                    sb.append(LangID.getStringByID("ui.search.old.page.cancel", lang));
                     sb.append("```");
 
                     createMessageWithNoPings(ch, sb.toString(), res -> {
@@ -251,7 +251,7 @@ public class Alias extends ConstraintCommand {
                 String[] names = generateStageNameSeries(loader.getContent());
 
                 if (names[0] == null && names[1] == null && names[2] == null) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias_stnoname", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noAlias.stage", lang));
 
                     return;
                 }
@@ -261,12 +261,12 @@ public class Alias extends ConstraintCommand {
                     stages = EntityFilter.findStageWithMapName(names[2]);
 
                     if (!stages.isEmpty()) {
-                        ch.sendMessage(LangID.getStringByID("stinfo_smart", lang)).queue();
+                        ch.sendMessage(LangID.getStringByID("stageInfo.smartSearch", lang)).queue();
                     }
                 }
 
                 if (stages.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("stageInfo.fail.noResult", lang).replace("_", generateSearchName(names)));
                 } else if (stages.size() == 1) {
                     String stName = StaticStore.safeMultiLangGet(stages.getFirst(), lang);
 
@@ -279,9 +279,9 @@ public class Alias extends ConstraintCommand {
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", stName));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_stalias", lang).replace("_SSS_", stName).replace("_NNN_", String.valueOf(alias.size())));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.stage", lang).replace("_SSS_", stName).replace("_NNN_", String.valueOf(alias.size())));
 
                         result.append("\n\n");
 
@@ -290,7 +290,7 @@ public class Alias extends ConstraintCommand {
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
-                                        .append(LangID.getStringByID("alias_etc", lang));
+                                        .append(LangID.getStringByID("alias.etc", lang));
                                 break;
                             }
 
@@ -309,9 +309,9 @@ public class Alias extends ConstraintCommand {
                     if (stages.size() <= 20)
                         check = "";
                     else
-                        check = LangID.getStringByID("formst_next", lang);
+                        check = LangID.getStringByID("ui.search.old.page.nextOnly", lang);
 
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names))).append("```md\n").append(check);
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("stageInfo.several", lang).replace("_", generateSearchName(names))).append("```md\n").append(check);
 
                     for (int i = 0; i < 20; i++) {
                         if (i >= stages.size())
@@ -382,10 +382,10 @@ public class Alias extends ConstraintCommand {
                         if (stages.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+                        sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
                     }
 
-                    sb.append(LangID.getStringByID("formst_can", lang));
+                    sb.append(LangID.getStringByID("ui.search.old.page.cancel", lang));
                     sb.append("```");
 
                     ArrayList<Stage> finalStages = stages;
@@ -457,15 +457,15 @@ public class Alias extends ConstraintCommand {
         }
 
         if(names[0] != null) {
-            result += LangID.getStringByID("stinfo_mc", lang).replace("_", names[0])+", ";
+            result += LangID.getStringByID("stageInfo.mapCollection", lang).replace("_", names[0])+", ";
         }
 
         if(names[1] != null) {
-            result += LangID.getStringByID("stinfo_stm", lang).replace("_", names[1])+", ";
+            result += LangID.getStringByID("stageInfo.stageMap", lang).replace("_", names[1])+", ";
         }
 
         if(names[2] != null) {
-            result += LangID.getStringByID("stinfo_st", lang).replace("_", names[2]);
+            result += LangID.getStringByID("stageInfo.stage", lang).replace("_", names[2]);
         }
 
         if(result.endsWith(", "))

@@ -107,7 +107,7 @@ public class SpamPrevent {
 
                 StaticStore.logger.uploadLog("Spammer found : " + id);
 
-                ch.sendMessage(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
+                ch.sendMessage(LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
 
                 return true;
             }
@@ -148,7 +148,7 @@ public class SpamPrevent {
                         lang =  StaticStore.config.get(m.getUser().getId()).lang;
                     }
 
-                    return LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.getUser().getId());
+                    return LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.getUser().getId());
                 } else {
                     return "";
                 }
@@ -190,33 +190,33 @@ public class SpamPrevent {
 
         if(day != 0) {
             if(day > 1) {
-                result.append(day).append(LangID.getStringByID("days", lang));
+                result.append(day).append(LangID.getStringByID("date.day.plural", lang));
             } else {
-                result.append(day).append(LangID.getStringByID("day", lang));
+                result.append(day).append(LangID.getStringByID("date.day.singular", lang));
             }
         }
 
         if(hour != 0) {
             if(hour > 1) {
-                result.append(hour).append(LangID.getStringByID("hours", lang));
+                result.append(hour).append(LangID.getStringByID("date.hour.plural", lang));
             } else {
-                result.append(day).append(LangID.getStringByID("hour", lang));
+                result.append(day).append(LangID.getStringByID("date.hour.singular", lang));
             }
         }
 
         if(min != 0) {
             if(min > 1) {
-                result.append(min).append(LangID.getStringByID("mins", lang));
+                result.append(min).append(LangID.getStringByID("date.minute.uppercase.plural", lang));
             } else {
-                result.append(min).append(LangID.getStringByID("min", lang));
+                result.append(min).append(LangID.getStringByID("date.minute.uppercase.singular", lang));
             }
         }
 
         if(sec != 0) {
             if(sec > 1) {
-                result.append(DataToString.df.format(sec)).append(LangID.getStringByID("secs", lang));
+                result.append(DataToString.df.format(sec)).append(LangID.getStringByID("date.second.plural", lang));
             } else {
-                result.append(DataToString.df.format(sec)).append(LangID.getStringByID("sec", lang));
+                result.append(DataToString.df.format(sec)).append(LangID.getStringByID("date.second.singular", lang));
             }
         }
 

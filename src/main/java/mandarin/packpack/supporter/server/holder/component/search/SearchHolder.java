@@ -37,7 +37,7 @@ public abstract class SearchHolder extends ComponentHolder {
 
         StaticStore.removeHolder(id, this);
 
-        message.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .setComponents()
@@ -89,7 +89,7 @@ public abstract class SearchHolder extends ComponentHolder {
         StaticStore.removeHolder(event.getUser().getId(), this);
 
         event.deferEdit()
-                .setContent(LangID.getStringByID("formst_cancel", lang))
+                .setContent(LangID.getStringByID("ui.search.canceled", lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -98,7 +98,7 @@ public abstract class SearchHolder extends ComponentHolder {
 
     protected String getPage() {
         StringBuilder sb = new StringBuilder("```md\n")
-                .append(LangID.getStringByID("formst_pick", lang));
+                .append(LangID.getStringByID("ui.search.selectData", lang));
 
         List<String> data = accumulateListData(true);
 
@@ -115,7 +115,7 @@ public abstract class SearchHolder extends ComponentHolder {
             if(getDataSize() % PAGE_CHUNK != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
+            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         sb.append("```");
@@ -136,29 +136,29 @@ public abstract class SearchHolder extends ComponentHolder {
 
             if(totalPage > 10) {
                 if(page - 10 < 0) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
                 } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS));
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS));
                 }
             }
 
             if(page - 1 < 0) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
             } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS));
             }
 
             if(page + 1 >= totalPage) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).asDisabled());
             } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
             }
 
             if(totalPage > 10) {
                 if(page + 10 >= totalPage) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT).asDisabled());
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).asDisabled());
                 } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT));
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
                 }
             }
 
@@ -185,9 +185,9 @@ public abstract class SearchHolder extends ComponentHolder {
             }
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
 
-        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return rows;
     }

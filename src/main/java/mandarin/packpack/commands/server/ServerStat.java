@@ -48,7 +48,7 @@ public class ServerStat extends Command {
                 human++;
         }
 
-        result.append(LangID.getStringByID("bcustat_human", lang).replace("_", Long.toString(human)));
+        result.append(LangID.getStringByID("serverStat.human", lang).replace("_", Long.toString(human)));
         allUsers = human;
 
         long member = 0L;
@@ -61,7 +61,7 @@ public class ServerStat extends Command {
             }
         }
 
-        result.append(LangID.getStringByID("bcustat_mem", lang).replace("_", String.valueOf(member)).replace("=", df.format(member * 100.0 / allUsers)));
+        result.append(LangID.getStringByID("serverStat.member", lang).replace("_", String.valueOf(member)).replace("=", df.format(member * 100.0 / allUsers)));
 
         for(String name : holder.ID.keySet()) {
             String id = holder.ID.get(name);
@@ -76,7 +76,7 @@ public class ServerStat extends Command {
                     c++;
             }
 
-            result.append(LangID.getStringByID("bcustat_role", lang).replace("_MMM_", String.valueOf(c)).replace("=", df.format(c * 100.0 / allUsers)).replace("_NNN_", limitName(name)));
+            result.append(LangID.getStringByID("serverStat.role", lang).replace("_MMM_", String.valueOf(c)).replace("=", df.format(c * 100.0 / allUsers)).replace("_NNN_", limitName(name)));
         }
 
         ch.sendMessage(result.toString()).queue();

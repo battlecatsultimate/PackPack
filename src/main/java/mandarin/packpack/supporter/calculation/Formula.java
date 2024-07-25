@@ -118,7 +118,7 @@ public class Formula {
         }
 
         if(e == null) {
-            error.add(LangID.getStringByID("calc_formulafail", lang));
+            error.add(LangID.getStringByID("calculator.failed.invalidFormula", lang));
 
             element = new NestedNumber(this, BigDecimal.ZERO);
         } else {
@@ -248,7 +248,7 @@ public class Formula {
                     BigDecimal y = substitute(startPoint);
 
                     if(!Equation.error.isEmpty() || y == null) {
-                        error.add(LangID.getStringByID("calc_newtonfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.newtonRaphson", lang));
 
                         Equation.error.clear();
 
@@ -276,7 +276,7 @@ public class Formula {
                     if(!Equation.error.isEmpty() || ey == null) {
                         Equation.error.clear();
 
-                        error.add(LangID.getStringByID("calc_falsefail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.falsePosition", lang));
 
                         return null;
                     }
@@ -290,7 +290,7 @@ public class Formula {
                     if(!Equation.error.isEmpty() || sy == null) {
                         Equation.error.clear();
 
-                        error.add(LangID.getStringByID("calc_falsefail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.falsePosition", lang));
 
                         return null;
                     }
@@ -310,7 +310,7 @@ public class Formula {
                     BigDecimal ey = substitute(endPoint);
 
                     if(!Equation.error.isEmpty() || ey == null) {
-                        error.add(LangID.getStringByID("calc_secantfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.secant", lang));
 
                         Equation.error.clear();
 
@@ -324,7 +324,7 @@ public class Formula {
                     BigDecimal sy = substitute(startPoint);
 
                     if(!Equation.error.isEmpty() || sy == null) {
-                        error.add(LangID.getStringByID("calc_secantfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.secant", lang));
 
                         Equation.error.clear();
 
@@ -353,7 +353,7 @@ public class Formula {
                     BigDecimal fm = substitute(m);
 
                     if(!Equation.error.isEmpty() || fm == null) {
-                        error.add(LangID.getStringByID("calc_bisectionfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.bisection", lang));
 
                         Equation.error.clear();
 
@@ -366,7 +366,7 @@ public class Formula {
                     BigDecimal fs = substitute(startPoint);
 
                     if(!Equation.error.isEmpty() || fs == null) {
-                        error.add(LangID.getStringByID("calc_bisectionfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.bisection", lang));
 
                         Equation.error.clear();
 
@@ -401,7 +401,7 @@ public class Formula {
                     error.clear();
                 }
 
-                error.add(LangID.getStringByID("calc_solvefail", lang));
+                error.add(LangID.getStringByID("calculator.failed.solve.unknown", lang));
 
                 return null;
             default:
@@ -423,7 +423,7 @@ public class Formula {
                     BigDecimal y = substitute(startPoint);
 
                     if (!Equation.error.isEmpty() || y == null) {
-                        error.add(LangID.getStringByID("calc_newtonfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.newtonRaphson", lang));
 
                         Equation.error.clear();
 
@@ -450,7 +450,7 @@ public class Formula {
                 NumericalResult result = new NumericalResult(startPoint, err, ROOT);
 
                 if (iteration >= maximumIteration) {
-                    result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
+                    result.warning = String.format(LangID.getStringByID("calculator.failed.solve.unknown", lang), Equation.formatNumber(err));
                 }
 
                 return result;
@@ -464,7 +464,7 @@ public class Formula {
                     if (!Equation.error.isEmpty() || sy == null) {
                         Equation.error.clear();
 
-                        error.add(LangID.getStringByID("calc_falsefail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.falsePosition", lang));
 
                         return null;
                     }
@@ -474,7 +474,7 @@ public class Formula {
                     if (!Equation.error.isEmpty() || ey == null) {
                         Equation.error.clear();
 
-                        error.add(LangID.getStringByID("calc_falsefail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.falsePosition", lang));
 
                         return null;
                     }
@@ -495,7 +495,7 @@ public class Formula {
                 NumericalResult result = new NumericalResult(startPoint, err, ROOT);
 
                 if (iteration >= maximumIteration) {
-                    result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
+                    result.warning = String.format(LangID.getStringByID("calculator.failed.solve.unknown", lang), Equation.formatNumber(err));
                 }
 
                 return result;
@@ -507,7 +507,7 @@ public class Formula {
                     BigDecimal ey = substitute(endPoint);
 
                     if (!Equation.error.isEmpty() || ey == null) {
-                        error.add(LangID.getStringByID("calc_secantfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.secant", lang));
 
                         Equation.error.clear();
 
@@ -521,7 +521,7 @@ public class Formula {
                     BigDecimal sy = substitute(startPoint);
 
                     if (!Equation.error.isEmpty() || sy == null) {
-                        error.add(LangID.getStringByID("calc_secantfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.secant", lang));
 
                         Equation.error.clear();
 
@@ -547,7 +547,7 @@ public class Formula {
                 NumericalResult result = new NumericalResult(startPoint, err, ROOT);
 
                 if (iteration >= maximumIteration) {
-                    result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
+                    result.warning = String.format(LangID.getStringByID("calculator.failed.solve.unknown", lang), Equation.formatNumber(err));
                 }
 
                 return result;
@@ -562,7 +562,7 @@ public class Formula {
                     BigDecimal fm = substitute(m);
 
                     if (!Equation.error.isEmpty() || fm == null) {
-                        error.add(LangID.getStringByID("calc_bisectionfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.bisection", lang));
 
                         Equation.error.clear();
 
@@ -575,7 +575,7 @@ public class Formula {
                     BigDecimal fs = substitute(startPoint);
 
                     if (!Equation.error.isEmpty() || fs == null) {
-                        error.add(LangID.getStringByID("calc_bisectionfail", lang));
+                        error.add(LangID.getStringByID("calculator.failed.solve.bisection", lang));
 
                         Equation.error.clear();
 
@@ -601,7 +601,7 @@ public class Formula {
                 NumericalResult result = new NumericalResult(startPoint, err, ROOT);
 
                 if (iteration >= maximumIteration) {
-                    result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
+                    result.warning = String.format(LangID.getStringByID("calculator.failed.solve.unknown", lang), Equation.formatNumber(err));
                 }
 
                 return result;
@@ -623,7 +623,7 @@ public class Formula {
                     error.clear();
                 }
 
-                error.add(LangID.getStringByID("calc_solvefail", lang));
+                error.add(LangID.getStringByID("calculator.failed.solve.unknown", lang));
 
                 return null;
             }
@@ -642,7 +642,7 @@ public class Formula {
                 if (!Equation.error.isEmpty() || fha == null) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_diffback", lang));
+                    error.add(LangID.getStringByID("calculator.failed.differentiate.backwardDifference", lang));
 
                     return null;
                 }
@@ -652,7 +652,7 @@ public class Formula {
                 if (!Equation.error.isEmpty() || fa == null) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_diffback", lang));
+                    error.add(LangID.getStringByID("calculator.failed.differentiate.backwardDifference", lang));
 
                     return null;
                 }
@@ -665,7 +665,7 @@ public class Formula {
                 if (!Equation.error.isEmpty() || fa == null) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_difffront", lang));
+                    error.add(LangID.getStringByID("calculator.failed.differentiate.forwardDifference", lang));
 
                     return null;
                 }
@@ -675,7 +675,7 @@ public class Formula {
                 if (!Equation.error.isEmpty() || fah == null) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_difffront", lang));
+                    error.add(LangID.getStringByID("calculator.failed.differentiate.forwardDifference", lang));
 
                     return null;
                 }
@@ -688,7 +688,7 @@ public class Formula {
                 if (!Equation.error.isEmpty() || fha == null) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_diffcenter", lang));
+                    error.add(LangID.getStringByID("calculator.failed.differentiate.centralDifference", lang));
 
                     return null;
                 }
@@ -698,7 +698,7 @@ public class Formula {
                 if (!Equation.error.isEmpty() || fah == null) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_diffcenter", lang));
+                    error.add(LangID.getStringByID("calculator.failed.differentiate.centralDifference", lang));
 
                     return null;
                 }
@@ -717,7 +717,7 @@ public class Formula {
         switch (algorithm) {
             case SIMPSON:
                 if(section % 2 != 0) {
-                    error.add(LangID.getStringByID("int_simpson", lang));
+                    error.add(LangID.getStringByID("integration.failed.invalidSectionNumber.simpson1/3", lang));
 
                     return BigDecimal.ZERO;
                 }
@@ -733,7 +733,7 @@ public class Formula {
                 break;
             case BOOLE:
                 if(section % 4 != 0) {
-                    error.add(LangID.getStringByID("int_boole", lang));
+                    error.add(LangID.getStringByID("integration.failed.invalidSectionNumber.boole", lang));
 
                     return BigDecimal.ZERO;
                 }
@@ -751,7 +751,7 @@ public class Formula {
             BigDecimal y = substitute(x);
 
             if(!Equation.error.isEmpty() || y == null) {
-                error.add(LangID.getStringByID("int_fail", lang));
+                error.add(LangID.getStringByID("integration.failed.integrationFailed", lang));
 
                 return BigDecimal.ZERO;
             }
@@ -1155,7 +1155,7 @@ public class Formula {
                                             type = NestedFunction.FUNC.CSC;
 
                                             break;
-                                        case "sec":
+                                        case "date.second.singular":
                                             type = NestedFunction.FUNC.SEC;
 
                                             break;
@@ -1368,7 +1368,7 @@ public class Formula {
 
                                 if(!variable.contains(va)) {
                                     if(variable.size() >= maxVariable) {
-                                        error.add(String.format(LangID.getStringByID("calc_var", lang), va.name, maxVariable, variable.getLast().name));
+                                        error.add(String.format(LangID.getStringByID("calculator.failed.tooManyVariables", lang), va.name, maxVariable, variable.getLast().name));
 
                                         return null;
                                     } else {
@@ -1489,7 +1489,7 @@ public class Formula {
 
         if(!variable.contains(v)) {
             if(variable.size() >= maxVariable) {
-                error.add(String.format(LangID.getStringByID("calc_var", lang), v.name, maxVariable, variable.getLast().name));
+                error.add(String.format(LangID.getStringByID("calculator.failed.tooManyVariables", lang), v.name, maxVariable, variable.getLast().name));
 
                 return null;
             } else {

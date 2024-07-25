@@ -36,9 +36,9 @@ public class SubscribeEvent extends ConstraintCommand {
     }
 
     private String getContents() {
-        return LangID.getStringByID("sercon_channeltitle", lang) + "\n" +
-                LangID.getStringByID("sercon_channeleventtit", lang).formatted(Emoji.fromUnicode("🗓️")) + "\n" +
-                LangID.getStringByID("sercon_channeleventversion", lang);
+        return LangID.getStringByID("serverConfig.channel.documentation.title", lang) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.eventData.title", lang).formatted(Emoji.fromUnicode("🗓️")) + "\n" +
+                LangID.getStringByID("serverConfig.eventData.versionSelect", lang);
     }
 
     private List<LayoutComponent> getComponents() {
@@ -68,19 +68,19 @@ public class SubscribeEvent extends ConstraintCommand {
             switch (id) {
                 case "en" -> {
                     emoji = Emoji.fromUnicode("🇺🇸");
-                    label = LangID.getStringByID("sercon_channeleventen", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.en", lang);
                 }
                 case "jp" -> {
                     emoji = Emoji.fromUnicode("🇯🇵");
-                    label = LangID.getStringByID("sercon_channeleventjp", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.jp", lang);
                 }
                 case "tw" -> {
                     emoji = Emoji.fromUnicode("🇹🇼");
-                    label = LangID.getStringByID("sercon_channeleventtw", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.tw", lang);
                 }
                 case "kr" -> {
                     emoji = Emoji.fromUnicode("🇰🇷");
-                    label = LangID.getStringByID("sercon_channeleventkr", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.kr", lang);
                 }
                 default -> throw new IllegalStateException("E/ConfigEventVersionSelectHolder::getComponents - Unknown locale type %s found".formatted(id));
             }
@@ -90,8 +90,8 @@ public class SubscribeEvent extends ConstraintCommand {
 
         result.add(
                 ActionRow.of(
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

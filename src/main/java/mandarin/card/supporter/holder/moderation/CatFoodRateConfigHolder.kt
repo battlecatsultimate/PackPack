@@ -30,7 +30,7 @@ class CatFoodRateConfigHolder(author: Message, channelID: String, message: Messa
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "cf" -> {
-                val min = TextInput.create("min", "Minimum Cat Food", TextInputStyle.SHORT)
+                val min = TextInput.create("date.minute.uppercase.singular", "Minimum Cat Food", TextInputStyle.SHORT)
                     .setPlaceholder("Define minimum amount of cat foods that will be given to user while chatting")
                     .setValue(CardData.minimumCatFoods.toString())
                     .setRequired(true)

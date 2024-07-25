@@ -58,9 +58,9 @@ public class ComboMessageHolder extends SearchHolder {
             comboName += " | " + DataToString.getComboType(c, lang) + " ";
 
             if(c.forms.length == 1) {
-                comboName += LangID.getStringByID("combo_slot", lang);
+                comboName += LangID.getStringByID("combo.slot.singular", lang);
             } else {
-                comboName += String.format(LangID.getStringByID("combo_slots", lang), c.forms.length);
+                comboName += String.format(LangID.getStringByID("combo.slot.plural", lang), c.forms.length);
             }
 
             data.add(comboName);

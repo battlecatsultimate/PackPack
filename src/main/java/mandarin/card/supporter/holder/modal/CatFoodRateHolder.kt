@@ -23,7 +23,7 @@ class CatFoodRateHolder(author: Message, channelID: String, message: Message, pr
         if (event.modalId != "cf")
             return
 
-        val min = getValueFromMap(event.values, "min").lowercase()
+        val min = getValueFromMap(event.values, "date.minute.uppercase.singular").lowercase()
         val max = getValueFromMap(event.values, "max").lowercase()
 
         if (!StaticStore.isNumeric(min)) {

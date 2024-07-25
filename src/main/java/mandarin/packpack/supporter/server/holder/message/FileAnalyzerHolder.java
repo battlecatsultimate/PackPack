@@ -41,7 +41,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
         if(!checkAttachments(author, false)) {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, msg, "stat_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, msg, "statAnalyzer.expired", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
@@ -61,7 +61,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
         Message m = event.getMessage();
 
         if(m.getContentRaw().equals("c")) {
-            msg.editMessage(LangID.getStringByID("stat_cancel", lang)).queue();
+            msg.editMessage(LangID.getStringByID("statAnalyzer.canceled", lang)).queue();
 
             StaticStore.deleteFile(container, true);
 
@@ -89,7 +89,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+        msg.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }

@@ -22,13 +22,13 @@ public class UnsubscribeScamLinkDetector extends ConstraintCommand {
         Guild g = loader.getGuild();
 
         if(!StaticStore.scamLinkHandlers.servers.containsKey(g.getId())) {
-            ch.sendMessage(LangID.getStringByID("subscam_notreg", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("unsubscribeScamDetector.failed.noDetector", lang)).queue();
 
             return;
         }
 
         StaticStore.scamLinkHandlers.servers.remove(g.getId());
 
-        ch.sendMessage(LangID.getStringByID("subscam_unsub", lang)).queue();
+        ch.sendMessage(LangID.getStringByID("unsubscribeScamDetector.unsubscribed", lang)).queue();
     }
 }

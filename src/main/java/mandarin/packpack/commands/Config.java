@@ -41,61 +41,61 @@ public class Config extends ConstraintCommand {
         String locale;
 
         if (language == null) {
-            locale = LangID.getStringByID("config_auto", lang);
+            locale = LangID.getStringByID("config.locale.auto", lang);
         } else {
             locale = switch (language) {
-                case EN -> LangID.getStringByID("lang_en", lang);
-                case JP -> LangID.getStringByID("lang_jp", lang);
-                case KR -> LangID.getStringByID("lang_kr", lang);
-                case ZH -> LangID.getStringByID("lang_zh", lang);
-                case FR -> LangID.getStringByID("lang_fr", lang);
-                case IT -> LangID.getStringByID("lang_it", lang);
-                case ES -> LangID.getStringByID("lang_es", lang);
-                case DE -> LangID.getStringByID("lang_de", lang);
-                case TH -> LangID.getStringByID("lang_th", lang);
-                default -> LangID.getStringByID("config_auto", lang);
+                case EN -> LangID.getStringByID("bot.language.en", lang);
+                case JP -> LangID.getStringByID("bot.language.jp", lang);
+                case KR -> LangID.getStringByID("bot.language.kr", lang);
+                case ZH -> LangID.getStringByID("bot.language.zh", lang);
+                case FR -> LangID.getStringByID("bot.language.fr", lang);
+                case IT -> LangID.getStringByID("bot.language.it", lang);
+                case ES -> LangID.getStringByID("bot.language.es", lang);
+                case DE -> LangID.getStringByID("bot.language.de", lang);
+                case TH -> LangID.getStringByID("bot.language.th", lang);
+                default -> LangID.getStringByID("config.locale.auto", lang);
             };
         }
 
-        String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
-        String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
+        String ex = LangID.getStringByID(config.extra ? "config.extraInformation.description.true" : "config.extraInformation.description.false", lang);
+        String bool = LangID.getStringByID(config.extra ? "data.true" : "data.false", lang);
 
-        String message = "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
-                LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
-                "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n\n" +
+        String message = "**" + LangID.getStringByID("config.defaultLevel.title", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
+                LangID.getStringByID("config.defaultLevel.description", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
+                "**" + LangID.getStringByID("config.extraInformation.title", lang).replace("_", bool) + "**\n\n" +
                 ex + "\n\n" +
-                "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**";
+                "**" + LangID.getStringByID("config.locale.title", lang).replace("_", locale) + "**";
 
         List<SelectOption> languages = new ArrayList<>();
 
-        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "auto").withDefault(config.lang == null));
+        languages.add(SelectOption.of(LangID.getStringByID("config.locale.auto", lang), "auto").withDefault(config.lang == null));
 
-        for (CommonStatic.Lang.Locale loc : CommonStatic.Lang.Locale.values()) {
-            String l = LangID.getStringByID("lang_" + loc.code, config.lang);
+        for (CommonStatic.Lang.Locale loc : CommonStatic.Lang.supportedLanguage) {
+            String l = LangID.getStringByID("bot.language." + loc.code, config.lang);
 
-            languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), loc.name()).withDefault(config.lang == loc));
+            languages.add(SelectOption.of(LangID.getStringByID("config.locale.title", lang).replace("_", l), loc.name()).withDefault(config.lang == loc));
         }
 
         Button extra;
 
         if(config.extra) {
-            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON);
+            extra = Button.secondary("extra", LangID.getStringByID("config.extraInformation.title", lang).replace("_", LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON);
         } else {
-            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF);
+            extra = Button.secondary("extra", LangID.getStringByID("config.extraInformation.title", lang).replace("_", LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF);
         }
 
         List<ActionComponent> components = new ArrayList<>();
 
-        components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
-        components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
+        components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
+        components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
 
         List<ActionComponent> pages = new ArrayList<>();
 
-        pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-        pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+        pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+        pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
 
         replyToMessageSafely(ch, message, loader.getMessage(), a -> a.setComponents(
-                ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
+                ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config.defaultLevel.set.title", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
                 ActionRow.of(extra),
                 ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
                 ActionRow.of(pages),

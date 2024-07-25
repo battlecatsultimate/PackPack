@@ -37,10 +37,10 @@ public class Setup extends ConstraintCommand {
         if(alreadySet(g)) {
             List<ActionComponent> components = new ArrayList<>();
 
-            components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
-            components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
+            components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
+            components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
 
-            ch.sendMessage(LangID.getStringByID("setup_confirm", lang))
+            ch.sendMessage(LangID.getStringByID("setup.confirmation", lang))
                     .setComponents(ActionRow.of(components))
                     .queue(m -> {
                         if(m == null)
@@ -59,11 +59,11 @@ public class Setup extends ConstraintCommand {
     }
 
     private void initializeSetup(MessageChannel ch, Message author) {
-        MessageCreateAction action = ch.sendMessage(LangID.getStringByID("setup_mod", lang));
+        MessageCreateAction action = ch.sendMessage(LangID.getStringByID("setup.select.moderator", lang));
 
         action = action.setComponents(
-                ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()),
-                ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
+                ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup.selectRole", lang)).setRequiredRange(1, 1).build()),
+                ActionRow.of(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)))
         ).setAllowedMentions(new ArrayList<>());
 
         action.queue(m -> {

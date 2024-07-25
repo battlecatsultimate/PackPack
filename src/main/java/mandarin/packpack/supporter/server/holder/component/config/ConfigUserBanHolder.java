@@ -41,9 +41,9 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
 
                 for (User u : users) {
                     if (u.isBot()) {
-                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("sercon_permissionbanbot", lang));
+                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("serverConfig.commandBan.cantBan.reason.bot", lang));
                     } else if (u.getId().equals(getAuthorMessage().getAuthor().getId())) {
-                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("sercon_permissionbanyou", lang));
+                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("serverConfig.commandBan.cantBan.reason.self", lang));
                     } else {
                         ids.add(u.getId());
                     }
@@ -53,9 +53,9 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
 
                 if (!cantBan.isEmpty()) {
                     if (cantBan.size() == 1) {
-                        invalidUser.append(LangID.getStringByID("sercon_permissioncantbanuser", lang));
+                        invalidUser.append(LangID.getStringByID("serverConfig.commandBan.cantBan.singular", lang));
                     } else {
-                        invalidUser.append(LangID.getStringByID("sercon_permissioncantbanusers", lang).formatted(cantBan.size()));
+                        invalidUser.append(LangID.getStringByID("serverConfig.commandBan.cantBan.plural", lang).formatted(cantBan.size()));
                     }
 
                     invalidUser.append("\n");
@@ -111,7 +111,7 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
             }
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -120,11 +120,11 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -169,13 +169,13 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
     private String getContents() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(LangID.getStringByID("sercon_permission", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_permissionban", lang).formatted(Emoji.fromUnicode("🔨"))).append("\n")
-                .append(LangID.getStringByID("sercon_permissionbanmanagedesc", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_permissionbanlist", lang)).append("\n");
+        builder.append(LangID.getStringByID("serverConfig.permission.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.permission.documentation.commandBan.title", lang).formatted(Emoji.fromUnicode("🔨"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.commandBan.description", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.commandBan.bannedUser", lang)).append("\n");
 
         if (holder.banned.isEmpty()) {
-            builder.append(LangID.getStringByID("sercon_permissionbannoban", lang));
+            builder.append(LangID.getStringByID("serverConfig.commandBan.noBanned", lang));
         } else {
             int size = Math.min(holder.banned.size(), (page + 1) * SearchHolder.PAGE_CHUNK);
 
@@ -190,7 +190,7 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
             if (holder.banned.size() > SearchHolder.PAGE_CHUNK) {
                 int totalPage = (int) Math.ceil(holder.banned.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
-                builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
+                builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
             }
         }
 
@@ -202,7 +202,7 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
 
         result.add(ActionRow.of(
                 EntitySelectMenu.create("user", EntitySelectMenu.SelectTarget.USER)
-                        .setPlaceholder(LangID.getStringByID("sercon_permissionbanselect", lang))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.commandBan.selectUser", lang))
                         .setRequiredRange(1, EntitySelectMenu.OPTIONS_MAX_AMOUNT)
                         .build()
         ));
@@ -217,29 +217,29 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
 
             if(totalPage > 10) {
                 if(page - 10 < 0) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
                 } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS));
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS));
                 }
             }
 
             if(page - 1 < 0) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
             } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), EmojiStore.PREVIOUS));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS));
             }
 
             if(page + 1 >= totalPage) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).asDisabled());
             } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), EmojiStore.NEXT));
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
             }
 
             if(totalPage > 10) {
                 if(page + 10 >= totalPage) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT).asDisabled());
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).asDisabled());
                 } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT));
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
                 }
             }
 
@@ -248,9 +248,9 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

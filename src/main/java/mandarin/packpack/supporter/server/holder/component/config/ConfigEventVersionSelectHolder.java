@@ -37,7 +37,7 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -46,11 +46,11 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -89,9 +89,9 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
-        return LangID.getStringByID("sercon_channeltitle", lang) + "\n" +
-                LangID.getStringByID("sercon_channeleventtit", lang).formatted(Emoji.fromUnicode("🗓️")) + "\n" +
-                LangID.getStringByID("sercon_channeleventversion", lang);
+        return LangID.getStringByID("serverConfig.channel.documentation.title", lang) + "\n" +
+                LangID.getStringByID("serverConfig.channel.documentation.eventData.title", lang).formatted(Emoji.fromUnicode("🗓️")) + "\n" +
+                LangID.getStringByID("serverConfig.eventData.versionSelect", lang);
     }
 
     private List<LayoutComponent> getComponents() {
@@ -115,19 +115,19 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
             switch (id) {
                 case "en" -> {
                     emoji = Emoji.fromUnicode("🇺🇸");
-                    label = LangID.getStringByID("sercon_channeleventen", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.en", lang);
                 }
                 case "jp" -> {
                     emoji = Emoji.fromUnicode("🇯🇵");
-                    label = LangID.getStringByID("sercon_channeleventjp", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.jp", lang);
                 }
                 case "tw" -> {
                     emoji = Emoji.fromUnicode("🇹🇼");
-                    label = LangID.getStringByID("sercon_channeleventtw", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.tw", lang);
                 }
                 case "kr" -> {
                     emoji = Emoji.fromUnicode("🇰🇷");
-                    label = LangID.getStringByID("sercon_channeleventkr", lang);
+                    label = LangID.getStringByID("serverConfig.eventData.version.kr", lang);
                 }
                 default -> throw new IllegalStateException("E/ConfigEventVersionSelectHolder::getComponents - Unknown locale type %s found".formatted(id));
             }
@@ -138,16 +138,16 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
         if (parent != null) {
             result.add(
                     ActionRow.of(
-                            Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                            Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                            Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                     )
             );
         } else {
             result.add(
                     ActionRow.of(
-                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                            Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                     )
             );
         }

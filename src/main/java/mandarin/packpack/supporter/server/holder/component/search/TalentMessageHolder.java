@@ -60,7 +60,7 @@ public class TalentMessageHolder extends SearchHolder {
             Form f = form.get(id);
 
             if(f.unit.forms.length < 3) {
-                createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notf", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("talentInfo.failed.noTrueForm", lang));
 
                 return;
             }
@@ -68,7 +68,7 @@ public class TalentMessageHolder extends SearchHolder {
             Form trueForm = f.unit.forms[2];
 
             if(trueForm.du == null || trueForm.du.getPCoin() == null) {
-                createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notal", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("talentInfo.failed.noTalent", lang));
 
                 return;
             }

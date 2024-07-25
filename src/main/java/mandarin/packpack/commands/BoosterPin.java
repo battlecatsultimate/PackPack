@@ -41,7 +41,7 @@ public class BoosterPin extends ConstraintCommand {
         }
 
         if(!holder.boosterPin) {
-            replyToMessageSafely(ch, LangID.getStringByID("boostpin_noperm", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("boosterPin.failed.noPermission", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -60,7 +60,7 @@ public class BoosterPin extends ConstraintCommand {
             }
 
             if(!pinAllowed) {
-                replyToMessageSafely(ch, LangID.getStringByID("boostpin_nothere", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("boosterPin.failed.noPinAllowed", lang), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -72,7 +72,7 @@ public class BoosterPin extends ConstraintCommand {
             if(loader.getMessage().getReferencedMessage() != null) {
                 pinMessage(loader, loader.getMessage().getReferencedMessage());
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("boostpin_id", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("boosterPin.failed.noID", lang), loader.getMessage(), a -> a);
             }
         } else {
             RestAction<Message> action = obtainMessage(contents[1], ch);
@@ -91,7 +91,7 @@ public class BoosterPin extends ConstraintCommand {
         MessageChannel ch = loader.getChannel();
 
         if(msg == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("boostpin_nomsg", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("boosterPin.failed.noTargetMessage", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -99,11 +99,11 @@ public class BoosterPin extends ConstraintCommand {
         if(msg.isPinned()) {
             msg.unpin().queue();
 
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("boostpin_unpin", lang), msg.getJumpUrl()), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("boosterPin.unpinned", lang), msg.getJumpUrl()), loader.getMessage(), a -> a);
         } else {
             msg.pin().queue();
 
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("boostpin_pin", lang), msg.getJumpUrl()), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("boosterPin.pinned", lang), msg.getJumpUrl()), loader.getMessage(), a -> a);
         }
     }
 

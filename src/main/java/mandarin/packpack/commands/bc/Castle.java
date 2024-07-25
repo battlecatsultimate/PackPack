@@ -106,7 +106,7 @@ public class Castle extends ConstraintCommand {
 
             event.deferReply()
                     .setAllowedMentions(new ArrayList<>())
-                    .setContent(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(cs.id.id)).replace("_BBB_", String.valueOf(cs.boss_spawn)))
+                    .setContent(LangID.getStringByID("castle.result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(cs.id.id)).replace("_BBB_", String.valueOf(cs.boss_spawn)))
                     .addFiles(FileUpload.fromData(img, "result.png"))
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
@@ -228,7 +228,7 @@ public class Castle extends ConstraintCommand {
             else
                 castleCode = "SC";
 
-            sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", String.valueOf(cs.boss_spawn)), img, "result.png", loader.getMessage());
+            sendMessageWithFile(ch, LangID.getStringByID("castle.result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", String.valueOf(cs.boss_spawn)), img, "result.png", loader.getMessage());
         } else {
             String[] list = loader.getContent().split(" ");
 
@@ -238,7 +238,7 @@ public class Castle extends ConstraintCommand {
                 String[] messages = loader.getContent().split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("castle.fail.noID", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -250,7 +250,7 @@ public class Castle extends ConstraintCommand {
                 if(StaticStore.isNumeric(msg)) {
                     id = StaticStore.safeParseInt(msg);
                 } else {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle_number", lang), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("castle.fail.notNumber", lang), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -325,9 +325,9 @@ public class Castle extends ConstraintCommand {
                 else
                     castleCode = "SC";
 
-                sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", String.valueOf(image.boss_spawn)), img, "result.png", loader.getMessage());
+                sendMessageWithFile(ch, LangID.getStringByID("castle.result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", String.valueOf(image.boss_spawn)), img, "result.png", loader.getMessage());
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("castle.fail.noParameter", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
             }
         }
     }

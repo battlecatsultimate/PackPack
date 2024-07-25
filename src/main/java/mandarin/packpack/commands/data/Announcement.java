@@ -75,7 +75,7 @@ public class Announcement extends ConstraintCommand {
 
         String url = EventFactor.ANNOUNCEURL.replace("LL", loc).replace("VVVVVV", ver).replace("DDDDDDDDD", time);
 
-        ch.sendMessage(LangID.getStringByID("announce_limit", lang)+"\n"+url).queue();
+        ch.sendMessage(LangID.getStringByID("announce.limit", lang)+"\n"+url).queue();
     }
 
     private int checkParameter(String message) {

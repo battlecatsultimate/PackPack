@@ -321,7 +321,7 @@ public class PackBot {
                                     if(!eventDone) {
                                         eventDone = true;
 
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc" + locale.code, holder.config.lang)).queue();
+                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event.title." + locale.code, holder.config.lang)).queue();
                                     }
 
                                     boolean started = false;
@@ -344,7 +344,7 @@ public class PackBot {
                                                     builder.append("** **\n");
                                                 }
 
-                                                builder.append(LangID.getStringByID("event_stage", holder.config.lang)).append("\n\n");
+                                                builder.append(LangID.getStringByID("event.section.stage", holder.config.lang)).append("\n\n");
                                             }
 
                                             if(!initial) {
@@ -354,15 +354,15 @@ public class PackBot {
 
                                                 switch (type) {
                                                     case DAILY ->
-                                                            builder.append(LangID.getStringByID("printstage_daily", holder.config.lang)).append("\n\n```ansi\n");
+                                                            builder.append(LangID.getStringByID("event.permanentSchedule.daily", holder.config.lang)).append("\n\n```ansi\n");
                                                     case WEEKLY ->
-                                                            builder.append(LangID.getStringByID("printstage_weekly", holder.config.lang)).append("\n\n```ansi\n");
+                                                            builder.append(LangID.getStringByID("event.permanentSchedule.weekly", holder.config.lang)).append("\n\n```ansi\n");
                                                     case MONTHLY ->
-                                                            builder.append(LangID.getStringByID("printstage_monthly", holder.config.lang)).append("\n\n```ansi\n");
+                                                            builder.append(LangID.getStringByID("event.permanentSchedule.monthly", holder.config.lang)).append("\n\n```ansi\n");
                                                     case YEARLY ->
-                                                            builder.append(LangID.getStringByID("printstage_yearly", holder.config.lang)).append("\n\n```ansi\n");
+                                                            builder.append(LangID.getStringByID("event.permanentSchedule.yearly", holder.config.lang)).append("\n\n```ansi\n");
                                                     case MISSION ->
-                                                            builder.append(LangID.getStringByID("event_mission", holder.config.lang)).append("\n\n```ansi\n");
+                                                            builder.append(LangID.getStringByID("event.section.mission", holder.config.lang)).append("\n\n```ansi\n");
                                                     default -> builder.append("```ansi\n");
                                                 }
                                             } else {
@@ -415,7 +415,7 @@ public class PackBot {
                                     if(!eventDone) {
                                         eventDone = true;
 
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc" + locale.code, holder.config.lang)).queue();
+                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event.title." + locale.code, holder.config.lang)).queue();
                                     }
 
                                     boolean started = false;
@@ -431,9 +431,9 @@ public class PackBot {
                                             }
 
                                             if(j == EventFactor.GATYA) {
-                                                builder.append(LangID.getStringByID("event_gacha", holder.config.lang)).append("\n\n");
+                                                builder.append(LangID.getStringByID("event.section.gacha", holder.config.lang)).append("\n\n");
                                             } else {
-                                                builder.append(LangID.getStringByID("event_item", holder.config.lang)).append("\n\n");
+                                                builder.append(LangID.getStringByID("event.section.item", holder.config.lang)).append("\n\n");
                                             }
                                         }
 
@@ -459,33 +459,33 @@ public class PackBot {
 
                                         if(result.isEmpty() && j == EventFactor.GATYA) {
                                             builder.append("\n")
-                                                    .append(LangID.getStringByID("printgacha_g", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.guaranteed.code", holder.config.lang))
                                                     .append(" : ")
-                                                    .append(LangID.getStringByID("printgacha_gua", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", holder.config.lang))
                                                     .append(" | ")
-                                                    .append(LangID.getStringByID("printgacha_s", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.stepUp.code", holder.config.lang))
                                                     .append(" : ")
-                                                    .append(LangID.getStringByID("printgacha_step", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", holder.config.lang))
                                                     .append(" | ")
-                                                    .append(LangID.getStringByID("printgacha_l", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", holder.config.lang))
                                                     .append(" : ")
-                                                    .append(LangID.getStringByID("printgacha_lucky", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", holder.config.lang))
                                                     .append(" | ")
-                                                    .append(LangID.getStringByID("printgacha_p", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.platinumShard.code", holder.config.lang))
                                                     .append(" : ")
-                                                    .append(LangID.getStringByID("printgacha_plat", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", holder.config.lang))
                                                     .append(" | ")
-                                                    .append(LangID.getStringByID("printgacha_n", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", holder.config.lang))
                                                     .append(" : ")
-                                                    .append(LangID.getStringByID("printgacha_neneko", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", holder.config.lang))
                                                     .append(" | ")
-                                                    .append(LangID.getStringByID("printgacha_gr", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.grandon.code", holder.config.lang))
                                                     .append(" : ")
-                                                    .append(LangID.getStringByID("printgacha_gran", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.grandon.fullName", holder.config.lang))
                                                     .append(" | ")
-                                                    .append(LangID.getStringByID("printgacha_r", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.reinforcement.code", holder.config.lang))
                                                     .append(" : ")
-                                                    .append(LangID.getStringByID("printgacha_rein", holder.config.lang))
+                                                    .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", holder.config.lang))
                                                     .append("\n```");
                                         } else {
                                             builder.append("```");
@@ -517,7 +517,7 @@ public class PackBot {
                             sent = true;
                             sentChannels.add(holder.eventMap.get(locale));
 
-                            ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
+                            ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event.warning", holder.config.lang)).queue();
                         }
 
                         if(!holder.eventMessage.isEmpty()) {

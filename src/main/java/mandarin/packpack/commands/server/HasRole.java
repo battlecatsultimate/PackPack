@@ -34,7 +34,7 @@ public class HasRole extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if (contents.length < 2) {
-            replyToMessageSafely(loader.getChannel(), LangID.getStringByID("hasrole_nodata", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), LangID.getStringByID("hasRole.failed.noID", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -42,7 +42,7 @@ public class HasRole extends ConstraintCommand {
         Role role = getRole(contents, loader.getGuild());
 
         if (role == null) {
-            replyToMessageSafely(loader.getChannel(), LangID.getStringByID("hasrole_norole", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), LangID.getStringByID("hasRole.failed.noRole", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -100,9 +100,9 @@ public class HasRole extends ConstraintCommand {
         StringBuilder builder = new StringBuilder();
 
         if (members.size() == 1) {
-            builder.append(LangID.getStringByID("hasrole_numbersingle", lang).formatted(role.getAsMention()));
+            builder.append(LangID.getStringByID("hasRole.embed.number.single", lang).formatted(role.getAsMention()));
         } else {
-            builder.append(LangID.getStringByID("hasrole_number", lang).formatted(members.size(), role.getAsMention()));
+            builder.append(LangID.getStringByID("hasRole.embed.number.plural", lang).formatted(members.size(), role.getAsMention()));
         }
 
         builder.append("\n\n");
@@ -122,12 +122,12 @@ public class HasRole extends ConstraintCommand {
         if (members.size() > SearchHolder.PAGE_CHUNK) {
             int totalPage = (int) Math.ceil(members.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
-            builder.append("\n\n").append(LangID.getStringByID("hasrole_page", lang).formatted(1, totalPage));
+            builder.append("\n\n").append(LangID.getStringByID("hasRole.embed.page", lang).formatted(1, totalPage));
         }
 
         EmbedBuilder embed = new EmbedBuilder();
 
-        embed.setTitle(LangID.getStringByID("hasrole_title", lang).formatted(role.getName()));
+        embed.setTitle(LangID.getStringByID("hasRole.embed.title", lang).formatted(role.getName()));
 
         embed.setDescription(builder.toString());
 
@@ -143,21 +143,21 @@ public class HasRole extends ConstraintCommand {
             List<Button> buttons = new ArrayList<>();
 
             if (totalPage > 10) {
-                buttons.add(Button.secondary("prev10", LangID.getStringByID("search_prev10", lang)).withEmoji(EmojiStore.TWO_PREVIOUS).asDisabled());
+                buttons.add(Button.secondary("prev10", LangID.getStringByID("ui.search.10Previous", lang)).withEmoji(EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
-            buttons.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
 
-            buttons.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+            buttons.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
 
             if (totalPage > 10) {
-                buttons.add(Button.secondary("next10", LangID.getStringByID("search_next10", lang)).withEmoji(EmojiStore.TWO_NEXT));
+                buttons.add(Button.secondary("next10", LangID.getStringByID("ui.search.10Next", lang)).withEmoji(EmojiStore.TWO_NEXT));
             }
 
             result.add(ActionRow.of(buttons));
         }
 
-        result.add(ActionRow.of(Button.danger("close", LangID.getStringByID("button_close", lang)).withEmoji(EmojiStore.CROSS)));
+        result.add(ActionRow.of(Button.danger("close", LangID.getStringByID("ui.button.close", lang)).withEmoji(EmojiStore.CROSS)));
 
         return result;
     }

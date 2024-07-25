@@ -88,7 +88,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             List<Stage> stages = EntityFilter.findStageByReward(rewards.get(id), chance, amount);
 
             if(stages.isEmpty()) {
-                ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", validateName(keyword))).queue();
+                ch.sendMessage(LangID.getStringByID("findReward.failed.noStage", lang).replace("_", validateName(keyword))).queue();
             } else if(stages.size() == 1) {
                 EntityHandler.showStageEmb(stages.getFirst(), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, treasure, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
@@ -104,7 +104,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                     StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact, lang));
                 });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(keyword))).append("```md\n");
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("findReward.several.reward", lang).replace("_", validateName(keyword))).append("```md\n");
 
                 List<String> data = accumulateStage(stages, true);
 
@@ -118,7 +118,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                     if(stages.size() % PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");

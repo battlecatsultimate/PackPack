@@ -42,13 +42,13 @@ public class Medal extends ConstraintCommand {
             ArrayList<Integer> id = EntityFilter.findMedalByName(realContents[1], lang);
 
             if(id.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("medal_nomed", lang).replace("_", getSearchKeyword(realContents[1])));
+                createMessageWithNoPings(ch, LangID.getStringByID("medal.failed.noEnemy", lang).replace("_", getSearchKeyword(realContents[1])));
             } else if(id.size() == 1) {
                 EntityHandler.showMedalEmbed(id.getFirst(), ch, loader.getMessage(), lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(realContents[1])));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(realContents[1])));
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateData(id);
 
@@ -62,7 +62,7 @@ public class Medal extends ConstraintCommand {
                     if(id.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -76,7 +76,7 @@ public class Medal extends ConstraintCommand {
                 });
             }
         } else {
-            ch.sendMessage(LangID.getStringByID("medal_more", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("medal.failed.noParameter", lang)).queue();
         }
     }
 
