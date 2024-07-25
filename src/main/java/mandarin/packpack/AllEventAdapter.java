@@ -549,7 +549,6 @@ public class AllEventAdapter extends ListenerAdapter {
                     new RTheta(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
             case "getid", "gi" -> new GetID(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "donate", "donation", "don" -> new Donate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "eventmessage", "em" -> new EventMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "grablanguage", "gl" -> new GrabLanguage(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "reloadlanguage", "rel" ->
                     new ReloadLanguage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
