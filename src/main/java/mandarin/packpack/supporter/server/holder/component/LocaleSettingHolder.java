@@ -62,10 +62,10 @@ public class LocaleSettingHolder extends ComponentHolder {
                 Emoji emoji;
 
                 if (config.lang == null) {
-                    localeName = LangID.getStringByID("locale.locale.auto", lang);
+                    localeName = LangID.getStringByID("bot.language.auto", lang);
                     emoji = Emoji.fromUnicode("⚙️");
                 } else {
-                    localeName = LangID.getStringByID("locale.language." + config.lang.code, lang);
+                    localeName = LangID.getStringByID("bot.language." + config.lang.code, lang);
                     emoji = Emoji.fromUnicode(StaticStore.langUnicode[config.lang.ordinal()]);
                 }
 
@@ -85,7 +85,7 @@ public class LocaleSettingHolder extends ComponentHolder {
                     lang = config.lang;
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("locale.locale.confirmed", lang))
+                        .setContent(LangID.getStringByID("locale.confirmed", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -110,7 +110,7 @@ public class LocaleSettingHolder extends ComponentHolder {
         else
             lang = config.lang;
 
-        message.editMessage(LangID.getStringByID("locale.locale.expired", lang))
+        message.editMessage(LangID.getStringByID("locale.expired", lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -130,13 +130,13 @@ public class LocaleSettingHolder extends ComponentHolder {
         List<SelectOption> localeOptions = new ArrayList<>();
 
         if (!forServer) {
-            localeOptions.add(SelectOption.of(LangID.getStringByID("locale.locale.auto", lang), "auto").withDescription(LangID.getStringByID("locale.locale.followingServer", lang)).withEmoji(Emoji.fromUnicode("⚙️")).withDefault(config.lang == null));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("bot.language.auto", lang), "auto").withDescription(LangID.getStringByID("locale.followingServer", lang)).withEmoji(Emoji.fromUnicode("⚙️")).withDefault(config.lang == null));
         }
 
         for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
             Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
-            localeOptions.add(SelectOption.of(LangID.getStringByID("locale.language." + locale.code, lang), locale.name()).withEmoji(emoji).withDefault(config.lang == locale));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("bot.language." + locale.code, lang), locale.name()).withEmoji(emoji).withDefault(config.lang == locale));
         }
 
         result.add(ActionRow.of(

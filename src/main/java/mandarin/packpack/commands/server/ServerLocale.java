@@ -35,10 +35,10 @@ public class ServerLocale extends ConstraintCommand {
         Emoji emoji;
 
         if (holder.config.lang == null) {
-            localeName = LangID.getStringByID("locale.locale.auto", lang);
+            localeName = LangID.getStringByID("bot.language.auto", lang);
             emoji = Emoji.fromUnicode("⚙️");
         } else {
-            localeName = LangID.getStringByID("locale.language." + holder.config.lang.code, lang);
+            localeName = LangID.getStringByID("bot.language." + holder.config.lang.code, lang);
             emoji = Emoji.fromUnicode(StaticStore.langUnicode[lang.ordinal()]);
         }
 
@@ -58,7 +58,7 @@ public class ServerLocale extends ConstraintCommand {
         for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
             Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
-            localeOptions.add(SelectOption.of(LangID.getStringByID("locale.language." + locale.code, holder.config.lang), locale.name()).withEmoji(emoji).withDefault(holder.config.lang == locale));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("bot.language." + locale.code, holder.config.lang), locale.name()).withEmoji(emoji).withDefault(holder.config.lang == locale));
         }
         
         result.add(ActionRow.of(

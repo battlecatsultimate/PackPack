@@ -42,16 +42,16 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 holder.config.lang = CommonStatic.Lang.Locale.valueOf(se.getValues().getFirst());
 
                 String languageName = switch (holder.config.lang) {
-                    case EN -> LangID.getStringByID("locale.language.en", lang);
-                    case ZH -> LangID.getStringByID("locale.language.zh", lang);
-                    case KR -> LangID.getStringByID("locale.language.kr", lang);
-                    case JP -> LangID.getStringByID("locale.language.jp", lang);
-                    case FR -> LangID.getStringByID("locale.language.fr", lang);
-                    case IT -> LangID.getStringByID("locale.language.it", lang);
-                    case ES -> LangID.getStringByID("locale.language.es", lang);
-                    case DE -> LangID.getStringByID("locale.language.de", lang);
-                    case TH -> LangID.getStringByID("locale.language.th", lang);
-                    case RU -> LangID.getStringByID("locale.language.ru", lang);
+                    case EN -> LangID.getStringByID("bot.language.en", lang);
+                    case ZH -> LangID.getStringByID("bot.language.zh", lang);
+                    case KR -> LangID.getStringByID("bot.language.kr", lang);
+                    case JP -> LangID.getStringByID("bot.language.jp", lang);
+                    case FR -> LangID.getStringByID("bot.language.fr", lang);
+                    case IT -> LangID.getStringByID("bot.language.it", lang);
+                    case ES -> LangID.getStringByID("bot.language.es", lang);
+                    case DE -> LangID.getStringByID("bot.language.de", lang);
+                    case TH -> LangID.getStringByID("bot.language.th", lang);
+                    case RU -> LangID.getStringByID("bot.language.ru", lang);
                 };
 
                 event.deferReply()
@@ -161,16 +161,16 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
         };
 
         String languageName = switch (locale) {
-            case EN -> LangID.getStringByID("locale.language.en", lang);
-            case ZH -> LangID.getStringByID("locale.language.zh", lang);
-            case KR -> LangID.getStringByID("locale.language.kr", lang);
-            case JP -> LangID.getStringByID("locale.language.jp", lang);
-            case FR -> LangID.getStringByID("locale.language.fr", lang);
-            case IT -> LangID.getStringByID("locale.language.it", lang);
-            case ES -> LangID.getStringByID("locale.language.es", lang);
-            case DE -> LangID.getStringByID("locale.language.de", lang);
-            case TH -> LangID.getStringByID("locale.language.th", lang);
-            case RU -> LangID.getStringByID("locale.language.ru", lang);
+            case EN -> LangID.getStringByID("bot.language.en", lang);
+            case ZH -> LangID.getStringByID("bot.language.zh", lang);
+            case KR -> LangID.getStringByID("bot.language.kr", lang);
+            case JP -> LangID.getStringByID("bot.language.jp", lang);
+            case FR -> LangID.getStringByID("bot.language.fr", lang);
+            case IT -> LangID.getStringByID("bot.language.it", lang);
+            case ES -> LangID.getStringByID("bot.language.es", lang);
+            case DE -> LangID.getStringByID("bot.language.de", lang);
+            case TH -> LangID.getStringByID("bot.language.th", lang);
+            case RU -> LangID.getStringByID("bot.language.ru", lang);
         };
 
         return LangID.getStringByID("serverConfig.general.documentation.title", lang) + "\n" +
@@ -186,7 +186,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
         List<SelectOption> languageOptions = new ArrayList<>();
 
         for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
-            String l = LangID.getStringByID("locale.language." + locale.code, lang);
+            String l = LangID.getStringByID("bot.language." + locale.code, lang);
             Emoji e = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
             languageOptions.add(

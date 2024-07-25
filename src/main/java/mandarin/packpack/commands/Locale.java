@@ -37,12 +37,12 @@ public class Locale extends ConstraintCommand {
         Emoji emoji;
 
         if (locale == null) {
-            localeName = LangID.getStringByID("locale.locale.auto", lang);
+            localeName = LangID.getStringByID("bot.language.auto", lang);
             emoji = Emoji.fromUnicode("⚙️");
         } else {
 
 
-            localeName = LangID.getStringByID("locale.language." + locale.code, lang);
+            localeName = LangID.getStringByID("bot.language." + locale.code, lang);
             emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
         }
 
@@ -56,12 +56,12 @@ public class Locale extends ConstraintCommand {
 
         List<SelectOption> localeOptions = new ArrayList<>();
 
-        localeOptions.add(SelectOption.of(LangID.getStringByID("locale.locale.auto", lang), "auto").withDescription(LangID.getStringByID("locale.locale.followingServer", lang)).withEmoji(Emoji.fromUnicode("⚙️")).withDefault(config.lang == null));
+        localeOptions.add(SelectOption.of(LangID.getStringByID("bot.language.auto", lang), "auto").withDescription(LangID.getStringByID("locale.followingServer", lang)).withEmoji(Emoji.fromUnicode("⚙️")).withDefault(config.lang == null));
 
         for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
             Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
-            localeOptions.add(SelectOption.of(LangID.getStringByID("locale.language." + locale.code, lang), locale.name()).withEmoji(emoji).withDefault(config.lang == locale));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("bot.language." + locale.code, lang), locale.name()).withEmoji(emoji).withDefault(config.lang == locale));
         }
 
         result.add(ActionRow.of(

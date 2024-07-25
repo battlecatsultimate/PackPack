@@ -291,7 +291,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                     languages.add(SelectOption.of(LangID.getStringByID("config.locale.auto", lang), "auto").withDefault(config.lang == null));
 
                     for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
-                        String l = LangID.getStringByID("locale.language." + locale.code, lang);
+                        String l = LangID.getStringByID("bot.language." + locale.code, lang);
 
                         languages.add(
                                 SelectOption.of(LangID.getStringByID("config.locale.title", lang).replace("_", l), locale.name())
@@ -393,16 +393,16 @@ public class ConfigButtonHolder extends ComponentHolder {
                         locale = LangID.getStringByID("config.locale.auto", lang);
                     } else {
                         locale = switch (config.lang) {
-                            case EN -> LangID.getStringByID("locale.language.en", lang);
-                            case JP -> LangID.getStringByID("locale.language.jp", lang);
-                            case KR -> LangID.getStringByID("locale.language.kr", lang);
-                            case ZH -> LangID.getStringByID("locale.language.zh", lang);
-                            case FR -> LangID.getStringByID("locale.language.fr", lang);
-                            case IT -> LangID.getStringByID("locale.language.it", lang);
-                            case ES -> LangID.getStringByID("locale.language.es", lang);
-                            case DE -> LangID.getStringByID("locale.language.de", lang);
-                            case TH -> LangID.getStringByID("locale.language.th", lang);
-                            case RU -> LangID.getStringByID("locale.language.ru", lang);
+                            case EN -> LangID.getStringByID("bot.language.en", lang);
+                            case JP -> LangID.getStringByID("bot.language.jp", lang);
+                            case KR -> LangID.getStringByID("bot.language.kr", lang);
+                            case ZH -> LangID.getStringByID("bot.language.zh", lang);
+                            case FR -> LangID.getStringByID("bot.language.fr", lang);
+                            case IT -> LangID.getStringByID("bot.language.it", lang);
+                            case ES -> LangID.getStringByID("bot.language.es", lang);
+                            case DE -> LangID.getStringByID("bot.language.de", lang);
+                            case TH -> LangID.getStringByID("bot.language.th", lang);
+                            case RU -> LangID.getStringByID("bot.language.ru", lang);
                         };
                     }
 
