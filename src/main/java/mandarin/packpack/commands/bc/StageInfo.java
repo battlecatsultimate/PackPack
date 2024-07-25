@@ -112,7 +112,7 @@ public class StageInfo extends TimedConstraintCommand {
         int star = SlashOption.getIntOption(options, "level", 0);
 
         if(name[2].isBlank() || st == null) {
-            event.deferReply().setContent(LangID.getStringByID("formst_specific", lang)).queue();
+            event.deferReply().setContent(LangID.getStringByID("ui.search.moreSpecific", lang)).queue();
         } else {
             try {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
@@ -174,7 +174,7 @@ public class StageInfo extends TimedConstraintCommand {
         String[] names = filterStageNames(command);
 
         if(list.length == 1 || allNull(names)) {
-            replyToMessageSafely(ch, LangID.getStringByID("stinfo_noname", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("stageInfo.fail.noParameter", lang), loader.getMessage(), a -> a);
 
             disableTimer();
         } else {
@@ -184,12 +184,12 @@ public class StageInfo extends TimedConstraintCommand {
                 stages = EntityFilter.findStageWithMapName(names[2]);
 
                 if(!stages.isEmpty()) {
-                    ch.sendMessage(LangID.getStringByID("stinfo_smart", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("stageInfo.smartSearch", lang)).queue();
                 }
             }
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("stageInfo.fail.noResult", lang).replace("_", generateSearchName(names)), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -235,9 +235,9 @@ public class StageInfo extends TimedConstraintCommand {
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names)))
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("stageInfo.several", lang).replace("_", generateSearchName(names)))
                         .append("```md\n")
-                        .append(LangID.getStringByID("formst_pick", lang));
+                        .append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateData(stages, true);
 
@@ -251,7 +251,7 @@ public class StageInfo extends TimedConstraintCommand {
                     if(stages.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -432,15 +432,15 @@ public class StageInfo extends TimedConstraintCommand {
         }
 
         if(names[0] != null) {
-            result += LangID.getStringByID("stinfo_mc", lang).replace("_", names[0])+", ";
+            result += LangID.getStringByID("stageInfo.mapCollection", lang).replace("_", names[0])+", ";
         }
 
         if(names[1] != null) {
-            result += LangID.getStringByID("stinfo_stm", lang).replace("_", names[1])+", ";
+            result += LangID.getStringByID("stageInfo.stageMap", lang).replace("_", names[1])+", ";
         }
 
         if(names[2] != null) {
-            result += LangID.getStringByID("stinfo_st", lang).replace("_", names[2]);
+            result += LangID.getStringByID("stageInfo.stage", lang).replace("_", names[2]);
         }
 
         if(result.endsWith(", "))

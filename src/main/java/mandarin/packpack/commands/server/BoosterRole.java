@@ -37,7 +37,7 @@ public class BoosterRole extends ConstraintCommand {
         Guild g = loader.getGuild();
 
         if(g.getRoles().size() == 250) {
-            ch.sendMessage(LangID.getStringByID("boorole_max", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("boosterRole.failed.maxReached", lang)).queue();
 
             return;
         }
@@ -45,21 +45,21 @@ public class BoosterRole extends ConstraintCommand {
         IDHolder holder = StaticStore.idHolder.get(g.getId());
 
         if(holder.booster == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorole_norole", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRegisteredRole", lang));
             return;
         }
 
         String id = getUserID(loader.getContent());
 
         if(id == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorole_invalidid", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noMember", lang));
             return;
         }
 
         String name = getRoleName(loader.getContent());
 
         if(name == null || name.isBlank()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorole_norolename", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRoleName", lang));
             return;
         }
 
@@ -72,7 +72,7 @@ public class BoosterRole extends ConstraintCommand {
 
         if(m != null) {
             if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
-                createMessageWithNoPings(ch, LangID.getStringByID("boorole_noboost", lang).replace("_RRR_", holder.booster));
+                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).replace("_RRR_", holder.booster));
                 return;
             }
 
@@ -83,7 +83,7 @@ public class BoosterRole extends ConstraintCommand {
                     BoosterData data = bHolder.serverBooster.get(m.getId());
 
                     if(data.getRole() != null) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("boorole_already", lang));
+                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.alreadyRegistered", lang));
                         return;
                     }
                 }
@@ -112,7 +112,7 @@ public class BoosterRole extends ConstraintCommand {
                                     int result = data.setRole(r.getId());
 
                                     if(result == BoosterData.ERR_ALREADY_ROLE_SET) {
-                                        createMessageWithNoPings(ch, LangID.getStringByID("boorole_already", lang));
+                                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.alreadyRegistered", lang));
                                     } else {
                                         g.addRoleToMember(UserSnowflake.fromId(m.getId()), r).queue(null, e -> {
                                             StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
@@ -120,7 +120,7 @@ public class BoosterRole extends ConstraintCommand {
                                             createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
                                         });
 
-                                        createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
                                     }
                                 } else {
                                     BoosterData data = new BoosterData(r.getId(), BoosterData.INITIAL.ROLE);
@@ -133,7 +133,7 @@ public class BoosterRole extends ConstraintCommand {
 
                                     bHolder.serverBooster.put(m.getId(), data);
 
-                                    createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
                                 }
                             } else {
                                 BoosterHolder bHolder = new BoosterHolder();
@@ -150,11 +150,11 @@ public class BoosterRole extends ConstraintCommand {
 
                                 StaticStore.boosterData.put(g.getId(), bHolder);
 
-                                createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
                             }
                         }, e -> StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to create role"));
             } else {
-                createMessageWithNoPings(ch, LangID.getStringByID("boorole_invmem", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.invalidMember", lang));
             }
         }
 
@@ -197,7 +197,7 @@ public class BoosterRole extends ConstraintCommand {
                     hex = h;
                     he = true;
                 } else {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boorole_invhex", lang).replace("_", h));
+                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.invalidHex", lang).replace("_", h));
 
                     return -1;
                 }
@@ -226,7 +226,7 @@ public class BoosterRole extends ConstraintCommand {
         }
 
         if(hex == null && rgb == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorole_setcolor", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noColor", lang));
 
             return -1;
         }
@@ -238,7 +238,7 @@ public class BoosterRole extends ConstraintCommand {
         if(re && gr && bl) {
             return new Color(rgb[0], rgb[1], rgb[2]).getRGB();
         } else {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorole_fullrgb", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notRGB", lang));
 
             return -1;
         }

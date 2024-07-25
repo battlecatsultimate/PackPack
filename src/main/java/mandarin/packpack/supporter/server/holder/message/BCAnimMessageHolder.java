@@ -124,7 +124,7 @@ public class BCAnimMessageHolder extends MessageHolder {
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, "animationAnalyze.expired", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
@@ -197,7 +197,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                     return STATUS.FINISH;
                 }
             } else if(m.getContentRaw().equals("c")) {
-                message.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
+                message.editMessage(LangID.getStringByID("animationAnalyze.canceled", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
@@ -226,7 +226,7 @@ public class BCAnimMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        message.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }

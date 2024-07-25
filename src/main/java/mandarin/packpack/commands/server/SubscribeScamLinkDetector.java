@@ -37,7 +37,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if (contents.length < 2) {
-            ch.sendMessage(LangID.getStringByID("subscam_noid", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("subscribeScamDetector.failed.noChannel", lang)).queue();
 
             return;
         }
@@ -45,13 +45,13 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         String channel = parseChannel(contents[1]);
 
         if (!StaticStore.isNumeric(channel)) {
-            ch.sendMessage(LangID.getStringByID("subscam_invalidch", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("subscribeScamDetector.failed.invalidID", lang)).queue();
 
             return;
         }
 
         if (!isValidChannel(g, channel)) {
-            ch.sendMessage(LangID.getStringByID("subscam_nosuch", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("subscribeScamDetector.failed.invalidChannel", lang)).queue();
 
             return;
         }
@@ -60,21 +60,21 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
 
         List<SelectOption> options = new ArrayList<>();
 
-        options.add(SelectOption.of(LangID.getStringByID("mute", lang), "mute").withDefault(true));
-        options.add(SelectOption.of(LangID.getStringByID("kick", lang), "kick"));
-        options.add(SelectOption.of(LangID.getStringByID("ban", lang), "ban"));
+        options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.mute", lang), "scamDetector.action.mute").withDefault(true));
+        options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.kick", lang), "scamDetector.action.kick"));
+        options.add(SelectOption.of(LangID.getStringByID("scamDetector.action.ban", lang), "scamDetector.action.ban"));
 
         List<SelectOption> notices = new ArrayList<>();
 
-        notices.add(SelectOption.of(LangID.getStringByID("noticex", lang), "noticeX").withDefault(true));
-        notices.add(SelectOption.of(LangID.getStringByID("noticeall", lang), "noticeAll"));
+        notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.onlyMember", lang), "noticeX").withDefault(true));
+        notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.allUsers", lang), "noticeAll"));
 
         List<ActionComponent> components = new ArrayList<>();
 
-        components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
-        components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
+        components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
+        components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
 
-        ch.sendMessage(LangID.getStringByID("subscam_decide", lang))
+        ch.sendMessage(LangID.getStringByID("subscribeScamDetector.decision.none", lang))
                 .setComponents(
                         ActionRow.of(StringSelectMenu.create("action").addOptions(options).build()),
                         ActionRow.of(StringSelectMenu.create("notice").addOptions(notices).build()),

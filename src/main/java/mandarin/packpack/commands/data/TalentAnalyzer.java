@@ -61,7 +61,7 @@ public class TalentAnalyzer extends ConstraintCommand {
         int uid = getUnitID(command);
 
         if(uid == -1) {
-            ch.sendMessage(LangID.getStringByID("talanalyzer_uid", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("talentAnalyzer.failed.noID", lang)).queue();
             return;
         }
 
@@ -88,7 +88,7 @@ public class TalentAnalyzer extends ConstraintCommand {
         if(name == null)
             name = Data.trio(uid) + " - 002";
 
-        name = String.format(LangID.getStringByID("talanalyzer_title", lang), name);
+        name = String.format(LangID.getStringByID("talentAnalyzer.title", lang), name);
 
         String type;
 
@@ -103,9 +103,9 @@ public class TalentAnalyzer extends ConstraintCommand {
         File talentImage = ImageDrawing.drawTalentImage(name, type, talent, lang);
 
         if(talentImage == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("talanalyzer_fail", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("talentAnalyzer.failed.noImage", lang), loader.getMessage(), a -> a);
         } else {
-            sendMessageWithFile(ch, LangID.getStringByID("talanalyzer_success", lang), talentImage, loader.getMessage());
+            sendMessageWithFile(ch, LangID.getStringByID("talentAnalyzer.success", lang), talentImage, loader.getMessage());
         }
     }
 
@@ -272,7 +272,7 @@ public class TalentAnalyzer extends ConstraintCommand {
                     if(StaticStore.isNumeric(data[0]) && StaticStore.safeParseInt(data[0]) == textID) {
                         textFound = true;
 
-                        title = String.format(LangID.getStringByID("talanalyzer_dummy", lang), abilityID);
+                        title = String.format(LangID.getStringByID("talentAnalyzer.dummy", lang), abilityID);
 
                         if(StaticStore.isNumeric(talentLine[2 + i * 14 + 1])) {
                             int maxLevel = StaticStore.safeParseInt(talentLine[2 + i * 14 + 1]);
@@ -437,7 +437,7 @@ public class TalentAnalyzer extends ConstraintCommand {
             return;
         }
 
-        MaAnim ma = MaAnim.newIns(anim.getData());
+        MaAnim ma = MaAnim.newIns(anim.getData(), false);
 
         statReader.readLine();
         statReader.readLine();

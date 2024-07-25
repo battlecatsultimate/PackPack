@@ -30,7 +30,7 @@ public class HasRolePageHolder extends ComponentHolder {
         this.members = members;
         this.role = role;
 
-        registerAutoFinish(this, message, "hasrole_close", FIVE_MIN);
+        registerAutoFinish(this, message, "hasRole.closed", FIVE_MIN);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class HasRolePageHolder extends ComponentHolder {
             }
             case "close" ->
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("hasrole_close", lang))
+                            .setContent(LangID.getStringByID("hasRole.closed", lang))
                             .setComponents()
                             .setEmbeds()
                             .setAllowedMentions(new ArrayList<>())
@@ -74,7 +74,7 @@ public class HasRolePageHolder extends ComponentHolder {
 
     @Override
     public void onExpire(String id) {
-        message.editMessage(LangID.getStringByID("hasrole_close", lang))
+        message.editMessage(LangID.getStringByID("hasRole.closed", lang))
                 .setEmbeds()
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
@@ -95,9 +95,9 @@ public class HasRolePageHolder extends ComponentHolder {
         StringBuilder builder = new StringBuilder();
 
         if (members.size() == 1) {
-            builder.append(LangID.getStringByID("hasrole_numbersingle", lang).formatted(role.getAsMention()));
+            builder.append(LangID.getStringByID("hasRole.embed.number.single", lang).formatted(role.getAsMention()));
         } else {
-            builder.append(LangID.getStringByID("hasrole_number", lang).formatted(members.size(), role.getAsMention()));
+            builder.append(LangID.getStringByID("hasRole.embed.number.plural", lang).formatted(members.size(), role.getAsMention()));
         }
 
         builder.append("\n\n");
@@ -117,12 +117,12 @@ public class HasRolePageHolder extends ComponentHolder {
         if (members.size() > SearchHolder.PAGE_CHUNK) {
             int totalPage = (int) Math.ceil(members.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
-            builder.append("\n\n").append(LangID.getStringByID("hasrole_page", lang).formatted(1, totalPage));
+            builder.append("\n\n").append(LangID.getStringByID("hasRole.embed.page", lang).formatted(1, totalPage));
         }
 
         EmbedBuilder embed = new EmbedBuilder();
 
-        embed.setTitle(LangID.getStringByID("hasrole_title", lang).formatted(role.getName()));
+        embed.setTitle(LangID.getStringByID("hasRole.embed.title", lang).formatted(role.getName()));
 
         embed.setDescription(builder.toString());
 
@@ -152,7 +152,7 @@ public class HasRolePageHolder extends ComponentHolder {
             result.add(ActionRow.of(buttons));
         }
 
-        result.add(ActionRow.of(Button.danger("close", LangID.getStringByID("button_close", lang)).withEmoji(EmojiStore.CROSS)));
+        result.add(ActionRow.of(Button.danger("close", LangID.getStringByID("ui.button.close", lang)).withEmoji(EmojiStore.CROSS)));
 
         return result;
     }

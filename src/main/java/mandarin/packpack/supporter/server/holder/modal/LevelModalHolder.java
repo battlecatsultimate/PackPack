@@ -26,12 +26,12 @@ public class LevelModalHolder extends ModalHolder {
         String value = getValueFromMap(event.getValues(), "level");
 
         if(!StaticStore.isNumeric(value)) {
-            event.reply(LangID.getStringByID("config_nonumber", config.lang)).setEphemeral(true).queue();
+            event.reply(LangID.getStringByID("config.defaultLevel.set.notNumber", config.lang)).setEphemeral(true).queue();
         } else {
             int level = StaticStore.safeParseInt(value);
 
             if(level < 1 || level > 60) {
-                event.reply(LangID.getStringByID("config_levelrange", config.lang)).setEphemeral(true).queue();
+                event.reply(LangID.getStringByID("config.defaultLevel.set.invalidRange", config.lang)).setEphemeral(true).queue();
             } else {
                 config.defLevel = StaticStore.safeParseInt(value);
 

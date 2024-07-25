@@ -46,7 +46,7 @@ public class EventDataArchive extends ConstraintCommand {
         File archive = new File("./data/event/" + l + "/archive/" + fileName);
 
         if(!archive.exists() || !current.exists()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("eventarc_noarchive", lang).replace("_", l.equals("zh") ? "tw" : l));
+            createMessageWithNoPings(ch, LangID.getStringByID("eventArchive.failed.noArchive", lang).replace("_", l.equals("zh") ? "tw" : l));
 
             return;
         }
@@ -54,7 +54,7 @@ public class EventDataArchive extends ConstraintCommand {
         File[] fs = archive.listFiles();
 
         if(fs == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("eventarc_fail", lang).replace("_", l.equals("zh") ? "tw" : l));
+            createMessageWithNoPings(ch, LangID.getStringByID("eventArchive.failed.upload", lang).replace("_", l.equals("zh") ? "tw" : l));
 
             return;
         }
@@ -67,14 +67,14 @@ public class EventDataArchive extends ConstraintCommand {
         Collections.reverse(files);
 
         if(files.isEmpty()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("eventarc_noarchive", lang).replace("_", l.equals("zh") ? "tw" : l));
+            createMessageWithNoPings(ch, LangID.getStringByID("eventArchive.failed.noArchive", lang).replace("_", l.equals("zh") ? "tw" : l));
 
             return;
         }
 
-        StringBuilder sb = new StringBuilder(LangID.getStringByID("eventarc_bring", lang).replace("_LLL_", l.equals("zh") ? "tw" : l).replace("_FFF_", fileName));
+        StringBuilder sb = new StringBuilder(LangID.getStringByID("eventArchive.bringing", lang).replace("_LLL_", l.equals("zh") ? "tw" : l).replace("_FFF_", fileName));
 
-        sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+        sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
         List<String> data = accumulateData(files);
 
@@ -85,7 +85,7 @@ public class EventDataArchive extends ConstraintCommand {
         if(files.size() > SearchHolder.PAGE_CHUNK) {
             int totalPage = (int) Math.ceil(files.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
-            sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
         }
 
         sb.append("```");
@@ -147,7 +147,7 @@ public class EventDataArchive extends ConstraintCommand {
 
         for(int i = 0; i < Math.min(files.size(), SearchHolder.PAGE_CHUNK); i++) {
             if (i == 0) {
-                result.add(LangID.getStringByID("eventarc_current", lang));
+                result.add(LangID.getStringByID("eventArchive.currentEvent", lang));
             } else {
                 result.add(files.get(i).getName().replace(".txt", "").replaceAll(";", ":"));
             }

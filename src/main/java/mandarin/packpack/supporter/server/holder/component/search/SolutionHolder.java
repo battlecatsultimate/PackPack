@@ -43,7 +43,7 @@ public class SolutionHolder extends SearchHolder {
             NumericalResult solution = solutions.get(i);
 
             result.add(String.format(
-                    LangID.getStringByID("solve_root", lang),
+                    LangID.getStringByID("solve.root", lang),
                     i + 1,
                     Equation.formatNumber(solution.value),
                     Equation.formatNumber(targetRanges.get(i)[0]),
@@ -76,7 +76,7 @@ public class SolutionHolder extends SearchHolder {
             if(getDataSize() % 5 != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
+            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         sb.append("```");

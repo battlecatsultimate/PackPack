@@ -76,7 +76,7 @@ public class TreasureHolder {
     public static final int L_STUDY = 2;
     public static final int[] basicIndex = {Data.LV_RES, Data.LV_ACC, Data.LV_XP};
     public static final int[] basicMax = new int[basicIndex.length];
-    public static final String[] basicText = {"data_lresearch", "data_laccount", "data_lstudy"};
+    public static final String[] basicText = {"data.treasure.upgrades.research", "data.treasure.upgrades.accountant", "data.treasure.upgrades.study"};
 
     public static final int T_RESEARCH = 0;
     public static final int T_STUDY = 1;
@@ -85,7 +85,7 @@ public class TreasureHolder {
     public static final int T_ATTACK = 4;
     public static final int[] eocIndex = {Data.T_RES, Data.T_XP1, Data.T_ACC, Data.T_DEF, Data.T_ATK};
     public static final int[] eocMax = new int[eocIndex.length];
-    public static final String[] eocText = {"data_tresearch", "data_tstudy", "data_taccount", "data_thealth", "data_tattack"};
+    public static final String[] eocText = {"data.treasure.eoc.research.text", "data.treasure.eoc.study.text", "data.treasure.eoc.accountant.text", "data.treasure.eoc.health.text", "data.treasure.eoc.damage.text"};
 
     public static final int T_ITF_CRYSTAL = 0;
     public static final int T_BLACK = 1;
@@ -94,7 +94,7 @@ public class TreasureHolder {
     public static final int T_ANGEL = 4;
     public static final int[] itfTraitIndex = {-1, Data.TRAIT_BLACK, Data.TRAIT_RED, Data.TRAIT_FLOAT, Data.TRAIT_ANGEL};
     public static final int[] itfMax = new int[5];
-    public static final String[] itfText = {"data_citf", "data_tblack", "data_tred", "data_tfloat", "data_tangel"};
+    public static final String[] itfText = {"data.treasure.itf.crystal", "data.treasure.itf.black.text", "data.treasure.itf.red.text", "data.treasure.itf.floating.text", "data.treasure.itf.angel.text"};
 
     public static final int T_COTC_CRYSTAL = 0;
     public static final int T_METAL = 1;
@@ -103,7 +103,7 @@ public class TreasureHolder {
     public static final int T_STUDY2 = 4;
     public static final int[] cotcMax = new int[5];
     public static final int[] cotcTraitIndex = {-1, Data.TRAIT_METAL, Data.TRAIT_ZOMBIE, Data.TRAIT_ALIEN};
-    public static final String[] cotcText = {"data_ccotc", "data_tmetal", "data_tzombie", "data_talien", "data_tstudy2"};
+    public static final String[] cotcText = {"data.treasure.cotc.crystal", "data.treasure.cotc.metal.text", "data.treasure.cotc.zombie.text", "data.treasure.cotc.alien.text", "data.treasure.cotc.study.text"};
 
     public int[] basic = new int[3];
     public int[] eoc = new int[5];

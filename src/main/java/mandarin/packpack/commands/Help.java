@@ -40,15 +40,15 @@ public class Help extends Command {
         } else {
             EmbedBuilder builder = new EmbedBuilder();
 
-            builder.setTitle(LangID.getStringByID("help_command", lang))
-                    .setDescription(LangID.getStringByID("help_explain", lang))
+            builder.setTitle(LangID.getStringByID("help.main.command", lang))
+                    .setDescription(LangID.getStringByID("help.main.description", lang))
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                    .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
-                    .addField(LangID.getStringByID("help_math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
-                    .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemydps, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formdps, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, clearcache, eventmessage, fixrole, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
-                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
-                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
+                    .addField(LangID.getStringByID("help.main.category.normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
+                    .addField(LangID.getStringByID("help.main.category.math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
+                    .addField(LangID.getStringByID("help.main.category.bc", lang), "```background, castle, catcombo, enemydps, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formdps, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
+                    .addField(LangID.getStringByID("help.main.category.server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, clearcache, eventmessage, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help.main.category.data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
+                    .addField(LangID.getStringByID("help.format.packPack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
             replyToMessageSafely(ch, "", loader.getMessage(), a -> a.setEmbeds(builder.build()));
         }
@@ -138,8 +138,6 @@ public class Help extends Command {
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosteremojiremove", true, false, false)));
             case "setup" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("setup", false, false, true)));
-            case "fixrole", "fir" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("fixrole", true, true, true)));
             case "watchdm", "wd" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("watchdm", false, false, true)));
             case "checkeventupdate", "ceu" ->
@@ -158,12 +156,12 @@ public class Help extends Command {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("statanalyzer", true, true, true)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                        .setDescription(LangID.getStringByID("help_statanalyzer_adddesc", lang))
-                        .addField("-name", LangID.getStringByID("help_statanalyzer_name", lang), false)
-                        .addField("-trait", LangID.getStringByID("help_statanalyzer_trait", lang), false)
-                        .addField("-cell", LangID.getStringByID("help_statanalyzer_cell", lang), false)
-                        .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
-                        .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
+                        .setDescription(LangID.getStringByID("help.statAnalyzer.additionalDescription", lang))
+                        .addField("-name", LangID.getStringByID("help.statAnalyzer.name", lang), false)
+                        .addField("-trait", LangID.getStringByID("help.statAnalyzer.trait", lang), false)
+                        .addField("-cell", LangID.getStringByID("help.statAnalyzer.cell", lang), false)
+                        .addField("-abil", LangID.getStringByID("help.statAnalyzer.passive", lang), false)
+                        .addField("-proc", LangID.getStringByID("help.statAnalyzer.active", lang), false)
                         .build()));
             }
             case "registerscamlink", "rsl" ->
@@ -184,24 +182,24 @@ public class Help extends Command {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("trueformanalyzer", true, true, true)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                        .setDescription(LangID.getStringByID("help_statanalyzer_adddesc", lang))
-                        .addField("-name", LangID.getStringByID("help_statanalyzer_name", lang), false)
-                        .addField("-trait", LangID.getStringByID("help_statanalyzer_trait", lang), false)
-                        .addField("-cell", LangID.getStringByID("help_statanalyzer_cell", lang), false)
-                        .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
-                        .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
+                        .setDescription(LangID.getStringByID("help.statAnalyzer.additionalDescription", lang))
+                        .addField("-name", LangID.getStringByID("help.statAnalyzer.name", lang), false)
+                        .addField("-trait", LangID.getStringByID("help.statAnalyzer.trait", lang), false)
+                        .addField("-cell", LangID.getStringByID("help.statAnalyzer.cell", lang), false)
+                        .addField("-abil", LangID.getStringByID("help.statAnalyzer.passive", lang), false)
+                        .addField("-proc", LangID.getStringByID("help.statAnalyzer.active", lang), false)
                         .build()));
             }
             case "enemystatanalyzer", "estatanalyzer", "enemysa", "esa" -> {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemystatanalyzer", true, true, true)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                        .setDescription(LangID.getStringByID("help_statanalyzer_adddesc", lang))
-                        .addField("-name", LangID.getStringByID("help_statanalyzer_name", lang), false)
-                        .addField("-trait", LangID.getStringByID("help_statanalyzer_trait", lang), false)
-                        .addField("-cell", LangID.getStringByID("help_statanalyzer_cell", lang), false)
-                        .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
-                        .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
+                        .setDescription(LangID.getStringByID("help.statAnalyzer.additionalDescription", lang))
+                        .addField("-name", LangID.getStringByID("help.statAnalyzer.name", lang), false)
+                        .addField("-trait", LangID.getStringByID("help.statAnalyzer.trait", lang), false)
+                        .addField("-cell", LangID.getStringByID("help.statAnalyzer.cell", lang), false)
+                        .addField("-abil", LangID.getStringByID("help.statAnalyzer.passive", lang), false)
+                        .addField("-proc", LangID.getStringByID("help.statAnalyzer.active", lang), false)
                         .build()));
             }
             case "stagestatanalyzer", "sstatanalyzer", "stagesa", "ssa" ->
@@ -253,31 +251,31 @@ public class Help extends Command {
             case "hasrole", "hr" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("hasrole", false, false, false)));
             default ->
-                    replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("help.noCommand", lang).replace("_", command), reference, a -> a);
         }
     }
 
-    private MessageEmbed addFields(String mainCommand, boolean argument, boolean example, boolean tip) {
+    private MessageEmbed addFields(String mainCommand, boolean parameter, boolean example, boolean tip) {
         EmbedBuilder builder = new EmbedBuilder();
 
         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
         if(LangID.hasID("help_" + mainCommand + "_url", lang)) {
             builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.config.prefix) + mainCommand, LangID.getStringByID("help_" + mainCommand + "_url", lang));
-            builder.setDescription(LangID.getStringByID("help_guide", lang));
+            builder.setDescription(LangID.getStringByID("help.format.guide", lang));
         } else {
             builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.config.prefix) + mainCommand);
         }
 
-        builder.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), false);
-        builder.addField(LangID.getStringByID("help_desc", lang), LangID.getStringByID("help_"+mainCommand+"_desc", lang), false);
+        builder.addField(LangID.getStringByID("help.format.usage", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), false);
+        builder.addField(LangID.getStringByID("help.format.description", lang), LangID.getStringByID("help_"+mainCommand+"_desc", lang), false);
 
-        if(argument) {
-            builder.addField(LangID.getStringByID("help_argu", lang), LangID.getStringByID("help_"+mainCommand+"_argu", lang), false);
+        if(parameter) {
+            builder.addField(LangID.getStringByID("help.format.parameter", lang), LangID.getStringByID("help_"+mainCommand+"_argu", lang), false);
         }
 
         if(example) {
-            builder.addField(LangID.getStringByID("help_exam", lang), LangID.getStringByID("help_"+mainCommand+"_exam", lang), false);
+            builder.addField(LangID.getStringByID("help.format.example", lang), LangID.getStringByID("help_"+mainCommand+"_exam", lang), false);
         }
 
         if(tip) {
@@ -288,7 +286,7 @@ public class Help extends Command {
                 String tips = LangID.getStringByID(id, lang);
 
                 if(!tips.equals(id)) {
-                    builder.addField(tipIndex == 1 ? LangID.getStringByID("help_tip", lang) : "** **", tips, false);
+                    builder.addField(tipIndex == 1 ? LangID.getStringByID("help.format.tip", lang) : "** **", tips, false);
                     tipIndex++;
                 } else {
                     break;

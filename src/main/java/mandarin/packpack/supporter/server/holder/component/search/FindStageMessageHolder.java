@@ -289,7 +289,7 @@ public class FindStageMessageHolder extends SearchHolder {
             }
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectData", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
 
         if(monthly != null) {
             List<SelectOption> categories = new ArrayList<>();
@@ -306,10 +306,10 @@ public class FindStageMessageHolder extends SearchHolder {
                 }
             }
 
-            rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("fstage_category", lang)).build()));
+            rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("findStage.monthly.category", lang)).build()));
         }
 
-        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return rows;
     }

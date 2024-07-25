@@ -27,7 +27,7 @@ public class BoosterEmojiRemove extends ConstraintCommand {
         String id = getID(loader.getContent());
 
         if(id == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_nomem", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.failed.noMember", lang));
             return;
         }
 
@@ -41,7 +41,7 @@ public class BoosterEmojiRemove extends ConstraintCommand {
                     BoosterData data = holder.serverBooster.get(m.getId());
 
                     if(data.getEmoji() == null) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
+                        createMessageWithNoPings(ch, LangID.getStringByID("boosterEmojiRemove.failed.noAssignedEmoji", lang));
                     } else {
                         String emoji = data.getEmoji();
 
@@ -60,13 +60,13 @@ public class BoosterEmojiRemove extends ConstraintCommand {
                             holder.serverBooster.remove(m.getId());
                         }
 
-                        createMessageWithNoPings(ch, LangID.getStringByID("booemorem_success", lang).replace("_", m.getId()));
+                        createMessageWithNoPings(ch, LangID.getStringByID("boosterEmojiRemove.success", lang).replace("_", m.getId()));
                     }
                 } else {
-                    createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmojiRemove.failed.noAssignedEmoji", lang));
                 }
             } else {
-                createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("boosterEmojiRemove.failed.noAssignedEmoji", lang));
             }
         }
     }

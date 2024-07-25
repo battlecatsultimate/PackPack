@@ -56,10 +56,10 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
 
                         if (channel instanceof GuildMessageChannel m) {
                             if (!m.canTalk()) {
-                                reasons.add(channel.getAsMention() + " : " + LangID.getStringByID("sercon_channelboostnosee", lang));
+                                reasons.add(channel.getAsMention() + " : " + LangID.getStringByID("serverConfig.boosterPin.problem.cantTalk", lang));
                                 invalid = true;
                             } else if (!g.getSelfMember().hasPermission(m, Permission.MESSAGE_MANAGE)) {
-                                reasons.add(channel.getAsMention() + " : " + LangID.getStringByID("sercon_channelboostnoperm", lang));
+                                reasons.add(channel.getAsMention() + " : " + LangID.getStringByID("serverConfig.boosterPin.problem.noPermission", lang));
                                 invalid = true;
                             }
                         }
@@ -71,7 +71,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                 }
 
                 if (!reasons.isEmpty()) {
-                    StringBuilder problem = new StringBuilder(LangID.getStringByID("sercon_channelboosterproblem", lang)).append("\n\n");
+                    StringBuilder problem = new StringBuilder(LangID.getStringByID("serverConfig.boosterPin.registerProblem", lang)).append("\n\n");
 
                     for (String reason : reasons) {
                         problem.append("- ").append(reason).append("\n");
@@ -118,7 +118,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
             }
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -127,11 +127,11 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -168,19 +168,19 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
     private String getContents() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(LangID.getStringByID("sercon_channeltitle", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_channelboosttit", lang).formatted(Emoji.fromUnicode("📌"))).append("\n")
-                .append(LangID.getStringByID("sercon_channelboostmanagedesc", lang)).append("\n\n");
+        builder.append(LangID.getStringByID("serverConfig.channel.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.channel.documentation.boosterPin.title", lang).formatted(Emoji.fromUnicode("📌"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.boosterPin.description", lang)).append("\n\n");
 
 
         if (holder.boosterPin) {
-            builder.append(LangID.getStringByID("sercon_channelboostallowed", lang)).append("\n\n");
+            builder.append(LangID.getStringByID("serverConfig.boosterPin.allowedChannels", lang)).append("\n\n");
 
             if (holder.boosterAll) {
-                builder.append(LangID.getStringByID("sercon_channelboostallchannel", lang));
+                builder.append(LangID.getStringByID("serverConfig.boosterPin.allChannels", lang));
             } else {
                 if (holder.boosterPinChannel.isEmpty()) {
-                    builder.append(LangID.getStringByID("sercon_channelboostnochannel", lang));
+                    builder.append(LangID.getStringByID("serverConfig.boosterPin.noChannels", lang));
                 } else {
                     int size = Math.min(holder.boosterPinChannel.size(), (page + 1) * SearchHolder.PAGE_CHUNK);
 
@@ -196,7 +196,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                 }
             }
         } else {
-            builder.append(LangID.getStringByID("sercon_channelboostdisable", lang));
+            builder.append(LangID.getStringByID("serverConfig.boosterPin.featureDisabled", lang));
         }
 
         return builder.toString();
@@ -216,7 +216,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
             result.add(ActionRow.of(
                     EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
                             .setChannelTypes(ChannelType.TEXT)
-                            .setPlaceholder(LangID.getStringByID("sercon_channelboostallow", lang))
+                            .setPlaceholder(LangID.getStringByID("serverConfig.boosterPin.selectChannel", lang))
                             .setRequiredRange(1, EntitySelectMenu.OPTIONS_MAX_AMOUNT)
                             .setDisabled(channelNotManageable)
                             .build()
@@ -251,23 +251,23 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
 
             result.add(
                     ActionRow.of(
-                            Button.secondary("enable", LangID.getStringByID("sercon_channelboostenable", lang)).withEmoji(EmojiStore.SWITCHON),
-                            Button.secondary("all", LangID.getStringByID("sercon_channelboostall", lang)).withEmoji(allChannelSwitch)
+                            Button.secondary("enable", LangID.getStringByID("serverConfig.boosterPin.allowBooster", lang)).withEmoji(EmojiStore.SWITCHON),
+                            Button.secondary("all", LangID.getStringByID("serverConfig.boosterPin.allowAll", lang)).withEmoji(allChannelSwitch)
                     )
             );
         } else {
             result.add(
                     ActionRow.of(
-                            Button.secondary("enable", LangID.getStringByID("sercon_channelboostenable", lang)).withEmoji(EmojiStore.SWITCHOFF)
+                            Button.secondary("enable", LangID.getStringByID("serverConfig.boosterPin.allowBooster", lang)).withEmoji(EmojiStore.SWITCHOFF)
                     )
             );
         }
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

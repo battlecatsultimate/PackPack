@@ -17,7 +17,7 @@ public class CultButtonHolder extends ComponentHolder {
 
             expired = true;
 
-            msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
+            msg.editMessage(LangID.getStringByID("hi.special.expired", lang))
                     .setComponents()
                     .mentionRepliedUser(false)
                     .queue();
@@ -32,7 +32,7 @@ public class CultButtonHolder extends ComponentHolder {
             case "yes" -> {
                 StaticStore.cultist.add(userID);
 
-                message.editMessage(LangID.getStringByID("hi_sp_0_0", lang))
+                message.editMessage(LangID.getStringByID("hi.special.accept", lang))
                         .setComponents()
                         .mentionRepliedUser(false)
                         .queue();
@@ -42,7 +42,7 @@ public class CultButtonHolder extends ComponentHolder {
                 StaticStore.removeHolder(userID, this);
             }
             case "no" -> {
-                message.editMessage(LangID.getStringByID("hi_sp_0_1", lang))
+                message.editMessage(LangID.getStringByID("hi.special.denial", lang))
                         .setComponents()
                         .mentionRepliedUser(false)
                         .queue();
@@ -63,7 +63,7 @@ public class CultButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        message.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
+        message.editMessage(LangID.getStringByID("hi.special.expired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();

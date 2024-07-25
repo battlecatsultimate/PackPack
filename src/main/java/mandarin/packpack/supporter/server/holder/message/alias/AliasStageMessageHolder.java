@@ -111,9 +111,9 @@ public class AliasStageMessageHolder extends MessageHolder {
             switch (mode) {
                 case GET -> {
                     if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", stName));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_stalias", lang).replace("_SSS_", stName).replace("_NNN_", String.valueOf(alias.size())));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.stage", lang).replace("_SSS_", stName).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
                         for (int i = 0; i < alias.size(); i++) {
@@ -121,7 +121,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
-                                        .append(LangID.getStringByID("alias_etc", lang));
+                                        .append(LangID.getStringByID("alias.etc", lang));
                                 break;
                             }
 
@@ -139,34 +139,34 @@ public class AliasStageMessageHolder extends MessageHolder {
                     if (alias == null)
                         alias = new ArrayList<>();
                     if (aliasName.isBlank()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noName", lang));
                         break;
                     }
                     if (alias.contains(aliasName)) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_contain", lang).replace("_", stName));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.contain", lang).replace("_", stName));
                         break;
                     }
                     alias.add(aliasName);
                     AliasHolder.SALIAS.put(lang, stage.get(id), alias);
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
+                    createMessageWithNoPings(ch, LangID.getStringByID("alias.added", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias added\n\nStage : " + stName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }
                 case REMOVE -> {
                     if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", stName));
                         break;
                     }
                     if (aliasName.isBlank()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noName", lang));
                         break;
                     }
                     if (!alias.contains(aliasName)) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias_nosuch", lang).replace("_", stName));
+                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.removeFail", lang).replace("_", stName));
                         break;
                     }
                     alias.remove(aliasName);
                     AliasHolder.SALIAS.put(lang, stage.get(id), alias);
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
+                    createMessageWithNoPings(ch, LangID.getStringByID("alias.removed", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
                     StaticStore.logger.uploadLog("Alias removed\n\nStage : " + stName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }
             }
@@ -179,7 +179,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
             return STATUS.WAIT;
         } else if(content.equals("c")) {
-            message.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+            message.editMessage(LangID.getStringByID("ui.search.canceled", lang)).queue();
 
             expired = true;
 
@@ -231,7 +231,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
         StaticStore.removeHolder(id, this);
 
-        message.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -242,13 +242,13 @@ public class AliasStageMessageHolder extends MessageHolder {
         if(stage.size() <= 20)
             check = "";
         else if(page == 0)
-            check = LangID.getStringByID("formst_next", lang);
+            check = LangID.getStringByID("ui.search.old.page.nextOnly", lang);
         else if((page + 1) * 20 >= stage.size())
-            check = LangID.getStringByID("formst_pre", lang);
+            check = LangID.getStringByID("ui.search.old.page.previousOnly", lang);
         else
-            check = LangID.getStringByID("formst_nexpre", lang);
+            check = LangID.getStringByID("ui.search.old.page.nextPrevious", lang);
 
-        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("ui.search.selectData", lang)).append(check);
 
         for(int i = 20 * page; i < 20 * (page + 1); i++) {
             if(i >= stage.size())
@@ -319,10 +319,10 @@ public class AliasStageMessageHolder extends MessageHolder {
             if(stage.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
+            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
         }
 
-        sb.append(LangID.getStringByID("formst_can", lang));
+        sb.append(LangID.getStringByID("ui.search.old.page.cancel", lang));
         sb.append("```");
 
         message.editMessage(sb.toString()).queue();

@@ -64,19 +64,19 @@ public class FindReward extends TimedConstraintCommand {
         int amount = getAmount(loader.getContent());
 
         if(rewardName.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_noname", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findReward.failed.noName", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(chance != -1 && (chance <= 0 || chance > 100)) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_chance", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findReward.failed.invalidChance", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(amount != -1 && amount <= 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_amount", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findReward.failed.invalidAmount", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -84,14 +84,14 @@ public class FindReward extends TimedConstraintCommand {
         List<Integer> rewards = EntityFilter.findRewardByName(rewardName, lang);
 
         if(rewards.isEmpty()) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_norew", lang).replace("_", validateName(rewardName)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findReward.failed.noReward", lang).replace("_", validateName(rewardName)), loader.getMessage(), a -> a);
 
             disableTimer();
         } else if(rewards.size() == 1) {
             List<Stage> stages = EntityFilter.findStageByReward(rewards.getFirst(), chance, amount);
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("freward_nosta", lang).replace("_", validateName(rewardName)), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("findReward.failed.noStage", lang).replace("_", validateName(rewardName)), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -105,9 +105,9 @@ public class FindReward extends TimedConstraintCommand {
                     StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact, lang));
                 });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_severalst", lang).replace("_", validateName(rewardName)))
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("findReward.several.stage", lang).replace("_", validateName(rewardName)))
                         .append("```md\n")
-                        .append(LangID.getStringByID("formst_pick", lang));
+                        .append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateStage(stages, true);
 
@@ -121,7 +121,7 @@ public class FindReward extends TimedConstraintCommand {
                     if(stages.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -139,9 +139,9 @@ public class FindReward extends TimedConstraintCommand {
 
             }
         } else {
-            StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(rewardName)))
+            StringBuilder sb = new StringBuilder(LangID.getStringByID("findReward.several.reward", lang).replace("_", validateName(rewardName)))
                     .append("```md\n")
-                    .append(LangID.getStringByID("formst_pick", lang));
+                    .append(LangID.getStringByID("ui.search.selectData", lang));
 
             List<String> data = accumulateReward(rewards);
 
@@ -155,7 +155,7 @@ public class FindReward extends TimedConstraintCommand {
                 if(rewards.size() % SearchHolder.PAGE_CHUNK != 0)
                     totalPage++;
 
-                sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
             }
 
             sb.append("```");

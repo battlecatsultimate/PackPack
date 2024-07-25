@@ -44,7 +44,7 @@ public class Operator extends Element {
                 return new Number(d0.multiply(d1));
             case DIVISION:
                 if(d1.doubleValue() == 0) {
-                    Equation.error.add(LangID.getStringByID("calc_division0", lang));
+                    Equation.error.add(LangID.getStringByID("calculator.failed.zeroDivision", lang));
 
                     return new Number("0");
                 }
@@ -70,7 +70,7 @@ public class Operator extends Element {
 
                         if(d1.compareTo(BigDecimal.ZERO) < 0) {
                             if(result.compareTo(BigDecimal.ZERO) == 0) {
-                                Equation.error.add(LangID.getStringByID("calc_division0", lang));
+                                Equation.error.add(LangID.getStringByID("calculator.failed.zeroDivision", lang));
 
                                 return new Number("0");
                             }
@@ -80,7 +80,7 @@ public class Operator extends Element {
 
                         return new Number(result);
                     } catch (ArithmeticException ignored) {
-                        Equation.error.add(LangID.getStringByID("calc_outofrange", lang));
+                        Equation.error.add(LangID.getStringByID("calculator.failed.NaN", lang));
 
                         return new Number(0);
                     }
@@ -90,7 +90,7 @@ public class Operator extends Element {
                     if(Double.isFinite(check)) {
                         return new Number(check);
                     } else {
-                        Equation.error.add(LangID.getStringByID("calc_outofrange", lang));
+                        Equation.error.add(LangID.getStringByID("calculator.failed.NaN", lang));
 
                         return new Number(0);
                     }

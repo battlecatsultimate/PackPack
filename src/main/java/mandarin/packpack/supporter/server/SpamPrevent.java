@@ -107,7 +107,7 @@ public class SpamPrevent {
 
                 StaticStore.logger.uploadLog("Spammer found : " + id);
 
-                ch.sendMessage(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
+                ch.sendMessage(LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
 
                 return true;
             }
@@ -148,7 +148,7 @@ public class SpamPrevent {
                         lang =  StaticStore.config.get(m.getUser().getId()).lang;
                     }
 
-                    return LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.getUser().getId());
+                    return LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.getUser().getId());
                 } else {
                     return "";
                 }

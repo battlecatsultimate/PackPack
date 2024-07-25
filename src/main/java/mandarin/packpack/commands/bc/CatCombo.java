@@ -49,13 +49,13 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(combos.isEmpty()) {
                 disableTimer();
-                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("combo.failed.noCombo", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(combos.size() == 1) {
                 EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang);
             } else {
                 disableTimer();
 
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateCombo(combos);
 
@@ -69,7 +69,7 @@ public class CatCombo extends TimedConstraintCommand {
                     if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -89,20 +89,20 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(forms.isEmpty()) {
                 disableTimer();
-                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("combo.failed.noCombo", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(forms.size() == 1) {
                 ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.getFirst(), cName);
 
                 if(combos.isEmpty()) {
                     disableTimer();
 
-                    replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("combo.failed.noCombo", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
                 } else if(combos.size() == 1) {
                     EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang);
                 } else {
                     disableTimer();
 
-                    StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                    StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                     List<String> data = accumulateCombo(combos);
 
@@ -116,7 +116,7 @@ public class CatCombo extends TimedConstraintCommand {
                         if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                        sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                     }
 
                     sb.append("```");
@@ -132,7 +132,7 @@ public class CatCombo extends TimedConstraintCommand {
                     });
                 }
             } else {
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateUnit(forms);
 
@@ -146,7 +146,7 @@ public class CatCombo extends TimedConstraintCommand {
                     if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -233,9 +233,9 @@ public class CatCombo extends TimedConstraintCommand {
             comboName += " | " + DataToString.getComboType(c, lang) + " ";
 
             if(c.forms.length == 1) {
-                comboName += LangID.getStringByID("combo_slot", lang);
+                comboName += LangID.getStringByID("combo.slot.singular", lang);
             } else {
-                comboName += String.format(LangID.getStringByID("combo_slots", lang), c.forms.length);
+                comboName += String.format(LangID.getStringByID("combo.slot.plural", lang), c.forms.length);
             }
 
             data.add(comboName);

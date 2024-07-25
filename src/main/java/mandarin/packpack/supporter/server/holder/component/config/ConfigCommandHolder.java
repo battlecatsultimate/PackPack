@@ -35,14 +35,14 @@ public class ConfigCommandHolder extends ServerConfigHolder {
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "level" -> {
-                TextInput input = TextInput.create("level", LangID.getStringByID("config_levelsubject", holder.config.lang), TextInputStyle.SHORT)
-                        .setPlaceholder(LangID.getStringByID("config_levelplace", holder.config.lang))
+                TextInput input = TextInput.create("level", LangID.getStringByID("config.defaultLevel.set.inputTagName", holder.config.lang), TextInputStyle.SHORT)
+                        .setPlaceholder(LangID.getStringByID("config.defaultLevel.set.placeholder", holder.config.lang))
                         .setRequiredRange(1, 2)
                         .setRequired(true)
                         .setValue(String.valueOf(holder.config.defLevel))
                         .build();
 
-                Modal modal = Modal.create("level", LangID.getStringByID("config_leveltitle", holder.config.lang))
+                Modal modal = Modal.create("level", LangID.getStringByID("config.defaultLevel.set.tagName", holder.config.lang))
                         .addActionRow(input)
                         .build();
 
@@ -98,7 +98,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -107,11 +107,11 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -161,12 +161,12 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                 Emoji unitEmoji;
 
                 if (holder.config.useFrame) {
-                    unit = LangID.getStringByID("config_frame", lang);
-                    unitExample = LangID.getStringByID("sercon_commandunitexamf", lang);
+                    unit = LangID.getStringByID("config.defaultUnit.frame", lang);
+                    unitExample = LangID.getStringByID("serverConfig.command.documentation.defaultUnit.example.frame", lang);
                     unitEmoji = Emoji.fromUnicode("📏");
                 } else {
-                    unit = LangID.getStringByID("config_second", lang);
-                    unitExample = LangID.getStringByID("sercon_commandunitexams", lang);
+                    unit = LangID.getStringByID("config.defaultUnit.second", lang);
+                    unitExample = LangID.getStringByID("serverConfig.command.documentation.defaultUnit.example.second", lang);
                     unitEmoji = Emoji.fromUnicode("⏱️");
                 }
 
@@ -178,13 +178,13 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     extra = LangID.getStringByID("data.false", lang);
                 }
 
-                return LangID.getStringByID("sercon_commandtitle", lang) + "\n" +
-                        LangID.getStringByID("sercon_commandlvtit", lang).formatted(EmojiStore.LEVEL, holder.config.defLevel) + "\n" +
-                        LangID.getStringByID("sercon_commandlvdesc", lang).formatted(holder.config.defLevel, holder.config.defLevel) + "\n" +
-                        LangID.getStringByID("sercon_commandunittit", lang).formatted(unitEmoji, unit) + "\n" +
-                        LangID.getStringByID("sercon_commandunitdesc", lang).formatted(unit, unitExample) + "\n" +
-                        LangID.getStringByID("sercon_commandextratit", lang).formatted(EmojiStore.INFORMATION, extra) + "\n" +
-                        LangID.getStringByID("sercon_commandextradesc", lang);
+                return LangID.getStringByID("serverConfig.command.documentation.title", lang) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.defaultLevel.title", lang).formatted(EmojiStore.LEVEL, holder.config.defLevel) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.defaultLevel.description", lang).formatted(holder.config.defLevel, holder.config.defLevel) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.defaultUnit.title", lang).formatted(unitEmoji, unit) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.defaultUnit.description", lang).formatted(unit, unitExample) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.extra.title", lang).formatted(EmojiStore.INFORMATION, extra) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.extra.description", lang);
             }
             case 1 -> {
                 String compacted;
@@ -214,13 +214,13 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     trueFormSearch = LangID.getStringByID("data.false", lang);
                 }
 
-                return LangID.getStringByID("sercon_commandtitle", lang) + "\n" +
-                        LangID.getStringByID("sercon_commandcompacttit", lang).formatted(EmojiStore.COMPRESS, compacted) + "\n" +
-                        LangID.getStringByID("sercon_commandcompactdesc", lang) + "\n" +
-                        LangID.getStringByID("sercon_commandforcomtit", lang).formatted(forceCompactedSwitch, forceCompacted) +"\n" +
-                        LangID.getStringByID("sercon_commandforcomdesc", lang) + "\n" +
-                        LangID.getStringByID("sercon_commandtruetit", lang).formatted(Emoji.fromUnicode("🔎"), trueFormSearch) + "\n" +
-                        LangID.getStringByID("sercon_commandtruedesc", lang);
+                return LangID.getStringByID("serverConfig.command.documentation.title", lang) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.compactEmbed.title", lang).formatted(EmojiStore.COMPRESS, compacted) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.compactEmbed.description", lang) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.forceCompact.title", lang).formatted(forceCompactedSwitch, forceCompacted) +"\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.forceCompact.description", lang) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.trueFormSearch.title", lang).formatted(Emoji.fromUnicode("🔎"), trueFormSearch) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.trueFormSearch.description", lang);
             }
             case 2 -> {
                 String treasure;
@@ -242,11 +242,11 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     forceTreasureSwitch = EmojiStore.SWITCHOFF;
                 }
 
-                return LangID.getStringByID("sercon_commandtitle", lang) + "\n" +
-                        LangID.getStringByID("sercon_commandtreasuretit", lang).formatted(EmojiStore.TREASURE_RADAR, treasure) + "\n" +
-                        LangID.getStringByID("sercon_commandtreasuredesc", lang) + "\n" +
-                        LangID.getStringByID("sercon_commandfortrtit", lang).formatted(forceTreasureSwitch, forceTreasure) + "\n" +
-                        LangID.getStringByID("sercon_commandfortrdesc", lang);
+                return LangID.getStringByID("serverConfig.command.documentation.title", lang) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.treasure.title", lang).formatted(EmojiStore.TREASURE_RADAR, treasure) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.treasure.description", lang) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.forceTreasure.title", lang).formatted(forceTreasureSwitch, forceTreasure) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.forceTreasure.description", lang);
             }
         }
 
@@ -262,10 +262,10 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                 Emoji unitEmoji;
 
                 if (holder.config.useFrame) {
-                    unit = LangID.getStringByID("config_frame", lang);
+                    unit = LangID.getStringByID("config.defaultUnit.frame", lang);
                     unitEmoji = Emoji.fromUnicode("📏");
                 } else {
-                    unit = LangID.getStringByID("config_second", lang);
+                    unit = LangID.getStringByID("config.defaultUnit.second", lang);
                     unitEmoji = Emoji.fromUnicode("⏱️");
                 }
 
@@ -277,9 +277,9 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     extra = EmojiStore.SWITCHOFF;
                 }
 
-                result.add(ActionRow.of(Button.secondary("level", LangID.getStringByID("sercon_commandlvbutton", lang).formatted(holder.config.defLevel)).withEmoji(EmojiStore.LEVEL)));
-                result.add(ActionRow.of(Button.secondary("unit", LangID.getStringByID("sercon_commandunitbutton", lang).formatted(unit)).withEmoji(unitEmoji)));
-                result.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("sercon_commandextrabutton", lang)).withEmoji(extra)));
+                result.add(ActionRow.of(Button.secondary("level", LangID.getStringByID("serverConfig.command.button.defaultLevel", lang).formatted(holder.config.defLevel)).withEmoji(EmojiStore.LEVEL)));
+                result.add(ActionRow.of(Button.secondary("unit", LangID.getStringByID("serverConfig.command.button.defaultUnit", lang).formatted(unit)).withEmoji(unitEmoji)));
+                result.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("serverConfig.command.button.extra", lang)).withEmoji(extra)));
 
             }
             case 1 -> {
@@ -307,9 +307,9 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     trueFormSwitch = EmojiStore.SWITCHOFF;
                 }
 
-                result.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("sercon_commandcompactbutton", lang)).withEmoji(extraSwitch)));
-                result.add(ActionRow.of(Button.secondary("forceCompact", LangID.getStringByID("sercon_commandforcombutton", lang)).withEmoji(forceCompactSwitch)));
-                result.add(ActionRow.of(Button.secondary("trueForm", LangID.getStringByID("sercon_commandtruebutton", lang)).withEmoji(trueFormSwitch)));
+                result.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("serverConfig.command.button.compactEmbed", lang)).withEmoji(extraSwitch)));
+                result.add(ActionRow.of(Button.secondary("forceCompact", LangID.getStringByID("serverConfig.command.button.forceCompact", lang)).withEmoji(forceCompactSwitch)));
+                result.add(ActionRow.of(Button.secondary("trueForm", LangID.getStringByID("serverConfig.command.button.trueFormSearch", lang)).withEmoji(trueFormSwitch)));
             }
             case 2 -> {
                 Emoji treasureSwitch;
@@ -328,8 +328,8 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     forceTreasureSwitch = EmojiStore.SWITCHOFF;
                 }
 
-                result.add(ActionRow.of(Button.secondary("treasure", LangID.getStringByID("sercon_commandtreasurebutton", lang)).withEmoji(treasureSwitch)));
-                result.add(ActionRow.of(Button.secondary("forceTreasure", LangID.getStringByID("sercon_commandfortrbutton", lang)).withEmoji(forceTreasureSwitch)));
+                result.add(ActionRow.of(Button.secondary("treasure", LangID.getStringByID("serverConfig.command.button.treasure", lang)).withEmoji(treasureSwitch)));
+                result.add(ActionRow.of(Button.secondary("forceTreasure", LangID.getStringByID("serverConfig.command.button.forceTreasure", lang)).withEmoji(forceTreasureSwitch)));
             }
         }
 
@@ -339,9 +339,9 @@ public class ConfigCommandHolder extends ServerConfigHolder {
         ));
 
         result.add(ActionRow.of(
-                Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
         ));
 
         return result;

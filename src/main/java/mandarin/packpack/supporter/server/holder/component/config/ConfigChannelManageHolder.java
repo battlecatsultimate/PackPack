@@ -102,7 +102,7 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
             }
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -111,11 +111,11 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -160,14 +160,14 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
             roleMention = "<@&" + role + ">";
         }
 
-        builder.append(LangID.getStringByID("sercon_permission", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_permissionchannel", lang).formatted(Emoji.fromUnicode("📜"))).append("\n")
-                .append(LangID.getStringByID("sercon_permissionchannelmanagedesc", lang).formatted(roleMention)).append("\n")
-                .append(LangID.getStringByID("sercon_permissionchannelallowedchannel", lang)).append("\n");
+        builder.append(LangID.getStringByID("serverConfig.permission.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.permission.documentation.channelPermission.title", lang).formatted(Emoji.fromUnicode("📜"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.channelPermission.role.description", lang).formatted(roleMention)).append("\n")
+                .append(LangID.getStringByID("serverConfig.channelPermission.role.allowedChannels", lang)).append("\n");
 
         if (channels != null) {
             if (channels.isEmpty()) {
-                builder.append(LangID.getStringByID("sercon_permissionchannelno", lang));
+                builder.append(LangID.getStringByID("serverConfig.channelPermission.role.noChannels", lang));
             } else {
                 int size = Math.min(channels.size() , (page + 1) * SearchHolder.PAGE_CHUNK);
 
@@ -181,11 +181,11 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
                 if (channels.size() > SearchHolder.PAGE_CHUNK) {
                     int totalPage = (int) Math.ceil(channels.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
-                    builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
+                    builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
                 }
             }
         } else {
-            builder.append(LangID.getStringByID("sercon_permissionchannelall", lang));
+            builder.append(LangID.getStringByID("serverConfig.channelPermission.role.allChannels", lang));
         }
 
         return builder.toString();
@@ -216,21 +216,21 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
         result.add(ActionRow.of(
                 EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
                         .setChannelTypes(ChannelType.TEXT, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.FORUM)
-                        .setPlaceholder(LangID.getStringByID("sercon_permissionchannelchannelselect", lang))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.channelPermission.role.selectChannel", lang))
                         .setRequiredRange(1, StringSelectMenu.OPTIONS_MAX_AMOUNT)
                         .build()
         ));
 
         result.add(ActionRow.of(
-                Button.secondary("all", LangID.getStringByID("sercon_permissionchannelallow", lang)).withEmoji(Emoji.fromUnicode("🪄")).withDisabled(channels == null),
-                Button.secondary("no", LangID.getStringByID("sercon_permissionchanneldisallow", lang)).withEmoji(Emoji.fromUnicode("❌")).withDisabled(channels != null && channels.isEmpty())
+                Button.secondary("all", LangID.getStringByID("serverConfig.channelPermission.role.allowAll", lang)).withEmoji(Emoji.fromUnicode("🪄")).withDisabled(channels == null),
+                Button.secondary("no", LangID.getStringByID("serverConfig.channelPermission.role.disallowAll", lang)).withEmoji(Emoji.fromUnicode("❌")).withDisabled(channels != null && channels.isEmpty())
         ));
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

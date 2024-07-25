@@ -59,13 +59,13 @@ public class StageStatAnalyzer extends ConstraintCommand {
         String code = getCode(command);
 
         if(mid == -1) {
-            ch.sendMessage(LangID.getStringByID("stanalyzer_sid", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.noMapID", lang)).queue();
 
             return;
         }
 
         if(code == null) {
-            ch.sendMessage(LangID.getStringByID("stanalyzer_code", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.noMapCode", lang)).queue();
 
             return;
         }
@@ -135,7 +135,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
 
         for(int i = 0; i < indexes.size(); i++) {
             if(indexes.get(i) >= len) {
-                createMessageWithNoPings(ch, LangID.getStringByID("stanalyzer_range", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("statAnalyzer.failed.mapOutOfRange", lang));
 
                 return;
             }
@@ -172,7 +172,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
         } else if(name.length != (indexes.isEmpty() ? len : indexes.size())) {
             int nLen = name.length;
 
-            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", String.valueOf(indexes.isEmpty() ? len : indexes.size())).replace("_PPP_", String.valueOf(nLen))).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.notEnoughName", lang).replace("_RRR_", String.valueOf(indexes.isEmpty() ? len : indexes.size())).replace("_PPP_", String.valueOf(nLen))).queue();
 
             return;
         }

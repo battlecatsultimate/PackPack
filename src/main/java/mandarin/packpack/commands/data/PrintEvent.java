@@ -38,7 +38,7 @@ public class PrintEvent extends ConstraintCommand {
         if(full && !StaticStore.contributors.contains(m.getId())) {
             full = false;
 
-            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("event.ignoreFull", lang));
         }
 
         List<String> gacha = StaticStore.event.printGachaEvent(loc, l , full, raw, false, 0);
@@ -46,7 +46,7 @@ public class PrintEvent extends ConstraintCommand {
         Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(loc, l, false, holder.eventRaw, false, 0);
 
         if(gacha.isEmpty() && item.isEmpty() && stage.isEmpty()) {
-            ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("checkEvent.noEvent", lang)).queue();
 
             return;
         }
@@ -65,7 +65,7 @@ public class PrintEvent extends ConstraintCommand {
 
                 if(!eventDone) {
                     eventDone = true;
-                    ch.sendMessage(LangID.getStringByID("event_loc" + loc.code, l)).queue();
+                    ch.sendMessage(LangID.getStringByID("event.title." + loc.code, l)).queue();
                 }
 
                 boolean started = false;
@@ -88,7 +88,7 @@ public class PrintEvent extends ConstraintCommand {
                                 builder.append("** **\n");
                             }
 
-                            builder.append(LangID.getStringByID("event_stage", l)).append("\n\n");
+                            builder.append(LangID.getStringByID("event.stage", l)).append("\n\n");
                         }
 
                         if(!initial) {
@@ -98,15 +98,15 @@ public class PrintEvent extends ConstraintCommand {
 
                             switch (type) {
                                 case DAILY ->
-                                        builder.append(LangID.getStringByID("printstage_daily", l)).append("\n\n```ansi\n");
+                                        builder.append(LangID.getStringByID("event.permanentSchedule.daily", l)).append("\n\n```ansi\n");
                                 case WEEKLY ->
-                                        builder.append(LangID.getStringByID("printstage_weekly", l)).append("\n\n```ansi\n");
+                                        builder.append(LangID.getStringByID("event.permanentSchedule.weekly", l)).append("\n\n```ansi\n");
                                 case MONTHLY ->
-                                        builder.append(LangID.getStringByID("printstage_monthly", l)).append("\n\n```ansi\n");
+                                        builder.append(LangID.getStringByID("event.permanentSchedule.monthly", l)).append("\n\n```ansi\n");
                                 case YEARLY ->
-                                        builder.append(LangID.getStringByID("printstage_yearly", l)).append("\n\n```ansi\n");
+                                        builder.append(LangID.getStringByID("event.permanentSchedule.yearly", l)).append("\n\n```ansi\n");
                                 case MISSION ->
-                                        builder.append(LangID.getStringByID("event_mission", l)).append("\n\n```ansi\n");
+                                        builder.append(LangID.getStringByID("event.mission", l)).append("\n\n```ansi\n");
                                 default -> builder.append("```ansi\n");
                             }
                         } else {
@@ -158,7 +158,7 @@ public class PrintEvent extends ConstraintCommand {
                 if(!eventDone) {
                     eventDone = true;
 
-                    ch.sendMessage(LangID.getStringByID("event_loc" + loc.code, l)).queue();
+                    ch.sendMessage(LangID.getStringByID("event.title." + loc.code, l)).queue();
                 }
 
                 boolean started = false;
@@ -174,9 +174,9 @@ public class PrintEvent extends ConstraintCommand {
                         }
 
                         if(j == EventFactor.GATYA) {
-                            builder.append(LangID.getStringByID("event_gacha", l)).append("\n\n");
+                            builder.append(LangID.getStringByID("event.gacha", l)).append("\n\n");
                         } else {
-                            builder.append(LangID.getStringByID("event_item", l)).append("\n\n");
+                            builder.append(LangID.getStringByID("event.item", l)).append("\n\n");
                         }
                     }
 
@@ -201,33 +201,33 @@ public class PrintEvent extends ConstraintCommand {
 
                     if(result.isEmpty() && j == EventFactor.GATYA) {
                         builder.append("\n")
-                                .append(LangID.getStringByID("printgacha_g", l))
+                                .append(LangID.getStringByID("event.gachaCode.guaranteed.code", l))
                                 .append(" : ")
-                                .append(LangID.getStringByID("printgacha_gua", l))
+                                .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", l))
                                 .append(" | ")
-                                .append(LangID.getStringByID("printgacha_s", l))
+                                .append(LangID.getStringByID("event.gachaCode.stepUp.code", l))
                                 .append(" : ")
-                                .append(LangID.getStringByID("printgacha_step", l))
+                                .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", l))
                                 .append(" | ")
-                                .append(LangID.getStringByID("printgacha_l", l))
+                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", l))
                                 .append(" : ")
-                                .append(LangID.getStringByID("printgacha_lucky", l))
+                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", l))
                                 .append(" | ")
-                                .append(LangID.getStringByID("printgacha_p", l))
+                                .append(LangID.getStringByID("event.gachaCode.platinumShard.code", l))
                                 .append(" : ")
-                                .append(LangID.getStringByID("printgacha_plat", l))
+                                .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", l))
                                 .append(" | ")
-                                .append(LangID.getStringByID("printgacha_n", l))
+                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", l))
                                 .append(" : ")
-                                .append(LangID.getStringByID("printgacha_neneko", l))
+                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", l))
                                 .append(" | ")
-                                .append(LangID.getStringByID("printgacha_gr", l))
+                                .append(LangID.getStringByID("event.gachaCode.grandon.code", l))
                                 .append(" : ")
-                                .append(LangID.getStringByID("printgacha_gran", l))
+                                .append(LangID.getStringByID("event.gachaCode.grandon.fullName", l))
                                 .append(" | ")
-                                .append(LangID.getStringByID("printgacha_r", l))
+                                .append(LangID.getStringByID("event.gachaCode.reinforcement.code", l))
                                 .append(" : ")
-                                .append(LangID.getStringByID("printgacha_rein", l))
+                                .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", l))
                                 .append("\n```");
                     } else {
                         builder.append("```");
@@ -240,7 +240,7 @@ public class PrintEvent extends ConstraintCommand {
             }
         }
 
-        ch.sendMessage(LangID.getStringByID("event_warning", l)).queue();
+        ch.sendMessage(LangID.getStringByID("event.warning", l)).queue();
     }
 
     private boolean followServerLocale(String content) {

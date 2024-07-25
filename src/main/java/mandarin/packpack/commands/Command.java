@@ -39,8 +39,8 @@ public abstract class Command {
     public static MessageCreateAction registerConfirmButtons(MessageCreateAction m, CommonStatic.Lang.Locale lang) {
         List<ActionComponent> components = new ArrayList<>();
 
-        components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
-        components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
+        components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
+        components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
 
         return m.setActionRow(components);
     }
@@ -88,9 +88,9 @@ public abstract class Command {
             }
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectData", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
 
-        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return m.setComponents(rows);
     }
@@ -265,7 +265,7 @@ public abstract class Command {
             Message msg = loader.getMessage();
 
             if(requireGuild && !(ch instanceof GuildChannel)) {
-                replyToMessageSafely(ch, LangID.getStringByID("sendFailure.reason.serverRequired", lang), msg, a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("bot.sendFailure.reason.serverRequired", lang), msg, a -> a);
 
                 return;
             }
@@ -300,7 +300,7 @@ public abstract class Command {
 
                     String content;
 
-                    content = LangID.getStringByID("sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                    content = LangID.getStringByID("bot.sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
                     u.openPrivateChannel()
                             .flatMap(pc -> pc.sendMessage(content))
@@ -313,7 +313,7 @@ public abstract class Command {
 
                 if(!missingPermission.isEmpty()) {
                     u.openPrivateChannel()
-                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
+                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("bot.sendFailure.reason.missingPermission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
                             .queue();
 
                     return;
@@ -379,7 +379,7 @@ public abstract class Command {
         if(error == DEFAULT_ERROR) {
             ch.sendMessage(StaticStore.ERROR_MSG).queue();
         } else if(error == SERVER_ERROR) {
-            ch.sendMessage(LangID.getStringByID("sendFailure.reason.apiError", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("bot.sendFailure.reason.apiError", lang)).queue();
         }
     }
 
@@ -426,12 +426,12 @@ public abstract class Command {
             Permission permission = missingPermissions.get(i);
 
             String id = switch (permission.getName()) {
-                case "Attach Files" -> "permission_file";
-                case "Manage Messages" -> "permission_managemsg";
-                case "Add Reactions" -> "permission_addreact";
-                case "Manage Roles" -> "permission_addrole";
-                case "Manage Emojis and Stickers" -> "permission_addemoji";
-                case "Use External Emojis" -> "permission_externalemoji";
+                case "Attach Files" -> "bot.permission.attachFile";
+                case "Manage Messages" -> "bot.permission.manageMessage";
+                case "Add Reactions" -> "bot.permission.addReaction";
+                case "Manage Roles" -> "bot.permission.manageRole";
+                case "Manage Emojis and Stickers" -> "bot.permission.manageEmoji";
+                case "Use External Emojis" -> "bot.permission.useExternalEmoji";
                 case "Embed Links" -> "permission_embed";
                 default -> permission.getName();
             };

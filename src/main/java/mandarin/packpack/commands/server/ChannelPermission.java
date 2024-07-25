@@ -57,13 +57,13 @@ public class ChannelPermission extends ConstraintCommand {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(LangID.getStringByID("sercon_permission", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_permissionchannel", lang).formatted(Emoji.fromUnicode("📜"))).append("\n")
-                .append(LangID.getStringByID("sercon_permissionchannelrole", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_permissionchannellist", lang)).append("\n");
+        builder.append(LangID.getStringByID("serverConfig.permission.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.permission.documentation.channelPermission.title", lang).formatted(Emoji.fromUnicode("📜"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.channelPermission.description", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.channelPermission.assignedRole", lang)).append("\n");
 
         if (roles.isEmpty()) {
-            builder.append(LangID.getStringByID("sercon_permissionchannelnorole", lang));
+            builder.append(LangID.getStringByID("serverConfig.channelPermission.noRoleAssigned", lang));
         } else {
             int size = Math.min(roles.size(), SearchHolder.PAGE_CHUNK);
 
@@ -77,12 +77,12 @@ public class ChannelPermission extends ConstraintCommand {
                     id = id.replace("MEMBER|", "");
                     isCustom = false;
 
-                    builder.append(LangID.getStringByID("sercon_permissionrolemember", lang));
+                    builder.append(LangID.getStringByID("serverConfig.channelPermission.role.member.text", lang));
                 } else if (id.startsWith("BOOSTER|")) {
                     id = id.replace("BOOSTER|", "");
                     isCustom = false;
 
-                    builder.append(LangID.getStringByID("sercon_permissionrolelbooster", lang));
+                    builder.append(LangID.getStringByID("serverConfig.channelPermission.role.booster.text", lang));
                 } else {
                     final String finalID = id;
 
@@ -92,13 +92,13 @@ public class ChannelPermission extends ConstraintCommand {
                         return v != null && v.equals(finalID);
                     }).findAny().orElse("UNKNOWN");
 
-                    builder.append(LangID.getStringByID("sercon_permissionrolecustom", lang).formatted(foundRoleName));
+                    builder.append(LangID.getStringByID("serverConfig.channelPermission.role.custom.text", lang).formatted(foundRoleName));
                 }
 
                 builder.append("<@&").append(id).append("> [").append(id).append("]");
 
                 if (isCustom) {
-                    builder.append(" <").append(LangID.getStringByID("sercon_permissionrolecustomtype", lang)).append(">");
+                    builder.append(" <").append(LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang)).append(">");
                 }
 
                 if (i < size - 1) {
@@ -110,7 +110,7 @@ public class ChannelPermission extends ConstraintCommand {
         if (roles.size() > SearchHolder.PAGE_CHUNK) {
             int totalPage = (int) Math.ceil(roles.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
-            builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+            builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
         }
 
         return builder.toString();
@@ -137,11 +137,11 @@ public class ChannelPermission extends ConstraintCommand {
                 if (id.startsWith("MEMBER|")) {
                     id = id.replace("MEMBER|", "");
                     value = id;
-                    label = LangID.getStringByID("sercon_permissionrolemembertype", lang);
+                    label = LangID.getStringByID("serverConfig.channelPermission.role.member.type", lang);
                 } else if (id.startsWith("BOOSTER|")) {
                     id = id.replace("BOOSTER|", "");
                     value = id;
-                    label = LangID.getStringByID("sercon_permissionrolelboostertype", lang);
+                    label = LangID.getStringByID("serverConfig.channelPermission.role.booster.type", lang);
                 } else {
                     value = id;
 
@@ -149,7 +149,7 @@ public class ChannelPermission extends ConstraintCommand {
                         String v = holder.ID.get(k);
 
                         return v != null && v.equals(value);
-                    }).findAny().orElse("UNKNOWN") + " <" + LangID.getStringByID("sercon_permissionrolecustomtype", lang) + ">";
+                    }).findAny().orElse("UNKNOWN") + " <" + LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang) + ">";
                 }
 
                 roleOptions.add(SelectOption.of(label, value).withDescription(id));
@@ -159,7 +159,7 @@ public class ChannelPermission extends ConstraintCommand {
         result.add(ActionRow.of(
                 StringSelectMenu.create("role")
                         .addOptions(roleOptions)
-                        .setPlaceholder(LangID.getStringByID("sercon_permissionchannelselect", lang))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.channelPermission.selectRole", lang))
                         .setDisabled(roles.isEmpty())
                         .build()
         ));
@@ -185,8 +185,8 @@ public class ChannelPermission extends ConstraintCommand {
 
         result.add(
                 ActionRow.of(
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

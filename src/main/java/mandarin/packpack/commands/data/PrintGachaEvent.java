@@ -40,7 +40,7 @@ public class PrintGachaEvent extends ConstraintCommand {
             else
                 content = String.valueOf(t);
 
-            ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
+            ch.sendMessage(LangID.getStringByID("printEvent.timeZone", lang).replace("_", content)).queue();
         }
 
         boolean full = isFull(loader.getContent());
@@ -50,13 +50,13 @@ public class PrintGachaEvent extends ConstraintCommand {
         if(full && !StaticStore.contributors.contains(u.getId())) {
             full = false;
 
-            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("event.ignoreFull", lang));
         }
 
         List<String> result = StaticStore.event.printGachaEvent(getLocale(loader.getContent()), lang, full, isRaw(loader.getContent()), now, t);
 
         if(result.isEmpty()) {
-            ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("checkEvent.noEvent", lang)).queue();
 
             return;
         }
@@ -69,7 +69,7 @@ public class PrintGachaEvent extends ConstraintCommand {
             if(!started) {
                 started = true;
 
-                builder.append(LangID.getStringByID("event_gacha", lang)).append("\n\n");
+                builder.append(LangID.getStringByID("event.gacha", lang)).append("\n\n");
             }
 
             builder.append("```ansi\n");
@@ -93,33 +93,33 @@ public class PrintGachaEvent extends ConstraintCommand {
 
             if(result.isEmpty()) {
                 builder.append("\n")
-                        .append(LangID.getStringByID("printgacha_g", lang))
+                        .append(LangID.getStringByID("event.gachaCode.guaranteed.code", lang))
                         .append(" : ")
-                        .append(LangID.getStringByID("printgacha_gua", lang))
+                        .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", lang))
                         .append(" | ")
-                        .append(LangID.getStringByID("printgacha_s", lang))
+                        .append(LangID.getStringByID("event.gachaCode.stepUp.code", lang))
                         .append(" : ")
-                        .append(LangID.getStringByID("printgacha_step", lang))
+                        .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", lang))
                         .append(" | ")
-                        .append(LangID.getStringByID("printgacha_l", lang))
+                        .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", lang))
                         .append(" : ")
-                        .append(LangID.getStringByID("printgacha_lucky", lang))
+                        .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", lang))
                         .append(" | ")
-                        .append(LangID.getStringByID("printgacha_p", lang))
+                        .append(LangID.getStringByID("event.gachaCode.platinumShard.code", lang))
                         .append(" : ")
-                        .append(LangID.getStringByID("printgacha_plat", lang))
+                        .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", lang))
                         .append(" | ")
-                        .append(LangID.getStringByID("printgacha_n", lang))
+                        .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", lang))
                         .append(" : ")
-                        .append(LangID.getStringByID("printgacha_neneko", lang))
+                        .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", lang))
                         .append(" | ")
-                        .append(LangID.getStringByID("printgacha_gr", lang))
+                        .append(LangID.getStringByID("event.gachaCode.grandon.code", lang))
                         .append(" : ")
-                        .append(LangID.getStringByID("printgacha_gran", lang))
+                        .append(LangID.getStringByID("event.gachaCode.grandon.fullName", lang))
                         .append(" | ")
-                        .append(LangID.getStringByID("printgacha_r", lang))
+                        .append(LangID.getStringByID("event.gachaCode.reinforcement.code", lang))
                         .append(" : ")
-                        .append(LangID.getStringByID("printgacha_rein", lang))
+                        .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", lang))
                         .append("\n```");
             } else {
                 builder.append("```");

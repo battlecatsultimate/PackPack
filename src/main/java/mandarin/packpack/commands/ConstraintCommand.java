@@ -75,7 +75,7 @@ public abstract class ConstraintCommand extends Command {
             Message msg = loader.getMessage();
 
             if(requireGuild && !(ch instanceof GuildChannel)) {
-                replyToMessageSafely(ch, LangID.getStringByID("sendFailure.reason.serverRequired", lang), msg, a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("bot.sendFailure.reason.serverRequired", lang), msg, a -> a);
 
                 return;
             }
@@ -104,7 +104,7 @@ public abstract class ConstraintCommand extends Command {
 
                     String content;
 
-                    content = LangID.getStringByID("sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                    content = LangID.getStringByID("bot.sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
                     u.openPrivateChannel()
                             .flatMap(pc -> pc.sendMessage(content))
@@ -117,7 +117,7 @@ public abstract class ConstraintCommand extends Command {
 
                 if(!missingPermission.isEmpty()) {
                     u.openPrivateChannel()
-                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
+                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("bot.sendFailure.reason.missingPermission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
                             .queue();
 
                     return;
@@ -136,7 +136,7 @@ public abstract class ConstraintCommand extends Command {
                         hasRole = m.getRoles().stream().anyMatch(r -> r.getId().equals(constRole)) || m.isOwner();
 
                         if (!hasRole) {
-                            denialMessage = LangID.getStringByID("command_denialmod", lang).formatted(constRole);
+                            denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.mod.withRole", lang).formatted(constRole);
                         }
                     } else {
                         //Find if user has server manage permission
@@ -148,7 +148,7 @@ public abstract class ConstraintCommand extends Command {
                         }
 
                         if (!hasRole) {
-                            denialMessage = LangID.getStringByID("command_denialnomod", lang);
+                            denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.mod.noRole", lang);
                         }
                     }
                 }
@@ -177,7 +177,7 @@ public abstract class ConstraintCommand extends Command {
                         hasRole = isModerator || roles.stream().anyMatch(r -> r.getId().equals(constRole));
 
                         if (!hasRole) {
-                            denialMessage = LangID.getStringByID("command_denialnorole", lang).formatted(constRole);
+                            denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.member", lang).formatted(constRole);
                         }
                     } else {
                         hasRole = true;
@@ -187,14 +187,14 @@ public abstract class ConstraintCommand extends Command {
                     hasRole = StaticStore.contributors.contains(u.getId());
 
                     if (!hasRole) {
-                        denialMessage = LangID.getStringByID("command_denialtrusted", lang).formatted(loader.getClient().getSelfUser().getId(), StaticStore.MANDARIN_SMELL);
+                        denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.trusted", lang).formatted(loader.getClient().getSelfUser().getId(), StaticStore.MANDARIN_SMELL);
                     }
                 }
                 case MANDARIN -> {
                     hasRole = isMandarin;
 
                     if (!hasRole) {
-                        denialMessage = LangID.getStringByID("command_denialdev", lang).formatted(StaticStore.MANDARIN_SMELL);
+                        denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.developer", lang).formatted(StaticStore.MANDARIN_SMELL);
                     }
                 }
                 default -> throw new IllegalStateException("E/ConstraintCommand::execute - Unknown value : %s".formatted(role));

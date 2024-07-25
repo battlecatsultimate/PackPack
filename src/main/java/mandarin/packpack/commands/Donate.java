@@ -22,12 +22,12 @@ public class Donate extends ConstraintCommand {
 
         EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setTitle(LangID.getStringByID("donate_donation", lang));
+        builder.setTitle(LangID.getStringByID("donate.donation", lang));
         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-        builder.setDescription(LangID.getStringByID("donate_below", lang));
+        builder.setDescription(LangID.getStringByID("donate.description", lang));
 
-        builder.addField(EmojiStore.PAYPAL.getFormatted() + " " + LangID.getStringByID("donate_paypal", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.PAYPAL + ")", false);
-        builder.addField(EmojiStore.CASHAPP.getFormatted() + " " + LangID.getStringByID("donate_cashapp", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.CASHAPP + ")", false);
+        builder.addField(EmojiStore.PAYPAL.getFormatted() + " " + LangID.getStringByID("donate.method.payPal", lang), "[" + LangID.getStringByID("donate.link", lang) + "](" + StaticStore.PAYPAL + ")", false);
+        builder.addField(EmojiStore.CASHAPP.getFormatted() + " " + LangID.getStringByID("donate.method.cashApp", lang), "[" + LangID.getStringByID("donate.link", lang) + "](" + StaticStore.CASHAPP + ")", false);
 
         replyToMessageSafely(ch, "", loader.getMessage(), a -> a.setEmbeds(builder.build()));
     }

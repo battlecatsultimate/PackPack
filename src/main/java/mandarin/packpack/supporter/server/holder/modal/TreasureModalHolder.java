@@ -66,13 +66,13 @@ public class TreasureModalHolder extends ModalHolder {
 
                 for(int i = 0; i < values.length; i++) {
                     if(!StaticStore.isNumeric(values[i])) {
-                        result.append(String.format(LangID.getStringByID("treasure_notnum", lang), texts[i]))
+                        result.append(String.format(LangID.getStringByID("treasure.failed.notNumber", lang), texts[i]))
                                 .append("\n\n");
                     } else {
                         int v = StaticStore.safeParseInt(values[i]);
 
                         if(v < 1 || v > TreasureHolder.basicMax[i]) {
-                            result.append(String.format(LangID.getStringByID("treasure_range", lang), texts[i], 1, TreasureHolder.basicMax[i]))
+                            result.append(String.format(LangID.getStringByID("treasure.failed.outOfRange", lang), texts[i], 1, TreasureHolder.basicMax[i]))
                                     .append("\n\n");
                         } else {
                             treasure.basic[i] = v;
@@ -81,7 +81,7 @@ public class TreasureModalHolder extends ModalHolder {
                     }
                 }
 
-                key = "treasure_basicdone";
+                key = "treasure.done.basicLevel";
             }
             case EOC -> {
                 String[] values = prepareValues(event, "research", "study", "account", "health", "attack");
@@ -98,13 +98,13 @@ public class TreasureModalHolder extends ModalHolder {
 
                 for (int i = 0; i < values.length; i++) {
                     if (!StaticStore.isNumeric(values[i])) {
-                        result.append(String.format(LangID.getStringByID("treasure_notnum", lang), texts[i]))
+                        result.append(String.format(LangID.getStringByID("treasure.failed.notNumber", lang), texts[i]))
                                 .append("\n\n");
                     } else {
                         int v = StaticStore.safeParseInt(values[i]);
 
                         if (v < 0 || v > TreasureHolder.eocMax[i]) {
-                            result.append(String.format(LangID.getStringByID("treasure_range", lang), texts[i], 0, TreasureHolder.eocMax[i]))
+                            result.append(String.format(LangID.getStringByID("treasure.failed.outOfRange", lang), texts[i], 0, TreasureHolder.eocMax[i]))
                                     .append("\n\n");
                         } else {
                             treasure.eoc[i] = v;
@@ -113,7 +113,7 @@ public class TreasureModalHolder extends ModalHolder {
                     }
                 }
 
-                key = "treasure_eocdone";
+                key = "treasure.done.EoC";
             }
             case ITF -> {
                 String[] values = prepareValues(event, "crystal", "black", "red", "float", "angel");
@@ -130,13 +130,13 @@ public class TreasureModalHolder extends ModalHolder {
 
                 for (int i = 0; i < values.length; i++) {
                     if (!StaticStore.isNumeric(values[i])) {
-                        result.append(String.format(LangID.getStringByID("treasure_notnum", lang), texts[i]))
+                        result.append(String.format(LangID.getStringByID("treasure.failed.notNumber", lang), texts[i]))
                                 .append("\n\n");
                     } else {
                         int v = StaticStore.safeParseInt(values[i]);
 
                         if (v < 0 || v > TreasureHolder.itfMax[i]) {
-                            result.append(String.format(LangID.getStringByID("treasure_range", lang), texts[i], 0, TreasureHolder.itfMax[i]))
+                            result.append(String.format(LangID.getStringByID("treasure.failed.outOfRange", lang), texts[i], 0, TreasureHolder.itfMax[i]))
                                     .append("\n\n");
                         } else {
                             treasure.itf[i] = v;
@@ -145,7 +145,7 @@ public class TreasureModalHolder extends ModalHolder {
                     }
                 }
 
-                key = "treasure_itfdone";
+                key = "treasure.done.ItF";
             }
             case COTC -> {
                 String[] values = prepareValues(event, "crystal", "metal", "zombie", "alien", "study");
@@ -162,13 +162,13 @@ public class TreasureModalHolder extends ModalHolder {
 
                 for (int i = 0; i < values.length; i++) {
                     if (!StaticStore.isNumeric(values[i])) {
-                        result.append(String.format(LangID.getStringByID("treasure_notnum", lang), texts[i]))
+                        result.append(String.format(LangID.getStringByID("treasure.failed.notNumber", lang), texts[i]))
                                 .append("\n\n");
                     } else {
                         int v = StaticStore.safeParseInt(values[i]);
 
                         if (v < 0 || v > TreasureHolder.cotcMax[i]) {
-                            result.append(String.format(LangID.getStringByID("treasure_range", lang), texts[i], 0, TreasureHolder.cotcMax[i]))
+                            result.append(String.format(LangID.getStringByID("treasure.failed.outOfRange", lang), texts[i], 0, TreasureHolder.cotcMax[i]))
                                     .append("\n\n");
                         } else {
                             treasure.cotc[i] = v;
@@ -177,7 +177,7 @@ public class TreasureModalHolder extends ModalHolder {
                     }
                 }
 
-                key = "treasure_cotcdone";
+                key = "treasure.done.CotC";
             }
         }
 
@@ -190,7 +190,7 @@ public class TreasureModalHolder extends ModalHolder {
                     .queue();
         } else {
             if(somethingDone(done)) {
-                result.append(LangID.getStringByID("treasure_other", lang));
+                result.append(LangID.getStringByID("treasure.adjusted", lang));
             }
 
             event.reply(result.toString())

@@ -44,26 +44,26 @@ public class BoosterEmoji extends ConstraintCommand {
         Message me = loader.getMessage();
 
         if(holder.booster == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorole_norole", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRegisteredRole", lang));
             return;
         }
 
         String id = getID(loader.getContent());
 
         if(id == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorole_invalidid", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noMember", lang));
             return;
         }
 
         String name = getEmojiName(loader.getContent());
 
         if(name == null || name.isBlank()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("booemo_noname", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.noName", lang));
             return;
         }
 
         if(me.getAttachments().isEmpty()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("booemo_nopng", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.noFile", lang));
             return;
         }
 
@@ -72,7 +72,7 @@ public class BoosterEmoji extends ConstraintCommand {
         if(m != null) {
             try {
                 if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boorole_noboost", lang).replace("_RRR_", holder.booster));
+                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).replace("_RRR_", holder.booster));
                     return;
                 }
 
@@ -83,7 +83,7 @@ public class BoosterEmoji extends ConstraintCommand {
                         BoosterData data = bHolder.serverBooster.get(m.getId());
 
                         if(data.getRole() != null) {
-                            createMessageWithNoPings(ch, LangID.getStringByID("booemo_already", lang));
+                            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.alreadyAssigned", lang));
                             return;
                         }
                     }
@@ -101,7 +101,7 @@ public class BoosterEmoji extends ConstraintCommand {
                             gif = true;
 
                         if(att.getSize() >= 256 * 1024) {
-                            createMessageWithNoPings(ch, LangID.getStringByID("booemo_bigpng", lang));
+                            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.tooBig", lang));
                             return;
                         }
 
@@ -110,7 +110,7 @@ public class BoosterEmoji extends ConstraintCommand {
                 }
 
                 if(selectedAttachment == null) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("booemo_nopng", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.noFile", lang));
 
                     return;
                 }
@@ -118,7 +118,7 @@ public class BoosterEmoji extends ConstraintCommand {
                 final boolean finalGif = gif;
                 final Message.Attachment att = selectedAttachment;
 
-                ch.sendMessage(LangID.getStringByID("booemo_down", lang))
+                ch.sendMessage(LangID.getStringByID("boosterEmoji.downloading", lang))
                         .setAllowedMentions(new ArrayList<>())
                         .queue(mes -> {
                             try {
@@ -144,14 +144,14 @@ public class BoosterEmoji extends ConstraintCommand {
                                     if(current - currentTime.get() > 1500) {
                                         currentTime.set(current);
 
-                                        mes.editMessage(LangID.getStringByID("booemo_down", lang).replace("-", DataToString.df.format(p * 100))).queue();
+                                        mes.editMessage(LangID.getStringByID("boosterEmoji.downloading", lang).replace("-", DataToString.df.format(p * 100))).queue();
                                     }
                                 });
 
                                 mes.delete().queue();
 
                                 if(target.exists() && att.getFileName().endsWith(".png") && !AnimMixer.validPng(target)) {
-                                    createMessageWithNoPings(ch, LangID.getStringByID("booemo_invpng", lang));
+                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.invalidImage", lang));
 
                                     if(target.exists() && !target.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+target.getAbsolutePath());
@@ -159,7 +159,7 @@ public class BoosterEmoji extends ConstraintCommand {
 
                                     return;
                                 } else if(!target.exists()) {
-                                    createMessageWithNoPings(ch, LangID.getStringByID("booemo_faildown", lang));
+                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.downloadFail", lang));
 
                                     return;
                                 }
@@ -174,16 +174,16 @@ public class BoosterEmoji extends ConstraintCommand {
                                             int result = data.setEmoji(e.getId());
 
                                             if(result == BoosterData.ERR_ALREADY_EMOJI_SET) {
-                                                createMessageWithNoPings(ch, LangID.getStringByID("booemo_already", lang));
+                                                createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.alreadyAssigned", lang));
                                             } else {
-                                                createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "booemo_gifsuccess" : "booemo_success", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
+                                                createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
                                             }
                                         } else {
                                             BoosterData data = new BoosterData(e.getId(), BoosterData.INITIAL.EMOJI);
 
                                             bHolder.serverBooster.put(m.getId(), data);
 
-                                            createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "booemo_gifsuccess" : "booemo_success", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
+                                            createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
                                         }
                                     } else {
                                         BoosterHolder bHolder = new BoosterHolder();
@@ -194,10 +194,10 @@ public class BoosterEmoji extends ConstraintCommand {
 
                                         StaticStore.boosterData.put(g.getId(), bHolder);
 
-                                        createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "booemo_gifsuccess" : "booemo_success", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
+                                        createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
                                     }
                                 }, err -> {
-                                    createMessageWithNoPings(ch, LangID.getStringByID("booemo_fail", lang));
+                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.unknown", lang));
 
                                     StaticStore.logger.uploadErrorLog(err, "E/BoosterEmoji::doSomething - Failed to create emote");
                                 });

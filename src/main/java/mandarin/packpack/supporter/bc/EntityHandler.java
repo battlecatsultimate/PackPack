@@ -428,7 +428,7 @@ public class EntityHandler {
         }
 
         if(isTrueForm && !trueFormPossible) {
-            desc += LangID.getStringByID("formst_notrue", lang) + "\n";
+            desc += LangID.getStringByID("data.unit.noTrueForm", lang) + "\n";
         }
 
         if(holder.differentFromGlobal()) {
@@ -587,34 +587,34 @@ public class EntityHandler {
 
             if(addEmoji) {
                 if (f.fid - 3 >= 0) {
-                    forms.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(EmojiStore.THREE_PREVIOUS));
+                    forms.add(Button.secondary("first", LangID.getStringByID("formStat.button.firstForm", lang)).withEmoji(EmojiStore.THREE_PREVIOUS));
                 }
 
                 if (f.fid - 2 >= 0) {
-                    forms.add(Button.secondary("twoPre", LangID.getStringByID("button_tprf", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
+                    forms.add(Button.secondary("twoPre", LangID.getStringByID("formStat.button.twoPreviousForm", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
                 }
 
                 if (f.fid - 1 >= 0) {
-                    forms.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(EmojiStore.PREVIOUS));
+                    forms.add(Button.secondary("pre", LangID.getStringByID("formStat.button.previousForm", lang)).withEmoji(EmojiStore.PREVIOUS));
                 }
 
                 if (f.fid + 1 < f.unit.forms.length) {
-                    forms.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(EmojiStore.NEXT));
+                    forms.add(Button.secondary("next", LangID.getStringByID("formStat.button.nextForm", lang)).withEmoji(EmojiStore.NEXT));
                 }
 
                 if (f.fid + 2 < f.unit.forms.length) {
-                    forms.add(Button.secondary("twoNext", LangID.getStringByID("button_tnef", lang)).withEmoji(EmojiStore.TWO_NEXT));
+                    forms.add(Button.secondary("twoNext", LangID.getStringByID("formStat.button.twoNextForm", lang)).withEmoji(EmojiStore.TWO_NEXT));
                 }
 
                 if (f.fid + 3 < f.unit.forms.length) {
-                    forms.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(EmojiStore.THREE_NEXT));
+                    forms.add(Button.secondary("final", LangID.getStringByID("formStat.button.finalForm", lang)).withEmoji(EmojiStore.THREE_NEXT));
                 }
 
                 if(talent && f.du.getPCoin() != null) {
-                    misc.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(EmojiStore.NP));
+                    misc.add(Button.secondary("talent", LangID.getStringByID("formStat.button.talentInfo", lang)).withEmoji(EmojiStore.NP));
                 }
 
-                misc.add(Button.secondary("dps", LangID.getStringByID("button_dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
+                misc.add(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
             }
 
             if(StaticStore.availableUDP.contains(f.unit.id.id)) {
@@ -676,11 +676,11 @@ public class EntityHandler {
         if(unitName == null)
             unitName = Data.trio(unit.unit.id.id);
 
-        spec.setTitle(LangID.getStringByID("talentinfo_title", lang).replace("_", unitName));
+        spec.setTitle(LangID.getStringByID("data.talent.embed.title", lang).replace("_", unitName));
 
         for(int i = 0; i < talent.info.size(); i++) {
             if(talent.info.get(i)[13] == 1) {
-                spec.setDescription(LangID.getStringByID("talentinfo_superdesc", lang));
+                spec.setDescription(LangID.getStringByID("data.talent.superTalent.description", lang));
 
                 break;
             }
@@ -868,7 +868,7 @@ public class EntityHandler {
             }
         }
 
-        spec.setFooter(LangID.getStringByID("enemyst_source", lang));
+        spec.setFooter(LangID.getStringByID("enemyStat.source", lang));
 
         Command.replyToMessageSafely(ch, "", reference, a -> {
             a = a.setEmbeds(spec.build());
@@ -877,7 +877,7 @@ public class EntityHandler {
                 a = a.addFiles(FileUpload.fromData(img, "icon.png"));
             }
 
-            return a.addComponents(ActionRow.of(Button.secondary("dps", LangID.getStringByID("button_dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
+            return a.addComponents(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
         }, msg -> {
             if (img != null && img.exists() && !img.delete()) {
                 StaticStore.logger.uploadLog("Failed to delete file : " + img.getAbsolutePath());
@@ -986,7 +986,7 @@ public class EntityHandler {
             }
         }
 
-        spec.setFooter(LangID.getStringByID("enemyst_source", lang), null);
+        spec.setFooter(LangID.getStringByID("enemyStat.source", lang), null);
 
         ReplyCallbackAction action = event.deferReply().addEmbeds(spec.build());
 
@@ -1127,8 +1127,8 @@ public class EntityHandler {
 
         CountDownLatch waiter = new CountDownLatch(1);
 
-        float[] trueFormText = font.measureDimension(LangID.getStringByID("data_tf", lang));
-        float[] ultraFormText = font.measureDimension(LangID.getStringByID("data_uf", lang));
+        float[] trueFormText = font.measureDimension(LangID.getStringByID("data.unit.trueForm", lang));
+        float[] ultraFormText = font.measureDimension(LangID.getStringByID("data.unit.ultraForm", lang));
 
         int w = Math.round(Math.max(600f, trueFormText[2]));
         float th = catFruitTextGap + trueFormText[3] + catFruitTextGap + 150f;
@@ -1151,7 +1151,7 @@ public class EntityHandler {
                 g.translate(0f, catFruitTextGap);
 
                 g.setColor(238, 238, 238, 255);
-                g.drawText(LangID.getStringByID("data_tf", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                g.drawText(LangID.getStringByID("data.unit.trueForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
                 g.translate(0f, trueFormText[3] + catFruitTextGap);
 
@@ -1195,7 +1195,7 @@ public class EntityHandler {
                     g.translate(0f, 150 + catFruitTextGap);
 
                     g.setColor(238, 238, 238, 255);
-                    g.drawText(LangID.getStringByID("data_uf", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                    g.drawText(LangID.getStringByID("data.unit.ultraForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
                     g.translate(0f, ultraFormText[3] + catFruitTextGap);
 
@@ -1449,15 +1449,15 @@ public class EntityHandler {
 
             ArrayList<Button> buttons = new ArrayList<>();
 
-            buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(EmojiStore.CASTLE));
-            buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(EmojiStore.BACKGROUND));
+            buttons.add(Button.secondary("castle", LangID.getStringByID("stageInfo.button.castle", lang)).withEmoji(EmojiStore.CASTLE));
+            buttons.add(Button.secondary("bg", LangID.getStringByID("stageInfo.button.background", lang)).withEmoji(EmojiStore.BACKGROUND));
 
             if(st.mus0 != null) {
-                buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(EmojiStore.MUSIC));
+                buttons.add(Button.secondary("music", LangID.getStringByID("stageInfo.button.music", lang)).withEmoji(EmojiStore.MUSIC));
             }
 
             if(hasTwoMusic(st)) {
-                buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(EmojiStore.MUSIC_BOSS));
+                buttons.add(Button.secondary("music2", LangID.getStringByID("stageInfo.button.secondMusic", lang)).withEmoji(EmojiStore.MUSIC_BOSS));
             }
 
             action = action.setComponents(ActionRow.of(buttons));
@@ -2164,7 +2164,7 @@ public class EntityHandler {
             if(fName.isBlank())
                 fName = LangID.getStringByID("data.stage.limit.unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
 
-            Command.sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
+            Command.sendMessageWithFile(ch, LangID.getStringByID("formImage.result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
         }
     }
 
@@ -2189,35 +2189,35 @@ public class EntityHandler {
             if(eName.isBlank())
                 eName = LangID.getStringByID("data.stage.enemy", lang)+" "+ Data.trio(en.id.id);
 
-            Command.sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", eName).replace(":::", getModeName(mode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
+            Command.sendMessageWithFile(ch, LangID.getStringByID("formImage.result", lang).replace("_", eName).replace(":::", getModeName(mode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
         }
     }
 
     private static String getModeName(int mode, int max, CommonStatic.Lang.Locale lang) {
         switch (mode) {
             case 1 -> {
-                return LangID.getStringByID("fimg_idle", lang);
+                return LangID.getStringByID("data.animation.mode.idle", lang);
             }
             case 2 -> {
-                return LangID.getStringByID("fimg_atk", lang);
+                return LangID.getStringByID("data.animation.mode.attack", lang);
             }
             case 3 -> {
-                return LangID.getStringByID("fimg_hitback", lang);
+                return LangID.getStringByID("formImage.mode.kb", lang);
             }
             case 4 -> {
                 if (max == 5)
-                    return LangID.getStringByID("fimg_enter", lang);
+                    return LangID.getStringByID("data.animation.mode.enter", lang);
                 else
-                    return LangID.getStringByID("fimg_burrowdown", lang);
+                    return LangID.getStringByID("formImage.mode.burrowDown", lang);
             }
             case 5 -> {
-                return LangID.getStringByID("fimg_burrowmove", lang);
+                return LangID.getStringByID("formImage.mode.burrowMove", lang);
             }
             case 6 -> {
-                return LangID.getStringByID("fimg_burrowup", lang);
+                return LangID.getStringByID("formImage.mode.burrowUp", lang);
             }
             default -> {
-                return LangID.getStringByID("fimg_walk", lang);
+                return LangID.getStringByID("data.animation.mode.walk", lang);
             }
         }
     }
@@ -2240,7 +2240,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", link), reference, a -> a);
+                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.cached", lang).replace("_", link), reference, a -> a);
 
                 onFail.run();
 
@@ -2254,18 +2254,18 @@ public class EntityHandler {
             return;
 
         if(limit > 0)  {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length)))).replace("-", String.valueOf(limit))).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length)))).replace("-", String.valueOf(limit))).queue();
         } else if(!raw && f.anim.len(getAnimType(mode, f.anim.anims.length)) >= 300) {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length)))).replace("-", 300+"")).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length)))).replace("-", 300+"")).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length))))).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length))))).queue();
         }
 
         CommonStatic.getConfig().ref = false;
 
         int finalMode = mode;
 
-        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
             try {
                 if(msg == null) {
                     onFail.run();
@@ -2304,9 +2304,9 @@ public class EntityHandler {
                     onFail.run();
                 } else if (img.length() >= max) {
                     if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a, m -> {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.alternative.imgur", lang), reference, a -> a, m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -2334,7 +2334,7 @@ public class EntityHandler {
                             }
 
                             if(link == null) {
-                                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2356,7 +2356,7 @@ public class EntityHandler {
 
                                 long finalEnd = System.currentTimeMillis();
 
-                                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2380,9 +2380,9 @@ public class EntityHandler {
                             onSuccess.run();
                         });
                     } else if(img.length() < 200 * 1024 * 1024) {
-                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesizecatbox", lang), reference, a -> a, m -> {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.alternative.catbox", lang), reference, a -> a, m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -2410,7 +2410,7 @@ public class EntityHandler {
                             }
 
                             if(link == null) {
-                                m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.catbox", lang))
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2432,7 +2432,7 @@ public class EntityHandler {
 
                                 long finalEnd = System.currentTimeMillis();
 
-                                m.editMessage(String.format(LangID.getStringByID("gif_uploadcatbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
+                                m.editMessage(String.format(LangID.getStringByID("data.animation.gif.uploaded.catbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2462,7 +2462,7 @@ public class EntityHandler {
                     }
                 } else if(img.length() < max) {
                     if(debug || limit > 0) {
-                        Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
+                        Command.sendMessageWithFile(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
                     } else {
                         GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
 
@@ -2480,7 +2480,7 @@ public class EntityHandler {
                                             Message.Attachment at = m.getAttachments().get(i);
 
                                             if(at.getFileName().startsWith("result.")) {
-                                                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+                                                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
                                                 break;
                                             }
                                         }
@@ -2522,7 +2522,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", link), reference, a -> a);
+                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.cached", lang).replace("_", link), reference, a -> a);
 
                 onFail.run();
 
@@ -2538,17 +2538,17 @@ public class EntityHandler {
         EAnimD<?> anim = en.getEAnim(getAnimType(mode, en.anim.anims.length));
 
         if(limit > 0)  {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
         } else if(!raw && anim.len() >= 300) {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(anim.len()))).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(anim.len()))).queue();
         }
 
         CommonStatic.getConfig().ref = false;
         int finalMode = mode;
 
-        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
             try {
                 if(msg == null) {
                     onFail.run();
@@ -2585,9 +2585,9 @@ public class EntityHandler {
                     onFail.run();
                 } else if(img.length() >= max) {
                     if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a, m -> {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.alternative.imgur", lang), reference, a -> a, m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -2615,7 +2615,7 @@ public class EntityHandler {
                             }
 
                             if(link == null) {
-                                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2637,7 +2637,7 @@ public class EntityHandler {
 
                                 long finalEnd = System.currentTimeMillis();
 
-                                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2661,9 +2661,9 @@ public class EntityHandler {
                             onSuccess.run();
                         });
                     } else if(img.length() < 200 * 1024 * 1024) {
-                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesizecatbox", lang), reference, a -> a, m -> {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.alternative.catbox", lang), reference, a -> a, m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -2691,7 +2691,7 @@ public class EntityHandler {
                             }
 
                             if(link == null) {
-                                m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.catbox", lang))
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2713,7 +2713,7 @@ public class EntityHandler {
 
                                 long finalEnd = System.currentTimeMillis();
 
-                                m.editMessage(String.format(LangID.getStringByID("gif_uploadcatbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
+                                m.editMessage(String.format(LangID.getStringByID("data.animation.gif.uploaded.catbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2742,7 +2742,7 @@ public class EntityHandler {
                     }
                 } else if(img.length() < max) {
                     if(debug || limit > 0) {
-                        Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
+                        Command.sendMessageWithFile(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
 
                         onSuccess.run();
                     } else {
@@ -2762,7 +2762,7 @@ public class EntityHandler {
                                             Message.Attachment at = m.getAttachments().get(i);
 
                                             if(at.getFileName().startsWith("result.")) {
-                                                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+                                                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
                                             }
                                         }
 
@@ -2800,11 +2800,11 @@ public class EntityHandler {
             return;
         }
 
-        ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(anim.len()))).queue();
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(anim.len()))).queue();
 
         CommonStatic.getConfig().ref = false;
 
-        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
             try {
                 if(msg == null)
                     return;
@@ -2827,9 +2827,9 @@ public class EntityHandler {
                     ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
                 } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
                     if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                        ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).queue(m -> {
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -2855,7 +2855,7 @@ public class EntityHandler {
                             }
 
                             if(link == null) {
-                                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2871,7 +2871,7 @@ public class EntityHandler {
                             } else {
                                 long finalEnd = System.currentTimeMillis();
 
-                                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2887,9 +2887,9 @@ public class EntityHandler {
                             }
                         });
                     } else if(img.length() < 200 * 1024 * 1024) {
-                        ch.sendMessage(LangID.getStringByID("gif_filesizecatbox", lang)).queue(m -> {
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).queue(m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -2915,7 +2915,7 @@ public class EntityHandler {
                             }
 
                             if(link == null) {
-                                m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.catbox", lang))
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2931,7 +2931,7 @@ public class EntityHandler {
                             } else {
                                 long finalEnd = System.currentTimeMillis();
 
-                                m.editMessage(LangID.getStringByID("gif_uploadcatbox", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.catbox", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
                                         .queue(message -> {
                                             if(img.exists() && !img.delete()) {
@@ -2948,7 +2948,7 @@ public class EntityHandler {
                         });
                     }
                 } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-                    ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
+                    ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                             .queue(message -> {
                                 if(img.exists() && !img.delete()) {
@@ -2981,7 +2981,7 @@ public class EntityHandler {
 
         CommonStatic.getConfig().ref = false;
 
-        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
             if(msg == null) {
                 onFail.run();
 
@@ -3007,9 +3007,9 @@ public class EntityHandler {
             if(img == null) {
                 ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
             } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < 200 * 1024 * 1024) {
-                ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).queue(m -> {
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
                     if(m == null) {
-                        ch.sendMessage(LangID.getStringByID("gif_failcommand", lang))
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang))
                                 .queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
@@ -3038,7 +3038,7 @@ public class EntityHandler {
                     }
 
                     if(link == null) {
-                        m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                        m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
                                 .queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
@@ -3053,7 +3053,7 @@ public class EntityHandler {
                     } else {
                         long finalEnd = System.currentTimeMillis();
 
-                        m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                        m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                 .queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
@@ -3070,7 +3070,7 @@ public class EntityHandler {
                     onSuccess.run();
                 });
             } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-                ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
                         .addFiles(FileUpload.fromData(img, "result.mp4"))
                         .queue(message -> {
                             if(img.exists() && !img.delete()) {
@@ -3090,7 +3090,7 @@ public class EntityHandler {
     }
 
     public static void generateBGAnim(MessageChannel ch, Message reference, Background bg, CommonStatic.Lang.Locale lang) {
-        ch.sendMessage(LangID.getStringByID("bg_prepare", lang)).queue(message -> {
+        ch.sendMessage(LangID.getStringByID("data.animation.background.prepare", lang)).queue(message -> {
             if(message == null)
                 return;
 
@@ -3114,9 +3114,9 @@ public class EntityHandler {
             long end = System.currentTimeMillis();
 
             if(result == null) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("bg_fail", lang), reference, a -> a);
+                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.background.failed", lang), reference, a -> a);
             } else if(result.length() >= 8 * 1024 * 1024) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result)), reference, a -> a);
+                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.background.fileTooBig", lang).replace("_SSS_", getFileSize(result)), reference, a -> a);
             } else {
                 GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
 
@@ -3134,7 +3134,7 @@ public class EntityHandler {
                                     Message.Attachment at = m.getAttachments().get(i);
 
                                     if(at.getFileName().startsWith("result.")) {
-                                        Command.replyToMessageSafely(ch, LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl(), reference, a -> a);
+                                        Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.background.result", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl(), reference, a -> a);
 
                                         StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), at.getUrl(), true);
                                     }
@@ -3164,7 +3164,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).queue();
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.cached", lang).replace("_", link)).queue();
 
                 onFail.run();
 
@@ -3182,16 +3182,16 @@ public class EntityHandler {
         EAnimD<?> anim = s.anim.getEAnim(AnimU.UType.SOUL);
 
         if(limit > 0)  {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
         } else if(!raw && anim.len() >= 300) {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(anim.len()))).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(anim.len()))).queue();
         }
 
         CommonStatic.getConfig().ref = false;
 
-        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
             if(msg == null) {
                 onFail.run();
 
@@ -3232,9 +3232,9 @@ public class EntityHandler {
 
                 onFail.run();
             } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a, m -> {
+                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.alternative.imgur", lang), reference, a -> a, m -> {
                     if(m == null) {
-                        ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                             }
@@ -3260,7 +3260,7 @@ public class EntityHandler {
                     }
 
                     if(link == null) {
-                        m.editMessage(LangID.getStringByID("gif_failimgur", lang)).queue(message -> {
+                        m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang)).queue(message -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                             }
@@ -3280,7 +3280,7 @@ public class EntityHandler {
 
                         long finalEnd = System.currentTimeMillis();
 
-                        m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                        m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                 .queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -3304,7 +3304,7 @@ public class EntityHandler {
                 });
             } else if(img.length() < max) {
                 if(debug || limit > 0) {
-                    Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
+                    Command.sendMessageWithFile(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
                 } else {
                     GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
 
@@ -3322,7 +3322,7 @@ public class EntityHandler {
                                         Message.Attachment at = m.getAttachments().get(i);
 
                                         if(at.getFileName().startsWith("result.")) {
-                                            Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+                                            Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
 
                                             StaticStore.imgur.put("SOUL - " + Data.trio(s.getID().id), at.getUrl(), raw);
                                         }
@@ -3388,7 +3388,7 @@ public class EntityHandler {
 
     public static void getFormSprite(Form f, MessageChannel ch, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
         if(f.unit == null || f.unit.id == null) {
-            ch.sendMessage(LangID.getStringByID("fsp_cantunit", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("formSprite.failed.invalidUnit", lang)).queue();
             return;
         }
 
@@ -3445,7 +3445,7 @@ public class EntityHandler {
         }
 
         if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
+            Command.replyToMessageSafely(ch, LangID.getStringByID("formSprite.failed.invalidMode", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
             return;
         }
 
@@ -3475,7 +3475,7 @@ public class EntityHandler {
             fName = Data.trio(f.unit.id.id)+"-"+Data.trio(f.fid);
         }
 
-        Command.sendMessageWithFile(ch, LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
+        Command.sendMessageWithFile(ch, LangID.getStringByID("formSprite.uploaded", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
 
         f.anim.unload();
     }
@@ -3513,7 +3513,7 @@ public class EntityHandler {
         };
 
         if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
+            Command.replyToMessageSafely(ch, LangID.getStringByID("formSprite.failed.invalidMode", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
             return;
         }
 
@@ -3541,14 +3541,14 @@ public class EntityHandler {
             fName = Data.trio(e.id.id);
         }
 
-        Command.sendMessageWithFile(ch, LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
+        Command.sendMessageWithFile(ch, LangID.getStringByID("formSprite.uploaded", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
 
         e.anim.unload();
     }
 
     public static void getSoulSprite(Soul s, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws Exception {
         if(s.getID() == null) {
-            ch.sendMessage(LangID.getStringByID("soul_nosoul", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("soul.failed.noSoul", lang)).queue();
 
             return;
         }
@@ -3571,7 +3571,7 @@ public class EntityHandler {
         FakeImage img = s.anim.getNum();
 
         if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("soul_nosoul", lang), reference, a -> a);
+            Command.replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noSoul", lang), reference, a -> a);
 
             return;
         }
@@ -3596,7 +3596,7 @@ public class EntityHandler {
 
         Command.sendMessageWithFile(
                 ch,
-                LangID.getStringByID("soulspr_success", lang).replace("_", Data.trio(s.getID().id)),
+                LangID.getStringByID("soulImage.success", lang).replace("_", Data.trio(s.getID().id)),
                 image,
                 reference
         );
@@ -4300,7 +4300,7 @@ public class EntityHandler {
         }
 
         if (result == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("fdps_fail", lang), authorMessage, a -> a);
+            Command.replyToMessageSafely(ch, LangID.getStringByID("formDPS.failed.unknown", lang), authorMessage, a -> a);
         } else {
             EmbedBuilder spec = new EmbedBuilder();
 
@@ -4312,13 +4312,13 @@ public class EntityHandler {
             String desc;
 
             if (lv.getPlusLv() == 0) {
-                desc = String.format(LangID.getStringByID("fdps_descnoplv", lang), lv.getLv());
+                desc = String.format(LangID.getStringByID("formDPS.graph.description.default", lang), lv.getLv());
             } else {
-                desc = String.format(LangID.getStringByID("fdps_desc", lang), lv.getLv(), lv.getPlusLv());
+                desc = String.format(LangID.getStringByID("formDPS.graph.description.withPlus", lang), lv.getLv(), lv.getPlusLv());
             }
 
             if (talent && f.du.getPCoin() != null) {
-                desc += "\n" + String.format(LangID.getStringByID("fdps_talent", lang), StringUtils.joinS(ArrayUtils.toObject(lv.getTalents()), ", "));
+                desc += "\n" + String.format(LangID.getStringByID("formDPS.graph.description.talent", lang), StringUtils.joinS(ArrayUtils.toObject(lv.getTalents()), ", "));
             }
 
             if (treasureSetting.differentFromGlobal()) {
@@ -4330,7 +4330,7 @@ public class EntityHandler {
             }
 
             if (treasure && !identical) {
-                desc += "\n\n" + String.format(LangID.getStringByID("fdps_line", lang), EmojiStore.GREENLINE.getFormatted(), EmojiStore.REDDASHEDLINE.getFormatted());
+                desc += "\n\n" + String.format(LangID.getStringByID("formDPS.graph.legend", lang), EmojiStore.GREENLINE.getFormatted(), EmojiStore.REDDASHEDLINE.getFormatted());
             }
 
             int c;
@@ -4342,7 +4342,7 @@ public class EntityHandler {
             else
                 c = StaticStore.rainbow[2];
 
-            spec.setTitle(String.format(LangID.getStringByID("fdps_title", lang), name));
+            spec.setTitle(String.format(LangID.getStringByID("formDPS.graph.title", lang), name));
 
             if (!desc.isBlank()) {
                 spec.setDescription(desc);
@@ -4742,7 +4742,7 @@ public class EntityHandler {
         File result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
 
         if (result == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("fdps_fail", lang), authorMessage, a -> a);
+            Command.replyToMessageSafely(ch, LangID.getStringByID("formDPS.failed.unknown", lang), authorMessage, a -> a);
         } else {
             EmbedBuilder spec = new EmbedBuilder();
 
@@ -4751,13 +4751,13 @@ public class EntityHandler {
             if(name == null || name.isBlank())
                 name = Data.trio(e.id.id);
 
-            String desc = String.format(LangID.getStringByID("edps_mag", lang), adjustedMagnification);
+            String desc = String.format(LangID.getStringByID("enemyDPS.graph.magnification", lang), adjustedMagnification);
 
             if (treasureSetting.differentFromGlobal()) {
                 desc += "\n\n" + LangID.getStringByID("data.unit.treasure", lang);
             }
 
-            spec.setTitle(String.format(LangID.getStringByID("fdps_title", lang), name));
+            spec.setTitle(String.format(LangID.getStringByID("formDPS.graph.title", lang), name));
 
             if (!desc.isBlank()) {
                 spec.setDescription(desc);
@@ -4999,9 +4999,9 @@ public class EntityHandler {
         File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, itemContainer, mode, uid, egg, trueForm);
 
         if(result == null) {
-            ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.unknown", lang)).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("stat_success", lang))
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.success", lang))
                     .addFiles(FileUpload.fromData(result, "stat.png"))
                     .queue(m -> {
                         if(result.exists() && !result.delete()) {
@@ -5020,12 +5020,12 @@ public class EntityHandler {
     public static void generateEnemyStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy enemy, String name, File container, int m, boolean isFrame, int eid, CommonStatic.Lang.Locale lang) throws Exception {
         List<CellDrawer> cellGroup = getEnemyCell(data, procData, abilData, traitData, enemy, lang, m, isFrame);
 
-        File result = ImageDrawing.drawEnemyStatImage(cellGroup, LangID.getStringByID("stat_magnif", lang).replace("_", String.valueOf(m)), name, container, eid);
+        File result = ImageDrawing.drawEnemyStatImage(cellGroup, LangID.getStringByID("statAnalyzer.magnification", lang).replace("_", String.valueOf(m)), name, container, eid);
 
         if(result == null) {
-            ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.failed.unknown", lang)).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("stat_success", lang))
+            ch.sendMessage(LangID.getStringByID("statAnalyzer.success", lang))
                     .addFiles(FileUpload.fromData(result, "stat.png"))
                     .queue(msg -> {
                         if(result.exists() && !result.delete()) {
@@ -5059,7 +5059,7 @@ public class EntityHandler {
         long start = System.currentTimeMillis();
 
         if(map.customIndex.isEmpty()) {
-            Command.replyToMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.list.size()), null, a -> a, msg -> {
+            Command.replyToMessageSafely(ch, String.format(LangID.getStringByID("statAnalyzer.analyzingStages", lang), 0, map.list.size()), null, a -> a, msg -> {
                 for(int i = 0; i < map.list.size(); i++) {
                     File result;
 
@@ -5076,16 +5076,16 @@ public class EntityHandler {
                     }
 
                     if(System.currentTimeMillis() - start > 1000) {
-                        msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.list.size())).queue();
+                        msg.editMessage(String.format(LangID.getStringByID("statAnalyzer.analyzingStages", lang), i + 1, map.list.size())).queue();
                     }
                 }
 
-                msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.list.size(), map.list.size())).queue();
+                msg.editMessage(String.format(LangID.getStringByID("statAnalyzer.analyzingStages", lang), map.list.size(), map.list.size())).queue();
 
                 sendMultipleFiles(ch, results);
             });
         } else {
-            Command.replyToMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.customIndex.size()), null, a -> a, msg -> {
+            Command.replyToMessageSafely(ch, String.format(LangID.getStringByID("statAnalyzer.analyzingStages", lang), 0, map.customIndex.size()), null, a -> a, msg -> {
                 for(int i = 0; i < map.customIndex.size(); i++) {
                     File result;
 
@@ -5102,11 +5102,11 @@ public class EntityHandler {
                     }
 
                     if(System.currentTimeMillis() - start > 1000) {
-                        msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.customIndex.size())).queue();
+                        msg.editMessage(String.format(LangID.getStringByID("statAnalyzer.analyzingStages", lang), i + 1, map.customIndex.size())).queue();
                     }
                 }
 
-                msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.customIndex.size(), map.customIndex.size())).queue();
+                msg.editMessage(String.format(LangID.getStringByID("statAnalyzer.analyzingStages", lang), map.customIndex.size(), map.customIndex.size())).queue();
 
                 sendMultipleFiles(ch, results);
             });
@@ -5542,13 +5542,13 @@ public class EntityHandler {
 
     private static String getIconName(int mode, CommonStatic.Lang.Locale lang) {
         if(mode == 0)
-            return LangID.getStringByID("fsp_sprite", lang);
+            return LangID.getStringByID("formSprite.spriteSheet", lang);
         else if(mode == 1)
-            return LangID.getStringByID("fsp_uni", lang);
+            return LangID.getStringByID("formSprite.icon.unitIcon", lang);
         else if(mode == 2)
-            return LangID.getStringByID("fsp_udi", lang);
+            return LangID.getStringByID("formSprite.icon.unitDisplay", lang);
         else
-            return LangID.getStringByID("fsp_edi", lang);
+            return LangID.getStringByID("formSprite.icon.enemyDisplay", lang);
     }
 
     private static void cacheImage(Enemy e, int mode, Message msg) {

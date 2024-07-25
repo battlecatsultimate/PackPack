@@ -94,7 +94,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
             findInviter(g).queue(m ->
                 m.getUser().openPrivateChannel().queue(ch ->
-                        ch.sendMessage(LangID.getStringByID("directMessage.invitation", holder.config.lang).formatted(g.getName())).queue(),
+                        ch.sendMessage(LangID.getStringByID("bot.directMessage.invitation", holder.config.lang).formatted(g.getName())).queue(),
                     e ->
                         StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Failed to open private channel to inviter")
                 )
@@ -471,7 +471,6 @@ public class AllEventAdapter extends ListenerAdapter {
             case "unregisterlogging", "urlogging", "unregisterl", "url" ->
                     new UnregisterLogging(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "setup" -> new Setup(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-            case "fixrole", "fir" -> new FixRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "registerfixing", "rf" ->
                     new RegisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "unregisterfixing", "urf" ->
@@ -706,9 +705,9 @@ public class AllEventAdapter extends ListenerAdapter {
                         EmbedBuilder builder = new EmbedBuilder();
 
                         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                                .setDescription(LangID.getStringByID("watdm_suslink", holder.config.lang))
+                                .setDescription(LangID.getStringByID("watchDM.suspiciousLink", holder.config.lang))
                                 .setAuthor(m.getEffectiveName()+" ("+m.getId()+")", null, m.getAvatarUrl())
-                                .addField(LangID.getStringByID("watdm_content", holder.config.lang), content, true);
+                                .addField(LangID.getStringByID("watchDM.embed.content", holder.config.lang), content, true);
 
                         if(ch instanceof GuildMessageChannel) {
                             ((GuildMessageChannel) ch).sendMessageEmbeds(builder.build()).queue();
@@ -784,11 +783,11 @@ public class AllEventAdapter extends ListenerAdapter {
                         continue;
 
                     if(StaticStore.wasSafeClose) {
-                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("botStatus.online.normal", holder.config.lang), client.getSelfUser().getAsMention()))
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot.status.online.normal", holder.config.lang), client.getSelfUser().getAsMention()))
                                 .setAllowedMentions(new ArrayList<>())
                                 .queue();
                     } else {
-                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("botStatus.online.unknown", holder.config.lang), client.getSelfUser().getAsMention()))
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot.status.online.unknown", holder.config.lang), client.getSelfUser().getAsMention()))
                                 .setAllowedMentions(new ArrayList<>())
                                 .queue();
                     }

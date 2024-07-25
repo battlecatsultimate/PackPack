@@ -126,19 +126,19 @@ public class FindStage extends TimedConstraintCommand {
         boolean monthly = (param & PARAM_MONTHLY) > 0;
 
         if(enemyName.isBlank() && music < 0 && castle < 0 && background < 0 && !hasBoss) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_noparam", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findStage.failed.noData", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(background >= 0 && UserProfile.getBCData().bgs.get(background) == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_bg", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findStage.failed.invalidRange.background", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(music >= 0 && UserProfile.getBCData().musics.get(music) == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_music", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findStage.failed.invalidRange.music", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -146,7 +146,7 @@ public class FindStage extends TimedConstraintCommand {
         ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
 
         if(castle >= 0 && castle >= castleLists.getFirst().size()) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_castle", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findStage.failed.invalidRange.castle", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -158,7 +158,7 @@ public class FindStage extends TimedConstraintCommand {
         String[] names = enemyName.split("/");
 
         if(names.length > 5) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_toomany", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("findStage.failed.tooManyEnemies", lang), loader.getMessage(), a -> a);
             disableTimer();
 
             return;
@@ -167,7 +167,7 @@ public class FindStage extends TimedConstraintCommand {
         if(!enemyName.isBlank()) {
             for(int i = 0; i < names.length; i++) {
                 if(names[i].trim().isBlank()) {
-                    replyToMessageSafely(ch, LangID.getStringByID("fstage_noname", lang), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("findStage.failed.noEmptyName", lang), loader.getMessage(), a -> a);
                     disableTimer();
 
                     return;
@@ -176,7 +176,7 @@ public class FindStage extends TimedConstraintCommand {
                 ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(names[i].trim(), lang);
 
                 if(enemies.isEmpty()) {
-                    replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", names[i].trim()), loader.getMessage(), a -> a);
                     disableTimer();
 
                     return;
@@ -200,7 +200,7 @@ public class FindStage extends TimedConstraintCommand {
             ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate, monthly);
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("fstage_nost", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("findStage.failed.noResult", lang), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -214,7 +214,7 @@ public class FindStage extends TimedConstraintCommand {
                     StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact, lang));
                 });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("findStage.several", lang)).append("```md\n");
 
                 List<String> data = accumulateStage(stages, true);
 
@@ -228,7 +228,7 @@ public class FindStage extends TimedConstraintCommand {
                     if(stages.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -247,10 +247,10 @@ public class FindStage extends TimedConstraintCommand {
             StringBuilder sb = new StringBuilder();
 
             if(!enemyList.isEmpty()) {
-                sb.append(LangID.getStringByID("fstage_selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
+                sb.append(LangID.getStringByID("findStage.selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
             }
 
-            sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+            sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
             List<Enemy> enemies = enemySequences.getFirst();
 
@@ -266,7 +266,7 @@ public class FindStage extends TimedConstraintCommand {
                 if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
                     totalPage++;
 
-                sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
             }
 
             sb.append("```");
@@ -615,7 +615,7 @@ public class FindStage extends TimedConstraintCommand {
             }
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectData", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
 
         if(monthly) {
             List<SelectOption> categories = new ArrayList<>();
@@ -630,10 +630,10 @@ public class FindStage extends TimedConstraintCommand {
                 categories.add(SelectOption.of(LangID.getStringByID("data_" + name, lang), name));
             }
 
-            rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("fstage_category", lang)).build()));
+            rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("findStage.monthly.category", lang)).build()));
         }
 
-        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         replyToMessageSafely(ch, content, reference, a -> a.setComponents(rows), onSuccess);
     }

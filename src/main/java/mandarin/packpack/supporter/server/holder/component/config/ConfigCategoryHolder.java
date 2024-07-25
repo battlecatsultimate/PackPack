@@ -36,7 +36,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
             case "permission" -> connectTo(event, new ConfigPermissionHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -45,11 +45,11 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -66,7 +66,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
     @Override
     public void onBack(@NotNull GenericComponentInteractionCreateEvent event, @NotNull Holder child) {
         event.deferEdit()
-                .setContent(LangID.getStringByID("sercon_category", lang))
+                .setContent(LangID.getStringByID("serverConfig.category.title", lang))
                 .setComponents(getComponents())
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -78,21 +78,21 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("general", LangID.getStringByID("sercon_general", lang)).withEmoji(Emoji.fromUnicode("🎛️")),
-                        Button.secondary("command", LangID.getStringByID("sercon_command", lang)).withEmoji(Emoji.fromUnicode("📟"))
+                        Button.secondary("general", LangID.getStringByID("serverConfig.category.general", lang)).withEmoji(Emoji.fromUnicode("🎛️")),
+                        Button.secondary("command", LangID.getStringByID("serverConfig.category.command", lang)).withEmoji(Emoji.fromUnicode("📟"))
                 )
         );
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("permission", LangID.getStringByID("sercon_perm", lang)).withEmoji(Emoji.fromUnicode("📖")),
-                        Button.secondary("channel", LangID.getStringByID("sercon_channel", lang)).withEmoji(Emoji.fromUnicode("💬"))
+                        Button.secondary("permission", LangID.getStringByID("serverConfig.category.permission", lang)).withEmoji(Emoji.fromUnicode("📖")),
+                        Button.secondary("channel", LangID.getStringByID("serverConfig.category.channel", lang)).withEmoji(Emoji.fromUnicode("💬"))
                 )
         );
 
         result.add(ActionRow.of(
-                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
         ));
 
         return result;

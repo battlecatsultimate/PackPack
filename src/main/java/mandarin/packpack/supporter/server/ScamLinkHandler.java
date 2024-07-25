@@ -94,9 +94,9 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
                 }
 
                 MessageEmbed embed = new EmbedBuilder()
-                        .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))
+                        .setTitle(LangID.getStringByID("scamDetector.title", holder.config.lang))
                         .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
-                        .setDescription(LangID.getStringByID("scamhandle_descmute", holder.config.lang))
+                        .setDescription(LangID.getStringByID("scamDetector.actionDone.mute", holder.config.lang))
                         .build();
 
                 try {
@@ -106,13 +106,13 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
             }
         } else if (action == ACTION.KICK) {
             m.kick()
-                    .reason(LangID.getStringByID("scamhandle_kickreason", holder.config.lang))
+                    .reason(LangID.getStringByID("scamDetector.reason.kick", holder.config.lang))
                     .queue();
 
             MessageEmbed embed = new EmbedBuilder()
-                    .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))
+                    .setTitle(LangID.getStringByID("scamDetector.title", holder.config.lang))
                     .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
-                    .setDescription(LangID.getStringByID("scamhandle_desckick", holder.config.lang))
+                    .setDescription(LangID.getStringByID("scamDetector.actionDone.kick", holder.config.lang))
                     .build();
 
             try {
@@ -121,13 +121,13 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
             }
         } else if (action == ACTION.BAN) {
             m.ban(0, TimeUnit.HOURS)
-                    .reason(LangID.getStringByID("scamhandle_kickreason", holder.config.lang))
+                    .reason(LangID.getStringByID("scamDetector.reason.kick", holder.config.lang))
                     .queue();
 
             MessageEmbed embed = new EmbedBuilder()
-                    .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))
+                    .setTitle(LangID.getStringByID("scamDetector.title", holder.config.lang))
                     .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
-                    .setDescription(LangID.getStringByID("scamhandle_descban", holder.config.lang))
+                    .setDescription(LangID.getStringByID("scamDetector.actionDone.ban", holder.config.lang))
                     .build();
 
             try {
@@ -137,7 +137,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
         }
 
         m.getUser().openPrivateChannel()
-                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("scamhandle_dm", holder.config.lang).replace("_NNN_", g.getName()).replace("_III_", g.getId())))
+                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("scamDetector.directMessage", holder.config.lang).replace("_NNN_", g.getName()).replace("_III_", g.getId())))
                 .queue();
 
         for (String guildID : StaticStore.idHolder.keySet()) {
@@ -195,15 +195,15 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
 
                     if (me != null) {
                         embed = new EmbedBuilder()
-                                .setTitle(LangID.getStringByID("scamhandle_report", h.config.lang))
+                                .setTitle(LangID.getStringByID("scamDetector.compromisedReport", h.config.lang))
                                 .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
-                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.config.lang).replace("_", link))
+                                .setDescription(LangID.getStringByID("scamDetector.report.onlyMember", h.config.lang).replace("_", link))
                                 .build();
                     } else {
                         embed = new EmbedBuilder()
-                                .setTitle(LangID.getStringByID("scamhandle_report", h.config.lang))
+                                .setTitle(LangID.getStringByID("scamDetector.compromisedReport", h.config.lang))
                                 .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
-                                .setDescription(LangID.getStringByID("scamhandle_reportdescall", h.config.lang).replace("_", link))
+                                .setDescription(LangID.getStringByID("scamDetector.report.allUsers", h.config.lang).replace("_", link))
                                 .build();
                     }
 
@@ -215,9 +215,9 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
 
                     if (cha instanceof MessageChannel) {
                         MessageEmbed embed = new EmbedBuilder()
-                                .setTitle(LangID.getStringByID("scamhandle_report", h.config.lang))
+                                .setTitle(LangID.getStringByID("scamDetector.compromisedReport", h.config.lang))
                                 .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
-                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.config.lang).replace("_", link))
+                                .setDescription(LangID.getStringByID("scamDetector.report.onlyMember", h.config.lang).replace("_", link))
                                 .build();
 
                         ((MessageChannel) cha).sendMessageEmbeds(embed).queue();
@@ -236,13 +236,13 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
         obj.addProperty("noticeAll", noticeAll);
 
         if (mute != null) {
-            obj.addProperty("mute", mute);
+            obj.addProperty("scamDetector.action.mute", mute);
         }
 
         switch (action) {
-            case MUTE -> obj.addProperty("action", "mute");
-            case KICK -> obj.addProperty("action", "kick");
-            case BAN -> obj.addProperty("action", "ban");
+            case MUTE -> obj.addProperty("action", "scamDetector.action.mute");
+            case KICK -> obj.addProperty("action", "scamDetector.action.kick");
+            case BAN -> obj.addProperty("action", "scamDetector.action.ban");
         }
 
         return obj;

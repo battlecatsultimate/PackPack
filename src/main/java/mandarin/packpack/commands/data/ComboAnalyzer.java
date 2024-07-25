@@ -69,9 +69,9 @@ public class ComboAnalyzer extends ConstraintCommand {
 
         if(!validateFiles(workspace, cid, localeCode) || combos.isEmpty()) {
             if(cid >= 0) {
-                replyToMessageSafely(ch, LangID.getStringByID("comanalyzer_nosuch", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("comboAnalyzer.failed.unknown", lang), loader.getMessage(), a -> a);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("comanalyzer_notfound", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("comboAnalyzer.failed.noCombo", lang), loader.getMessage(), a -> a);
             }
 
             return;

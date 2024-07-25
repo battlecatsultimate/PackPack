@@ -209,9 +209,9 @@ public class StageSchedule extends EventFactor implements Schedule {
                 result.append("{");
 
                 if(isEvenDays(j)) {
-                    result.append(LangID.getStringByID("event_even", lang));
+                    result.append(LangID.getStringByID("event.evenDay", lang));
                 } else if(isOddDays(j)) {
-                    result.append(LangID.getStringByID("event_odd", lang));
+                    result.append(LangID.getStringByID("event.oddDay", lang));
                 } else {
                     for (int i = 0; i < section.days.size(); i++) {
                         result.append(section.days.get(i)).append(getNumberWithDayFormat(section.days.get(i), lang));
@@ -466,7 +466,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                         units.append(", ");
                 }
 
-                result.append(LangID.getStringByID("printstage_unlock", lang).replace("_", units.toString()));
+                result.append(LangID.getStringByID("event.unlock", lang).replace("_", units.toString()));
             } else {
                 for(int i = 0; i < unknownStages.size(); i++) {
                     int id = StaticStore.safeParseInt(unknownStages.get(i));
@@ -480,13 +480,13 @@ public class StageSchedule extends EventFactor implements Schedule {
                             trueForm = Integer.toString(id + 13000);
                         }
 
-                        result.append(LangID.getStringByID("printstage_unlock", lang).replace("_", trueForm));
+                        result.append(LangID.getStringByID("event.unlock", lang).replace("_", trueForm));
                     } else if(id >= 18000 && id < 18100) {
                         int year = id - 18000 + 7;
 
-                        result.append(LangID.getStringByID("sale_18xxx", lang).replace("_", (String.valueOf(year)).repeat(3)));
+                        result.append(LangID.getStringByID("event.sale.18xxx", lang).replace("_", (String.valueOf(year)).repeat(3)));
                     } else {
-                        String langID = "sale_"+id;
+                        String langID = "event.sale."+id;
 
                         String temp = LangID.getStringByID(langID, lang);
 
@@ -494,7 +494,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                             result.append(temp);
                         } else {
                             if(id >= 18100 && id < 18200)
-                                result.append(LangID.getStringByID("sale_181xx", lang));
+                                result.append(LangID.getStringByID("event.sale.181xx", lang));
                             else
                                 result.append(id);
                         }
@@ -545,11 +545,11 @@ public class StageSchedule extends EventFactor implements Schedule {
                 if (!section.days.isEmpty()) {
                     if (isEvenDays(i)) {
                         result.append("\u001B[0;33m")
-                                .append(LangID.getStringByID("event_even", lang))
+                                .append(LangID.getStringByID("event.evenDay", lang))
                                 .append("\u001B[0;38m");
                     } else if (isOddDays(i)) {
                         result.append("\u001B[0;33m")
-                                .append(LangID.getStringByID("event_odd", lang))
+                                .append(LangID.getStringByID("event.oddDay", lang))
                                 .append("\u001B[0;38m");
                     } else {
                         for (int j = 0; j < section.days.size(); j++) {
@@ -614,7 +614,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         }
 
         if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
-            result.append("\u001B[0;35m <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
+            result.append("\u001B[0;35m <").append(LangID.getStringByID("event.newVersion", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
         if(isMission) {
@@ -631,7 +631,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                 String mission = StaticStore.MISSIONNAME.getCont(id, lang);
 
                 if(mission == null) {
-                    mission = LangID.getStringByID("printstage_mission", lang).replace("_", unknownStages.get(i));
+                    mission = LangID.getStringByID("event.dummy.mission", lang).replace("_", unknownStages.get(i));
                 }
 
                 result.append("  \u001B[1;38m").append(mission);
@@ -651,12 +651,12 @@ public class StageSchedule extends EventFactor implements Schedule {
                             String unit;
 
                             if (u == null) {
-                                unit = LangID.getStringByID("printstage_unit", lang).replace("_", String.valueOf(data[1]));
+                                unit = LangID.getStringByID("event.unit", lang).replace("_", String.valueOf(data[1]));
                             } else {
                                 unit = StaticStore.safeMultiLangGet(u.forms[0], lang);
 
                                 if (unit == null || unit.isBlank()) {
-                                    unit = LangID.getStringByID("printstage_unit", lang).replace("_", String.valueOf(data[1]));
+                                    unit = LangID.getStringByID("event.unit", lang).replace("_", String.valueOf(data[1]));
                                 }
                             }
 
@@ -668,16 +668,16 @@ public class StageSchedule extends EventFactor implements Schedule {
                             String unit;
 
                             if (u == null) {
-                                unit = LangID.getStringByID("printstage_true", lang).replace("_", String.valueOf(data[1]));
+                                unit = LangID.getStringByID("event.trueForm", lang).replace("_", String.valueOf(data[1]));
                             } else {
                                 if (u.forms.length == 3) {
                                     unit = StaticStore.safeMultiLangGet(u.forms[2], lang);
 
                                     if (unit == null || unit.isBlank()) {
-                                        unit = LangID.getStringByID("printstage_true", lang).replace("_", String.valueOf(data[1]));
+                                        unit = LangID.getStringByID("event.trueForm", lang).replace("_", String.valueOf(data[1]));
                                     }
                                 } else {
-                                    unit = LangID.getStringByID("printstage_true", lang).replace("_", String.valueOf(data[1]));
+                                    unit = LangID.getStringByID("event.trueForm", lang).replace("_", String.valueOf(data[1]));
                                 }
                             }
 
@@ -687,7 +687,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                 }
 
                 if(permanent) {
-                    result.append(" \u001B[0;34m").append(LangID.getStringByID("printstage_perma", lang));
+                    result.append(" \u001B[0;34m").append(LangID.getStringByID("event.permanentTag", lang));
                 }
 
                 if(i < unknownStages.size() - 1)

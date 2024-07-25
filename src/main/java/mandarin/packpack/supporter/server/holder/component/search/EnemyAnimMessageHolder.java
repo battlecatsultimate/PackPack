@@ -85,7 +85,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
             Enemy e = enemy.get(id);
 
             if(EnemyGif.forbidden.contains(e.id.id)) {
-                ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.dummy", lang)).queue();
 
                 message.delete().queue();
 
@@ -137,7 +137,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                         }
                     }).start();
                 } else {
-                    ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
+                    ch.sendMessage(LangID.getStringByID("bot.denied.reason.cooldown", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
                 }
             } else {
                 User u = event.getUser();
@@ -151,7 +151,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
                             StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                         } else {
-                            ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
+                            ch.sendMessage(LangID.getStringByID("bot.command.timeLimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
                         }
                     } else if (StaticStore.timeLimit.containsKey(u.getId())) {
                         EntityHandler.generateEnemyImage(e, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);

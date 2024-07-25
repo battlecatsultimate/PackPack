@@ -25,13 +25,13 @@ public class Prefix extends ConstraintCommand {
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("prefix_space", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("prefix.noWhiteSpace", lang), loader.getMessage(), a -> a);
 
                 return;
             }
 
             if(list[1].matches("(.+)?http(s)?://(.+)?")) {
-                replyToMessageSafely(ch, LangID.getStringByID("prefix_nourl", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("prefix.fail.noURL", lang), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -42,17 +42,17 @@ public class Prefix extends ConstraintCommand {
 
             config.prefix = list[1];
 
-            String result = String.format(LangID.getStringByID("prefix_set", lang), list[1]);
+            String result = String.format(LangID.getStringByID("prefix.set.withPrefix", lang), list[1]);
 
             if(result.length() < 2000) {
                 replyToMessageSafely(ch, result, loader.getMessage(), a -> a);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("prefix_setnone", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("prefix.set.none", lang), loader.getMessage(), a -> a);
             }
         } else if(list.length == 1) {
-            replyToMessageSafely(ch, LangID.getStringByID("prefix_tooarg", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("prefix.fail.tooMany", lang), loader.getMessage(), a -> a);
         } else {
-            replyToMessageSafely(ch, LangID.getStringByID("prefix_tooarg", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("prefix.fail.tooMany", lang), loader.getMessage(), a -> a);
         }
     }
 

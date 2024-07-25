@@ -31,7 +31,7 @@ public class CustomRoleNameModalHolder extends ModalHolder {
 
         if (value.trim().isBlank()) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_empty", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.noWhiteSpace", lang))
                     .setEphemeral(true)
                     .queue();
 
@@ -40,7 +40,7 @@ public class CustomRoleNameModalHolder extends ModalHolder {
 
         if (value.matches("(.+)?http(s)?://(.+)?")) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_nourl", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.noURL", lang))
                     .setEphemeral(true)
                     .queue();
 
@@ -52,7 +52,7 @@ public class CustomRoleNameModalHolder extends ModalHolder {
 
             if (id != null) {
                 event.deferReply()
-                        .setContent(LangID.getStringByID("sercon_customsamename", lang).formatted("<@&" + id + ">"))
+                        .setContent(LangID.getStringByID("serverConfig.general.custom.nameRegistered", lang).formatted("<@&" + id + ">"))
                         .setEphemeral(true)
                         .queue();
 
@@ -63,7 +63,7 @@ public class CustomRoleNameModalHolder extends ModalHolder {
         onSelected.accept(value);
 
         event.deferReply()
-                .setContent(LangID.getStringByID("sercon_customsuc", lang))
+                .setContent(LangID.getStringByID("serverConfig.general.custom.success", lang))
                 .setEphemeral(true)
                 .queue();
 

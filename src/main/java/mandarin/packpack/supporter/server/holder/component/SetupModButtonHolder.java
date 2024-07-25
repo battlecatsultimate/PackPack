@@ -58,14 +58,14 @@ public class SetupModButtonHolder extends ComponentHolder {
                 roleID = es.getValues().getFirst().getId();
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", es.getValues().getFirst().getId()))
+                        .setContent(LangID.getStringByID("setup.selected.moderator", lang).replace("_RRR_", es.getValues().getFirst().getId()))
                         .setComponents(getComponents())
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
             }
-            case "confirm" -> Command.replyToMessageSafely(ch, LangID.getStringByID("setup_mem", lang), message, a -> a.setComponents(
-                    ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()),
-                    ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
+            case "confirm" -> Command.replyToMessageSafely(ch, LangID.getStringByID("setup.select.member", lang), message, a -> a.setComponents(
+                    ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup.selectRole", lang)).setRequiredRange(1, 1).build()),
+                    ActionRow.of(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)))
             ), m -> {
                 expired = true;
 
@@ -74,7 +74,7 @@ public class SetupModButtonHolder extends ComponentHolder {
                 StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, getAuthorMessage(), channelID, holder, roleID, lang));
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", roleID))
+                        .setContent(LangID.getStringByID("setup.selected.moderator", lang).replace("_RRR_", roleID))
                         .setComponents()
                         .queue();
             });
@@ -84,7 +84,7 @@ public class SetupModButtonHolder extends ComponentHolder {
                 StaticStore.removeHolder(memberID, this);
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("setup_cancel", lang))
+                        .setContent(LangID.getStringByID("setup.canceled", lang))
                         .setComponents()
                         .queue();
             }
@@ -100,7 +100,7 @@ public class SetupModButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        message.editMessage(LangID.getStringByID("setup_expire", lang))
+        message.editMessage(LangID.getStringByID("setup.expired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();
@@ -114,12 +114,12 @@ public class SetupModButtonHolder extends ComponentHolder {
         Button confirm;
 
         if(roleID != null) {
-            confirm = Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asEnabled();
+            confirm = Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asEnabled();
         } else {
-            confirm = Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled();
+            confirm = Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asDisabled();
         }
 
-        result.add(ActionRow.of(confirm, Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+        result.add(ActionRow.of(confirm, Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return result;
     }

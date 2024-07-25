@@ -51,7 +51,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
     public void onExpire(String id) {
         expired = true;
 
-        message.editMessage(LangID.getStringByID("confirm_expired", lang))
+        message.editMessage(LangID.getStringByID("ui.confirmExpired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();

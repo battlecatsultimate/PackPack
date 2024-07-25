@@ -28,7 +28,7 @@ public class BoosterRoleRemove extends ConstraintCommand {
         String id = getID(loader.getContent());
 
         if(id == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_nomem", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.failed.noMember", lang));
             return;
         }
 
@@ -42,7 +42,7 @@ public class BoosterRoleRemove extends ConstraintCommand {
                     BoosterData data = holder.serverBooster.get(m.getId());
 
                     if(data.getRole() == null) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_norole", lang));
+                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.failed.noAssignedRole", lang));
                     } else {
                         String r = data.getRole();
 
@@ -63,14 +63,14 @@ public class BoosterRoleRemove extends ConstraintCommand {
                                 holder.serverBooster.remove(m.getId());
                             }
 
-                            createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_success", lang).replace("_", m.getId()));
+                            createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.success", lang).replace("_", m.getId()));
                         }
                     }
                 } else {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_norole", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.failed.noAssignedRole", lang));
                 }
             } else {
-                createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_nodata", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.failed.noData", lang));
             }
         }
     }

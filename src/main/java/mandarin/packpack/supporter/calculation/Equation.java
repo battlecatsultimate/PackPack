@@ -119,7 +119,7 @@ public class Equation {
 
     public static BigDecimal calculate(String equation, String parent, boolean formula, CommonStatic.Lang.Locale lang) {
         if(equation.equals(parent)) {
-            error.add(String.format(LangID.getStringByID("calc_notnum", lang), equation));
+            error.add(String.format(LangID.getStringByID("calculator.failed.notNumber", lang), equation));
 
             return new BigDecimal(0);
         }
@@ -211,7 +211,7 @@ public class Equation {
         if(elements.size() != 1 || !(elements.getFirst() instanceof Number)) {
             StaticStore.logger.uploadLog("W/Equation::calculate - Invalid equation format : " + equation + "\n\nData : " + elements);
 
-            error.add(LangID.getStringByID("calc_fail", lang));
+            error.add(LangID.getStringByID("calculator.failed.unknown", lang));
 
             return new BigDecimal(0);
         } else {
@@ -254,7 +254,7 @@ public class Equation {
 
     private static List<Element> parse(String equation, boolean formula, CommonStatic.Lang.Locale lang) {
         if(openedBracket(equation)) {
-            error.add(LangID.getStringByID("calc_opened", lang));
+            error.add(LangID.getStringByID("calculator.failed.bracketOpened", lang));
 
             return new ArrayList<>();
         }
@@ -322,7 +322,7 @@ public class Equation {
                         BigDecimal test = calculate(builder.toString(), equation, formula, lang);
 
                         if(size != error.size()) {
-                            error.add(String.format(LangID.getStringByID("calc_absfail", lang), builder));
+                            error.add(String.format(LangID.getStringByID("calculator.failed.abs.innerEquation", lang), builder));
 
                             return new ArrayList<>();
                         }
@@ -331,7 +331,7 @@ public class Equation {
                             BigDecimal preTest = calculate(builder.toString(), equation, formula, lang);
 
                             if(size != error.size()) {
-                                error.add(String.format(LangID.getStringByID("calc_abspre", lang), pre + "|" + builder + "|"));
+                                error.add(String.format(LangID.getStringByID("calculator.failed.abs.previousEquation", lang), pre + "|" + builder + "|"));
 
                                 return new ArrayList<>();
                             }
@@ -383,7 +383,7 @@ public class Equation {
                             case "npr", "ncr" -> {
                                 List<String> data = filterData(builder.toString(), ',');
                                 if (data.size() != 2) {
-                                    error.add(String.format(LangID.getStringByID("calc_npcrparam", lang), 2, data.size(), data));
+                                    error.add(String.format(LangID.getStringByID("calculator.failed.statistics.noParameter", lang), 2, data.size(), data));
 
                                     return new ArrayList<>();
                                 }
@@ -393,15 +393,15 @@ public class Equation {
                                     BigDecimal valD = calculate(data.get(j), null, formula, lang);
 
                                     if (originalLength != error.size()) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
+                                        error.add(String.format(LangID.getStringByID("calculator.failed.statistics.notNumber", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
 
                                         return new ArrayList<>();
                                     } else if (valD.divideAndRemainder(new BigDecimal(1))[1].doubleValue() != 0) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
+                                        error.add(String.format(LangID.getStringByID("calculator.failed.statistics.notInteger", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
 
                                         return new ArrayList<>();
                                     } else if (valD.doubleValue() < 0) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
+                                        error.add(String.format(LangID.getStringByID("calculator.failed.statistics.notInteger", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
 
                                         return new ArrayList<>();
                                     }
@@ -409,7 +409,7 @@ public class Equation {
                                 BigInteger n = calculate(data.getFirst(), null, formula, lang).toBigInteger();
                                 BigInteger r = calculate(data.get(1), null, formula, lang).toBigInteger();
                                 if (n.compareTo(r) < 0) {
-                                    error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.getFirst(), data.get(1)));
+                                    error.add(String.format(LangID.getStringByID("calculator.failed.statistics.nTooSmall", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.getFirst(), data.get(1)));
                                 }
                                 if (prefix.equals("npr")) {
                                     elements.add(new Number(nPr(n, r, lang)));
@@ -432,7 +432,7 @@ public class Equation {
                                         case "cos" -> elements.add(new Number(Math.cos(inner.doubleValue())));
                                         case "tan" -> {
                                             if (inner.compareTo(BigDecimal.ZERO) != 0 && zeroEnough(inner.remainder(PI2, Equation.context)) && !zeroEnough(inner.remainder(PI, Equation.context))) {
-                                                error.add(String.format(LangID.getStringByID("calc_tan", lang), "tan(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.tan", lang), "tan(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -441,7 +441,7 @@ public class Equation {
                                         }
                                         case "csc" -> {
                                             if (zeroEnough(inner.remainder(PI, context))) {
-                                                error.add(String.format(LangID.getStringByID("calc_csc", lang), "csc(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.csc", lang), "csc(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -452,7 +452,7 @@ public class Equation {
                                         }
                                         case "date.second.singular" -> {
                                             if (zeroEnough(inner.remainder(PI2, context)) && !zeroEnough(inner.remainder(PI, context))) {
-                                                error.add(String.format(LangID.getStringByID("calc_sec", lang), "sec(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.sec", lang), "sec(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -461,7 +461,7 @@ public class Equation {
                                         }
                                         case "cot" -> {
                                             if (zeroEnough(inner.remainder(PI, context))) {
-                                                error.add(String.format(LangID.getStringByID("calc_cot", lang), "cot(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.cot", lang), "cot(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             } else if (zeroEnough(inner.remainder(PI2, context))) {
@@ -472,7 +472,7 @@ public class Equation {
                                         }
                                         case "ln", "loge" -> {
                                             if (inner.compareTo(BigDecimal.ZERO) <= 0) {
-                                                error.add(String.format(LangID.getStringByID("calc_ln", lang), prefix + "(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.ln", lang), prefix + "(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -481,7 +481,7 @@ public class Equation {
                                         }
                                         case "log" -> {
                                             if (inner.compareTo(BigDecimal.ZERO) <= 0) {
-                                                error.add(String.format(LangID.getStringByID("calc_ln", lang), "log(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.ln", lang), "log(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -490,7 +490,7 @@ public class Equation {
                                         }
                                         case "sqrt", "root", "sqrt2" -> {
                                             if (inner.compareTo(BigDecimal.ZERO) < 0) {
-                                                error.add(String.format(LangID.getStringByID("calc_sqrt", lang), prefix + "(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.sqrt", lang), prefix + "(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -506,7 +506,7 @@ public class Equation {
                                         }
                                         case "arcsin", "asin" -> {
                                             if (b1) {
-                                                error.add(String.format(LangID.getStringByID("calc_arcsin", lang), prefix + "(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.arcsin", lang), prefix + "(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -515,7 +515,7 @@ public class Equation {
                                         }
                                         case "arccos", "acos" -> {
                                             if (b1) {
-                                                error.add(String.format(LangID.getStringByID("calc_arccos", lang), prefix + "(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.arccos", lang), prefix + "(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -525,7 +525,7 @@ public class Equation {
                                         case "arctan", "atan" -> elements.add(new Number(Math.atan(inner.doubleValue())));
                                         case "arccsc", "acsc" -> {
                                             if (b) {
-                                                error.add(String.format(LangID.getStringByID("calc_arccsc", lang), prefix + "(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.arccsc", lang), prefix + "(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -534,7 +534,7 @@ public class Equation {
                                         }
                                         case "arcsec", "asec" -> {
                                             if (b) {
-                                                error.add(String.format(LangID.getStringByID("calc_arcsec", lang), prefix + "(" + builder + ")"));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.arcsec", lang), prefix + "(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
@@ -560,7 +560,7 @@ public class Equation {
                                                 double log = Math.log(inner.doubleValue());
 
                                                 if (!Double.isFinite(log)) {
-                                                    error.add(LangID.getStringByID("calc_outofrange", lang));
+                                                    error.add(LangID.getStringByID("calculator.failed.NaN", lang));
 
                                                     return new ArrayList<>();
                                                 }
@@ -571,13 +571,13 @@ public class Equation {
                                                     double value = Double.parseDouble(base);
 
                                                     if (value <= 0) {
-                                                        error.add(String.format(LangID.getStringByID("calc_logbase", lang), prefix + "(" + builder + ")"));
+                                                        error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.logBase", lang), prefix + "(" + builder + ")"));
 
                                                         return new ArrayList<>();
                                                     }
 
                                                     if (inner.compareTo(BigDecimal.ZERO) <= 0) {
-                                                        error.add(String.format(LangID.getStringByID("calc_ln", lang), prefix + "(" + builder + ")"));
+                                                        error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.ln", lang), prefix + "(" + builder + ")"));
 
                                                         return new ArrayList<>();
                                                     }
@@ -585,7 +585,7 @@ public class Equation {
                                                     double l = Math.log(Double.parseDouble(base));
 
                                                     if (!Double.isFinite(l)) {
-                                                        error.add(LangID.getStringByID("calc_outofrange", lang));
+                                                        error.add(LangID.getStringByID("calculator.failed.NaN", lang));
 
                                                         return new ArrayList<>();
                                                     }
@@ -597,12 +597,12 @@ public class Equation {
                                                     BigDecimal value = calculate(base, prefix + "(" + builder + ")", formula, lang);
 
                                                     if (originalLength != error.size()) {
-                                                        error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
+                                                        error.add(String.format(LangID.getStringByID("calculator.failed.unknownFunction", lang), prefix + "(" + builder + ")"));
 
                                                         return new ArrayList<>();
                                                     } else {
                                                         if (value.compareTo(BigDecimal.ZERO) <= 0) {
-                                                            error.add(String.format(LangID.getStringByID("calc_logbase", lang), prefix + "(" + builder + ")"));
+                                                            error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.logBase", lang), prefix + "(" + builder + ")"));
 
                                                             return new ArrayList<>();
                                                         }
@@ -610,7 +610,7 @@ public class Equation {
                                                         double l = Math.log(value.doubleValue());
 
                                                         if (!Double.isFinite(l)) {
-                                                            error.add(LangID.getStringByID("calc_outofrange", lang));
+                                                            error.add(LangID.getStringByID("calculator.failed.NaN", lang));
 
                                                             return new ArrayList<>();
                                                         }
@@ -625,7 +625,7 @@ public class Equation {
                                                     BigDecimal value = new BigDecimal(base);
 
                                                     if (value.compareTo(BigDecimal.ZERO) == 0 && inner.compareTo(BigDecimal.ZERO) < 0) {
-                                                        error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
+                                                        error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.sqrtBase", lang), prefix + "(" + builder + ")"));
 
                                                         return new ArrayList<>();
                                                     }
@@ -633,7 +633,7 @@ public class Equation {
                                                     double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, Equation.context).doubleValue());
 
                                                     if (!Double.isFinite(checkValue)) {
-                                                        error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
+                                                        error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.sqrtBase", lang), prefix + "(" + builder + ")"));
 
                                                         return new ArrayList<>();
                                                     }
@@ -645,12 +645,12 @@ public class Equation {
                                                     BigDecimal value = calculate(base, prefix + "(" + builder + ")", formula, lang);
 
                                                     if (originalLength != error.size()) {
-                                                        error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
+                                                        error.add(String.format(LangID.getStringByID("calculator.failed.unknownFunction", lang), prefix + "(" + builder + ")"));
 
                                                         return new ArrayList<>();
                                                     } else {
                                                         if (value.remainder(BigDecimal.valueOf(2)).compareTo(BigDecimal.ZERO) == 0 && inner.compareTo(BigDecimal.ZERO) < 0) {
-                                                            error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
+                                                            error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.sqrtBase", lang), prefix + "(" + builder + ")"));
 
                                                             return new ArrayList<>();
                                                         }
@@ -658,7 +658,7 @@ public class Equation {
                                                         double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, Equation.context).doubleValue());
 
                                                         if (!Double.isFinite(checkValue)) {
-                                                            error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
+                                                            error.add(String.format(LangID.getStringByID("calculator.failed.invalidValue.sqrtBase", lang), prefix + "(" + builder + ")"));
 
                                                             return new ArrayList<>();
                                                         }
@@ -672,7 +672,7 @@ public class Equation {
                                                 BigDecimal check = calculate(prefix, prefix + "(" + builder + ")", formula, lang);
 
                                                 if (len != error.size()) {
-                                                    error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
+                                                    error.add(String.format(LangID.getStringByID("calculator.failed.unknownFunction", lang), prefix + "(" + builder + ")"));
 
                                                     return new ArrayList<>();
                                                 }
@@ -691,7 +691,7 @@ public class Equation {
                     break;
                 case 'x':
                     if(formula) {
-                        error.add(String.format(LangID.getStringByID("calc_notnum", lang), "x"));
+                        error.add(String.format(LangID.getStringByID("calculator.failed.notNumber", lang), "x"));
 
                         return new ArrayList<>();
                     }
@@ -703,7 +703,7 @@ public class Equation {
                 case '÷':
                 case '^':
                     if((builder.isEmpty() && i != 0 && equation.charAt(i - 1) != ')' && equation.charAt(i - 1) != '|') || i == equation.length() - 1) {
-                        error.add(LangID.getStringByID("calc_alone", lang));
+                        error.add(LangID.getStringByID("calculator.failed.aloneOperator", lang));
 
                         return new ArrayList<>();
                     }
@@ -732,16 +732,16 @@ public class Equation {
                                         BigDecimal valD = calculate(filtered, null, formula, lang);
 
                                         if (originalSize != error.size()) {
-                                            error.add(String.format(LangID.getStringByID("calc_notnum", lang), wait));
+                                            error.add(String.format(LangID.getStringByID("calculator.failed.notNumber", lang), wait));
 
                                             return new ArrayList<>();
                                         } else {
                                             if (valD.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) != 0) {
-                                                error.add(String.format(LangID.getStringByID("calc_factnum", lang), wait));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.factorial.notInteger", lang), wait));
 
                                                 return new ArrayList<>();
                                             } else if (valD.compareTo(BigDecimal.ZERO) < 0) {
-                                                error.add(String.format(LangID.getStringByID("calc_factrange", lang), wait));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.factorial.noNegative", lang), wait));
 
                                                 return new ArrayList<>();
                                             } else {
@@ -758,7 +758,7 @@ public class Equation {
                                         }
 
                                         if (data.length != 2) {
-                                            error.add(String.format(LangID.getStringByID("calc_npcrparam", lang), 2, data.length, Arrays.toString(data)));
+                                            error.add(String.format(LangID.getStringByID("calculator.failed.statistics.noParameter", lang), 2, data.length, Arrays.toString(data)));
 
                                             return new ArrayList<>();
                                         }
@@ -769,16 +769,16 @@ public class Equation {
                                                 double valD = Double.parseDouble(data[j]);
 
                                                 if (valL != valD) {
-                                                    error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), wait, data[j]));
+                                                    error.add(String.format(LangID.getStringByID("calculator.failed.statistics.notInteger", lang), wait, data[j]));
 
                                                     return new ArrayList<>();
                                                 } else if (valL < 0) {
-                                                    error.add(String.format(LangID.getStringByID("calc_npcrrange", lang), wait, data[j]));
+                                                    error.add(String.format(LangID.getStringByID("calculator.failed.statistics.invalidRange", lang), wait, data[j]));
 
                                                     return new ArrayList<>();
                                                 }
                                             } else {
-                                                error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), wait, data[j]));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.statistics.notNumber", lang), wait, data[j]));
 
                                                 return new ArrayList<>();
                                             }
@@ -788,7 +788,7 @@ public class Equation {
                                         BigInteger r = new BigInteger(data[1]);
 
                                         if (n.compareTo(r) < 0) {
-                                            error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), wait, data[0], data[1]));
+                                            error.add(String.format(LangID.getStringByID("calculator.failed.statistics.nTooSmall", lang), wait, data[0], data[1]));
                                         }
 
                                         if (wait.matches("\\d+p\\d+")) {
@@ -805,7 +805,7 @@ public class Equation {
                                             BigDecimal check = calculate(wait, equation, formula, lang);
 
                                             if (len != error.size()) {
-                                                error.add(String.format(LangID.getStringByID("calc_notnum", lang), wait));
+                                                error.add(String.format(LangID.getStringByID("calculator.failed.notNumber", lang), wait));
 
                                                 return new ArrayList<>();
                                             } else {
@@ -856,16 +856,16 @@ public class Equation {
                             BigDecimal valD = calculate(filtered, null, formula, lang);
 
                             if (originalSize != error.size()) {
-                                error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
+                                error.add(String.format(LangID.getStringByID("calculator.failed.notNumber", lang), prefix));
 
                                 return new ArrayList<>();
                             } else {
                                 if (valD.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) != 0) {
-                                    error.add(String.format(LangID.getStringByID("calc_factnum", lang), prefix));
+                                    error.add(String.format(LangID.getStringByID("calculator.failed.factorial.notInteger", lang), prefix));
 
                                     return new ArrayList<>();
                                 } else if (valD.compareTo(BigDecimal.ZERO) < 0) {
-                                    error.add(String.format(LangID.getStringByID("calc_factrange", lang), prefix));
+                                    error.add(String.format(LangID.getStringByID("calculator.failed.factorial.noNegative", lang), prefix));
 
                                     return new ArrayList<>();
                                 } else {
@@ -882,7 +882,7 @@ public class Equation {
                             }
 
                             if (data.length != 2) {
-                                error.add(String.format(LangID.getStringByID("calc_npcrparam", lang), 2, data.length, Arrays.toString(data)));
+                                error.add(String.format(LangID.getStringByID("calculator.failed.statistics.noParameter", lang), 2, data.length, Arrays.toString(data)));
 
                                 return new ArrayList<>();
                             }
@@ -893,16 +893,16 @@ public class Equation {
                                     double valD = Double.parseDouble(data[j]);
 
                                     if (valL != valD) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), prefix, data[j]));
+                                        error.add(String.format(LangID.getStringByID("calculator.failed.statistics.notInteger", lang), prefix, data[j]));
 
                                         return new ArrayList<>();
                                     } else if (valL < 0) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrrange", lang), prefix, data[j]));
+                                        error.add(String.format(LangID.getStringByID("calculator.failed.statistics.invalidRange", lang), prefix, data[j]));
 
                                         return new ArrayList<>();
                                     }
                                 } else {
-                                    error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix, data[j]));
+                                    error.add(String.format(LangID.getStringByID("calculator.failed.statistics.notNumber", lang), prefix, data[j]));
 
                                     return new ArrayList<>();
                                 }
@@ -912,7 +912,7 @@ public class Equation {
                             BigInteger r = new BigInteger(data[1]);
 
                             if (n.compareTo(r) < 0) {
-                                error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data[0] + ", " + data[1] + ")", data[0], data[1]));
+                                error.add(String.format(LangID.getStringByID("calculator.failed.statistics.nTooSmall", lang), prefix + "(" + data[0] + ", " + data[1] + ")", data[0], data[1]));
                             }
 
                             if (prefix.matches("\\d+p\\d+")) {
@@ -929,7 +929,7 @@ public class Equation {
                                 BigDecimal check = calculate(prefix, equation, formula, lang);
 
                                 if (len != error.size()) {
-                                    error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
+                                    error.add(String.format(LangID.getStringByID("calculator.failed.notNumber", lang), prefix));
 
                                     return new ArrayList<>();
                                 } else {
@@ -1035,7 +1035,7 @@ public class Equation {
             return BigDecimal.ONE;
 
         if (n.compareTo(BigInteger.valueOf(10000)) > 0) {
-            error.add(LangID.getStringByID("calc_factorial", lang));
+            error.add(LangID.getStringByID("calculator.failed.factorial.tooBig", lang));
 
             return BigDecimal.ONE;
         }

@@ -115,7 +115,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
             }
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -124,11 +124,11 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -207,13 +207,13 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
 
         List<String> deactivatedChannelPermission = holder.channelException.get(userID);
 
-        builder.append(LangID.getStringByID("sercon_permission", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_permissionmanage", lang).formatted(Emoji.fromUnicode("🔧"))).append("\n")
-                .append(LangID.getStringByID("sercon_permissiondeactivatedesc", lang).formatted("<@" + userID + ">")).append("\n")
-                .append(LangID.getStringByID("serconpermissiondeactivateadjustable", lang)).append("\n");
+        builder.append(LangID.getStringByID("serverConfig.permission.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.permission.documentation.permissionBan.title", lang).formatted(Emoji.fromUnicode("🔧"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.permissionBan.user.description", lang).formatted("<@" + userID + ">")).append("\n")
+                .append(LangID.getStringByID("serverConfig.permissionBan.user.adjustable", lang)).append("\n");
 
         if (adjustableChannelPermission.isEmpty()) {
-            builder.append(LangID.getStringByID("sercon_permissiondeactivatenorole", lang));
+            builder.append(LangID.getStringByID("serverConfig.permissionBan.user.noRole", lang));
         } else {
             int size = Math.min(adjustableChannelPermission.size(), (page + 1) * PAGE_CHUNK);
 
@@ -225,12 +225,12 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
 
                 if (id.startsWith("MEMBER|")) {
                     id = id.replace("MEMBER|", "");
-                    name = LangID.getStringByID("sercon_permissionrolemember", lang);
+                    name = LangID.getStringByID("serverConfig.channelPermission.role.member.text", lang);
                 } else if (id.startsWith("BOOSTER|")) {
                     id = id.replace("BOOSTER|", "");
-                    name = LangID.getStringByID("sercon_permissionrolelbooster", lang);
+                    name = LangID.getStringByID("serverConfig.channelPermission.role.booster.text", lang);
                 } else {
-                    name = LangID.getStringByID("sercon_permissionrolecustom", lang).formatted(adjustableChannelPermission.get(i).getFirst());
+                    name = LangID.getStringByID("serverConfig.channelPermission.role.custom.text", lang).formatted(adjustableChannelPermission.get(i).getFirst());
                     isCustom = true;
                 }
 
@@ -248,7 +248,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
                         .append(name).append("<@&").append(id).append("> [").append(id).append("]");
 
                 if (isCustom) {
-                    builder.append(" <").append(LangID.getStringByID("sercon_permissionrolecustomtype", lang)).append(">");
+                    builder.append(" <").append(LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang)).append(">");
                 }
 
                 if (i < size - 1){
@@ -257,7 +257,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
             }
 
             if (adjustableChannelPermission.size() > PAGE_CHUNK) {
-                builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(page + 1, getTotalPage(adjustableChannelPermission.size())));
+                builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, getTotalPage(adjustableChannelPermission.size())));
             }
         }
 
@@ -282,12 +282,12 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
 
                 if (id.startsWith("MEMBER|")) {
                     id = id.replace("MEMBER|", "");
-                    label = LangID.getStringByID("sercon_permissionrolemembertype", lang);
+                    label = LangID.getStringByID("serverConfig.channelPermission.role.member.type", lang);
                 } else if (id.startsWith("BOOSTER|")) {
                     id = id.replace("BOOSTER|", "");
-                    label = LangID.getStringByID("sercon_permissionrolelboostertype", lang);
+                    label = LangID.getStringByID("serverConfig.channelPermission.role.booster.type", lang);
                 } else {
-                    label = adjustableChannelPermission.get(i).getFirst() + " <" + LangID.getStringByID("sercon_permissionrolecustomtype", lang) + ">";
+                    label = adjustableChannelPermission.get(i).getFirst() + " <" + LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang) + ">";
                 }
 
                 boolean activated = deactivatedChannelPermission == null || !deactivatedChannelPermission.contains(id);
@@ -307,7 +307,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
                 StringSelectMenu.create("adjust")
                         .addOptions(activatedOption)
                         .setDisabled(adjustableChannelPermission.isEmpty())
-                        .setPlaceholder(LangID.getStringByID("sercon_permissiondeactivateactivate", lang))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.permissionBan.user.selectRole", lang))
                         .setRequiredRange(1, 1)
                         .build()
         ));
@@ -333,9 +333,9 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 

@@ -17,7 +17,7 @@ public class Statistic extends Command {
     public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        createMessageWithNoPings(ch, LangID.getStringByID("stat_info", lang)
+        createMessageWithNoPings(ch, LangID.getStringByID("stat.info", lang)
                 .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
                 .replace("_CCC_", String.valueOf(StaticStore.executed))
                 .replace("_MMM_", String.valueOf(StaticStore.spamData.size()))

@@ -44,7 +44,7 @@ public abstract class Holder {
             holder.expire(holder.userID);
             holder.expired = true;
 
-            msg.editMessage(LangID.getStringByID("formst_expire", holder.lang))
+            msg.editMessage(LangID.getStringByID("ui.search.expired", holder.lang))
                     .setComponents()
                     .queue();
         });
@@ -58,7 +58,7 @@ public abstract class Holder {
         holder.expire(holder.userID);
         holder.expired = true;
 
-        msg.editMessage(LangID.getStringByID("formst_expire", holder.lang))
+        msg.editMessage(LangID.getStringByID("ui.search.expired", holder.lang))
                 .setComponents()
                 .queue();
 
@@ -468,8 +468,8 @@ public abstract class Holder {
                 .mentionRepliedUser(false)
                 .setComponents(
                         ActionRow.of(
-                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                         )
                 )
                 .queue();
@@ -483,8 +483,8 @@ public abstract class Holder {
                 .mentionRepliedUser(false)
                 .setComponents(
                         ActionRow.of(
-                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                         )
                 )
                 .queue();
@@ -497,8 +497,8 @@ public abstract class Holder {
                 .setFiles()
                 .setComponents(
                         ActionRow.of(
-                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                         )
                 )
                 .queue();

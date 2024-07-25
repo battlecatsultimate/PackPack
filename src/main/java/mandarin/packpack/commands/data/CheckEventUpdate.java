@@ -22,16 +22,16 @@ public class CheckEventUpdate extends ConstraintCommand {
     public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        ch.sendMessage(LangID.getStringByID("chevent_check", lang)).queue( msg -> {
+        ch.sendMessage(LangID.getStringByID("checkEvent.checking", lang)).queue( msg -> {
             try {
                 boolean[][] result = StaticStore.event.checkUpdates();
 
                 String res = parseResult(result);
 
                 if(res.isBlank()) {
-                    msg.editMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+                    msg.editMessage(LangID.getStringByID("checkEvent.noEvent", lang)).queue();
                 } else {
-                    msg.editMessage(LangID.getStringByID("chevent_done", lang) + "\n\n" + res).queue();
+                    msg.editMessage(LangID.getStringByID("checkEvent.done", lang) + "\n\n" + res).queue();
 
                     ShardManager manager = ch.getJDA().getShardManager();
 

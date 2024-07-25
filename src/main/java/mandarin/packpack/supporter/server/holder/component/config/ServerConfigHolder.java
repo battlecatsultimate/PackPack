@@ -38,7 +38,7 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
 
     @Override
     public final void onExpire(String id) {
-        message.editMessage(LangID.getStringByID("sercon_expire", lang))
+        message.editMessage(LangID.getStringByID("serverConfig.expired", lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)

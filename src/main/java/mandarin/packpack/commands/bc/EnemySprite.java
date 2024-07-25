@@ -41,12 +41,12 @@ public class EnemySprite extends TimedConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length == 1) {
-            replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("enemyImage.fail.noParameter", lang), loader.getMessage(), a -> a);
         } else {
             String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyImage.fail.noParameter", lang), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -54,7 +54,7 @@ public class EnemySprite extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
@@ -62,9 +62,9 @@ public class EnemySprite extends TimedConstraintCommand {
 
                 EntityHandler.getEnemySprite(enemies.getFirst(), ch, loader.getMessage(), getModeFromParam(param), lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateData(enemies);
 
@@ -78,7 +78,7 @@ public class EnemySprite extends TimedConstraintCommand {
                     if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");

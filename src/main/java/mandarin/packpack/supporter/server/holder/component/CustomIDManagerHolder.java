@@ -196,7 +196,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
             if(holder.ID.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
+            builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
         }
 
         return builder.toString();
@@ -321,7 +321,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
             result.add(ActionRow.of(buttons));
         }
 
-        result.add(ActionRow.of(Button.primary("back", LangID.getStringByID("button_back", lang))));
+        result.add(ActionRow.of(Button.primary("back", LangID.getStringByID("ui.button.back", lang))));
 
         return result;
     }
@@ -356,7 +356,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
 
         result.add(ActionRow.of(pages));
 
-        result.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("button_confirm", lang))));
+        result.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("ui.button.confirm", lang))));
 
         return result;
     }

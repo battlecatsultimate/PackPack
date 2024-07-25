@@ -31,7 +31,7 @@ public class EventDataArchiveHolder extends SearchHolder {
 
         for(int i = PAGE_CHUNK * page; i < Math.min(files.size(), PAGE_CHUNK * (page + 1)); i++) {
             if (i == 0) {
-                result.add(LangID.getStringByID("eventarc_current", lang));
+                result.add(LangID.getStringByID("eventArchive.currentEvent", lang));
             } else {
                 result.add(files.get(i).getName().replace(".txt", "").replaceAll(";", ":"));
             }
@@ -48,7 +48,7 @@ public class EventDataArchiveHolder extends SearchHolder {
 
         File f = files.get(id);
 
-        ch.sendMessage(LangID.getStringByID("eventarc_success", lang))
+        ch.sendMessage(LangID.getStringByID("eventArchive.success", lang))
                 .setAllowedMentions(new ArrayList<>())
                 .addFiles(FileUpload.fromData(f, f.getName().replace(".txt", "").replaceAll(";", "-") + "_" + fileName + ".txt"))
                 .queue();

@@ -465,7 +465,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
             if(holder.ID.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+            builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
         }
 
         return builder.toString();
@@ -548,7 +548,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
 
         components.add(ActionRow.of(pages));
 
-        components.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("button_confirm", lang))));
+        components.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("ui.button.confirm", lang))));
 
         return components;
     }
@@ -604,7 +604,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
             result.add(ActionRow.of(pages));
         }
 
-        result.add(ActionRow.of(Button.primary("back", LangID.getStringByID("button_back", lang))));
+        result.add(ActionRow.of(Button.primary("back", LangID.getStringByID("ui.button.back", lang))));
 
         return result;
     }

@@ -31,7 +31,7 @@ public class SoulSprite extends TimedConstraintCommand {
         int id = findSoulID(loader.getContent());
 
         if(id == -1) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noParameter", lang), loader.getMessage(), a -> a);
 
             disableTimer();
         }
@@ -39,7 +39,7 @@ public class SoulSprite extends TimedConstraintCommand {
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", String.valueOf(soulLen - 1)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.outOfRange", lang).replace("_", String.valueOf(soulLen - 1)), loader.getMessage(), a -> a);
 
             disableTimer();
 
@@ -49,7 +49,7 @@ public class SoulSprite extends TimedConstraintCommand {
         Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_nosoul", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("soul.failed.noSoul", lang));
 
             disableTimer();
 

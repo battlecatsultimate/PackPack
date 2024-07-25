@@ -86,7 +86,7 @@ public class FormAnimMessageHolder extends SearchHolder {
             if(FormGif.forbidden.contains(f.unit.id.id)) {
                 message.delete().queue();
 
-                ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.dummy", lang)).queue();
 
                 return;
             }
@@ -133,7 +133,7 @@ public class FormAnimMessageHolder extends SearchHolder {
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
                     t.start();
                 } else {
-                    ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
+                    ch.sendMessage(LangID.getStringByID("bot.denied.reason.cooldown", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
                 }
             } else {
                 User u = event.getUser();
@@ -147,7 +147,7 @@ public class FormAnimMessageHolder extends SearchHolder {
 
                             StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
                         } else {
-                            ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
+                            ch.sendMessage(LangID.getStringByID("bot.command.timeLimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
                         }
                     } else if(StaticStore.timeLimit.containsKey(u.getId())) {
                         EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);

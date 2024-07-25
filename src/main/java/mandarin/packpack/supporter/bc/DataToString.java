@@ -1585,7 +1585,7 @@ public class DataToString extends Data {
 
         if (cfText != null && !cfText.strip().isBlank() && f.unit.info.hasEvolveCost()) {
             result.append("- **")
-                    .append(LangID.getStringByID("data_tf", lang))
+                    .append(LangID.getStringByID("data.unit.trueForm", lang))
                     .append("**\n")
                     .append(cfText);
         }
@@ -1596,7 +1596,7 @@ public class DataToString extends Data {
             }
 
             result.append("- **")
-                    .append(LangID.getStringByID("data_uf", lang))
+                    .append(LangID.getStringByID("data.unit.ultraForm", lang))
                     .append("**\n")
                     .append(ufText);
         }
@@ -2570,7 +2570,7 @@ public class DataToString extends Data {
         }
 
         if(data[13] == 1) {
-            name += " " + LangID.getStringByID("talentinfo_super", lang);
+            name += " " + LangID.getStringByID("data.talent.superTalent.tag", lang);
         }
 
         if(talentIcon.containsKey(data[0])) {
@@ -2623,7 +2623,7 @@ public class DataToString extends Data {
         }
 
         if(StaticStore.isNumeric(data[2 + index * 14 + 13]) && StaticStore.safeParseInt(data[2 + index * 14 + 13]) == 1) {
-            name += " " + LangID.getStringByID("talentinfo_super", lang);
+            name += " " + LangID.getStringByID("data.talent.superTalent.tag", lang);
         }
 
         return name;
@@ -2648,7 +2648,7 @@ public class DataToString extends Data {
         String desc = "";
 
         if(du.getPCoin().trait.size() == 1 && index == 0) {
-            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
+            desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
         }
 
         switch (type[0]) {
@@ -2683,9 +2683,9 @@ public class DataToString extends Data {
                     String fieldName = p.getFieldName(changedIndex);
 
                     String descID = switch (fieldName) {
-                        case "prob" -> "talentinfo_chance";
-                        case "time" -> "talentinfo_duration";
-                        case "mult" -> "talentinfo_multiplier";
+                        case "prob" -> "data.talent.description.chance";
+                        case "time" -> "data.talent.description.duration";
+                        case "mult" -> "data.talent.description.multiplier";
                         default -> throw new IllegalStateException("Unknown proc field name : " + fieldName);
                     };
 
@@ -2727,13 +2727,13 @@ public class DataToString extends Data {
                 }
 
                 String key = switch (type[1]) {
-                    case PC2_HP -> "talentinfo_health";
-                    case PC2_ATK -> "talentinfo_attack";
-                    case PC2_SPEED -> "talentinfo_speed";
-                    case PC2_COST -> "talentinfo_cost";
-                    case PC2_CD -> "talentinfo_cooldown";
-                    case PC2_HB -> "talentinfo_kb";
-                    case PC2_TBA -> "talentinfo_tba";
+                    case PC2_HP -> "data.talent.description.health";
+                    case PC2_ATK -> "data.talent.description.damage";
+                    case PC2_SPEED -> "data.talent.description.speed";
+                    case PC2_COST -> "data.talent.description.cost";
+                    case PC2_CD -> "data.talent.description.cooldown";
+                    case PC2_HB -> "data.talent.description.kb";
+                    case PC2_TBA -> "data.talent.description.tba";
                     default -> throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
                 };
 
@@ -2743,7 +2743,7 @@ public class DataToString extends Data {
                         fillUpNpCost(data, lang, true);
             }
             case PC_TRAIT -> {
-                return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName) + fillUpNpCost(data, lang, true);
+                return desc + LangID.getStringByID("data.talent.description.trait.default", lang).replace("_", talentName) + fillUpNpCost(data, lang, true);
             }
             default ->
                     throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + data[0] + " | Type : " + type[0]);
@@ -2770,7 +2770,7 @@ public class DataToString extends Data {
         String desc = "";
 
         if(traits.size() == 1 && index == 0) {
-            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.getFirst().id.id], lang)) + "\n\n";
+            desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.getFirst().id.id], lang)) + "\n\n";
         }
 
         switch (type[0]) {
@@ -2804,9 +2804,9 @@ public class DataToString extends Data {
 
                     String fieldName = p.getFieldName(changedIndex);
                     String descID = switch (fieldName) {
-                        case "prob" -> "talentinfo_chance";
-                        case "time" -> "talentinfo_duration";
-                        case "mult" -> "talentinfo_multiplier";
+                        case "prob" -> "data.talent.description.chance";
+                        case "time" -> "data.talent.description.duration";
+                        case "mult" -> "data.talent.description.multiplier";
                         default -> throw new IllegalStateException("Unknown proc field name : " + fieldName);
                     };
 
@@ -2852,13 +2852,13 @@ public class DataToString extends Data {
                 }
 
                 String key = switch (type[1]) {
-                    case PC2_HP -> "talentinfo_health";
-                    case PC2_ATK -> "talentinfo_attack";
-                    case PC2_SPEED -> "talentinfo_speed";
-                    case PC2_COST -> "talentinfo_cost";
-                    case PC2_CD -> "talentinfo_cooldown";
-                    case PC2_HB -> "talentinfo_kb";
-                    case PC2_TBA -> "talentinfo_tba";
+                    case PC2_HP -> "data.talent.description.health";
+                    case PC2_ATK -> "data.talent.description.damage";
+                    case PC2_SPEED -> "data.talent.description.speed";
+                    case PC2_COST -> "data.talent.description.cost";
+                    case PC2_CD -> "data.talent.description.cooldown";
+                    case PC2_HB -> "data.talent.description.kb";
+                    case PC2_TBA -> "data.talent.description.tba";
                     default -> throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
                 };
 
@@ -2867,7 +2867,7 @@ public class DataToString extends Data {
                         .replace("_MMM_", String.valueOf(max));
             }
             case PC_TRAIT -> {
-                return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName);
+                return desc + LangID.getStringByID("data.talent.description.trait.default", lang).replace("_", talentName);
             }
             default ->
                     throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + abilityID + " | Type : " + type[0]);
@@ -2935,7 +2935,7 @@ public class DataToString extends Data {
     private static String fillUpNpCost(int[] data, CommonStatic.Lang.Locale lang, boolean space) {
         if(talentLevel.containsKey(data[11])) {
             if(data[1] < 2) {
-                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_npsingle", lang).replace("_", String.valueOf(talentLevel.get(data[11])[0]));
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("data.talent.npCost.single", lang).replace("_", String.valueOf(talentLevel.get(data[11])[0]));
             } else {
                 int[] costs = talentLevel.get(data[11]);
 
@@ -2954,7 +2954,7 @@ public class DataToString extends Data {
                     }
                 }
 
-                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_np", lang).replace("_CCC_", cost.toString()).replace("_TTT_", String.valueOf(totalCost));
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("data.talent.npCost.level", lang).replace("_CCC_", cost.toString()).replace("_TTT_", String.valueOf(totalCost));
             }
         } else {
             StaticStore.logger.uploadLog("W/DataToString::fillUpNpCost - Unknown talent cost group ID : " + data[11]);
@@ -2983,6 +2983,6 @@ public class DataToString extends Data {
             }
         }
 
-        return LangID.getStringByID("talentinfo_total", lang).replace("_", String.valueOf(cost));
+        return LangID.getStringByID("data.talent.npCost.total", lang).replace("_", String.valueOf(cost));
     }
 }

@@ -25,7 +25,7 @@ public class ServerPrefixModalHolder extends ModalHolder {
 
         if (value.trim().isBlank()) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_empty", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.noWhiteSpace", lang))
                     .setEphemeral(true)
                     .queue();
 
@@ -34,7 +34,7 @@ public class ServerPrefixModalHolder extends ModalHolder {
 
         if (value.matches("(.+)?http(s)?://(.+)?")) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_nourl", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.noURL", lang))
                     .setEphemeral(true)
                     .queue();
 
@@ -44,7 +44,7 @@ public class ServerPrefixModalHolder extends ModalHolder {
         config.prefix = value.replaceAll("\\s", "");
 
         event.deferReply()
-                .setContent(LangID.getStringByID("sercon_prefixsuc", lang).formatted(value))
+                .setContent(LangID.getStringByID("serverConfig.general.prefixSuccess", lang).formatted(value))
                 .setEphemeral(true)
                 .queue();
 

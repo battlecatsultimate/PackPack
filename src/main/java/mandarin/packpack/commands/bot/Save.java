@@ -18,11 +18,11 @@ public class Save extends ConstraintCommand {
     public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        ch.sendMessage(LangID.getStringByID("save_save", lang)).queue( msg -> {
+        ch.sendMessage(LangID.getStringByID("save.saving", lang)).queue( msg -> {
             if(msg != null) {
                 StaticStore.saveServerInfo();
 
-                msg.editMessage(LangID.getStringByID("save_done", lang)).queue();
+                msg.editMessage(LangID.getStringByID("save.done", lang)).queue();
             } else {
                 onFail(loader, DEFAULT_ERROR);
             }

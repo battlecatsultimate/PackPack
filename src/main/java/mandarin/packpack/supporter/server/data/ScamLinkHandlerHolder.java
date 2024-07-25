@@ -47,15 +47,15 @@ public class ScamLinkHandlerHolder {
             boolean noticeAll = h.get("noticeAll").getAsBoolean();
             String mute;
 
-            if(h.has("mute")) {
-                mute = h.get("mute").getAsString();
+            if(h.has("scamDetector.action.mute")) {
+                mute = h.get("scamDetector.action.mute").getAsString();
             } else {
                 mute = null;
             }
 
             ScamLinkHandler.ACTION action = switch (h.get("action").getAsString()) {
-                case "kick" -> ScamLinkHandler.ACTION.KICK;
-                case "ban" -> ScamLinkHandler.ACTION.BAN;
+                case "scamDetector.action.kick" -> ScamLinkHandler.ACTION.KICK;
+                case "scamDetector.action.ban" -> ScamLinkHandler.ACTION.BAN;
                 default -> ScamLinkHandler.ACTION.MUTE;
             };
 

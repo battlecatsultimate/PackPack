@@ -73,7 +73,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyImage.fail.noParameter", lang), loader.getMessage(), a -> a);
 
                 disableTimer();
 
@@ -83,7 +83,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
@@ -97,13 +97,13 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 Enemy en = enemies.getFirst();
 
                 if(forbidden.contains(en.id.id)) {
-                    ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("data.animation.gif.dummy", lang)).queue();
 
                     return;
                 }
 
                 if(raw && !isTrusted) {
-                    ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
                 }
 
                 int boostLevel = 0;
@@ -132,9 +132,9 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     disableTimer();
                 });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateData(enemies);
 
@@ -148,7 +148,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -162,7 +162,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     boolean gif = (param & PARAM_GIF) > 0;
 
                     if(raw && !isTrusted) {
-                        ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
                     }
 
                     StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
@@ -171,7 +171,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 disableTimer();
             }
         } else {
-            ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("enemyImage.fail.noParameter", lang)).queue();
             disableTimer();
         }
     }
@@ -192,21 +192,21 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         for(int i = 0; i < msg.length; i++) {
             if(msg[i].equals("-m") || msg[i].equals("-mode")) {
                 if(i < msg.length - 1) {
-                    if(LangID.getStringByID("fimg_walk", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    if(LangID.getStringByID("data.animation.mode.walk", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 0;
-                    else if(LangID.getStringByID("fimg_idle", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.idle", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 1;
-                    else if(LangID.getStringByID("fimg_atk", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.attack", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 2;
-                    else if(LangID.getStringByID("fimg_hb", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.kb", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 3;
-                    else if(LangID.getStringByID("fimg_enter", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.enter", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 4;
-                    else if(LangID.getStringByID("fimg_burrdown", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.burrowDown", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 4;
-                    else if(LangID.getStringByID("fimg_burrmove", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.burrowMove", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 5;
-                    else if(LangID.getStringByID("fimg_burrup", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
+                    else if(LangID.getStringByID("data.animation.mode.burrowUp", lang).toLowerCase(java.util.Locale.ENGLISH).contains(msg[i+1].toLowerCase(java.util.Locale.ENGLISH)))
                         return 6;
                 } else {
                     return 0;

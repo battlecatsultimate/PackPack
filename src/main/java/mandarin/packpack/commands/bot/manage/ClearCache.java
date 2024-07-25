@@ -26,7 +26,7 @@ public class ClearCache extends ConstraintCommand {
             StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(loader.getMessage(), res, ch.getId(), lang, () -> {
                 StaticStore.imgur.clear();
 
-                ch.sendMessage(LangID.getStringByID("clearcache_cleared", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("clearCache.cleared", lang)).queue();
             }));
         });
     }

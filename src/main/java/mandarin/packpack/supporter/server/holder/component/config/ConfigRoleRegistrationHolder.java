@@ -56,7 +56,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                     holder.moderator = role.getId();
 
                     event.deferReply()
-                            .setContent(LangID.getStringByID("sercon_modset", lang).formatted("<@&" + role.getId() + ">"))
+                            .setContent(LangID.getStringByID("serverConfig.general.role.set.moderator", lang).formatted("<@&" + role.getId() + ">"))
                             .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
@@ -96,7 +96,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 if (event.getComponentId().equals("member")) {
                     String oldID = holder.member;
                     holder.member = roleID;
-                    id = "sercon_memset";
+                    id = "serverConfig.general.role.set.member";
 
                     if (holder.member == null)
                         mention = "@everyone";
@@ -113,7 +113,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 } else {
                     String oldID = holder.booster;
                     holder.booster = roleID;
-                    id = "sercon_booset";
+                    id = "serverConfig.general.role.set.booster";
 
                     if (holder.booster == null)
                         mention = LangID.getStringByID("data.none", lang);
@@ -136,7 +136,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
             case "custom" -> connectTo(event, new ConfigRoleCustomHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -145,11 +145,11 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -205,18 +205,18 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         String moderatorRole;
 
         if (holder.moderator == null) {
-            moderatorRole = LangID.getStringByID("sercon_rolemanager", lang);
+            moderatorRole = LangID.getStringByID("serverConfig.general.role.anyManager", lang);
         } else {
             moderatorRole = "<@&" + holder.moderator + ">";
         }
 
-        StringBuilder builder = new StringBuilder(LangID.getStringByID("sercon_roletit", lang).formatted(EmojiStore.ROLE.getFormatted()))
+        StringBuilder builder = new StringBuilder(LangID.getStringByID("serverConfig.general.role.documentation.title", lang).formatted(EmojiStore.ROLE.getFormatted()))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_roledesc", lang))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.description", lang))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.moderator.title", lang).formatted(EmojiStore.MODERATOR.getFormatted(), moderatorRole))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolemoddesc", lang))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.moderator.description", lang))
                 .append("\n");
 
         String memberRole;
@@ -227,9 +227,9 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
             memberRole = "<@&" + holder.member + ">";
         }
 
-        builder.append(LangID.getStringByID("sercon_rolemem", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
+        builder.append(LangID.getStringByID("serverConfig.general.role.documentation.member.title", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_rolememdesc", lang))
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.member.description", lang))
                 .append("\n");
 
         String boosterRole;
@@ -240,9 +240,9 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
             boosterRole = "<@&" + holder.booster + ">";
         }
 
-        builder.append(LangID.getStringByID("sercon_roleboo", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
+        builder.append(LangID.getStringByID("serverConfig.general.role.documentation.booster.title", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
                 .append("\n")
-                .append(LangID.getStringByID("sercon_roleboodesc", lang));
+                .append(LangID.getStringByID("serverConfig.general.role.documentation.booster.description", lang));
 
         return builder.toString();
     }
@@ -286,7 +286,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("member", EntitySelectMenu.SelectTarget.ROLE)
-                                .setPlaceholder(LangID.getStringByID("sercon_roleevery", lang))
+                                .setPlaceholder(LangID.getStringByID("serverConfig.general.role.selectNone.everyone", lang))
                                 .setDefaultValues(member == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { member })
                                 .setRequiredRange(0, 1)
                                 .build()
@@ -297,7 +297,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 ActionRow.of(
                         EntitySelectMenu.create("booster", EntitySelectMenu.SelectTarget.ROLE)
                                 .setDefaultValues(booster == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { booster })
-                                .setPlaceholder(LangID.getStringByID("sercon_rolenone", lang))
+                                .setPlaceholder(LangID.getStringByID("serverConfig.general.role.selectNone.none", lang))
                                 .setRequiredRange(0, 1)
                                 .build()
                 )
@@ -305,23 +305,23 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("custom", LangID.getStringByID("sercon_custom", lang)).withEmoji(Emoji.fromUnicode("⚙️"))
+                        Button.secondary("custom", LangID.getStringByID("serverConfig.general.role.custom", lang)).withEmoji(Emoji.fromUnicode("⚙️"))
                 )
         );
 
         if (parent != null) {
             result.add(
                     ActionRow.of(
-                            Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                            Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                            Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                     )
             );
         } else {
             result.add(
                     ActionRow.of(
-                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                            Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                     )
             );
         }
@@ -334,7 +334,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
         if (id.equals(holder.moderator)) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.custom.already.moderator", lang))
                     .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
@@ -342,7 +342,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
             return true;
         } else if (id.equals(holder.member)) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_rolememalready", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.custom.already.member", lang))
                     .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
@@ -350,7 +350,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
             return true;
         } else if (id.equals(holder.booster)) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.custom.already.booster", lang))
                     .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
@@ -358,7 +358,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
             return true;
         } else if (holder.ID.containsValue(id)) {
             event.deferReply()
-                    .setContent(LangID.getStringByID("sercon_customalready", lang))
+                    .setContent(LangID.getStringByID("serverConfig.general.custom.already.custom", lang))
                     .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();

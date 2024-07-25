@@ -45,7 +45,7 @@ public class Soul extends GlobalTimedConstraintCommand {
         common.util.pack.Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_nosoul", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noSoul", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -59,7 +59,7 @@ public class Soul extends GlobalTimedConstraintCommand {
         int frame = getFrame(loader.getContent());
 
         if(raw && !isTrusted) {
-            ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
         }
 
         int boostLevel = 0;
@@ -105,10 +105,10 @@ public class Soul extends GlobalTimedConstraintCommand {
         MessageChannel ch = loader.getChannel();
 
         switch (optionalID) {
-            case NO_ID -> replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), loader.getMessage(), a -> a);
+            case NO_ID -> replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noParameter", lang), loader.getMessage(), a -> a);
             case INVALID_RANGE -> {
                 int soulLen = UserProfile.getBCData().souls.size() - 1;
-                replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", String.valueOf(soulLen)), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("soul.failed.outOfRange", lang).replace("_", String.valueOf(soulLen)), loader.getMessage(), a -> a);
             }
         }
     }

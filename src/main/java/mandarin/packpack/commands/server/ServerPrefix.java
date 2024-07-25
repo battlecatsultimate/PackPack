@@ -24,15 +24,15 @@ public class ServerPrefix extends ConstraintCommand {
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
-                ch.sendMessage(LangID.getStringByID("prefix_space", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("prefix.noWhiteSpace", lang)).queue();
                 return;
             }
 
             holder.config.prefix = list[1];
 
-            createMessageWithNoPings(ch, LangID.getStringByID("serverpre_set", lang).replace("_", holder.config.prefix));
+            createMessageWithNoPings(ch, LangID.getStringByID("serverPrefix.set", lang).replace("_", holder.config.prefix));
         } else if(list.length == 1) {
-            ch.sendMessage(LangID.getStringByID("prefix_argu", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("prefix.fail.noParameter", lang)).queue();
         } else {
             ch.sendMessage(LangID.getStringByID("prefix_tooag", lang)).queue();
         }

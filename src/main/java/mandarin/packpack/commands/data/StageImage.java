@@ -66,7 +66,7 @@ public class StageImage extends ConstraintCommand {
                 String[] messages = loader.getContent().split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("stageImage.fail.noText", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -74,7 +74,7 @@ public class StageImage extends ConstraintCommand {
                 String message = messages[startIndex];
 
                 if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && message.length() > StaticStore.MAX_STAGE_IMAGE_LENGTH) {
-                    replyToMessageSafely(ch, LangID.getStringByID("stimg_max", lang), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("stageImage.fail.maxLimit", lang), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -99,7 +99,7 @@ public class StageImage extends ConstraintCommand {
 
                 handleLast(message, ch, loader.getMessage(), generator);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("stimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("stageImage.fail.noParameter", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to handle stage image command");
@@ -143,14 +143,14 @@ public class StageImage extends ConstraintCommand {
 
     private void handleLast(String message, MessageChannel ch, Message reference, ImageGenerator generator) {
         if(f != null) {
-            sendMessageWithFile(ch, LangID.getStringByID("stimg_result", lang), f, f.getName(), reference);
+            sendMessageWithFile(ch, LangID.getStringByID("stageImage.result", lang), f, f.getName(), reference);
         } else {
             ArrayList<String> invalid = generator.getInvalids(message);
 
             if(invalid.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("stimg_wrong", lang), reference, a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("stageImage.fail.unknown", lang), reference, a -> a);
             } else {
-                StringBuilder builder = new StringBuilder(LangID.getStringByID("stimg_letter", lang));
+                StringBuilder builder = new StringBuilder(LangID.getStringByID("stageImage.fail.letterNotSupported", lang));
 
                 for(int i = 0; i < invalid.size(); i++) {
                     if(i == invalid.size() -1) {

@@ -163,7 +163,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
         result.append("\u001B[1;38m").append(beautifyItem(lang, itemID, itemAmount));
 
         if(1000 <= categoryID && categoryID < 5000 && everyday) {
-            result.append("\u001B[1;34m [").append(LangID.getStringByID("printitem_daily", lang)).append("]");
+            result.append("\u001B[1;34m [").append(LangID.getStringByID("event.daily", lang)).append("]");
         }
 
         if(!title.isBlank() && !title.startsWith("←全画面")) {
@@ -171,7 +171,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
         }
 
         if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
-            result.append("\u001B[0;35m <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
+            result.append("\u001B[0;35m <").append(LangID.getStringByID("event.newVersion", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
         return result.toString();

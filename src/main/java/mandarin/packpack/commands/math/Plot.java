@@ -33,7 +33,7 @@ public class Plot extends TimedConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_formula", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noFormula", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -46,7 +46,7 @@ public class Plot extends TimedConstraintCommand {
         String[] test = f.split("=");
 
         if(test.length > 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_invalid", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.invalidFormat", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -107,7 +107,7 @@ public class Plot extends TimedConstraintCommand {
             Object[] plots = ImageDrawing.plotGraph(coordinates, xRange, yRange, keepRatio(loader.getContent()), lang);
 
             if(plots == null) {
-                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noImage", lang), loader.getMessage(), a -> a);
             } else {
                 sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", loader.getMessage());
             }
@@ -119,7 +119,7 @@ public class Plot extends TimedConstraintCommand {
             Object[] plots = ImageDrawing.plotXYGraph(formula, xRange, yRange, keepRatio(loader.getContent()), lang);
 
             if(plots == null) {
-                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noImage", lang), loader.getMessage(), a -> a);
             } else {
                 sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", loader.getMessage());
             }

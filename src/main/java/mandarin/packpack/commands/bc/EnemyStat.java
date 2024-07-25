@@ -72,7 +72,7 @@ public class EnemyStat extends ConstraintCommand {
         final CommonStatic.Lang.Locale finalLang = lang;
 
         if(e == null) {
-            interaction.deferReply().setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("formst_specific", finalLang)).queue();
+            interaction.deferReply().setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("ui.search.moreSpecific", finalLang)).queue();
         } else {
             try {
                 EntityHandler.performEnemyEmb(e, interaction, frame, extra, magnification, StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global), finalLang);
@@ -126,7 +126,7 @@ public class EnemyStat extends ConstraintCommand {
         String command = removeMistake.toString();
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
         } else {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(command), lang);
 
@@ -153,11 +153,11 @@ public class EnemyStat extends ConstraintCommand {
 
                 EntityHandler.showEnemyEmb(enemies.getFirst(), ch, m, isFrame, isExtra, isCompact, magnification, treasure, lang);
             } else if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(command)), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(command)), loader.getMessage(), a -> a);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(command)));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(command)));
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
                 List<String> data = accumulateData(enemies);
 
@@ -171,7 +171,7 @@ public class EnemyStat extends ConstraintCommand {
                     if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");

@@ -37,7 +37,7 @@ public abstract class SearchHolder extends ComponentHolder {
 
         StaticStore.removeHolder(id, this);
 
-        message.editMessage(LangID.getStringByID("formst_expire", lang))
+        message.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .setComponents()
@@ -89,7 +89,7 @@ public abstract class SearchHolder extends ComponentHolder {
         StaticStore.removeHolder(event.getUser().getId(), this);
 
         event.deferEdit()
-                .setContent(LangID.getStringByID("formst_cancel", lang))
+                .setContent(LangID.getStringByID("ui.search.canceled", lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -98,7 +98,7 @@ public abstract class SearchHolder extends ComponentHolder {
 
     protected String getPage() {
         StringBuilder sb = new StringBuilder("```md\n")
-                .append(LangID.getStringByID("formst_pick", lang));
+                .append(LangID.getStringByID("ui.search.selectData", lang));
 
         List<String> data = accumulateListData(true);
 
@@ -115,7 +115,7 @@ public abstract class SearchHolder extends ComponentHolder {
             if(getDataSize() % PAGE_CHUNK != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
+            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         sb.append("```");
@@ -185,9 +185,9 @@ public abstract class SearchHolder extends ComponentHolder {
             }
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectData", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
 
-        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return rows;
     }

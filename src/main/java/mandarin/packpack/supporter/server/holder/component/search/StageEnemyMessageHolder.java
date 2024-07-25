@@ -107,7 +107,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             if(stages.isEmpty()) {
                 message.delete().queue();
 
-                ch.sendMessage(LangID.getStringByID("fstage_nost", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("findStage.failed.noResult", lang)).queue();
             } else if(stages.size() == 1) {
                 message.delete().queue();
 
@@ -125,7 +125,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact, lang));
                 });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("findStage.several", lang)).append("```md\n");
 
                 List<String> data = accumulateStage(stages, true);
 
@@ -139,7 +139,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     if(stages.size() % PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
+                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -185,10 +185,10 @@ public class StageEnemyMessageHolder extends SearchHolder {
         StringBuilder sb = new StringBuilder();
 
         if(!enemyList.isEmpty()) {
-            sb.append(LangID.getStringByID("fstage_selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
+            sb.append(LangID.getStringByID("findStage.selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
         }
 
-        sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+        sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
         List<String> data = accumulateListData(false);
 
@@ -202,7 +202,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             if(enemy.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
+            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         sb.append("```");
@@ -329,7 +329,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             }
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectData", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
 
         if(monthly) {
             List<SelectOption> categories = new ArrayList<>();
@@ -344,10 +344,10 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 categories.add(SelectOption.of(LangID.getStringByID("data_" + name, lang), name));
             }
 
-            rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("fstage_category", lang)).build()));
+            rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("findStage.monthly.category", lang)).build()));
         }
 
-        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return ch.sendMessage(content).setAllowedMentions(new ArrayList<>()).setComponents(rows);
     }

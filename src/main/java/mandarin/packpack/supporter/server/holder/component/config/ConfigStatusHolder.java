@@ -52,7 +52,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
 
                 if (holder.status.contains(id)) {
                     event.deferReply()
-                            .setContent(LangID.getStringByID("sercon_channelstatusalready", lang))
+                            .setContent(LangID.getStringByID("serverConfig.status.alreadyAssigned", lang))
                             .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
@@ -62,7 +62,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
 
                 if (!channel.canTalk()) {
                     event.deferReply()
-                            .setContent(LangID.getStringByID("sercon_channelcanttalk", lang))
+                            .setContent(LangID.getStringByID("serverConfig.eventData.cantTalk", lang))
                             .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
@@ -87,7 +87,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("sercon_done", lang))
+                        .setContent(LangID.getStringByID("serverConfig.applied", lang))
                         .setComponents()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
@@ -96,11 +96,11 @@ public class ConfigStatusHolder extends ServerConfigHolder {
                 expired = true;
             }
             case "cancel" -> {
-                registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang));
+                registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
-                            .setContent(LangID.getStringByID("sercon_cancel", lang))
+                            .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -136,13 +136,13 @@ public class ConfigStatusHolder extends ServerConfigHolder {
     private String getContents() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append(LangID.getStringByID("sercon_channeltitle", lang)).append("\n")
-                .append(LangID.getStringByID("sercon_channelstatustit", lang).formatted(Emoji.fromUnicode("📡"))).append("\n")
-                .append(LangID.getStringByID("sercon_channelstatusmanagedesc", lang)).append("\n\n")
-                .append(LangID.getStringByID("sercon_channelstatuslist", lang)).append("\n\n");
+        builder.append(LangID.getStringByID("serverConfig.channel.documentation.title", lang)).append("\n")
+                .append(LangID.getStringByID("serverConfig.channel.documentation.status.title", lang).formatted(Emoji.fromUnicode("📡"))).append("\n")
+                .append(LangID.getStringByID("serverConfig.status.description", lang)).append("\n\n")
+                .append(LangID.getStringByID("serverConfig.status.channelList", lang)).append("\n\n");
 
         if (holder.status.isEmpty()) {
-            builder.append("```\n").append(LangID.getStringByID("sercon_channelstatusno", lang)).append("\n```");
+            builder.append("```\n").append(LangID.getStringByID("serverConfig.status.noChannel", lang)).append("\n```");
         } else {
             for (int i = 0; i < holder.status.size(); i++) {
                 builder.append(i + 1).append(". <#").append(holder.status.get(i)).append("> [").append(holder.status.get(i)).append("]");
@@ -167,7 +167,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
         result.add(ActionRow.of(
                 EntitySelectMenu.create("assign", EntitySelectMenu.SelectTarget.CHANNEL)
                         .setChannelTypes(ChannelType.TEXT)
-                        .setPlaceholder(LangID.getStringByID("sercon_channelstatusassign", lang).formatted(SelectMenu.OPTIONS_MAX_AMOUNT))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.status.assignChannel", lang).formatted(SelectMenu.OPTIONS_MAX_AMOUNT))
                         .setDisabled(holder.status.size() >= SelectMenu.OPTIONS_MAX_AMOUNT)
                         .setRequiredRange(1, 1)
                         .build()
@@ -178,7 +178,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
 
         if (holder.status.isEmpty()) {
             options.add(SelectOption.of("A", "A"));
-            placeHolder = LangID.getStringByID("sercon_channelstatusnochannel", lang);
+            placeHolder = LangID.getStringByID("serverConfig.status.noRemovableChannel", lang);
         } else {
             for (int i = 0; i < holder.status.size(); i++) {
                 TextChannel channel = g.getTextChannelById(holder.status.get(i));
@@ -204,7 +204,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
                 options.add(SelectOption.of(name, String.valueOf(i)).withDescription(holder.status.get(i)));
             }
 
-            placeHolder = LangID.getStringByID("sercon_channelstatusremove", lang);
+            placeHolder = LangID.getStringByID("serverConfig.status.removeChannel", lang);
         }
 
         result.add(ActionRow.of(
@@ -218,9 +218,9 @@ public class ConfigStatusHolder extends ServerConfigHolder {
 
         result.add(
                 ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
 
