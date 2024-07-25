@@ -746,15 +746,15 @@ public class AllEventAdapter extends ListenerAdapter {
             List<Role> roles = guild.getRoles();
 
             //Validate Role
-            if (roles.stream().noneMatch(r -> r.getId().equals(id.moderator))) {
+            if (id.moderator != null && roles.stream().noneMatch(r -> r.getId().equals(id.moderator))) {
                 id.moderator = null;
             }
 
-            if (roles.stream().noneMatch(r -> r.getId().equals(id.member))) {
-                id.moderator = null;
+            if (id.member != null && roles.stream().noneMatch(r -> r.getId().equals(id.member))) {
+                id.member = null;
             }
 
-            if (roles.stream().noneMatch(r -> r.getId().equals(id.booster))) {
+            if (id.booster != null && roles.stream().noneMatch(r -> r.getId().equals(id.booster))) {
                 id.booster = null;
             }
 

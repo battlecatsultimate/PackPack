@@ -98,79 +98,85 @@ object CardBot : ListenerAdapter() {
 
         StaticStore.saver.schedule(object : TimerTask() {
             override fun run() {
-                val currentTime = CardData.getUnixEpochTime()
+                try {
+                    val currentTime = CardData.getUnixEpochTime()
 
-                if (notifier == 2) {
-                    notifier = 1
+                    if (notifier == 2) {
+                        notifier = 1
 
-                    val removeQueue = ArrayList<Long>()
+                        val removeQueue = ArrayList<Long>()
 
-                    CardData.notifierGroup.filter { (_, notifier) -> notifier.any { b -> b } }.forEach { (id, notifier) ->
-                        if (!test || id.toString() == StaticStore.MANDARIN_SMELL) {
-                            client.retrieveUserById(id).queue { u ->
-                                val messageContent = StringBuilder()
+                        CardData.notifierGroup.filter { (_, notifier) -> notifier.any { b -> b } }.forEach { (id, notifier) ->
+                            if (!test || id.toString() == StaticStore.MANDARIN_SMELL) {
+                                client.retrieveUserById(id).queue { u ->
+                                    val messageContent = StringBuilder()
 
-                                if (notifier[0]) {
-                                    val packList = StringBuilder()
+                                    if (notifier[0]) {
+                                        val packList = StringBuilder()
 
-                                    val cooldown = CardData.cooldown[u.id] ?: return@queue
+                                        val cooldown = CardData.cooldown[u.id] ?: return@queue
 
-                                    cooldown.forEach { (uuid, cd) ->
-                                        val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
+                                        cooldown.forEach { (uuid, cd) ->
+                                            val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
 
-                                        if (pack != null && cd > 0 && cd - currentTime <= 0) {
-                                            packList.append("- ")
-                                                .append(pack.packName)
-                                                .append("\n")
+                                            if (pack != null && cd > 0 && cd - currentTime <= 0 && pack.activated) {
+                                                packList.append("- ")
+                                                    .append(pack.packName)
+                                                    .append("\n")
+                                            }
+                                        }
+
+                                        if (packList.isNotBlank()) {
+                                            messageContent.append("You can roll pack below!\n\n")
+                                                .append(packList)
                                         }
                                     }
 
-                                    if (packList.isNotBlank()) {
-                                        messageContent.append("You can roll pack below!\n\n")
-                                            .append(packList)
-                                    }
-                                }
+                                    if (notifier[1]) {
+                                        val slotList = StringBuilder()
 
-                                if (notifier[1]) {
-                                    val slotList = StringBuilder()
+                                        val cooldown = CardData.slotCooldown[u.id] ?: return@queue
 
-                                    val cooldown = CardData.slotCooldown[u.id] ?: return@queue
+                                        cooldown.forEach { (uuid, cd) ->
+                                            val slot = CardData.slotMachines.filter { slot -> slot.cooldown >= CardData.MINIMUM_NOTIFY_TIME }.find { slot -> slot.uuid == uuid }
 
-                                    cooldown.forEach { (uuid, cd) ->
-                                        val slot = CardData.slotMachines.filter { slot -> slot.cooldown >= CardData.MINIMUM_NOTIFY_TIME }.find { slot -> slot.uuid == uuid }
-
-                                        if (slot != null && cd > 0 && cd - currentTime <= 0) {
-                                            slotList.append("- ")
-                                                .append(slot.name)
-                                                .append("\n")
-                                        }
-                                    }
-
-                                    if (slotList.isNotBlank()) {
-                                        if (messageContent.isNotBlank()) {
-                                            messageContent.append("\n")
+                                            if (slot != null && cd > 0 && cd - currentTime <= 0 && slot.activate) {
+                                                slotList.append("- ")
+                                                    .append(slot.name)
+                                                    .append("\n")
+                                            }
                                         }
 
-                                        messageContent.append("You can roll slot machine below!\n\n")
-                                            .append(slotList)
-                                    }
-                                }
-
-                                if (messageContent.isNotBlank()) {
-                                    u.openPrivateChannel().queue { pc ->
-                                        pc.sendMessage(messageContent).queue {
-                                            CardData.cooldown.forEach { (_, cooldownMap) ->
-                                                cooldownMap.forEach { (uuid, cd) ->
-                                                    if (cd > 0 && cd - currentTime <= 0) {
-                                                        cooldownMap[uuid] = 0
-                                                    }
-                                                }
+                                        if (slotList.isNotBlank()) {
+                                            if (messageContent.isNotBlank()) {
+                                                messageContent.append("\n")
                                             }
 
-                                            CardData.slotCooldown.forEach { (_, cooldownMap) ->
-                                                cooldownMap.forEach { (uuid, cd) ->
-                                                    if (cd > 0 && cd - currentTime <= 0) {
-                                                        cooldownMap[uuid] = 0
+                                            messageContent.append("You can roll slot machine below!\n\n")
+                                                .append(slotList)
+                                        }
+                                    }
+
+                                    if (messageContent.isNotBlank()) {
+                                        u.openPrivateChannel().queue { pc ->
+                                            pc.sendMessage(messageContent).queue {
+                                                CardData.cooldown.forEach { (_, cooldownMap) ->
+                                                    cooldownMap.forEach { (uuid, cd) ->
+                                                        val pack = CardData.cardPacks.find { p -> p.uuid == uuid } ?: return@forEach
+
+                                                        if (cd > 0 && cd - currentTime <= 0 && pack.activated) {
+                                                            cooldownMap[uuid] = 0
+                                                        }
+                                                    }
+                                                }
+
+                                                CardData.slotCooldown.forEach { (_, cooldownMap) ->
+                                                    cooldownMap.forEach { (uuid, cd) ->
+                                                        val slot = CardData.slotMachines.find { s -> s.uuid == uuid } ?: return@forEach
+
+                                                        if (cd > 0 && cd - currentTime <= 0 && slot.activate) {
+                                                            cooldownMap[uuid] = 0
+                                                        }
                                                     }
                                                 }
                                             }
@@ -179,146 +185,148 @@ object CardBot : ListenerAdapter() {
                                 }
                             }
                         }
+
+                        removeQueue.forEach { id -> CardData.notifierGroup.remove(id) }
+
+                        RecordableThread.handleExpiration()
+                    } else {
+                        notifier++
                     }
 
-                    removeQueue.forEach { id -> CardData.notifierGroup.remove(id) }
+                    if (collectorMonitor == 30 && !test) {
+                        collectorMonitor = 1
 
-                    RecordableThread.handleExpiration()
-                } else {
-                    notifier++
-                }
+                        val g = client.getGuildById(CardData.guild)
+                        val collectorRole = g?.roles?.find { r -> r.id == CardData.Role.LEGEND.id }
 
-                if (collectorMonitor == 30 && !test) {
-                    collectorMonitor = 1
+                        CardData.inventories.keys.forEach { userID ->
+                            val inventory = Inventory.getInventory(userID)
 
-                    val g = client.getGuildById(CardData.guild)
-                    val collectorRole = g?.roles?.find { r -> r.id == CardData.Role.LEGEND.id }
+                            if (!inventory.validForLegendCollector() && inventory.vanityRoles.contains(CardData.Role.LEGEND)) {
+                                inventory.vanityRoles.remove(CardData.Role.LEGEND)
 
-                    CardData.inventories.keys.forEach { userID ->
-                        val inventory = Inventory.getInventory(userID)
+                                if (collectorRole != null) {
+                                    g.removeRoleFromMember(UserSnowflake.fromId(userID), collectorRole).queue()
+                                }
 
-                        if (!inventory.validForLegendCollector() && inventory.vanityRoles.contains(CardData.Role.LEGEND)) {
-                            inventory.vanityRoles.remove(CardData.Role.LEGEND)
-
-                            if (collectorRole != null) {
-                                g.removeRoleFromMember(UserSnowflake.fromId(userID), collectorRole).queue()
-                            }
-
-                            client.retrieveUserById(userID).queue { u ->
-                                u.openPrivateChannel().queue({ privateChannel ->
-                                    privateChannel.sendMessage("Your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
-                                            "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
-                                            "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
-                                            "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}").queue(null) { _ -> }
-                                }, { _ -> })
+                                client.retrieveUserById(userID).queue { u ->
+                                    u.openPrivateChannel().queue({ privateChannel ->
+                                        privateChannel.sendMessage("Your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
+                                                "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
+                                                "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
+                                                "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}").queue(null) { _ -> }
+                                    }, { _ -> })
+                                }
                             }
                         }
+                    } else {
+                        collectorMonitor++
                     }
-                } else {
-                    collectorMonitor++
-                }
 
-                if (!test && backup == 360) {
-                    backup = 1
+                    if (!test && backup == 360) {
+                        backup = 1
 
-                    client.retrieveUserById(StaticStore.MANDARIN_SMELL)
-                        .queue {user ->
-                            user.openPrivateChannel().queue { pv ->
+                        client.retrieveUserById(StaticStore.MANDARIN_SMELL)
+                            .queue {user ->
+                                user.openPrivateChannel().queue { pv ->
+                                    pv.sendMessage("Sending backup")
+                                        .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
+                                        .queue()
+                                }
+                            }
+
+                        client.retrieveUserById(ServerData.get("gid")).queue { user ->
+                            user.openPrivateChannel().queue {pv ->
                                 pv.sendMessage("Sending backup")
                                     .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
                                     .queue()
                             }
                         }
-
-                    client.retrieveUserById(ServerData.get("gid")).queue { user ->
-                        user.openPrivateChannel().queue {pv ->
-                            pv.sendMessage("Sending backup")
-                                .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
-                                .queue()
-                        }
+                    } else {
+                        backup++
                     }
-                } else {
-                    backup++
-                }
 
-                if (!forceReplace) {
-                    saveCardData()
-                }
+                    if (!forceReplace) {
+                        saveCardData()
+                    }
 
-                LogSession.syncSession()
+                    LogSession.syncSession()
 
-                if (!test) {
-                    val g = client.getGuildById(CardData.guild)
+                    if (!test) {
+                        val g = client.getGuildById(CardData.guild)
 
-                    if (g != null) {
-                        val forum = g.getForumChannelById(CardData.tradingPlace)
+                        if (g != null) {
+                            val forum = g.getForumChannelById(CardData.tradingPlace)
 
-                        if (forum != null) {
-                            ArrayList(CardData.sessions).forEach { session ->
-                                val ch = forum.threadChannels.find { ch -> ch.idLong == session.postID }
+                            if (forum != null) {
+                                ArrayList(CardData.sessions).forEach { session ->
+                                    val ch = forum.threadChannels.find { ch -> ch.idLong == session.postID }
 
-                                if (ch != null) {
-                                    val timeStamp = Timestamp.valueOf(ch.timeCreated.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
+                                    if (ch != null) {
+                                        val timeStamp = Timestamp.valueOf(ch.timeCreated.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
 
-                                    if (currentTime - timeStamp.time >= CardData.TRADE_EXPIRATION_TIME) {
-                                        session.expire(ch)
+                                        if (currentTime - timeStamp.time >= CardData.TRADE_EXPIRATION_TIME) {
+                                            session.expire(ch)
+                                        }
+                                    } else {
+                                        session.expire()
                                     }
-                                } else {
-                                    session.expire()
                                 }
                             }
                         }
                     }
-                }
 
-                val jda = client.shards.firstOrNull()
+                    val jda = client.shards.firstOrNull()
 
-                CardData.auctionSessions.removeIf { auction ->
-                    if (!auction.opened)
-                        return@removeIf false
-
-                    val ended = auction.autoClose && auction.autoCloseTime > 0L && auction.lastBidTime > 0L && currentTime >= auction.lastBidTime + auction.autoCloseTime
-
-                    if (ended) {
-                        val result = auction.closeSession(jda?.selfUser?.idLong ?: 0L, true)
-
-                        val ch = auction.getAuctionChannel() ?: return@removeIf result.isEmpty()
-
-                        if (result.isNotEmpty()) {
-                            val mention = if (test) {
-                                "<@${StaticStore.MANDARIN_SMELL}>"
-                            } else {
-                                "<@&${CardData.dealer}>"
-                            }
-
-                            ch.sendMessage("Tried to auto close the auction due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}, but failed\n\n$result\n\nPinging $mention for manual close").queue()
-
+                    CardData.auctionSessions.removeIf { auction ->
+                        if (!auction.opened)
                             return@removeIf false
-                        } else {
-                            ch.sendMessage("Auction has been auto-closed due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}").queue()
 
-                            val successMessage = StringBuilder()
+                        val ended = auction.autoClose && auction.autoCloseTime > 0L && auction.lastBidTime > 0L && currentTime >= auction.lastBidTime + auction.autoCloseTime
 
-                            if (auction.author != -1L)
-                                successMessage.append("<@").append(auction.author).append(">, ")
+                        if (ended) {
+                            val result = auction.closeSession(jda?.selfUser?.idLong ?: 0L, true)
 
-                            successMessage.append("<@").append(auction.getMostBidMember()).append("> Check your inventory")
+                            val ch = auction.getAuctionChannel() ?: return@removeIf result.isEmpty()
 
-                            ch.sendMessage(successMessage).queue()
+                            if (result.isNotEmpty()) {
+                                val mention = if (test) {
+                                    "<@${StaticStore.MANDARIN_SMELL}>"
+                                } else {
+                                    "<@&${CardData.dealer}>"
+                                }
+
+                                ch.sendMessage("Tried to auto close the auction due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}, but failed\n\n$result\n\nPinging $mention for manual close").queue()
+
+                                return@removeIf false
+                            } else {
+                                ch.sendMessage("Auction has been auto-closed due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}").queue()
+
+                                val successMessage = StringBuilder()
+
+                                if (auction.author != -1L)
+                                    successMessage.append("<@").append(auction.author).append(">, ")
+
+                                successMessage.append("<@").append(auction.getMostBidMember()).append("> Check your inventory")
+
+                                ch.sendMessage(successMessage).queue()
+                            }
                         }
+
+                        return@removeIf ended
                     }
 
-                    return@removeIf ended
-                }
+                    if (inviteLocked) {
+                        val g = client.getGuildById(CardData.guild)
 
-                if (inviteLocked) {
-                    val g = client.getGuildById(CardData.guild)
-
-                    if (g != null && !g.isInvitesDisabled) {
-                        g.manager.setInvitesDisabled(true).queue(null) { e ->
-                            StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to pause invite links")
+                        if (g != null && !g.isInvitesDisabled) {
+                            g.manager.setInvitesDisabled(true).queue(null) { e ->
+                                StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to pause invite links")
+                            }
                         }
                     }
+                } catch(e: Exception) {
+                    StaticStore.logger.uploadErrorLog(e, "CardBot::saver - Failed to perform background thread")
                 }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1))

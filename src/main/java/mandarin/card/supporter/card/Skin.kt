@@ -115,7 +115,7 @@ class Skin {
         name = "Skin $skinID"
     }
 
-    fun displayInfo(showPublic: Boolean) : String {
+    fun displayInfo(client: JDA, showPublic: Boolean, displayCacheLink: Boolean) : String {
         val builder = StringBuilder()
 
         builder.append("**Targeted Card** : ").append(card.simpleCardInfo()).append("\n\n")
@@ -124,9 +124,17 @@ class Skin {
             .append("**Creator** : ")
 
         if (creator == -1L) {
-            builder.append("<@").append(CardData.bankAccount).append("> [Official Skin]\n\n")
+            builder.append("<@").append(CardData.bankAccount).append("> [Official Skin]\n")
         } else {
-            builder.append("<@").append(creator).append(">\n\n")
+            builder.append("<@").append(creator).append(">\n")
+        }
+
+        if (displayCacheLink) {
+            if (cacheLink.isBlank()) {
+                cache(client, true)
+            }
+
+            builder.append("**Image** : [Image]($cacheLink)\n\n")
         }
 
         if (showPublic) {

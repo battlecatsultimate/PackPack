@@ -236,7 +236,7 @@ class SkinModifyHolder(
 
     private fun getContents() : String {
         val builder = StringBuilder("## Skin Manager\n")
-            .append(skin.displayInfo(true))
+            .append(skin.displayInfo(authorMessage.jda, true, false))
 
         return builder.toString()
     }

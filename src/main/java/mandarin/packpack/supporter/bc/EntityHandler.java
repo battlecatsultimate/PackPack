@@ -3986,7 +3986,7 @@ public class EntityHandler {
                     else
                         index = rawIndex;
 
-                    BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, false).multiply(damageTotalMultiplier);
+                    BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, false);
 
                     if (rawIndex >= 1000) {
                         y2 = y2.add(damage);
@@ -4044,7 +4044,7 @@ public class EntityHandler {
                     else
                         index = rawIndex;
 
-                    BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, false).multiply(damageTotalMultiplier);
+                    BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, false);
 
                     if (rawIndex >= 1000)
                         y2 = y2.add(damage);
@@ -4154,7 +4154,7 @@ public class EntityHandler {
                         else
                             index = rawIndex;
 
-                        BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, true).multiply(damageTotalMultiplier);
+                        BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, true);
 
                         if (rawIndex >= 1000) {
                             y2 = y2.add(damage);
@@ -4212,7 +4212,7 @@ public class EntityHandler {
                         else
                             index = rawIndex;
 
-                        BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, true).multiply(damageTotalMultiplier);
+                        BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, true);
 
                         if (rawIndex >= 1000)
                             y2 = y2.add(damage);
@@ -4620,7 +4620,7 @@ public class EntityHandler {
                     else
                         index = rawIndex;
 
-                    BigDecimal damage = getAttack(index, de, adjustedMagnification).multiply(damageTotalMultiplier);
+                    BigDecimal damage = getAttack(index, de, adjustedMagnification);
 
                     if (rawIndex >= 1000) {
                         y2 = y2.add(damage);
@@ -4678,7 +4678,7 @@ public class EntityHandler {
                     else
                         index = rawIndex;
 
-                    BigDecimal damage = getAttack(index, de, adjustedMagnification).multiply(damageTotalMultiplier);
+                    BigDecimal damage = getAttack(index, de, adjustedMagnification);
 
                     if (rawIndex >= 1000)
                         y2 = y2.add(damage);
@@ -4932,6 +4932,21 @@ public class EntityHandler {
     private static BigDecimal getAttack(int index, MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
         MaskAtk attack = data.getAtkModel(index);
 
+        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
+
+        if (data.rawAtkData()[index][2] == 1) {
+            Data.Proc.PM savageBlow = attack.getProc().SATK;
+            Data.Proc.PM critical = attack.getProc().CRIT;
+
+            if (savageBlow.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+
+            if (critical.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+        }
+
         int result;
 
         if(data.getPCoin() != null && talent) {
@@ -4956,15 +4971,30 @@ public class EntityHandler {
             }
         }
 
-        return BigDecimal.valueOf(result);
+        return BigDecimal.valueOf(result).multiply(damageTotalMultiplier);
     }
 
     private static BigDecimal getAttack(int index, MaskEnemy data, int magnification) {
         MaskAtk attack = data.getAtkModel(index);
 
+        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
+
+        if (data.rawAtkData()[index][2] == 1) {
+            Data.Proc.PM savageBlow = attack.getProc().SATK;
+            Data.Proc.PM critical = attack.getProc().CRIT;
+
+            if (savageBlow.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+
+            if (critical.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+        }
+
         int result = (int) ((attack.getAtk() * data.multi(BasisSet.current()) * magnification / 100.0));
 
-        return BigDecimal.valueOf(result);
+        return BigDecimal.valueOf(result).multiply(damageTotalMultiplier);
     }
 
     private static boolean allCoordinatesSame(List<BigDecimal[]> normal, List<BigDecimal[]> withTreasure) {

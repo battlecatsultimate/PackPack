@@ -50,8 +50,10 @@ class RenderSessionManager {
     }
 
     fun closeRenderSession(renderSession: RenderSession) {
-        GLFW.glfwMakeContextCurrent(mainRenderSession.windowID)
-        VAO.switchVAO(mainRenderSession)
+        if (renderSession !== mainRenderSession) {
+            GLFW.glfwMakeContextCurrent(mainRenderSession.windowID)
+            VAO.switchVAO(mainRenderSession)
+        }
 
         renderSession.release()
     }
