@@ -159,7 +159,7 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
                 return;
             }
 
-            MaAnim ma = MaAnim.newIns(anim.getData());
+            MaAnim ma = MaAnim.newIns(anim.getData(), false);
 
             CustomMaskEnemy data = new CustomMaskEnemy(statReader.readLine().split(","), ma);
 

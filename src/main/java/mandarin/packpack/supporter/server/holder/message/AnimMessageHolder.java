@@ -221,7 +221,7 @@ public class AnimMessageHolder extends MessageHolder {
                                 VFile vf = VFile.getFile(res);
 
                                 if(vf != null) {
-                                    mixer.anim[ind] = MaAnim.newIns(vf.getData());
+                                    mixer.anim[ind] = MaAnim.newIns(vf.getData(), false);
                                 }
                             } else {
                                 maanim.get(ind).set("MAANIM "+ind+" : INVALID");
@@ -445,7 +445,7 @@ public class AnimMessageHolder extends MessageHolder {
                                     VFile vf = VFile.getFile(res);
 
                                     if(vf != null) {
-                                        mixer.anim[ind] = MaAnim.newIns(vf.getData());
+                                        mixer.anim[ind] = MaAnim.newIns(vf.getData(), false);
                                     }
                                 } else {
                                     maanim.get(ind).set("MAANIM "+ind+" : INVALID");

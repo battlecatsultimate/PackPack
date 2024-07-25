@@ -186,7 +186,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 return;
             }
 
-            MaAnim ma = MaAnim.newIns(anim.getData());
+            MaAnim ma = MaAnim.newIns(anim.getData(), false);
 
             statReader.readLine();
             statReader.readLine();

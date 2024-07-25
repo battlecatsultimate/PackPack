@@ -348,7 +348,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                         default -> {
                             VFile animationFile = VFile.getFile(res);
                             if (animationFile != null) {
-                                mixer.anim[fileType.index] = MaAnim.newIns(animationFile.getData());
+                                mixer.anim[fileType.index] = MaAnim.newIns(animationFile.getData(), false);
                             }
                         }
                     }
