@@ -251,7 +251,7 @@ class SlotMachine {
             return
         }
 
-        val cooldownMap = CardData.slotCooldown.computeIfAbsent(user.toString()) { _ -> HashMap() }
+        val cooldownMap = CardData.slotCooldown.computeIfAbsent(user) { _ -> HashMap() }
 
         cooldownMap[uuid] = CardData.getUnixEpochTime() + cooldown
 

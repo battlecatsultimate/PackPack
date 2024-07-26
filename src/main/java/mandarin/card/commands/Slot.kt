@@ -41,7 +41,7 @@ class Slot : Command(CommonStatic.Lang.Locale.EN, true){
     }
 
     private fun getComponents(user: User, possibleSlotMachines: List<SlotMachine>) : List<LayoutComponent> {
-        val cooldownMap = CardData.slotCooldown.computeIfAbsent(user.id) { HashMap() }
+        val cooldownMap = CardData.slotCooldown.computeIfAbsent(user.idLong) { HashMap() }
 
         val currentTime = CardData.getUnixEpochTime()
 

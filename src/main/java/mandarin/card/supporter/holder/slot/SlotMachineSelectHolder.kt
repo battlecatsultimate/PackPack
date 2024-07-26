@@ -89,7 +89,7 @@ class SlotMachineSelectHolder(author: Message, channelID: String, message: Messa
     }
 
     private fun getComponents() : List<LayoutComponent> {
-        val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
+        val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.idLong) { HashMap() }
 
         val currentTime = CardData.getUnixEpochTime()
 

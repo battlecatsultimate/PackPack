@@ -68,7 +68,7 @@ class PackPayHolder(
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "roll" -> {
-                val cooldownMap = CardData.cooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
+                val cooldownMap = CardData.cooldown.computeIfAbsent(authorMessage.author.idLong) { HashMap() }
 
                 if (cooldownMap.containsKey(pack.uuid)) {
                     val cooldown = cooldownMap[pack.uuid] ?: 0
@@ -196,7 +196,7 @@ class PackPayHolder(
     private fun getContent() : String {
         val builder = StringBuilder()
 
-        val cooldownMap = CardData.cooldown[member.id]
+        val cooldownMap = CardData.cooldown[member.idLong]
         val cooldown = if (cooldownMap == null) {
             0L
         } else {
@@ -227,7 +227,7 @@ class PackPayHolder(
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        val cooldownMap = CardData.cooldown[member.id]
+        val cooldownMap = CardData.cooldown[member.idLong]
         val cooldown = if (cooldownMap == null) {
             0L
         } else {

@@ -159,7 +159,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
         var result = slotMachine.asText(page) + "\n"
 
         val currentTime = CardData.getUnixEpochTime()
-        val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
+        val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.idLong) { HashMap() }
         val time = cooldownMap[slotMachine.uuid] ?: 0L
 
         if (!slotMachine.valid) {
@@ -201,7 +201,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
         }
 
         val currentTime = CardData.getUnixEpochTime()
-        val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
+        val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.idLong) { HashMap() }
         val time = cooldownMap[slotMachine.uuid] ?: 0L
 
         val timeEnded = currentTime >= time

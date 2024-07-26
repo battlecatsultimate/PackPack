@@ -137,7 +137,7 @@ class PackSelectHolder(
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
             val pack = packList[i]
-            val cooldownMap = CardData.cooldown[authorMessage.author.id]
+            val cooldownMap = CardData.cooldown[authorMessage.author.idLong]
 
             val desc = if (cooldownMap == null) {
                 ""

@@ -57,7 +57,7 @@ class Roll : Command(CommonStatic.Lang.Locale.EN, true) {
 
         for (i in 0 until size) {
             val pack = packList[i]
-            val cooldownMap = CardData.cooldown[member.id]
+            val cooldownMap = CardData.cooldown[member.idLong]
 
             val desc = if (cooldownMap == null) {
                 ""

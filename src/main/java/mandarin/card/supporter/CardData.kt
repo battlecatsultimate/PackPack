@@ -209,8 +209,8 @@ object CardData {
 
     val activatedBanners = ArrayList<Activator>()
 
-    val cooldown = HashMap<String, HashMap<String, Long>>()
-    val slotCooldown = HashMap<String, HashMap<String, Long>>()
+    val cooldown = HashMap<Long, HashMap<String, Long>>()
+    val slotCooldown = HashMap<Long, HashMap<String, Long>>()
 
     val lastMessageSent = HashMap<String, Long>()
 
