@@ -66,7 +66,7 @@ object CardBot : ListenerAdapter() {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        Runtime.getRuntime().addShutdownHook(Thread(Logger::writeLog))
+        Runtime.getRuntime().addShutdownHook(Thread { Logger.writeLog(Logger.BotInstance.CARD_DEALER) })
 
         args.forEachIndexed { index, arg ->
             if (arg == "--test" && index < args.size - 1 && args[index + 1] == "true") {

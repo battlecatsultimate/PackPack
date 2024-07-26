@@ -17,6 +17,11 @@ import java.util.Date;
 import java.util.List;
 
 public class Logger {
+    public enum BotInstance {
+        PACK_PACK,
+        CARD_DEALER
+    }
+
     private static final String[] errorMessages = {
             "Fix me",
             "I literally had seizure while doing job",
@@ -30,11 +35,11 @@ public class Logger {
 
     public final static List<String> logMessages = new ArrayList<>();
 
-    public static void writeLog() {
+    public static void writeLog(BotInstance instance) {
         if (logMessages.isEmpty())
             return;
 
-        File logFile = new File("./data/log.txt");
+        File logFile = new File(instance == BotInstance.PACK_PACK ? "./data/log.txt" : "./data/cardLog.txt");
 
         try {
             if (!logFile.exists() && !logFile.createNewFile())

@@ -51,7 +51,7 @@ public class PackBot {
     public static RestAction<Message> statusMessage = null;
 
     public static void main(String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(Logger::writeLog));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> Logger.writeLog(Logger.BotInstance.PACK_PACK)));
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--test") && i < args.length - 1) {
@@ -220,7 +220,7 @@ public class PackBot {
                 if (log == 60) {
                     log = 0;
 
-                    Logger.writeLog();
+                    Logger.writeLog(Logger.BotInstance.PACK_PACK);
                 } else {
                     log++;
                 }

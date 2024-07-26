@@ -18,7 +18,7 @@ public class WriteLog extends ConstraintCommand {
     public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        Logger.writeLog();
+        Logger.writeLog(Logger.BotInstance.PACK_PACK);
 
         replyToMessageSafely(ch, "Successfully wrote log!", loader.getMessage(), a -> a);
     }
