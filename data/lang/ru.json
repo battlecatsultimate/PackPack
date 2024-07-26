@@ -2041,6 +2041,7 @@
   "medal" : {
     "failed" : {
       "noEnemy" : "Поиск с _ не дало результатов о медали!",
+      "noImage" : "Failed to get medal image data",
       "noParameter" : "Для этой команды требуется еще один аргумент: [Название медали]"
     }
   },

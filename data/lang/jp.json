@@ -2059,6 +2059,7 @@
   "medal" : {
     "failed" : {
       "noEnemy" : " _ で検索しましたが、  そのようなメダルは見つかりませんでした!",
+      "noImage" : "Failed to get medal image data",
       "noParameter" : "このコマンドはもう一つ引数が必要です。 : [メダルの名前]"
     }
   },

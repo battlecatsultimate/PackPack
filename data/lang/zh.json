@@ -2038,6 +2038,7 @@
   "medal" : {
     "failed" : {
       "noEnemy" : "Searching with _, but no such medal found!",
+      "noImage" : "Failed to get medal image data",
       "noParameter" : "This command requires one more parameter : [Medal Name]"
     }
   },
