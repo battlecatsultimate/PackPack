@@ -336,6 +336,9 @@ object CardBot : ListenerAdapter() {
         if (!ready)
             return
 
+        if (event.isWebhookMessage)
+            return
+
         val u = event.author
 
         if (u.idLong in CardData.optOut)
