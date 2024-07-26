@@ -281,7 +281,7 @@ public class Help extends Command {
 
             while(true) {
                 String id = "help." + mainCommand + ".tip" + (tipIndex == 1 ? "" : String.valueOf(tipIndex));
-                String tips = LangID.getStringByID(id, lang);
+                String tips = LangID.getStringByIDSuppressed(id, lang);
 
                 if(!tips.equals(id)) {
                     builder.addField(tipIndex == 1 ? LangID.getStringByID("help.format.tip", lang) : "** **", tips, false);

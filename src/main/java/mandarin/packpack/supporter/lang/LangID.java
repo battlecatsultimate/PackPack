@@ -60,10 +60,42 @@ public class LangID {
         if (obj == null)
             return id;
 
-        String value = getStringFromPath(obj, id, locale);
+        String value = getStringFromPath(obj, id, locale, false);
 
         if (value.equals(id) && obj != EN_OBJ) {
-            value = getStringFromPath(EN_OBJ, id, locale);
+            value = getStringFromPath(EN_OBJ, id, locale, false);
+        }
+
+        return value;
+    }
+
+    public static String getStringByIDSuppressed(String id, @Nullable CommonStatic.Lang.Locale locale) {
+        if (locale == null)
+            locale = CommonStatic.Lang.Locale.EN;
+
+        JsonObject obj = switch (locale) {
+            case JP -> JP_OBJ;
+            case KR -> KR_OBJ;
+            case ZH -> ZH_OBJ;
+            case RU -> RU_OBJ;
+            default -> EN_OBJ;
+        };
+
+        if (obj == null) {
+            if (locale == CommonStatic.Lang.Locale.EN) {
+                return id;
+            } else {
+                obj = EN_OBJ;
+            }
+        }
+
+        if (obj == null)
+            return id;
+
+        String value = getStringFromPath(obj, id, locale, true);
+
+        if (value.equals(id) && obj != EN_OBJ) {
+            value = getStringFromPath(EN_OBJ, id, locale, true);
         }
 
         return value;
@@ -119,14 +151,16 @@ public class LangID {
     }
 
     @NotNull
-    private static String getStringFromPath(JsonObject obj, String path, CommonStatic.Lang.Locale locale) {
+    private static String getStringFromPath(JsonObject obj, String path, CommonStatic.Lang.Locale locale, boolean suppress) {
         JsonObject currentPath = obj;
 
         String[] segments = path.split("\\.");
 
         for (int i = 0; i < segments.length; i++) {
             if (!currentPath.has(segments[i])) {
-                StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+                if (!suppress) {
+                    StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+                }
 
                 return path;
             }
@@ -135,7 +169,9 @@ public class LangID {
 
             if (i < segments.length - 1) {
                 if (!(e instanceof JsonObject o)) {
-                    StaticStore.logger.uploadLog("W/LangID::getStringFromPath - Invalid path found in " + locale + " : " + path);
+                    if (!suppress) {
+                        StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+                    }
 
                     return path;
                 }
@@ -143,7 +179,9 @@ public class LangID {
                 currentPath = o;
             } else {
                 if (!(e instanceof JsonPrimitive p)) {
-                    StaticStore.logger.uploadLog("W/LangID::getStringFromPath - Invalid path found in " + locale + " : " + path);
+                    if (!suppress) {
+                        StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+                    }
 
                     return path;
                 }
@@ -153,7 +191,9 @@ public class LangID {
         }
 
         if (!obj.has(path)) {
-            StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+            if (!suppress) {
+                StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+            }
 
             return path;
         }
@@ -161,7 +201,9 @@ public class LangID {
         JsonElement e = obj.get(path);
 
         if (!(e instanceof JsonPrimitive p)) {
-            StaticStore.logger.uploadLog("W/LangID::getStringFromPath - Invalid path found in " + locale + " : " + path);
+            if (!suppress) {
+                StaticStore.logger.uploadLog("W/LangID::getStringFromPath - No such path found in " + locale + " : " + path);
+            }
 
             return path;
         }
