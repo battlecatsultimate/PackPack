@@ -555,7 +555,7 @@
     },
     "combo" : {
       "combo" : "Комбо",
-      "accounting" : {
+      "accountant" : {
         "description" : "Увеличивает денежную награду с врагов на %d%%",
         "title" : "Комбо Заработка"
       },

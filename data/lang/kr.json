@@ -555,7 +555,7 @@
     },
     "combo" : {
       "combo" : "냥콤보",
-      "accounting" : {
+      "accountant" : {
         "description" : "적을 죽일 시 얻는 머니 %d%% 증가",
         "title" : "회계력 콤보"
       },

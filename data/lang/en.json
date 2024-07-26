@@ -555,7 +555,7 @@
     },
     "combo" : {
       "combo" : "Combo",
-      "accounting" : {
+      "accountant" : {
         "description" : "Increases money drop from enemies by %d%%",
         "title" : "Accounting Combo"
       },

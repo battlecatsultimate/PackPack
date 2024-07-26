@@ -555,7 +555,7 @@
     },
     "combo" : {
       "combo" : "コンボ",
-      "accounting" : {
+      "accountant" : {
         "description" : "敵を倒したときに得られるお金が%d%%増加",
         "title" : "会計力アップ"
       },
