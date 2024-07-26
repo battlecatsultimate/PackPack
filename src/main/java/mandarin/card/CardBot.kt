@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
+import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -41,6 +42,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.nio.file.Files
 import java.sql.Timestamp
 import java.time.ZoneOffset
 import java.util.*
@@ -334,6 +336,35 @@ object CardBot : ListenerAdapter() {
         }, 0, TimeUnit.MINUTES.toMillis(1))
     }
 
+    override fun onGuildBan(event: GuildBanEvent) {
+        val userID = event.user.idLong
+
+        val inventory = CardData.inventories.remove(userID) ?: return
+        CardData.notifierGroup.remove(userID)
+        LogSession.gatherPreviousSessions(CardData.getUnixEpochTime(), -1).forEach { log ->
+            log.optOut(userID)
+            log.saveSessionAsFile()
+        }
+
+        val targetFile = inventory.extractAsFile()
+
+        event.jda.retrieveUserById(StaticStore.MANDARIN_SMELL)
+            .flatMap { u -> u.openPrivateChannel() }
+            .flatMap { ch ->
+                ch.sendMessage("Inventory of <@$userID> ($userID)")
+                    .setFiles(FileUpload.fromData(targetFile, "inventory.json"))
+            }.queue {
+                event.jda.retrieveUserById(ServerData.get("gid"))
+                    .flatMap { u -> u.openPrivateChannel() }
+                    .flatMap { ch ->
+                        ch.sendMessage("Inventory of <@$userID> ($userID)")
+                            .setFiles(FileUpload.fromData(targetFile, "inventory.json"))
+                    }.queue {
+                        Files.deleteIfExists(targetFile.toPath())
+                    }
+            }
+    }
+
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (!ready)
             return
@@ -564,6 +595,10 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}optout" -> OptOut().execute(event)
             "${globalPrefix}wipeinventory",
             "${globalPrefix}wi" -> WipeInventory().execute(event)
+            "${globalPrefix}injectinventory",
+            "${globalPrefix}ii" -> InjectInventory().execute(event)
+            "${globalPrefix}ejectinventory",
+            "${globalPrefix}ei" -> EjectInventory().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -699,10 +734,66 @@ object CardBot : ListenerAdapter() {
 
         CardData.auctionSessions.forEach { it.queueSession(event.jda) }
 
+        val g = event.jda.getGuildById(CardData.guild) ?: return
+
+        g.retrieveBanList().queue { list ->
+            list.forEach { ban ->
+                val userID = ban.user.idLong
+
+                val inventory = CardData.inventories[userID] ?: return@forEach
+
+                val countdown = CountDownLatch(1)
+
+                g.retrieveMember(UserSnowflake.fromId(userID)).queue({ member ->
+                    StaticStore.logger.uploadLog("W/CardBot::onReady - Unbanned member is found in banned user list? <@$userID> ($userID)")
+
+                    countdown.countDown()
+                }) { _ ->
+                    CardData.inventories.remove(userID)
+                    CardData.notifierGroup.remove(userID)
+                    LogSession.gatherPreviousSessions(CardData.getUnixEpochTime(), -1).forEach { log ->
+                        log.optOut(userID)
+                        log.saveSessionAsFile()
+                    }
+
+                    val file = inventory.extractAsFile()
+
+                    event.jda.retrieveUserById(StaticStore.MANDARIN_SMELL)
+                        .flatMap { u -> u.openPrivateChannel() }
+                        .flatMap { ch ->
+                            ch.sendMessage("Inventory of <@$userID> ($userID)")
+                                .setFiles(FileUpload.fromData(file, "inventory.json"))
+                        }.queue({
+                            if (!test) {
+                                event.jda.retrieveUserById(ServerData.get("gid"))
+                                    .flatMap { u -> u.openPrivateChannel() }
+                                    .flatMap { ch ->
+                                        ch.sendMessage("Inventory of <@$userID> ($userID)")
+                                            .setFiles(FileUpload.fromData(file, "inventory.json"))
+                                    }.queue({
+                                        Files.deleteIfExists(file.toPath())
+                                        countdown.countDown()
+                                    }) { e ->
+                                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::onReady - Failed to send extracted inventory")
+
+                                        countdown.countDown()
+                                    }
+                            } else {
+                                countdown.countDown()
+                            }
+                        }) { e ->
+                            StaticStore.logger.uploadErrorLog(e, "E/CardBot::onReady - Failed to send extracted inventory")
+
+                            countdown.countDown()
+                        }
+                }
+
+                countdown.await()
+            }
+        }
+
         if (test)
             return
-
-        val g = event.jda.getGuildById(CardData.guild) ?: return
 
         val ch = g.getGuildChannelById(CardData.statusChannel) ?: return
 
@@ -803,7 +894,7 @@ object CardBot : ListenerAdapter() {
         CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.unitID in CardData.bannerData[r.tier.ordinal][i] } })
         CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[r.tier.ordinal].any { arr -> r.unitID !in arr } })
 
-        val serverElement: JsonElement? = StaticStore.getJsonFile("serverinfo")
+        val serverElement: JsonElement? = StaticStore.getJsonFile(if (test) "testserverinfo" else "serverinfo")
 
         if (serverElement != null && serverElement.isJsonObject) {
             val serverInfo = serverElement.asJsonObject

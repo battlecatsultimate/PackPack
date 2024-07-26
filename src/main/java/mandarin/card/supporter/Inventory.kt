@@ -1,11 +1,16 @@
 package mandarin.card.supporter
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.StaticStore
+import java.io.File
+import java.io.FileWriter
+import java.nio.file.Files
 import java.util.HashMap
 import kotlin.math.min
 
@@ -328,6 +333,24 @@ class Inventory(private val id: Long) {
         }
 
         return builder.toString().trim()
+    }
+
+    fun extractAsFile() : File {
+        val json = toJson()
+
+        val mapper = ObjectMapper()
+        mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+
+        val nodes = mapper.readTree(json.asJsonObject.toString())
+
+        val targetFile = StaticStore.generateTempFile(File("./temp"), "inventory", "json", false)
+
+        val writer = FileWriter(targetFile)
+
+        writer.append(mapper.writeValueAsString(nodes))
+        writer.close()
+
+        return targetFile
     }
 
     companion object {
