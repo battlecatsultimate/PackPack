@@ -108,78 +108,78 @@ object CardBot : ListenerAdapter() {
 
                         CardData.notifierGroup.filter { (_, notifier) -> notifier.any { b -> b } }.forEach { (id, notifier) ->
                             if (!test || id.toString() == StaticStore.MANDARIN_SMELL) {
-                                client.retrieveUserById(id).queue { u ->
-                                    val messageContent = StringBuilder()
+                                val messageContent = StringBuilder()
 
-                                    if (notifier[0]) {
-                                        val packList = StringBuilder()
+                                if (notifier[0]) {
+                                    val packList = StringBuilder()
 
-                                        val cooldown = CardData.cooldown[u.id] ?: return@queue
+                                    val cooldown = CardData.cooldown[id] ?: return@forEach
 
-                                        cooldown.forEach { (uuid, cd) ->
-                                            val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
+                                    cooldown.forEach { (uuid, cd) ->
+                                        val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
 
-                                            if (pack != null && cd > 0 && cd - currentTime <= 0 && pack.activated) {
-                                                packList.append("- ")
-                                                    .append(pack.packName)
-                                                    .append("\n")
-                                            }
-                                        }
-
-                                        if (packList.isNotBlank()) {
-                                            messageContent.append("You can roll pack below!\n\n")
-                                                .append(packList)
+                                        if (pack != null && cd > 0 && cd - currentTime <= 0 && pack.activated) {
+                                            packList.append("- ")
+                                                .append(pack.packName)
+                                                .append("\n")
                                         }
                                     }
 
-                                    if (notifier[1]) {
-                                        val slotList = StringBuilder()
+                                    if (packList.isNotBlank()) {
+                                        messageContent.append("You can roll pack below!\n\n")
+                                            .append(packList)
+                                    }
+                                }
 
-                                        val cooldown = CardData.slotCooldown[u.id] ?: return@queue
+                                if (notifier[1]) {
+                                    val slotList = StringBuilder()
 
-                                        cooldown.forEach { (uuid, cd) ->
-                                            val slot = CardData.slotMachines.filter { slot -> slot.cooldown >= CardData.MINIMUM_NOTIFY_TIME }.find { slot -> slot.uuid == uuid }
+                                    val cooldown = CardData.slotCooldown[id] ?: return@forEach
 
-                                            if (slot != null && cd > 0 && cd - currentTime <= 0 && slot.activate) {
-                                                slotList.append("- ")
-                                                    .append(slot.name)
-                                                    .append("\n")
-                                            }
-                                        }
+                                    cooldown.forEach { (uuid, cd) ->
+                                        val slot = CardData.slotMachines.filter { slot -> slot.cooldown >= CardData.MINIMUM_NOTIFY_TIME }.find { slot -> slot.uuid == uuid }
 
-                                        if (slotList.isNotBlank()) {
-                                            if (messageContent.isNotBlank()) {
-                                                messageContent.append("\n")
-                                            }
-
-                                            messageContent.append("You can roll slot machine below!\n\n")
-                                                .append(slotList)
+                                        if (slot != null && cd > 0 && cd - currentTime <= 0 && slot.activate) {
+                                            slotList.append("- ")
+                                                .append(slot.name)
+                                                .append("\n")
                                         }
                                     }
 
-                                    if (messageContent.isNotBlank()) {
+                                    if (slotList.isNotBlank()) {
+                                        if (messageContent.isNotBlank()) {
+                                            messageContent.append("\n")
+                                        }
+
+                                        messageContent.append("You can roll slot machine below!\n\n")
+                                            .append(slotList)
+                                    }
+                                }
+
+                                if (messageContent.isNotBlank()) {
+                                    client.retrieveUserById(id).queue { u ->
                                         u.openPrivateChannel().queue { pc ->
-                                            pc.sendMessage(messageContent).queue {
-                                                CardData.cooldown.forEach { (_, cooldownMap) ->
-                                                    cooldownMap.forEach { (uuid, cd) ->
-                                                        val pack = CardData.cardPacks.find { p -> p.uuid == uuid } ?: return@forEach
+                                            pc.sendMessage(messageContent).queue()
+                                        }
+                                    }
+                                }
 
-                                                        if (cd > 0 && cd - currentTime <= 0 && pack.activated) {
-                                                            cooldownMap[uuid] = 0
-                                                        }
-                                                    }
-                                                }
+                                CardData.cooldown.forEach { (_, cooldownMap) ->
+                                    cooldownMap.forEach { (uuid, cd) ->
+                                        val pack = CardData.cardPacks.find { p -> p.uuid == uuid } ?: return@forEach
 
-                                                CardData.slotCooldown.forEach { (_, cooldownMap) ->
-                                                    cooldownMap.forEach { (uuid, cd) ->
-                                                        val slot = CardData.slotMachines.find { s -> s.uuid == uuid } ?: return@forEach
+                                        if (cd > 0 && cd - currentTime <= 0 && pack.activated) {
+                                            cooldownMap[uuid] = 0
+                                        }
+                                    }
+                                }
 
-                                                        if (cd > 0 && cd - currentTime <= 0 && slot.activate) {
-                                                            cooldownMap[uuid] = 0
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                CardData.slotCooldown.forEach { (_, cooldownMap) ->
+                                    cooldownMap.forEach { (uuid, cd) ->
+                                        val slot = CardData.slotMachines.find { s -> s.uuid == uuid } ?: return@forEach
+
+                                        if (cd > 0 && cd - currentTime <= 0 && slot.activate) {
+                                            cooldownMap[uuid] = 0
                                         }
                                     }
                                 }
@@ -938,7 +938,16 @@ object CardBot : ListenerAdapter() {
                         }
                     }
 
-                    CardData.cooldown[o.get("key").asString] = packCooldownMap
+                     val key = o.get("key")
+
+                    if (key !is JsonPrimitive)
+                        return@forEach
+
+                    if (key.isString) {
+                        CardData.cooldown[StaticStore.safeParseLong(key.asString)] = packCooldownMap
+                    } else if (key.isNumber) {
+                        CardData.cooldown[key.asLong] = packCooldownMap
+                    }
                 }
             }
         }
@@ -968,7 +977,16 @@ object CardBot : ListenerAdapter() {
                         }
                     }
 
-                    CardData.slotCooldown[o.get("key").asString] = slotCooldownMap
+                    val key = o.get("key")
+
+                    if (key !is JsonPrimitive)
+                        return@forEach
+
+                    if (key.isString) {
+                        CardData.slotCooldown[StaticStore.safeParseLong(key.asString)] = slotCooldownMap
+                    } else if (key.isNumber) {
+                        CardData.slotCooldown[key.asLong] = slotCooldownMap
+                    }
                 }
             }
         }
