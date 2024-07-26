@@ -93,7 +93,7 @@ public class TreasureButtonHolder extends ComponentHolder {
                 TextInput metal = buildTextInput("metal", "data.treasure.cotc.metal.ui", "treasure.set.treasure.metal", true, 0, TreasureHolder.cotcMax[TreasureHolder.T_METAL], String.valueOf(treasure.cotc[TreasureHolder.T_METAL]));
                 TextInput zombie = buildTextInput("zombie", "data.treasure.cotc.zombie.ui", "treasure.set.treasure.zombie", true, 0, TreasureHolder.cotcMax[TreasureHolder.T_ZOMBIE], String.valueOf(treasure.cotc[TreasureHolder.T_ZOMBIE]));
                 TextInput alien = buildTextInput("alien", "data.treasure.cotc.alien.ui", "treasure.set.treasure.alien", true, 0, TreasureHolder.cotcMax[TreasureHolder.T_ALIEN], String.valueOf(treasure.cotc[TreasureHolder.T_ALIEN]));
-                TextInput study = buildTextInput("study", "data.treasure.cotc.study.ui", "treaasure_tstudy2pl", true, 0, TreasureHolder.cotcMax[TreasureHolder.T_STUDY2], String.valueOf(treasure.cotc[TreasureHolder.T_STUDY2]));
+                TextInput study = buildTextInput("study", "data.treasure.cotc.study.ui", "treasure.set.treasure.study.cotc", true, 0, TreasureHolder.cotcMax[TreasureHolder.T_STUDY2], String.valueOf(treasure.cotc[TreasureHolder.T_STUDY2]));
 
                 Modal modal = Modal.create("cotc", LangID.getStringByID("data.treasure.cotc.title", lang))
                         .addActionRow(crystal)
