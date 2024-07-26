@@ -224,7 +224,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     .append("\n```\n")
                     .append(message)
                     .append("\n\n```\n")
-                    .append("=".repeat(LangID.getStringByID("sercon_channeleventmessage", lang).length()))
+                    .append("=".repeat(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang).length()))
                     .append("\n```");
 
             if (message.matches("(.+)?(<@&?\\d+>|@everyone|@here)(.+)?")) {

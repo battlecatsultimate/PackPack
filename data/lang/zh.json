@@ -102,6 +102,7 @@
       "invalidHex" : "Color hex code's format is invalid! (Example : `71f0f5` / `#71f0f5`)",
       "invalidMember" : "There isn't such member in this server",
       "maxReached" : "This server has maximum number of roles (250), so bot couldn't add booster role!",
+      "move" : "Failed to move the role",
       "noColor" : "Please specify color by using `-h` or `-r & -g & -b` parameter!",
       "noMember" : "Member's ID isn't specified!",
       "noRegisteredRole" : "No booster role is set in this server! Please specify booster role via `p!idset` command",
@@ -160,6 +161,9 @@
       "manageMessage" : "Managing Messages (Deletion, etc.)",
       "manageRole" : "Managing Roles (Adding, Deleting, etc.)",
       "useExternalEmoji" : "Using External Emojis"
+    },
+    "scamHandler" : {
+      "noChannel" : "Bot detected user sending scam link. However, bot couldn't find a channel to post the information about compromised user"
     },
     "sendFailure" : {
       "reason" : {
@@ -294,6 +298,7 @@
     }
   },
   "comboAnalyzer" : {
+    "dummyTitle" : "Cat Combo %s",
     "failed" : {
       "noCombo" : "未發現此貓咪聯組，資訊圖生成失敗",
       "unknown" : "未發現此貓咪聯組ID，資訊圖生成失敗"
@@ -513,6 +518,7 @@
           "catbox" : "Failed to upload gif to catbox...",
           "gif" : "Failed to generate gif...",
           "imgur" : "Failed to upload gif to imgur...",
+          "tooBig" : "Failed to upload file due to too large size!",
           "unknown" : "Failed to perform command..."
         },
         "length" : {

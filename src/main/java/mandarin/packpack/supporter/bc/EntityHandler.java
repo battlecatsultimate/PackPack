@@ -2299,7 +2299,7 @@ public class EntityHandler {
                     max = 8 * 1024 * 1024;
 
                 if (img == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
 
                     onFail.run();
                 } else if (img.length() >= max) {
@@ -2456,7 +2456,7 @@ public class EntityHandler {
                             onSuccess.run();
                         });
                     } else {
-                        ch.sendMessage(LangID.getStringByID("gif_toobig", lang)).queue();
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.tooBig", lang)).queue();
 
                         onSuccess.run();
                     }
@@ -2580,7 +2580,7 @@ public class EntityHandler {
                 String time = DataToString.df.format((end - start)/1000.0);
 
                 if(img == null) {
-                    Command.replyToMessageSafely(ch, LangID.getStringByID("gif_faile", lang), reference, a -> a);
+                    Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.failed.gif", lang), reference, a -> a);
 
                     onFail.run();
                 } else if(img.length() >= max) {
@@ -2737,7 +2737,7 @@ public class EntityHandler {
                             onSuccess.run();
                         });
                     } else {
-                        ch.sendMessage(LangID.getStringByID("gif_toobig", lang)).queue();
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.tooBig", lang)).queue();
                         onSuccess.run();
                     }
                 } else if(img.length() < max) {
@@ -2824,7 +2824,7 @@ public class EntityHandler {
                 String time = DataToString.df.format((end - start)/1000.0);
 
                 if(img == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
                 } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
                     if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
                         ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
@@ -3005,7 +3005,7 @@ public class EntityHandler {
             String time = DataToString.df.format((end - start) / 1000.0);
 
             if(img == null) {
-                ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
             } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < 200 * 1024 * 1024) {
                 ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
                     if(m == null) {
@@ -3228,7 +3228,7 @@ public class EntityHandler {
             String time = DataToString.df.format((end - start) / 1000.0);
 
             if(img == null) {
-                ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
 
                 onFail.run();
             } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
@@ -3482,7 +3482,7 @@ public class EntityHandler {
 
     public static void getEnemySprite(Enemy e, MessageChannel ch, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
         if(e.id == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("esp_cantunit", lang), reference, a -> a);
+            Command.replyToMessageSafely(ch, LangID.getStringByID("enemySprite.failed.invalidEnemy", lang), reference, a -> a);
             return;
         }
 
@@ -3631,7 +3631,7 @@ public class EntityHandler {
         VFile vf = VFile.get(medalName);
 
         if(vf == null)
-            Command.replyToMessageSafely(ch, LangID.getStringByID("medal_nopng", lang), reference, a -> a);
+            Command.replyToMessageSafely(ch, LangID.getStringByID("medal.failed.noImage", lang), reference, a -> a);
         else {
             FakeImage img = vf.getData().getImg();
 

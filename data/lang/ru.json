@@ -104,6 +104,7 @@
       "invalidHex" : "Неверный формат шестнадцатеричного кода цвета! (Пример: `71f0f5` / `#71f0f5`)",
       "invalidMember" : "На этом сервере нет такого участника",
       "maxReached" : "На этом сервере максимальное количество ролей (250), поэтому бот не может добавить роль бустера!",
+      "move" : "Failed to move the role",
       "noColor" : "Пожалуйста, укажите цвет, используя аргумент `-h` или `-r & -g & -b`!",
       "noMember" : "ID участника не указан!",
       "noRegisteredRole" : "На этом сервере не установлена ​​роль бустера! Укажите роль бустера с помощью команды `p!idset`",
@@ -162,6 +163,9 @@
       "manageMessage" : "Управление сообщениями (удаление и т. д.)",
       "manageRole" : "Управление ролями (добавление, удаление и т. д.)",
       "useExternalEmoji" : "Использование внешних эмодзи"
+    },
+    "scamHandler" : {
+      "noChannel" : "Bot detected user sending scam link. However, bot couldn't find a channel to post the information about compromised user"
     },
     "sendFailure" : {
       "reason" : {
@@ -296,6 +300,7 @@
     }
   },
   "comboAnalyzer" : {
+    "dummyTitle" : "Cat Combo %s",
     "failed" : {
       "noCombo" : "Не удалось создать изображение комбо, либо бот не смог найти новые данные комбо",
       "unknown" : "Не удалось создать комбинированное изображение, либо бот не смог найти такой ID комбо в данных."
@@ -515,6 +520,7 @@
           "catbox" : "Не удалось загрузить gif в catbox...",
           "gif" : "Не удалось создать gif...",
           "imgur" : "Не удалось загрузить gif в imgur...",
+          "tooBig" : "Failed to upload file due to too large size!",
           "unknown" : "Не удалось выполнить команду..."
         },
         "length" : {

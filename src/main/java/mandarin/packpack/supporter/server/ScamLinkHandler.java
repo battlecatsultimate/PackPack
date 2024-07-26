@@ -66,7 +66,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
             User u = me.getUser();
 
             u.openPrivateChannel()
-                    .flatMap(channel -> channel.sendMessage(LangID.getStringByID("scamhandle_nochannel", holder.config.lang)))
+                    .flatMap(channel -> channel.sendMessage(LangID.getStringByID("bot.scamHandler.noChannel", holder.config.lang)))
                     .queue();
 
             return;

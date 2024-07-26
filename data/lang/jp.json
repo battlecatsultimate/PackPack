@@ -102,6 +102,7 @@
       "invalidHex" : "色の16進法コードが有効ではありません! (例 : `71f0f5` / `#71f0f5`)",
       "invalidMember" : "そのメンバーはこのサーバーにいません。",
       "maxReached" : "This server has maximum number of roles (250), so bot couldn't add booster role!",
+      "move" : "Failed to move the role",
       "noColor" : "引数`-h`か`-r & -g & -b`で色を指定してください!",
       "noMember" : "このメンバーのIDが有効ではありません!",
       "noRegisteredRole" : "ブースターロールがこのサーバーで設定されていません! `p!idset`コマンドでブースターロールを追加してください。",
@@ -160,6 +161,9 @@
       "manageMessage" : "メッセージの管理(削除など)",
       "manageRole" : "ロールの管理(追加、削除など)",
       "useExternalEmoji" : "外部の絵文字を使用"
+    },
+    "scamHandler" : {
+      "noChannel" : "Bot detected user sending scam link. However, bot couldn't find a channel to post the information about compromised user"
     },
     "sendFailure" : {
       "reason" : {
@@ -294,6 +298,7 @@
     }
   },
   "comboAnalyzer" : {
+    "dummyTitle" : "Cat Combo %s",
     "failed" : {
       "noCombo" : "コンボの画像生成に失敗したか、新しいコンボデータを見つけれませんでした",
       "unknown" : "コンボの画像生成に失敗したか、そのようなコンボIDを見つけれませんでした"
@@ -513,6 +518,7 @@
           "catbox" : "catboxにgifをアップロードするのを失敗しました...",
           "gif" : "gifを組み立てる...",
           "imgur" : "imgurにgifをアップロードするのを失敗しました...",
+          "tooBig" : "Failed to upload file due to too large size!",
           "unknown" : "コマンドを実行するのに失敗しました..."
         },
         "length" : {

@@ -100,7 +100,7 @@ public class BoosterRole extends ConstraintCommand {
                             g.modifyRolePositions().selectPosition(r).moveTo(getPackPackPosition(g) - 1).queue(null, e -> {
                                 StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Failed to move role");
 
-                                ch.sendMessage(LangID.getStringByID("boorole_failmove", lang)).queue();
+                                ch.sendMessage(LangID.getStringByID("boosterRole.failed.move", lang)).queue();
                             });
 
                             if(StaticStore.boosterData.containsKey(g.getId())) {

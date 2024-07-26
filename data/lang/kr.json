@@ -102,6 +102,7 @@
       "invalidHex" : "색상 헥스 코드가 올바르지 않습니다! (예시 : `71f0f5` / `#71f0f5`)",
       "invalidMember" : "해당 멤버는 이 서버에 존재하지 않는 것 같습니다",
       "maxReached" : "서버의 역할 개수가 최대 한도 (250개)를 도달했기 때문에 부스터 역할을 추가할 수 없습니다!",
+      "move" : "역할의 위치를 이동시키는데 실패하였습니다",
       "noColor" : "`-h` 또는 `-r & -g & -b` 인자로 역할 색상을 정해주세요!",
       "noMember" : "멤버 ID를 정해주세요!",
       "noRegisteredRole" : "이 서버에는 부스터 역할이 정해져 있지 않습니다! `p!idset` 명령어로 부스터 역할을 정해주세요",
@@ -160,6 +161,9 @@
       "manageMessage" : "메세지 관리 (제거 등)",
       "manageRole" : "역할 관리 (추가, 제거 등)",
       "useExternalEmoji" : "외부 이모지 사용"
+    },
+    "scamHandler" : {
+      "noChannel" : "봇이 유저가 사기 링크를 올리는 것을 감지하였지만 해킹된 유저에 대한 정보를 올릴 채널을 찾지 못하였습니다"
     },
     "sendFailure" : {
       "reason" : {
@@ -294,6 +298,7 @@
     }
   },
   "comboAnalyzer" : {
+    "dummyTitle" : "Cat Combo %s",
     "failed" : {
       "noCombo" : "냥콤보 이미지 생성에 실패했거나, 새로운 냥톰보 데이터를 봇이 찾지 못했습니다",
       "unknown" : "냥콤보 이미지 생성에 실패했거나, 해당 냥콤보 ID를 갖고 있는 데이터를 발견하지 못했습니다"
@@ -513,6 +518,7 @@
           "catbox" : "Catbox로 gif 업로드 실패...",
           "gif" : "gif 생성 실패...",
           "imgur" : "Imgur로 gif 업로드 실패...",
+          "tooBig" : "파일 사이즈가 너무 커서 업로드에 실패하였습니다!",
           "unknown" : "명령어 수행 실패..."
         },
         "length" : {

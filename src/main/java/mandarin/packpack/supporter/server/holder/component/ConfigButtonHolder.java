@@ -7,13 +7,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.modal.LevelModalHolder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -131,69 +126,6 @@ public class ConfigButtonHolder extends ComponentHolder {
                 config.treasure = !config.treasure;
 
                 performResult(event);
-            }
-            case "forceTreasure" -> {
-                holder.forceFullTreasure = !holder.forceFullTreasure;
-
-                performResult(event);
-            }
-            case "boosterPin" -> {
-                holder.boosterPin = !holder.boosterPin;
-
-                performResult(event);
-            }
-            case "boosterPinChannel" -> {
-                if(event instanceof EntitySelectInteractionEvent e) {
-                    List<IMentionable> mentionables = e.getValues();
-
-                    holder.boosterPinChannel.clear();
-
-                    StringBuilder result = new StringBuilder();
-
-                    int succeed = 0;
-
-                    for(int i = 0; i < mentionables.size(); i++) {
-                        if(mentionables.get(i) instanceof GuildMessageChannel t) {
-                            if(t.canTalk() && t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_MANAGE)) {
-                                holder.boosterPinChannel.add(t.getId());
-                                succeed++;
-                            } else {
-                                result.append(String.format(LangID.getStringByID("config_bootalk", config.lang), t.getAsMention()))
-                                        .append("\n\n");
-                            }
-                        } else if(mentionables.get(i) instanceof ForumChannel f) {
-                            if(f.getGuild().getSelfMember().hasPermission(f, Permission.MESSAGE_MANAGE, Permission.MESSAGE_SEND, Permission.MESSAGE_SEND_IN_THREADS)) {
-                                holder.boosterPinChannel.add(f.getId());
-                                succeed++;
-                            } else {
-                                result.append(String.format(LangID.getStringByID("config_bootalk", config.lang), f.getAsMention()))
-                                        .append("\n\n");
-                            }
-                        }
-                    }
-
-                    if(succeed != mentionables.size()) {
-                        if(succeed != 0) {
-                            result.append(LangID.getStringByID("config_boootherset", config.lang));
-                        }
-
-                        event.deferReply(true)
-                                .setContent(result.toString())
-                                .mentionRepliedUser(false)
-                                .queue();
-                    } else {
-                        event.deferReply(true)
-                                .setContent(LangID.getStringByID("config_boosuccess", config.lang))
-                                .mentionRepliedUser(false)
-                                .queue();
-                    }
-                }
-
-                message.editMessage(parseMessage())
-                        .setComponents(parseComponents())
-                        .mentionRepliedUser(false)
-                        .setAllowedMentions(new ArrayList<>())
-                        .queue();
             }
             case "next" -> {
                 page++;

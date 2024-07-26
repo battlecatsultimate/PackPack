@@ -31,7 +31,7 @@ public class OptOut extends ConstraintCommand {
                 StaticStore.config.remove(id);
                 StaticStore.timeZones.remove(id);
 
-                replyToMessageSafely(ch, LangID.getStringByID("optout_success", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("optOut.success", lang), loader.getMessage(), a -> a);
             }))
         );
     }

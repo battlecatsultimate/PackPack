@@ -34,7 +34,7 @@ public class ServerPrefix extends ConstraintCommand {
         } else if(list.length == 1) {
             ch.sendMessage(LangID.getStringByID("prefix.fail.noParameter", lang)).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("prefix_tooag", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("prefix.fail.tooMany", lang)).queue();
         }
     }
 }

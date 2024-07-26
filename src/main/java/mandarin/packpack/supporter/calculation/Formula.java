@@ -725,7 +725,7 @@ public class Formula {
                 break;
             case SIMPSON38:
                 if(section % 3 != 0) {
-                    error.add(LangID.getStringByID("int_sipson38", lang));
+                    error.add(LangID.getStringByID("integration.failed.invalidSectionNumber.simpson3/8", lang));
 
                     return BigDecimal.ZERO;
                 }

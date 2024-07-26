@@ -243,7 +243,7 @@ public class ComboAnalyzer extends ConstraintCommand {
         File comboName = new File(resLocal, "Nyancombo_" + getRawLocale(locale) + ".csv");
 
         if(!comboName.exists())
-            title = String.format(LangID.getStringByID("comanalyzer_dummytitle", lang), comboLine[0]);
+            title = String.format(LangID.getStringByID("comboAnalyzer.dummyTitle", lang), comboLine[0]);
         else {
             BufferedReader nameReader = new BufferedReader(new FileReader(comboName, StandardCharsets.UTF_8));
 
@@ -258,7 +258,7 @@ public class ComboAnalyzer extends ConstraintCommand {
                     String[] data = line.split(getSeparator(locale));
 
                     if(data.length < 1) {
-                        title = String.format(LangID.getStringByID("comanalyzer_dummytitle", lang), comboLine[0]);
+                        title = String.format(LangID.getStringByID("comboAnalyzer.dummyTitle", lang), comboLine[0]);
                     } else {
                         title = data[0];
                     }
@@ -273,7 +273,7 @@ public class ComboAnalyzer extends ConstraintCommand {
         }
 
         if (title == null) {
-            title = String.format(LangID.getStringByID("comanalyzer_dummytitle", lang), comboLine[0]);
+            title = String.format(LangID.getStringByID("comboAnalyzer.dummyTitle", lang), comboLine[0]);
         }
 
         int formNumber = comboLine.length - 5;
