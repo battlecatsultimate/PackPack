@@ -67,6 +67,15 @@ object CardBot : ListenerAdapter() {
     @JvmStatic
     fun main(args: Array<String>) {
         Runtime.getRuntime().addShutdownHook(Thread { Logger.writeLog(Logger.BotInstance.CARD_DEALER) })
+        Thread.currentThread().uncaughtExceptionHandler = object : Thread.UncaughtExceptionHandler {
+            override fun uncaughtException(t: Thread?, e: Throwable?) {
+                if (e == null) {
+                    StaticStore.logger.uploadLog("E/CardBot::main - Uncaught exception found without trace : ${t?.name}")
+                } else {
+                    StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Uncaught exception found : ${t?.name}")
+                }
+            }
+        }
 
         args.forEachIndexed { index, arg ->
             if (arg == "--test" && index < args.size - 1 && args[index + 1] == "true") {
