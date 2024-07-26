@@ -109,6 +109,8 @@ class AuctionBidHolder(author: Message, channelID: String, message: Message, pri
                 event.deferReply().setContent("You have to bid at least ${EmojiStore.ABILITY["CF"]?.formatted} ${auctionSession.currentBid + auctionSession.minimumBid}!").setEphemeral(true).queue()
 
                 goBack()
+
+                return
             }
 
             if (bid > inventory.actualCatFood + (auctionSession.bidData[u.idLong] ?: 0)) {
