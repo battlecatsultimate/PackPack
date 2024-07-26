@@ -344,20 +344,25 @@ object CardBot : ListenerAdapter() {
         if (u.idLong in CardData.bannedUser)
             return
 
-        val waiter = CountDownLatch(1)
-        val atomicMember = AtomicReference<Member>(null)
+        val m = if (event.member == null) {
+            val waiter = CountDownLatch(1)
+            val atomicMember = AtomicReference<Member>(null)
 
-        event.jda.getGuildById(CardData.guild)?.retrieveMemberById(u.id)?.queue({
-            atomicMember.set(it)
+            event.jda.getGuildById(CardData.guild)?.retrieveMemberById(u.id)?.queue({
+                atomicMember.set(it)
 
-            waiter.countDown()
-        }) { _ ->
-            waiter.countDown()
-        }
+                waiter.countDown()
+            }) { _ ->
+                waiter.countDown()
+            }
 
-        waiter.await()
+            waiter.await()
 
-        val m = atomicMember.get() ?: return
+            atomicMember.get()
+        } else {
+            event.member
+        } ?: return
+
         val ch = event.channel
 
         val lastTime = CardData.lastMessageSent[u.id] ?: 0L
