@@ -55,7 +55,7 @@ public class FindStage extends TimedConstraintCommand {
         SOL("data.stage.SoL"),
         CYCLONE("data.stage.cyclones");
 
-        private MONTHLY(String id) {
+        MONTHLY(String id) {
             this.id = id;
         }
 
