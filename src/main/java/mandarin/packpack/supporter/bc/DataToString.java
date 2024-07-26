@@ -2165,7 +2165,7 @@ public class DataToString extends Data {
 
         if(info.resetMode != -1) {
             if(info.resetMode > 0 && info.resetMode < 4)
-                result.add(LangID.getStringByID("data.reset."+info.resetMode, lang));
+                result.add(LangID.getStringByID("data.stage.misc.resetFlag."+info.resetMode, lang));
             else
                 result.add(LangID.getStringByID("data.stage.misc.resetFlag.unknown", lang));
         }

@@ -299,11 +299,7 @@ public class FindStageMessageHolder extends SearchHolder {
             for(int i = 0; i < monthly.size(); i++) {
                 String name = monthly.get(i).name().toLowerCase(Locale.ENGLISH);
 
-                if(monthly.get(i) == selected) {
-                    categories.add(SelectOption.of(LangID.getStringByID("data_" + name, lang), name).withDefault(true));
-                } else {
-                    categories.add(SelectOption.of(LangID.getStringByID("data_" + name, lang), name));
-                }
+                categories.add(SelectOption.of(LangID.getStringByID(monthly.get(i).id, lang), name).withDefault(monthly.get(i) == selected));
             }
 
             rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("findStage.monthly.category", lang)).build()));

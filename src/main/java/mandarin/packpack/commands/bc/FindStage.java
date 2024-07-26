@@ -44,16 +44,22 @@ import java.util.function.Consumer;
 
 public class FindStage extends TimedConstraintCommand {
     public enum MONTHLY {
-        ALL,
-        EOC,
-        ITF1,
-        ITF2,
-        ITF3,
-        COTC1,
-        COTC2,
-        COTC3,
-        SOL,
-        CYCLONE
+        ALL("data.all"),
+        EOC("data.stage.EoC"),
+        ITF1("data.stage.ItF.1"),
+        ITF2("data.stage.ItF.2"),
+        ITF3("data.stage.ItF.3"),
+        COTC1("data.stage.CotC.1"),
+        COTC2("data.stage.CotC.2"),
+        COTC3("data.stage.CotC.3"),
+        SOL("data.stage.SoL"),
+        CYCLONE("data.stage.cyclones");
+
+        private MONTHLY(String id) {
+            this.id = id;
+        }
+
+        public final String id;
     }
 
     private static final int PARAM_SECOND = 2;
@@ -627,7 +633,7 @@ public class FindStage extends TimedConstraintCommand {
             for(int i = 0; i < category.size(); i++) {
                 String name = category.get(i).name().toLowerCase(Locale.ENGLISH);
 
-                categories.add(SelectOption.of(LangID.getStringByID("data_" + name, lang), name));
+                categories.add(SelectOption.of(LangID.getStringByID(category.get(i).id, lang), name));
             }
 
             rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("findStage.monthly.category", lang)).build()));

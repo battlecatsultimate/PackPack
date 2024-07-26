@@ -341,7 +341,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             for(int i = 0; i < category.size(); i++) {
                 String name = category.get(i).name().toLowerCase(Locale.ENGLISH);
 
-                categories.add(SelectOption.of(LangID.getStringByID("data_" + name, lang), name));
+                categories.add(SelectOption.of(LangID.getStringByID(category.get(i).id, lang), name));
             }
 
             rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("findStage.monthly.category", lang)).build()));
