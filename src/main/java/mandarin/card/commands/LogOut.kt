@@ -14,9 +14,6 @@ import kotlin.system.exitProcess
 
 class LogOut : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
-        if (CardBot.test)
-            return
-
         val m = loader.member
 
         if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid"))
@@ -62,7 +59,11 @@ class LogOut : Command(CommonStatic.Lang.Locale.EN, true) {
 
             StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                 val self = ch.jda.selfUser.asMention
-                val channel = loader.guild.getGuildChannelById(CardData.statusChannel)
+                val channel = if (CardBot.test) {
+                    null
+                } else {
+                    loader.guild.getGuildChannelById(CardData.statusChannel)
+                }
 
                 if (channel != null && channel is GuildMessageChannel) {
                     val message = "%s will be temporarily offline due to %s".format(self, reason)
@@ -77,6 +78,16 @@ class LogOut : Command(CommonStatic.Lang.Locale.EN, true) {
 
                             exitProcess(0)
                         }
+                    }
+                } else {
+                    replyToMessageSafely(ch, "Good bye!", loader.message, { a -> a }) { _ ->
+                        StaticStore.safeClose = true
+
+                        CardBot.saveCardData()
+
+                        client.shutdown()
+
+                        exitProcess(0)
                     }
                 }
             })
