@@ -414,7 +414,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "enemystat", "es" -> new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
             case "castle", "cas" -> new Castle(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "stageinfo", "si" -> new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
-            case "memory", "mm" -> new Memory(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "memory", "mm" -> new Memory(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "formimage", "formimg", "fimage", "fimg", "catimage", "catimg", "cimage", "cimg", "unitimage", "unitimg", "uimage", "uimg" ->
                     new FormImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
             case "enemyimage", "enemyimg", "eimage", "eimg" ->
