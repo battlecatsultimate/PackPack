@@ -833,8 +833,6 @@ object CardBot : ListenerAdapter() {
     }
 
     override fun onShutdown(event: ShutdownEvent) {
-        println("I'm here?")
-
         StaticStore.logger.uploadErrorLog(Exception("Shutdown"), "I/CardBot::onShutdown - Shutting down")
         Logger.writeLog(Logger.BotInstance.CARD_DEALER)
     }
