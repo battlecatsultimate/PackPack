@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
+import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -104,6 +105,7 @@ object CardBot : ListenerAdapter() {
         builder.disableCache(CacheFlag.VOICE_STATE)
         builder.setActivity(Activity.playing(if (test) "B" else "A"))
         builder.addEventListeners(CardBot)
+        builder.setEnableShutdownHook(true)
 
         val client = builder.build()
 
@@ -828,6 +830,13 @@ object CardBot : ListenerAdapter() {
         }
 
         saveCardData()
+    }
+
+    override fun onShutdown(event: ShutdownEvent) {
+        println("I'm here?")
+
+        StaticStore.logger.uploadErrorLog(Exception("Shutdown"), "I/CardBot::onShutdown - Shutting down")
+        Logger.writeLog(Logger.BotInstance.CARD_DEALER)
     }
 
     private fun initialize() {
