@@ -12,17 +12,35 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 class SkinSelectHolder(author: Message, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     private val skins = CardData.skins.filter { s -> s.card == card }.toMutableList()
 
     private var page = 0
+
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
+    override fun clean() {
+
+    }
+
+    override fun onExpire() {
+        message.editMessage("Skin manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
@@ -68,7 +86,7 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
+                end()
             }
         }
     }
@@ -77,19 +95,11 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
         this.message = message
     }
 
-    override fun clean() {
-
-    }
-
-    override fun onExpire(id: String?) {
-
-    }
-
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         skins.clear()
 
         skins.addAll(CardData.skins.filter { s -> s.card == card })
@@ -118,7 +128,10 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
         builder.queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
+        if (event !is GenericComponentInteractionCreateEvent)
+            return
+
         var builder = event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

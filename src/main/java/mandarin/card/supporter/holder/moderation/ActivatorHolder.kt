@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -21,12 +22,20 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
 
     private var page = 0
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Activator expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -59,9 +68,7 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
             else -> {
                 if (event !is ButtonInteractionEvent)
@@ -87,7 +94,7 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
         }
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getText())
             .setComponents(getComponents())

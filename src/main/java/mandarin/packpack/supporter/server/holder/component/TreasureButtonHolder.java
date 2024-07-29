@@ -29,7 +29,7 @@ public class TreasureButtonHolder extends ComponentHolder {
         this.treasure = treasure;
         backup = this.treasure.copy();
 
-        registerAutoFinish(this, msg, "treasure.expired", FIVE_MIN);
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -116,9 +116,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 StaticStore.treasure.put(userID, treasure);
 
-                expired = true;
-
-                expire();
+                end();
             }
             case "cancel" -> {
                 event.editMessage(LangID.getStringByID("treasure.canceled", lang))
@@ -133,9 +131,7 @@ public class TreasureButtonHolder extends ComponentHolder {
                     StaticStore.treasure.put(userID, backup);
                 }
 
-                expired = true;
-
-                expire();
+                end();
             }
         }
     }
@@ -146,21 +142,17 @@ public class TreasureButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(!expired) {
-            expired = true;
+    public void onExpire() {
+        message.editMessage(LangID.getStringByID("treasure.expired", lang))
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .setComponents()
+                .queue();
 
-            message.editMessage(LangID.getStringByID("treasure.expired", lang))
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .setComponents()
-                    .queue();
+        TreasureHolder previous = StaticStore.treasure.get(userID);
 
-            TreasureHolder previous = StaticStore.treasure.get(id);
-
-            if(previous != null) {
-                StaticStore.treasure.put(id, backup);
-            }
+        if(previous != null) {
+            StaticStore.treasure.put(userID, backup);
         }
     }
 

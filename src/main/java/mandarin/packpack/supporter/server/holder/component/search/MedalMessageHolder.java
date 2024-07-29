@@ -18,8 +18,6 @@ public class MedalMessageHolder extends SearchHolder {
         super(author, msg, channelID, lang);
 
         this.id = id;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

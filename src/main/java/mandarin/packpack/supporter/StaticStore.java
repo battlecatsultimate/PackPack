@@ -1148,7 +1148,7 @@ public class StaticStore {
             if (hub.messageHolder == messageHolder)
                 return;
 
-            if(hub.messageHolder != null && !hub.messageHolder.expired) {
+            if(hub.messageHolder != null) {
                 hub.messageHolder.expire();
             }
 
@@ -1157,7 +1157,7 @@ public class StaticStore {
             if (hub.componentHolder == componentHolder)
                 return;
 
-            if(hub.componentHolder != null && !hub.componentHolder.expired) {
+            if(hub.componentHolder != null) {
                 hub.componentHolder.expire();
             }
 
@@ -1165,10 +1165,6 @@ public class StaticStore {
         } else if(holder instanceof ModalHolder modalHolder) {
             if (hub.modalHolder == modalHolder)
                 return;
-
-            if(hub.modalHolder != null && !hub.modalHolder.expired) {
-                hub.modalHolder.expire();
-            }
 
             hub.modalHolder = modalHolder;
         }

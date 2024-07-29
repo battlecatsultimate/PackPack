@@ -40,16 +40,7 @@ public class ConfigButtonHolder extends ComponentHolder {
         this.backup = config.clone();
         this.holder = holder;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), ConfigButtonHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -136,10 +127,6 @@ public class ConfigButtonHolder extends ComponentHolder {
                 performResult(event);
             }
             case "confirm" -> {
-                expired = true;
-
-                StaticStore.removeHolder(userID, this);
-
                 CommonStatic.Lang.Locale lang = config.lang;
 
                 if (lang == null)
@@ -153,12 +140,10 @@ public class ConfigButtonHolder extends ComponentHolder {
                 if (!StaticStore.config.containsKey(userID)) {
                     StaticStore.config.put(userID, config);
                 }
+
+                end();
             }
             case "cancel" -> {
-                expired = true;
-
-                StaticStore.removeHolder(userID, this);
-
                 if(StaticStore.config.containsKey(userID)) {
                     StaticStore.config.put(userID, backup);
                 }
@@ -167,6 +152,8 @@ public class ConfigButtonHolder extends ComponentHolder {
                         .setContent(LangID.getStringByID("config.canceled", backup.lang))
                         .setComponents()
                         .queue();
+
+                end();
             }
         }
     }
@@ -177,11 +164,9 @@ public class ConfigButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        expired = true;
-
-        if(StaticStore.config.containsKey(id)) {
-            StaticStore.config.put(id, backup);
+    public void onExpire() {
+        if(StaticStore.config.containsKey(userID)) {
+            StaticStore.config.put(userID, backup);
         }
 
         message.editMessage(LangID.getStringByID("config.expired", config.lang))

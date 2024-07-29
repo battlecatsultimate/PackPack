@@ -66,4 +66,9 @@ public abstract class ModalHolder extends Holder {
 
         return result;
     }
+
+    @Override
+    public final void onExpire() {
+
+    }
 }

@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -142,7 +143,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                expired = true;
+                end();
             }
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
@@ -157,7 +158,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
                     holder.inject(backup);
 
-                    expired = true;
+                    end();
                 }, lang));
             }
             case "back" -> goBack(event);
@@ -175,16 +176,16 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, @NotNull Holder child) {
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
         applyResult(event);
     }
 
     @Override
-    public void onConnected(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onConnected(@NotNull IMessageEditCallback event) {
         applyResult(event);
     }
 
-    private void applyResult(GenericComponentInteractionCreateEvent event) {
+    private void applyResult(IMessageEditCallback event) {
         event.deferEdit()
                 .setContent(getContents())
                 .setComponents(getComponents())

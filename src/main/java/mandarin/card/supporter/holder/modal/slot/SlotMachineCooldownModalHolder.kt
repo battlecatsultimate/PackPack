@@ -20,10 +20,6 @@ class SlotMachineCooldownModalHolder(author: Message, channelID: String, message
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "cooldown")
             return

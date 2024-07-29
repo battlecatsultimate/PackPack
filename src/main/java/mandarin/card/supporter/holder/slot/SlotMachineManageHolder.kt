@@ -14,9 +14,9 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -25,17 +25,26 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
 class SlotMachineManageHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Skin manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -159,15 +168,11 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
         }
     }
 
-    override fun onConnected(event: ModalInteractionEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
-        applyResult(event)
-    }
-
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
@@ -183,16 +188,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
             .queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
-        event.deferEdit()
-            .setContent(slotMachine.asText(page))
-            .setComponents(getComponents())
-            .setAllowedMentions(ArrayList())
-            .mentionRepliedUser(false)
-            .queue()
-    }
-
-    private fun applyResult(event: ModalInteractionEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(slotMachine.asText(page))
             .setComponents(getComponents())

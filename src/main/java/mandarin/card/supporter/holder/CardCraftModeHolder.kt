@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -20,12 +21,20 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 class CardCraftModeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Craft expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -55,11 +64,11 @@ class CardCraftModeHolder(author: Message, channelID: String, message: Message) 
         }
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

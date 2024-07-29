@@ -8,22 +8,10 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import org.jetbrains.annotations.NotNull;
 
 public class CultButtonHolder extends ComponentHolder {
-    public CultButtonHolder(Message author, Message msg, String channelID, String memberID, CommonStatic.Lang.Locale lang) {
+    public CultButtonHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang) {
         super(author, channelID, msg, lang);
 
-        StaticStore.executorHandler.postDelayed(10000, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            msg.editMessage(LangID.getStringByID("hi.special.expired", lang))
-                    .setComponents()
-                    .mentionRepliedUser(false)
-                    .queue();
-
-            StaticStore.removeHolder(memberID, CultButtonHolder.this);
-        });
+        registerAutoExpiration(10000);
     }
 
     @Override
@@ -37,9 +25,7 @@ public class CultButtonHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                expired = true;
-
-                StaticStore.removeHolder(userID, this);
+                end();
             }
             case "no" -> {
                 message.editMessage(LangID.getStringByID("hi.special.denial", lang))
@@ -47,9 +33,7 @@ public class CultButtonHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                expired = true;
-
-                StaticStore.removeHolder(userID, this);
+                end();
             }
         }
     }
@@ -60,9 +44,7 @@ public class CultButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        expired = true;
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("hi.special.expired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)

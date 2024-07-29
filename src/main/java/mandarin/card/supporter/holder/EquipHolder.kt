@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -20,14 +21,21 @@ import kotlin.math.min
 class EquipHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Equipment expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
-
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "prev" -> {
@@ -58,9 +66,7 @@ class EquipHolder(author: Message, channelID: String, message: Message, private 
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
             else -> {
                 if (event !is ButtonInteractionEvent)
@@ -102,7 +108,7 @@ class EquipHolder(author: Message, channelID: String, message: Message, private 
         }
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         val g = event.guild ?: return
         val m = event.member ?: return
 

@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 import java.lang.StringBuilder
 import java.util.HashMap
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import kotlin.collections.any
 import kotlin.collections.filter
 import kotlin.collections.forEach
@@ -57,12 +59,20 @@ class PackPayHolder(
 
     private val inventory = Inventory.getInventory(author.author.idLong)
 
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Card pack manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -172,11 +182,11 @@ class PackPayHolder(
         applyResult()
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponents())

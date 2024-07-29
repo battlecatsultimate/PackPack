@@ -617,10 +617,11 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
                 setAlpha(p0.toFloat())
             }
             FakeGraphics.BLEND -> {
-                when(p1) {
-                    1 -> blend = Blend.ADD
-                    2 -> blend = Blend.SUBTRACT
-                    3 -> blend = Blend.MULTIPLY
+                blend = when(p1) {
+                    1 -> Blend.ADD
+                    2 -> Blend.SUBTRACT
+                    3 -> Blend.MULTIPLY
+                    else -> Blend.ADD
                 }
 
                 setAlpha(p0.toFloat())

@@ -30,7 +30,7 @@ public class HasRole extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         String[] contents = loader.getContent().split(" ");
 
         if (contents.length < 2) {

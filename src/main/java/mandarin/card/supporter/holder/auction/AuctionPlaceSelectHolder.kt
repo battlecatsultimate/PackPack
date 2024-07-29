@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -24,11 +25,11 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
-    override fun clean() {
-
+    init {
+        registerAutoExpiration(FIVE_MIN)
     }
 
-    override fun onExpire(id: String?) {
+    override fun clean() {
 
     }
 
@@ -70,9 +71,7 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
                             .mentionRepliedUser(false)
                             .queue()
 
-                        expired = true
-
-                        expire()
+                        end()
                     }, CommonStatic.Lang.Locale.EN))
                 })
             }
@@ -84,14 +83,12 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
         }
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
@@ -108,7 +105,15 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
             .queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    override fun onExpire() {
+        message.editMessage("Auction creation expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
+
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent("Please select auction place where you want to bid\n" +
                     "\n" +

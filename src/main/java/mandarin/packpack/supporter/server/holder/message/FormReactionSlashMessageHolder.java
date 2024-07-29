@@ -41,27 +41,11 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
         this.treasure = treasure;
         this.t = t;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(userID, FormReactionSlashMessageHolder.this);
-
-            if(!(message.getChannel() instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                message.clearReactions().queue();
-            }
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
     public STATUS onReactionEvent(MessageReactionAddEvent event) {
-        if(expired) {
-            System.out.println("Expired at FormReactionSlashHolder!");
-            return STATUS.FAIL;
-        }
-
         MessageChannel ch = event.getChannel();
 
         Emoji emoji = event.getEmoji();
@@ -147,7 +131,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 message.clearReactions().queue();
             }
 
-            expired = true;
+            end();
         }
 
         return emojiClicked ? STATUS.FINISH : STATUS.WAIT;
@@ -159,14 +143,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         MessageChannel ch = message.getChannel();
 
         if(!(ch instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_MANAGE)) {

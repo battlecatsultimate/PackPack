@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("ForLoopReplaceableByForEach")
 public class Setup extends ConstraintCommand {
     public Setup(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);

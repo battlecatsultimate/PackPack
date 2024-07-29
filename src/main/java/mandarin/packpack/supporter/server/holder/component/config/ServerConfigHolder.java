@@ -25,6 +25,8 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
 
         this.holder = holder;
         backup = this.holder.clone();
+
+        registerAutoExpiration(FIVE_MIN);
     }
 
     public ServerConfigHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
@@ -34,10 +36,12 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
 
         this.holder = holder;
         this.backup = backup;
+
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
-    public final void onExpire(String id) {
+    public final void onExpire() {
         message.editMessage(LangID.getStringByID("serverConfig.expired", lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
@@ -68,8 +72,6 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
 
     @Override
     public void onConflict() {
-        expired = true;
-
         expire();
     }
 }

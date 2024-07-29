@@ -6,6 +6,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
+import mandarin.card.supporter.holder.skin.SkinCostManageHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore
@@ -16,6 +17,7 @@ import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -24,6 +26,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 class SpecificCardCostHolder(
@@ -40,6 +43,22 @@ class SpecificCardCostHolder(
 
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
+
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
+    override fun clean() {
+
+    }
+
+    override fun onExpire() {
+        message.editMessage("Card pack manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
@@ -147,9 +166,7 @@ class SpecificCardCostHolder(
                     .setEphemeral(true)
                     .queue()
 
-                expired = true
-
-                parent?.goBack()
+                goBackTo(SkinCostManageHolder::class.java)
             }
             "back" -> {
                 if (new) {
@@ -159,18 +176,12 @@ class SpecificCardCostHolder(
                     )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        expired = true
-
-                        e.deferEdit().queue()
-
-                        parent?.goBack()
+                        goBackTo(e, CardPackCostHolder::class.java)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
                     if (pack in CardData.cardPacks) {
                         CardBot.saveCardData()
                     }
-
-                    expired = true
 
                     event.deferEdit().queue()
 
@@ -221,27 +232,19 @@ class SpecificCardCostHolder(
         }
     }
 
-    override fun clean() {
-
-    }
-
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onBack(child: Holder) {
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .mentionRepliedUser(false)

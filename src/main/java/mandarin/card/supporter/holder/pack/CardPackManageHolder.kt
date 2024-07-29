@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -21,20 +22,28 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
 class CardPackManageHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Card pack manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
-
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "confirm" -> {
@@ -47,7 +56,7 @@ class CardPackManageHolder(author: Message, channelID: String, message: Message)
 
                 CardBot.saveCardData()
 
-                expired = true
+                end()
             }
             "pack" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -106,7 +115,7 @@ class CardPackManageHolder(author: Message, channelID: String, message: Message)
             .queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponents())

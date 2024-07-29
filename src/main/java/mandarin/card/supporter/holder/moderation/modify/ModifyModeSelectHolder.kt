@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -23,12 +24,20 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
 class ModifyModeSelectHolder(author: Message, channelID: String, message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Inventory modification expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -103,9 +112,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
                     .setAllowedMentions(ArrayList())
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
         }
     }
@@ -116,7 +123,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
         applyResult()
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
@@ -148,7 +155,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
             .queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         val target = when (category) {
             CardData.ModifyCategory.CARD -> "cards"
             CardData.ModifyCategory.ROLE -> "roles"

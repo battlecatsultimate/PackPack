@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
 import common.CommonStatic;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -21,16 +20,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         this.onConfirm = onConfirm;
         this.onCancel = onCancel;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), ConfirmPopUpHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, CommonStatic.Lang.Locale lang) {
@@ -39,24 +29,11 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         this.onConfirm = onConfirm;
         this.onCancel = null;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), ConfirmPopUpHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        expired = true;
-
-        StaticStore.removeHolder(userID, this);
-
         switch (event.getComponentId()) {
             case "confirm" -> onConfirm.accept(event);
             case "cancel" -> {
@@ -67,6 +44,8 @@ public class ConfirmPopUpHolder extends ComponentHolder {
                 }
             }
         }
+
+        end();
     }
 
     @Override
@@ -75,9 +54,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        expired = true;
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("ui.confirmExpired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)

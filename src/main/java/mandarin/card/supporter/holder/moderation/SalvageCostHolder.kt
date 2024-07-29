@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -20,12 +21,20 @@ class SalvageCostHolder(author: Message, channelID: String, message: Message) : 
 
     private var page = 0
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Config expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -79,14 +88,12 @@ class SalvageCostHolder(author: Message, channelID: String, message: Message) : 
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
         }
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponents())

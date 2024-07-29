@@ -10,12 +10,17 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
 class InventoryWipeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "user" -> {
@@ -40,14 +45,14 @@ class InventoryWipeHolder(author: Message, channelID: String, message: Message) 
                 }, CommonStatic.Lang.Locale.EN))
             }
             "close" -> {
-                expired = true
-
                 event.deferEdit()
                     .setContent("Moderation tool closed")
                     .setComponents()
                     .setAllowedMentions(ArrayList())
                     .mentionRepliedUser(false)
                     .queue()
+
+                end()
             }
         }
     }
@@ -56,15 +61,19 @@ class InventoryWipeHolder(author: Message, channelID: String, message: Message) 
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Inventory selection expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

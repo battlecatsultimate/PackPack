@@ -23,8 +23,6 @@ public class FormSpriteMessageHolder extends SearchHolder {
 
         this.form = form;
         this.mode = mode;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

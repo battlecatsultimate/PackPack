@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -48,14 +49,20 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
 
     init {
         filterCards()
+
+        registerAutoExpiration(FIVE_MIN)
     }
 
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Salvage expired...")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -99,9 +106,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
 
                     CardBot.saveCardData()
 
-                    expired = true
-
-                    expire()
+                    end()
                 }
 
                 if (shard >= 100 || selectedCard.size >= 20) {
@@ -117,16 +122,14 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
                 }
             }
             "cancel" -> {
-                expired = true
-
                 event.deferEdit()
-                        .setContent("Inventory Closed")
+                        .setContent("Inventory closed")
                         .setComponents(ArrayList())
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
                         .queue()
 
-                expire()
+                end()
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -278,7 +281,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
         }
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         filterCards()
 
         applyResult(event)
@@ -307,7 +310,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
         cards.sortWith(CardComparator())
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
                 .setContent(getText())
                 .setComponents(getComponents())

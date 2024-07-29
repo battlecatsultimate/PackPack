@@ -31,16 +31,7 @@ public class EnemyButtonHolder extends ComponentHolder {
         this.t = t;
         this.compact = compact;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), EnemyButtonHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -56,6 +47,8 @@ public class EnemyButtonHolder extends ComponentHolder {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show DPS graph on buttone click");
             }
         }
+
+        end();
     }
 
     @Override
@@ -64,7 +57,7 @@ public class EnemyButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
+    public void onExpire() {
         ArrayList<Button> buttons = new ArrayList<>();
 
         for(Button button : message.getButtons()) {
@@ -80,7 +73,5 @@ public class EnemyButtonHolder extends ComponentHolder {
         } else {
             message.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
         }
-
-        expired = true;
     }
 }

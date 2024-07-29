@@ -5,7 +5,6 @@ import mandarin.packpack.supporter.lwjgl.opengl.RenderSessionManager
 import org.lwjgl.glfw.GLFW
 import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
 
 class Renderer {
     lateinit var renderThread: Thread

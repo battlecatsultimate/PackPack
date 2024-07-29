@@ -21,8 +21,6 @@ public class EventDataArchiveHolder extends SearchHolder {
 
         this.files = files;
         this.fileName = fileName;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

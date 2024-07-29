@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -41,12 +42,20 @@ class RequirementSelectHolder : ComponentHolder {
 
     private val filters = ArrayList<Filter>()
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Purchase expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -76,8 +85,6 @@ class RequirementSelectHolder : ComponentHolder {
                 goBack()
             }
             "cancel" -> {
-                expired = true
-
                 event.deferEdit()
                     .setContent("Buying canceled")
                     .setComponents()
@@ -85,7 +92,7 @@ class RequirementSelectHolder : ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue()
 
-                expire()
+                end()
             }
         }
     }
@@ -94,7 +101,7 @@ class RequirementSelectHolder : ComponentHolder {
         applyResult()
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         if (product.requiredFilter == product.possibleFilters.size && product.possibleFilters.any { f -> !f.match(inventory.cards.keys.toList(), inventory)}) {
             event.deferEdit()
                 .setContent("It seems you can't afford this role with your cards")
@@ -122,7 +129,7 @@ class RequirementSelectHolder : ComponentHolder {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent("Please select requirements that you will use" + if (filters.isNotEmpty()) "\n\n${filters.size} requirement(s) selected" else "")
             .setComponents(registerComponents())

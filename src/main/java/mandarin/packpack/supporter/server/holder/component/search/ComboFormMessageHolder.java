@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class ComboFormMessageHolder extends SearchHolder {
     private final ArrayList<Form> form;
@@ -36,8 +35,6 @@ public class ComboFormMessageHolder extends SearchHolder {
 
         this.cName = cName;
         this.fName = fName;
-
-        registerAutoFinish(this, msg, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override

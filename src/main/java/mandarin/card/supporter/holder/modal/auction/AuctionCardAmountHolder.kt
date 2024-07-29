@@ -11,10 +11,6 @@ class AuctionCardAmountHolder(author: Message, channelID: String, message: Messa
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "card")
             return

@@ -18,10 +18,6 @@ class AuctionEndTimeHolder(author: Message, channelID: String, message: Message,
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "endTime")
             return
@@ -42,10 +38,6 @@ class AuctionEndTimeHolder(author: Message, channelID: String, message: Message,
         onSelected.invoke(timeStamp)
 
         event.deferReply().setContent("Successfully set end time like above!").setEphemeral(true).queue()
-
-        expired = true
-
-        expire()
     }
 
     private fun parseDate(time: String) : Long {

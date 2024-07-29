@@ -34,6 +34,8 @@ public class LocaleSettingHolder extends ComponentHolder {
         this.forServer = forServer;
 
         this.holder = holder;
+
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class LocaleSettingHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                expired = true;
+                end();
             }
         }
     }
@@ -102,7 +104,7 @@ public class LocaleSettingHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
+    public void onExpire() {
         CommonStatic.Lang.Locale lang;
 
         if (config.lang == null)

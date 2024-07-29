@@ -24,12 +24,20 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Purchase expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -132,8 +140,6 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                 }
             }
             "cancel" -> {
-                expired = true
-
                 event.deferEdit()
                     .setContent("Buying canceled")
                     .setComponents()
@@ -141,7 +147,7 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                     .mentionRepliedUser(false)
                     .queue()
 
-                expire()
+                end()
             }
         }
     }

@@ -10,10 +10,6 @@ class SlotMachineEmojiSearchModalHolder(author: Message, channelID: String, mess
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "search")
             return

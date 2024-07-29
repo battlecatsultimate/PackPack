@@ -38,8 +38,6 @@ public class StageInfoMessageHolder extends SearchHolder {
         this.isFrame = isFrame;
         this.isExtra = isExtra;
         this.isCompact = isCompact;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

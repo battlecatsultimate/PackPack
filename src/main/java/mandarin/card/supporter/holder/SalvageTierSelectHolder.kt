@@ -17,12 +17,20 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 class SalvageTierSelectHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String) {
-
+    override fun onExpire() {
+        message.editMessage("Salvage expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -51,9 +59,7 @@ class SalvageTierSelectHolder(author: Message, channelID: String, message: Messa
                 .mentionRepliedUser(false)
                 .queue()
 
-            expired = true
-
-            expire()
+            end()
         }
     }
 

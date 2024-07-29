@@ -29,6 +29,8 @@ public class SetupMemberButtonHolder extends ComponentHolder {
 
         this.holder = holder;
         this.modID = modID;
+
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -63,10 +65,6 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                 }
             }
             case "confirm" -> {
-                expired = true;
-                
-                StaticStore.removeHolder(userID, this);
-                
                 holder.moderator = modID;
                 holder.member = roleID;
                 
@@ -78,16 +76,16 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                         .setContent(LangID.getStringByID("setup.selected.member", lang).replace("_RRR_", roleID))
                         .setComponents()
                         .queue();
+
+                end();
             }
             case "cancel" -> {
-                expired = true;
-                
-                StaticStore.removeHolder(userID, this);
-                
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup.canceled", lang))
                         .setComponents()
                         .queue();
+
+                end();
             }
         }
     }
@@ -98,9 +96,7 @@ public class SetupMemberButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        expired = true;
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("setup.expired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)

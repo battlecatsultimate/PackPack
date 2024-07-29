@@ -7,12 +7,21 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 class NotificationConfigHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var tested = false
+
+    override fun onExpire() {
+        message.editMessage("Notification setting expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         val userID = authorMessage.author.idLong
@@ -66,16 +75,12 @@ class NotificationConfigHolder(author: Message, channelID: String, message: Mess
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
+                end()
             }
         }
     }
 
     override fun clean() {
-
-    }
-
-    override fun onExpire(id: String?) {
 
     }
 
@@ -87,7 +92,7 @@ class NotificationConfigHolder(author: Message, channelID: String, message: Mess
             .queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

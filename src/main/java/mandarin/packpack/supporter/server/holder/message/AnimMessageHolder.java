@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AnimMessageHolder extends MessageHolder {
@@ -260,18 +259,13 @@ public class AnimMessageHolder extends MessageHolder {
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, "animationAnalyze.expired", TimeUnit.MINUTES.toMillis(5));
+            registerAutoExpiration(FIVE_MIN);
         }
     }
 
     @Override
     public STATUS onReceivedEvent(MessageReceivedEvent event) {
         try {
-            if(expired) {
-                System.out.println("Expired!!");
-                return STATUS.FAIL;
-            }
-
             MessageChannel ch = event.getMessage().getChannel();
 
             if(!ch.getId().equals(channelID)) {
@@ -505,15 +499,9 @@ public class AnimMessageHolder extends MessageHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("ui.search.expired", lang))
+                .setComponents()
                 .mentionRepliedUser(false)
                 .queue();
     }

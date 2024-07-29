@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -30,7 +31,7 @@ public class HasRolePageHolder extends ComponentHolder {
         this.members = members;
         this.role = role;
 
-        registerAutoFinish(this, message, "hasRole.closed", FIVE_MIN);
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class HasRolePageHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("hasRole.closed", lang))
                 .setEmbeds()
                 .setComponents()
@@ -82,7 +83,7 @@ public class HasRolePageHolder extends ComponentHolder {
                 .queue();
     }
 
-    private void applyResult(GenericComponentInteractionCreateEvent event) {
+    private void applyResult(IMessageEditCallback event) {
         event.deferEdit()
                 .setComponents(getComponents())
                 .setEmbeds(getEmbed())

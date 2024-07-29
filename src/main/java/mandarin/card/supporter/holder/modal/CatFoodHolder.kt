@@ -15,10 +15,6 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         val value = getValueFromMap(event.values, "cf").lowercase()
 

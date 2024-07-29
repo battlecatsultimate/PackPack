@@ -13,12 +13,14 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -28,12 +30,20 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
 
     private var page = 0
 
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Skin manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -59,7 +69,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                                 slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
                             }
 
-                        expired = true
+                        end()
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
                     val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
@@ -103,7 +113,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                                         slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
                                     }
 
-                                expired = true
+                                end()
                             }, CommonStatic.Lang.Locale.EN))
                         })
                 }
@@ -130,15 +140,15 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

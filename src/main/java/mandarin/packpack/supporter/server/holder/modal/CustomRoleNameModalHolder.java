@@ -74,9 +74,4 @@ public class CustomRoleNameModalHolder extends ModalHolder {
     public void clean() {
 
     }
-
-    @Override
-    public void onExpire(String id) {
-
-    }
 }

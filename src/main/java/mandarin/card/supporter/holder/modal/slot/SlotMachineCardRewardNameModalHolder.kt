@@ -11,10 +11,6 @@ class SlotMachineCardRewardNameModalHolder(author: Message, channelID: String, m
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "name")
             return

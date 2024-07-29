@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
 import common.CommonStatic;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -15,24 +14,11 @@ public class ConfirmButtonHolder extends ComponentHolder {
 
         this.action = action;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), ConfirmButtonHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        expired = true;
-
-        StaticStore.removeHolder(userID, this);
-
         switch (event.getComponentId()) {
             case "confirm" -> {
                 message.delete().queue();
@@ -40,6 +26,8 @@ public class ConfirmButtonHolder extends ComponentHolder {
             }
             case "cancel" -> message.delete().queue();
         }
+
+        end();
     }
 
     @Override
@@ -48,9 +36,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        expired = true;
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("ui.confirmExpired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)

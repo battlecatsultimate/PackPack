@@ -55,8 +55,6 @@ public class FindStageMessageHolder extends SearchHolder {
         this.isCompact = isCompact;
 
         actualStage.addAll(stage);
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

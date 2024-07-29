@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -26,17 +25,12 @@ public abstract class SearchHolder extends ComponentHolder {
 
     public SearchHolder(@Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, CommonStatic.Lang.Locale lang) {
         super(author, channelID, msg, lang);
+
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -53,10 +47,12 @@ public abstract class SearchHolder extends ComponentHolder {
             case "next10" -> page += 10;
             case "data" -> {
                 finish(event);
+
                 return;
             }
             case "cancel" -> {
                 cancel(event);
+
                 return;
             }
         }
@@ -76,24 +72,20 @@ public abstract class SearchHolder extends ComponentHolder {
     public abstract int getDataSize();
 
     public void finish(GenericComponentInteractionCreateEvent event) {
-        expired = true;
-
-        StaticStore.removeHolder(event.getUser().getId(), this);
-
         onSelected(event);
+
+        end();
     }
 
     public void cancel(GenericComponentInteractionCreateEvent event) {
-        expired = true;
-
-        StaticStore.removeHolder(event.getUser().getId(), this);
-
         event.deferEdit()
                 .setContent(LangID.getStringByID("ui.search.canceled", lang))
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
+
+        end();
     }
 
     protected String getPage() {
@@ -175,7 +167,7 @@ public abstract class SearchHolder extends ComponentHolder {
             String[] elements = element.split("\\\\\\\\");
 
             if(elements.length == 2) {
-                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                if(elements[0].matches("<:\\S+?:\\d+>")) {
                     options.add(SelectOption.of(elements[1], String.valueOf(page * PAGE_CHUNK + i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
                     options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));

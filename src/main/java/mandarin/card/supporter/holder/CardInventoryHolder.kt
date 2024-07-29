@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -31,15 +32,19 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
 
     private var filterFavorite = false
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-        message.editMessage("Inventory Closed")
-            .mentionRepliedUser(false)
+    override fun onExpire() {
+        message.editMessage("Inventory expired")
+            .setComponents()
             .setAllowedMentions(ArrayList())
-            .setComponents(ArrayList())
+            .mentionRepliedUser(false)
             .queue()
     }
 
@@ -73,16 +78,14 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
                 applyResult(event)
             }
             "confirm" -> {
-                expired = true
-
                 event.deferEdit()
-                    .setContent("Inventory Closed")
+                    .setContent("Inventory closed")
                     .setComponents(ArrayList())
                     .setAllowedMentions(ArrayList())
                     .mentionRepliedUser(false)
                     .queue()
 
-                expire()
+                end()
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -189,7 +192,7 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
         cards.sortWith(CardComparator())
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

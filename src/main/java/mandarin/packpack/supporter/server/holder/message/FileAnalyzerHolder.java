@@ -12,8 +12,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class FileAnalyzerHolder extends MessageHolder {
     private static final int INVALID = -3, FAILED = -2, READY = -1, SUCCESS = 1;
@@ -41,18 +43,12 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
         if(!checkAttachments(author, false)) {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, msg, "statAnalyzer.expired", TimeUnit.MINUTES.toMillis(5));
+            registerAutoExpiration(FIVE_MIN);
         }
     }
 
     @Override
     public STATUS onReceivedEvent(MessageReceivedEvent event) {
-        if(expired) {
-            StaticStore.logger.uploadLog("Expired Holder : "+this.getClass().getName());
-
-            return STATUS.FAIL;
-        }
-
         MessageChannel ch = event.getChannel();
 
         if(!ch.getId().equals(channelID))
@@ -81,14 +77,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         msg.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .mentionRepliedUser(false)
                 .queue();

@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -72,14 +73,21 @@ class FilterProcessHolder : ComponentHolder {
         filterCards()
     }
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Purchase expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
-
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "prev" -> {
@@ -163,9 +171,7 @@ class FilterProcessHolder : ComponentHolder {
 
                     LogSession.session.logBuy(authorMessage.author.idLong, spentCard)
 
-                    expired = true
-
-                    expire()
+                    end()
                 }
             }
             "category" -> {
@@ -273,19 +279,17 @@ class FilterProcessHolder : ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
         }
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         if (product.requiredFilter == product.possibleFilters.size && product.possibleFilters.any { f -> !f.match(inventory.cards.keys.toList(), inventory)}) {
             event.deferEdit()
                 .setContent("It seems you can't afford this role with your cards")
                 .setAllowedMentions(ArrayList())
-                .setComponents(registerCardComponents())
+                .setComponents(getComponents())
                 .mentionRepliedUser(false)
                 .queue()
 
@@ -297,7 +301,7 @@ class FilterProcessHolder : ComponentHolder {
                 event.deferEdit()
                     .setContent("It seems you can't afford this role with your cards")
                     .setAllowedMentions(ArrayList())
-                    .setComponents(registerCardComponents())
+                    .setComponents(getComponents())
                     .mentionRepliedUser(false)
                     .queue()
 
@@ -308,10 +312,10 @@ class FilterProcessHolder : ComponentHolder {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getText())
-            .setComponents(registerCardComponents())
+            .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
             .queue()
@@ -319,7 +323,7 @@ class FilterProcessHolder : ComponentHolder {
 
     private fun applyResult() {
         message.editMessage(getText())
-            .setComponents(registerCardComponents())
+            .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
             .queue()
@@ -356,7 +360,7 @@ class FilterProcessHolder : ComponentHolder {
         cards.sortWith(CardComparator())
     }
 
-    private fun registerCardComponents() : List<LayoutComponent> {
+    private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
         val impossibleFilter = filters.find { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } < f.amount }
@@ -393,7 +397,7 @@ class FilterProcessHolder : ComponentHolder {
                         2 -> CardPack.CardType.T2
                         3 -> CardPack.CardType.T3
                         4 -> CardPack.CardType.T4
-                        else -> throw IllegalStateException("E/CardModifyHolder::assignComponents - Invalid tier index $index")
+                        else -> throw IllegalStateException("E/FilterProcessHolder::getComponents - Invalid tier index $index")
                     }
                 )
 

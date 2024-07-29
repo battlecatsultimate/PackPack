@@ -32,6 +32,8 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
 
         this.targetChannel = targetChannel;
         this.mute = mute;
+
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -72,10 +74,6 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
             }
             case "confirm" -> {
                 if (action != ScamLinkHandler.ACTION.MUTE || mute != null) {
-                    expired = true;
-                    
-                    StaticStore.removeHolder(userID, this);
-
                     ScamLinkHandler handler = new ScamLinkHandler(userID, g.getId(), targetChannel, mute, action, noticeAll);
 
                     StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
@@ -86,6 +84,8 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                             .setContent(parseMessage())
                             .setComponents()
                             .queue();
+
+                    end();
                 } else {
                     event.deferEdit()
                             .setContent(LangID.getStringByID("subscribeScamDetector.failed.noMuteRole", lang))
@@ -94,12 +94,12 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                 }
             }
             case "cancel" -> {
-                expired = true;
-                StaticStore.removeHolder(userID, this);
                 event.deferEdit()
                         .setContent(LangID.getStringByID("subscribeScamDetector.canceled", lang))
                         .setComponents()
                         .queue();
+
+                end();
             }
         }
     }
@@ -110,9 +110,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        expired = true;
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("subscribeScamDetector.expired", lang)).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
     }
 

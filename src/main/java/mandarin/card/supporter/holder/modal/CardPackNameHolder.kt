@@ -19,10 +19,6 @@ class CardPackNameHolder(author: Message, channelID: String, message: Message, p
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "name")
             return

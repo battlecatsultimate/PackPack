@@ -1,10 +1,10 @@
 package mandarin.card.supporter.holder.auction
 
 import common.CommonStatic
-import mandarin.card.supporter.card.Card
-import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.modal.auction.AuctionCardAmountHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -33,11 +34,11 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
 
-    override fun clean() {
-
+    init {
+        registerAutoExpiration(FIVE_MIN)
     }
 
-    override fun onExpire(id: String?) {
+    override fun clean() {
 
     }
 
@@ -160,13 +161,21 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
         applyResult()
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         filterCards()
 
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    override fun onExpire() {
+        message.editMessage("Auction creation expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
+
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

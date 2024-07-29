@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -17,6 +18,10 @@ class GuildListHolder(author: Message, channelID: String, message: Message) : Co
     private var page = 0
 
     private val jda = author.jda
+
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
@@ -47,11 +52,15 @@ class GuildListHolder(author: Message, channelID: String, message: Message) : Co
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("List expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

@@ -19,10 +19,6 @@ class AuctionBidHolder(author: Message, channelID: String, message: Message, pri
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "bid")
             return

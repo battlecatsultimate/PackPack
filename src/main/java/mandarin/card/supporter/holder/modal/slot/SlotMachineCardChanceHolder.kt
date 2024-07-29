@@ -16,10 +16,6 @@ class SlotMachineCardChanceHolder(author: Message, channelID: String, message: M
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "chance")
             return

@@ -35,8 +35,6 @@ public class FormDPSHolder extends SearchHolder {
         this.treasure = (param & 4) > 0 || config.treasure;
         this.lv = lv;
         this.t = t;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

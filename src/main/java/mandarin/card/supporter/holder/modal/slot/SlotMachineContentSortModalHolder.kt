@@ -33,8 +33,4 @@ class SlotMachineContentSortModalHolder(author: Message, channelID: String, mess
     override fun clean() {
 
     }
-
-    override fun onExpire(id: String?) {
-
-    }
 }

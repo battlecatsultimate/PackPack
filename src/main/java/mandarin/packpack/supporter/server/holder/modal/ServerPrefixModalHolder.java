@@ -55,9 +55,4 @@ public class ServerPrefixModalHolder extends ModalHolder {
     public void clean() {
 
     }
-
-    @Override
-    public void onExpire(String id) {
-
-    }
 }

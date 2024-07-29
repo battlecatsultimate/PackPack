@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -42,7 +43,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                expired = true;
+                end();
             }
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
@@ -57,14 +58,14 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
 
                     holder.inject(backup);
 
-                    expired = true;
+                    end();
                 }, lang));
             }
         }
     }
 
     @Override
-    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, @NotNull Holder child) {
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
         event.deferEdit()
                 .setContent(LangID.getStringByID("serverConfig.category.title", lang))
                 .setComponents(getComponents())

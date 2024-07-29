@@ -30,7 +30,7 @@ public class SayHi extends Command {
                 replyToMessageSafely(ch, LangID.getStringByID("hi.special.invitation", lang), loader.getMessage(), a -> a.setActionRow(
                         Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("ui.button.yes", lang)),
                         Button.of(ButtonStyle.DANGER, "no", LangID.getStringByID("ui.button.no", lang))
-                ), msg -> StaticStore.putHolder(u.getId(), new CultButtonHolder(loader.getMessage(), msg, ch.getId(), u.getId(), lang)));
+                ), msg -> StaticStore.putHolder(u.getId(), new CultButtonHolder(loader.getMessage(), msg, ch.getId(), lang)));
             }
         } else if(chance <= 0.05) {
             replyToMessageSafely(ch, LangID.getStringByID("hi.dog", lang), loader.getMessage(), a -> a);

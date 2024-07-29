@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("ForLoopReplaceableByForEach")
 public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
     private final List<CellData> cellData;
     private final List<AbilityData> procData;

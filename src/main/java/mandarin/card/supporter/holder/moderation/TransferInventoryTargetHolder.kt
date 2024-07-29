@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -29,6 +30,18 @@ class TransferInventoryTargetHolder(
         private set
     var reset = r
         private set
+
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
+    override fun onExpire() {
+        message.editMessage("Inventory transfer expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
@@ -100,7 +113,7 @@ class TransferInventoryTargetHolder(
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
+                end()
             }
         }
     }
@@ -109,19 +122,15 @@ class TransferInventoryTargetHolder(
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

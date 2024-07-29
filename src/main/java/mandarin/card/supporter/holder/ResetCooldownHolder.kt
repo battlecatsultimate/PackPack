@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -22,12 +23,20 @@ import kotlin.math.min
 class ResetCooldownHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Cooldown reset expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -45,8 +54,6 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
                 registerPopUp(event, "Are you sure you want to reset cooldown of this pack [`${pack.packName}`] **for all users?\n\n__This cannot be undone__**")
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                    expired = true
-
                     for (cooldown in CardData.cooldown.values) {
                         cooldown[pack.uuid] = 0
                     }
@@ -59,6 +66,8 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
                         .queue()
+
+                    end()
                 }, CommonStatic.Lang.Locale.EN))
             }
             "prev" -> {
@@ -82,19 +91,19 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
                 applyResult(event)
             }
             "cancel" -> {
-                expired = true
-
                 event.deferEdit()
                     .setContent("Canceled resetting cooldown")
                     .setComponents()
                     .setAllowedMentions(ArrayList())
                     .mentionRepliedUser(false)
                     .queue()
+
+                end()
             }
         }
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent("Select pack to reset cooldown of it")
             .setComponents(getComponents())

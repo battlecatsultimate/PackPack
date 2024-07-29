@@ -15,10 +15,6 @@ class CatFoodRateHolder(author: Message, channelID: String, message: Message, pr
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "cf")
             return

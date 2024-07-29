@@ -7,9 +7,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jcodec.api.NotSupportedException;
@@ -19,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Holder {
@@ -36,68 +36,6 @@ public abstract class Holder {
 
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
 
-    public static void registerAutoFinish(Holder holder, Message msg, long millis) {
-        StaticStore.executorHandler.postDelayed(millis, () -> {
-            if(holder.expired)
-                return;
-
-            holder.expire();
-            holder.expired = true;
-
-            msg.editMessage(LangID.getStringByID("ui.search.expired", holder.lang))
-                    .setComponents()
-                    .queue();
-        });
-    }
-
-    public static void registerAutoFinish(Holder holder, Message msg, long millis, @Nullable Runnable run) {
-        StaticStore.executorHandler.postDelayed(millis, () -> {
-        if(holder.expired)
-            return;
-
-        holder.expire();
-        holder.expired = true;
-
-        msg.editMessage(LangID.getStringByID("ui.search.expired", holder.lang))
-                .setComponents()
-                .queue();
-
-        if(run != null)
-            run.run();
-        });
-    }
-
-    public static void registerAutoFinish(Holder holder, Message msg, String langID, long millis) {
-        StaticStore.executorHandler.postDelayed(millis, () -> {
-            if(holder.expired)
-                return;
-
-            holder.expire();
-            holder.expired = true;
-
-            msg.editMessage(LangID.getStringByID(langID, holder.lang))
-                    .setComponents()
-                    .queue();
-        });
-    }
-
-    public static void registerAutoFinish(Holder holder, Message msg, String langID, long millis, @Nullable Runnable run) {
-        StaticStore.executorHandler.postDelayed(millis, () -> {
-            if (holder.expired)
-                return;
-
-            holder.expire();
-            holder.expired = true;
-
-            msg.editMessage(LangID.getStringByID(langID, holder.lang))
-                    .setComponents()
-                    .queue();
-
-            if (run != null)
-                run.run();
-        });
-    }
-
     public final long time = System.currentTimeMillis();
     @Nullable
     private final Message author;
@@ -113,8 +51,15 @@ public abstract class Holder {
 
     @Nullable
     public Holder parent;
+    @Nullable
+    public Holder child;
 
-    public boolean expired = false;
+    public boolean isRoot = true;
+
+    private boolean expired = false;
+
+    @Nullable
+    private ScheduledFuture<?> schedule = null;
 
     public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         this.author = author;
@@ -148,17 +93,82 @@ public abstract class Holder {
     public abstract void clean();
 
     public final void expire() {
+        expired = true;
+
+        if (schedule != null) {
+            schedule.cancel(true);
+        }
+
         HolderHub hub = StaticStore.getHolderHub(userID);
 
         if(hub == null)
             throw new IllegalStateException("E/Holder::expire - Unregistered holder found : " + getClass().getName());
 
-        onExpire(userID);
+        if (isRoot) {
+            Holder childHolder = child;
+
+            while (childHolder != null) {
+                childHolder.expired = true;
+
+                if (childHolder.schedule != null) {
+                    childHolder.schedule.cancel(true);
+                }
+
+                childHolder = childHolder.child;
+            }
+        }
+
+        onExpire();
 
         StaticStore.removeHolder(userID, this);
     }
 
-    public abstract void onExpire(String id);
+    public final void end() {
+        expired = true;
+
+        if (schedule != null) {
+            schedule.cancel(true);
+        }
+
+        System.out.println(1);
+
+        Holder childHolder = child;
+
+        while (childHolder != null) {
+            childHolder.expired = true;
+
+            if (childHolder.schedule != null) {
+                childHolder.schedule.cancel(true);
+            }
+
+            childHolder = childHolder.child;
+        }
+
+        System.out.println(2);
+
+        Holder parentHolder = parent;
+
+        while (parentHolder != null) {
+            parentHolder.expired = true;
+
+            if (parentHolder.schedule != null) {
+                parentHolder.schedule.cancel(true);
+            }
+
+            parentHolder = parentHolder.parent;
+        }
+
+        System.out.println(3);
+
+        HolderHub hub = StaticStore.getHolderHub(userID);
+
+        if(hub == null)
+            throw new IllegalStateException("E/Holder::expire - Unregistered holder found : " + getClass().getName());
+
+        StaticStore.removeHolder(userID, this);
+    }
+
+    public abstract void onExpire();
 
     public abstract Type getType();
 
@@ -181,28 +191,20 @@ public abstract class Holder {
                 .queue();
     }
 
-    public void onConnected(@Nonnull GenericComponentInteractionCreateEvent event) {
-
-    }
-
-    public void onConnected(@Nonnull ModalInteractionEvent event) {
-
+    public void onConnected(@Nonnull IMessageEditCallback event) {
+        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection");
     }
 
     public void onConnected() {
-
+        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection");
     }
 
     public void onBack(@Nonnull Holder child) {
-
+        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler");
     }
 
-    public void onBack(@Nonnull GenericComponentInteractionCreateEvent event, @Nonnull Holder child) {
-
-    }
-
-    public void onBack(@Nonnull ModalInteractionEvent event, @Nonnull Holder child) {
-
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
+        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler");
     }
 
     public void handleMessageDetected(@Nonnull Message message) {
@@ -245,6 +247,7 @@ public abstract class Holder {
         }
 
         holder.parent = this;
+        child = holder;
 
         if (holder.getType() == this.getType()) {
             StaticStore.removeHolder(userID, this);
@@ -252,15 +255,17 @@ public abstract class Holder {
 
         StaticStore.putHolder(userID, holder);
 
+        holder.isRoot = false;
         holder.onConnected();
     }
 
-    public void connectTo(@Nonnull ModalInteractionEvent event, Holder holder) {
+    public void connectTo(@Nonnull IMessageEditCallback event, Holder holder) {
         if (holder.expired) {
             throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
         }
 
         holder.parent = this;
+        child = holder;
 
         if (holder.getType() == this.getType()) {
             StaticStore.removeHolder(userID, this);
@@ -268,22 +273,7 @@ public abstract class Holder {
 
         StaticStore.putHolder(userID, holder);
 
-        holder.onConnected(event);
-    }
-
-    public void connectTo(@Nonnull GenericComponentInteractionCreateEvent event, Holder holder) {
-        if (holder.expired) {
-            throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
-        }
-
-        holder.parent = this;
-
-        if (holder.getType() == this.getType()) {
-            StaticStore.removeHolder(userID, this);
-        }
-
-        StaticStore.putHolder(userID, holder);
-
+        holder.isRoot = false;
         holder.onConnected(event);
     }
 
@@ -293,13 +283,26 @@ public abstract class Holder {
         } else if (parent.expired) {
             throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
         } else {
-            expired = true;
+            Holder childHolder = child;
+
+            while (childHolder != null) {
+                childHolder.expired = true;
+
+                if (childHolder.schedule != null) {
+                    childHolder.schedule.cancel(true);
+                }
+
+                childHolder = childHolder.child;
+            }
+
+            if (schedule != null) {
+                schedule.cancel(true);
+            }
+
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
             if (parent instanceof MessageUpdater updater) {
-                System.out.println("BACK : " + message.getAttachments());
-
                 updater.onMessageUpdated(message);
             }
 
@@ -307,31 +310,28 @@ public abstract class Holder {
         }
     }
 
-    public void goBack(GenericComponentInteractionCreateEvent event) {
+    public void goBack(IMessageEditCallback event) {
         if (parent == null) {
             throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
         } else if (parent.expired) {
             throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
         } else {
-            expired = true;
-            StaticStore.removeHolder(userID, this);
-            StaticStore.putHolder(userID, parent);
+            Holder childHolder = child;
 
-            if (parent instanceof MessageUpdater updater) {
-                updater.onMessageUpdated(message);
+            while (childHolder != null) {
+                childHolder.expired = true;
+
+                if (childHolder.schedule != null) {
+                    childHolder.schedule.cancel(true);
+                }
+
+                childHolder = childHolder.child;
             }
 
-            Objects.requireNonNull(parent).onBack(event, this);
-        }
-    }
+            if (schedule != null) {
+                schedule.cancel(true);
+            }
 
-    public void goBack(ModalInteractionEvent event) {
-        if (parent == null) {
-            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
-        } else if (parent.expired) {
-            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
-        } else {
-            expired = true;
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
@@ -361,7 +361,25 @@ public abstract class Holder {
                         continue;
                     }
 
-                    expired = true;
+                    for (Holder parentHolder : skimmedHolder) {
+                        parentHolder.expired = true;
+                    }
+
+                    Holder childHolder = child;
+
+                    while (childHolder != null) {
+                        childHolder.expired = true;
+
+                        if (childHolder.schedule != null) {
+                            childHolder.schedule.cancel(true);
+                        }
+
+                        childHolder = childHolder.child;
+                    }
+
+                    if (schedule != null) {
+                        schedule.cancel(true);
+                    }
 
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
@@ -396,7 +414,7 @@ public abstract class Holder {
         }
     }
 
-    public void goBackTo(@Nonnull GenericComponentInteractionCreateEvent event, Class<?> parentClass) {
+    public void goBackTo(@Nonnull IMessageEditCallback event, Class<?> parentClass) {
         Holder parent = this.parent;
 
         List<Holder> skimmedHolder = new ArrayList<>();
@@ -414,7 +432,25 @@ public abstract class Holder {
                         continue;
                     }
 
-                    expired = true;
+                    for (Holder parentHolder : skimmedHolder) {
+                        parentHolder.expired = true;
+                    }
+
+                    Holder childHolder = child;
+
+                    while (childHolder != null) {
+                        childHolder.expired = true;
+
+                        if (childHolder.schedule != null) {
+                            childHolder.schedule.cancel(true);
+                        }
+
+                        childHolder = childHolder.child;
+                    }
+
+                    if (schedule != null) {
+                        schedule.cancel(true);
+                    }
 
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
@@ -449,22 +485,7 @@ public abstract class Holder {
         }
     }
 
-    public void registerPopUp(GenericComponentInteractionCreateEvent event, String content) {
-        event.deferEdit()
-                .setContent(content)
-                .setAllowedMentions(new ArrayList<>())
-                .setFiles()
-                .mentionRepliedUser(false)
-                .setComponents(
-                        ActionRow.of(
-                                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
-                                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
-                        )
-                )
-                .queue();
-    }
-
-    public void registerPopUp(ModalInteractionEvent event, String content) {
+    public void registerPopUp(IMessageEditCallback event, String content) {
         event.deferEdit()
                 .setContent(content)
                 .setAllowedMentions(new ArrayList<>())
@@ -491,5 +512,39 @@ public abstract class Holder {
                         )
                 )
                 .queue();
+    }
+
+    public void registerAutoExpiration(long delayedTime) {
+        schedule = StaticStore.executorHandler.postDelayed(delayedTime, () -> {
+            if(expired)
+                return;
+
+            expire();
+
+            StaticStore.removeHolder(userID, this);
+        });
+    }
+
+    /**
+     * Register automatic expiration
+     * @param code Language data ID or message contents
+     * @param raw Whether bot will use passed {@code code} will be used as raw contents or not
+     * @param delayedTime Delay of expiration
+     */
+    public void registerAutoExpiration(String code, boolean raw, long delayedTime) {
+        schedule = StaticStore.executorHandler.postDelayed(delayedTime, () -> {
+            if(expired)
+                return;
+
+            expired = true;
+
+            message.editMessage(raw ? code : LangID.getStringByID(code, lang))
+                    .setComponents()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+
+            StaticStore.removeHolder(userID, this);
+        });
     }
 }

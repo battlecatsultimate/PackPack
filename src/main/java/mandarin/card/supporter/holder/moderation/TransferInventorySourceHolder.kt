@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -18,6 +19,18 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 class TransferInventorySourceHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var transferMode = CardData.TransferMode.INJECT
     private var reset = false
+
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
+    override fun onExpire() {
+        message.editMessage("Inventory transfer expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
@@ -55,7 +68,7 @@ class TransferInventorySourceHolder(author: Message, channelID: String, message:
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
+                end()
             }
         }
     }
@@ -64,11 +77,7 @@ class TransferInventorySourceHolder(author: Message, channelID: String, message:
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         if (child is TransferInventoryTargetHolder) {
             transferMode = child.transferMode
             reset = child.reset
@@ -77,7 +86,7 @@ class TransferInventorySourceHolder(author: Message, channelID: String, message:
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

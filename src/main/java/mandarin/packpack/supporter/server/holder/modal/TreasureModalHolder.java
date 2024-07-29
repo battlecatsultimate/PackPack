@@ -42,11 +42,6 @@ public class TreasureModalHolder extends ModalHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-
-    }
-
-    @Override
     public void onEvent(@Nonnull ModalInteractionEvent event) {
         StringBuilder result = new StringBuilder();
         String key = null;

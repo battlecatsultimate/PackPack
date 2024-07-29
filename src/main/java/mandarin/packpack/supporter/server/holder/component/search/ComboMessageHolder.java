@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class ComboMessageHolder extends SearchHolder {
     private final ArrayList<Combo> combo;
@@ -28,16 +27,6 @@ public class ComboMessageHolder extends SearchHolder {
 
         this.combo = combo;
         this.fMsg = fMsg;
-
-        registerAutoFinish(this, msg, TimeUnit.MINUTES.toMillis(5), () -> {
-            if (expired)
-                return;
-
-            expired = true;
-
-            if(fMsg != null)
-                fMsg.delete().queue();
-        });
     }
 
     @Override
@@ -105,10 +94,10 @@ public class ComboMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        super.onExpire(id);
-
+    public void onExpire() {
         if(fMsg != null)
             fMsg.delete().queue();
+
+        super.onExpire();
     }
 }

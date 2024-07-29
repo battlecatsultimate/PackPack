@@ -71,8 +71,6 @@ public class StageEnemyMessageHolder extends SearchHolder {
         this.music = music;
 
         enemy = enemySequences.removeFirst();
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

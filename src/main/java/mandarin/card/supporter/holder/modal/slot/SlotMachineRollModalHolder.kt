@@ -19,10 +19,6 @@ class SlotMachineRollModalHolder(author: Message, channelID: String, message: Me
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "roll")
             return

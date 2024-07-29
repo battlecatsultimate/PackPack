@@ -40,16 +40,11 @@ public class AliasStageMessageHolder extends MessageHolder {
         this.mode = mode;
         this.aliasName = aliasName;
 
-        registerAutoFinish(this, msg, FIVE_MIN);
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
     public STATUS onReceivedEvent(MessageReceivedEvent event) {
-        if(expired) {
-            System.out.println("Expired!!");
-            return STATUS.FAIL;
-        }
-
         MessageChannel ch = event.getMessage().getChannel();
 
         if(!ch.getId().equals(channelID))
@@ -171,19 +166,19 @@ public class AliasStageMessageHolder extends MessageHolder {
                 }
             }
 
-            expired = true;
-
             cleaner.add(event.getMessage());
 
             clean();
+
+            end();
 
             return STATUS.WAIT;
         } else if(content.equals("c")) {
             message.editMessage(LangID.getStringByID("ui.search.canceled", lang)).queue();
 
-            expired = true;
-
             cleaner.add(event.getMessage());
+
+            end();
 
             return STATUS.FINISH;
         } else if(content.startsWith("n ")) {
@@ -223,14 +218,7 @@ public class AliasStageMessageHolder extends MessageHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .mentionRepliedUser(false)
                 .queue();

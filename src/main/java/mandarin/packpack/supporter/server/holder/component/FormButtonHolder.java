@@ -44,16 +44,7 @@ public class FormButtonHolder extends ComponentHolder {
         this.t = t;
         this.lv = lv;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), FormButtonHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -106,6 +97,8 @@ public class FormButtonHolder extends ComponentHolder {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
             }
         }
+
+        end();
     }
 
     @Override
@@ -114,7 +107,7 @@ public class FormButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
+    public void onExpire() {
         ArrayList<Button> buttons = new ArrayList<>();
 
         for(Button button : message.getButtons()) {
@@ -130,7 +123,5 @@ public class FormButtonHolder extends ComponentHolder {
         } else {
             message.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
         }
-
-        expired = true;
     }
 }

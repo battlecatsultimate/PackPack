@@ -12,10 +12,6 @@ class CardPackCooldownHolder(author: Message, channelID: String, message: Messag
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "cooldown")
             return

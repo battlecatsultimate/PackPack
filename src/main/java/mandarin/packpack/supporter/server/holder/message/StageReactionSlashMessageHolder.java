@@ -10,7 +10,6 @@ import common.util.stage.Music;
 import common.util.stage.Stage;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.bc.Castle;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -33,28 +32,11 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
         this.holder = holder;
         this.st = st;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(userID, StageReactionSlashMessageHolder.this);
-
-            if(!(message.getChannel() instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                message.clearReactions().queue();
-            }
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
     public STATUS onReactionEvent(MessageReactionAddEvent event) {
-        if(expired) {
-            System.out.println("Expired at StageReactionHolder!");
-
-            return STATUS.FAIL;
-        }
-
         MessageChannel ch = event.getChannel();
 
         Emoji e = event.getEmoji();
@@ -124,7 +106,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
                 message.clearReactions().queue();
             }
 
-            expired = true;
+            end();
         }
 
         return emojiClicked ? STATUS.FINISH : STATUS.WAIT;
@@ -136,14 +118,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(userID, StageReactionSlashMessageHolder.this);
-
+    public void onExpire() {
         MessageChannel ch = message.getChannel();
 
         if(!(ch instanceof GuildChannel) || message.getGuild().getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_MANAGE)) {

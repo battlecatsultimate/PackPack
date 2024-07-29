@@ -19,6 +19,8 @@ import java.util.Locale;
 public class EventGrabberHolder extends ComponentHolder {
     public EventGrabberHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull CommonStatic.Lang.Locale lang) {
         super(author, channelID, message, lang);
+
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class EventGrabberHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
+    public void onExpire() {
         message.editMessage("Event file grabbing config expired")
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -59,14 +61,14 @@ public class EventGrabberHolder extends ComponentHolder {
                 performResult(event);
             }
             case "confirm" -> {
-                expired = true;
-
                 event.deferEdit()
                         .setContent("Applied")
                         .setComponents()
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
+
+                end();
             }
         }
     }

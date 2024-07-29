@@ -17,12 +17,20 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class ModifyCategoryHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Inventory modification expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -60,9 +68,7 @@ class ModifyCategoryHolder(author: Message, channelID: String, message: Message,
                     .setAllowedMentions(ArrayList())
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
         }
     }

@@ -15,10 +15,6 @@ class CatFoodModifyHolder(author: Message, channelID: String, message: Message, 
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "cf")
             return

@@ -50,8 +50,6 @@ public class EnemyAnimMessageHolder extends SearchHolder {
         this.gifMode = gifMode;
 
         this.command = author.getContentRaw();
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

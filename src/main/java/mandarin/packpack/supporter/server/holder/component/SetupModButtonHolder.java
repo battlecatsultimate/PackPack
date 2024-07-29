@@ -32,16 +32,7 @@ public class SetupModButtonHolder extends ComponentHolder {
         this.memberID = author.getAuthor().getId();
         this.holder = holder;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), SetupModButtonHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -67,8 +58,6 @@ public class SetupModButtonHolder extends ComponentHolder {
                     ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup.selectRole", lang)).setRequiredRange(1, 1).build()),
                     ActionRow.of(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)))
             ), m -> {
-                expired = true;
-
                 StaticStore.removeHolder(memberID, this);
 
                 StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, getAuthorMessage(), channelID, holder, roleID, lang));
@@ -77,16 +66,16 @@ public class SetupModButtonHolder extends ComponentHolder {
                         .setContent(LangID.getStringByID("setup.selected.moderator", lang).replace("_RRR_", roleID))
                         .setComponents()
                         .queue();
+
+                end();
             });
             case "cancel" -> {
-                expired = true;
-
-                StaticStore.removeHolder(memberID, this);
-
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup.canceled", lang))
                         .setComponents()
                         .queue();
+
+                end();
             }
         }
     }
@@ -97,9 +86,7 @@ public class SetupModButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        expired = true;
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("setup.expired", lang))
                 .setComponents()
                 .mentionRepliedUser(false)

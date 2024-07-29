@@ -47,10 +47,6 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
             return session
         }
-
-        fun accumulateSuggestedCatFood(member: Long) : Int {
-            return CardData.sessions.filter { s -> s.member.contains(member) }.map { s -> s.suggestion[s.member.indexOf(member)] }.sumOf { s -> s.catFood }
-        }
     }
 
     val agreed = booleanArrayOf(false, false)

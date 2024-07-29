@@ -49,8 +49,6 @@ public class FindRewardMessageHolder extends SearchHolder {
         this.isFrame = isFrame;
 
         this.treasure = treasure;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

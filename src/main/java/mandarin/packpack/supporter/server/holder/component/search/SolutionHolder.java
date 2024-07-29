@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.NumericalResult;
 import mandarin.packpack.supporter.lang.LangID;
@@ -28,8 +27,6 @@ public class SolutionHolder extends SearchHolder {
         this.summary = summary;
         this.targetRanges = targetRanges;
         this.solutions = solutions;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override
@@ -140,14 +137,7 @@ public class SolutionHolder extends SearchHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         message.editMessageComponents(new ArrayList<>())
                 .setAllowedMentions(new ArrayList<>())
                 .queue();

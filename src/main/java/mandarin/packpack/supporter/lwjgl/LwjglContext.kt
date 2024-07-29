@@ -67,7 +67,7 @@ class LwjglContext : Context {
         return if (toString().endsWith("png"))
             false
         else
-            !animationFileFormat.any { format -> desc?.path?.endsWith(format) ?: false }
+            !animationFileFormat.any { format -> desc?.path?.endsWith(format) == true }
     }
 
     override fun printErr(t: Context.ErrType, str: String) {

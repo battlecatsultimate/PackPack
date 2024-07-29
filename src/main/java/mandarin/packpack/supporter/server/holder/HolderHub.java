@@ -21,17 +21,12 @@ public class HolderHub {
                     return;
 
                 try {
-                    if (messageHolder.expired) {
-                        StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired message holder didn't get removed : " + messageHolder.getClass().getName());
+                    Holder.STATUS result = messageHolder.handleEvent(ge);
+
+                    if (result == Holder.STATUS.FAIL) {
+                        messageHolder.clean();
 
                         messageHolder = null;
-                    } else {
-                        Holder.STATUS result = messageHolder.handleEvent(ge);
-
-                        if (result == Holder.STATUS.FINISH || result == Holder.STATUS.FAIL) {
-                            messageHolder.clean();
-                            messageHolder = null;
-                        }
                     }
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e,
@@ -47,16 +42,10 @@ public class HolderHub {
                     return;
 
                 try {
-                    if (componentHolder.expired) {
-                        StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired interaction holder didn't get removed : " + componentHolder.getClass().getName());
+                    Holder.STATUS result = componentHolder.handleEvent(gie);
 
+                    if (result == Holder.STATUS.FAIL) {
                         componentHolder = null;
-                    } else {
-                        Holder.STATUS result = componentHolder.handleEvent(gie);
-
-                        if (result == Holder.STATUS.FINISH && componentHolder != null && componentHolder.expired) {
-                            componentHolder = null;
-                        }
                     }
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e,
@@ -72,16 +61,10 @@ public class HolderHub {
                     return;
 
                 try {
-                    if (modalHolder.expired) {
-                        StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired modal holder didn't get removed : " + modalHolder.getClass().getName());
+                    Holder.STATUS result = modalHolder.handleEvent(mie);
 
+                    if (result == Holder.STATUS.FAIL) {
                         modalHolder = null;
-                    } else {
-                        Holder.STATUS result = modalHolder.handleEvent(mie);
-
-                        if (result == Holder.STATUS.FINISH && modalHolder != null && modalHolder.expired) {
-                            modalHolder = null;
-                        }
                     }
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e,

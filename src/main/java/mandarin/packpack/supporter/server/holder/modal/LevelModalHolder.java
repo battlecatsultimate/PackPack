@@ -39,16 +39,11 @@ public class LevelModalHolder extends ModalHolder {
             }
         }
 
-        expire();
+        end();
     }
 
     @Override
     public void clean() {
-
-    }
-
-    @Override
-    public void onExpire(String id) {
 
     }
 }

@@ -26,8 +26,4 @@ class SkinNameHolder(author: Message, channelID: String, message: Message, priva
     override fun clean() {
 
     }
-
-    override fun onExpire(id: String?) {
-
-    }
 }

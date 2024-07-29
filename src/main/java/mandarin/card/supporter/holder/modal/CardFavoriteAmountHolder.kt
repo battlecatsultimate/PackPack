@@ -14,10 +14,6 @@ class CardFavoriteAmountHolder(author: Message, channelID: String, message: Mess
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "favorite")
             return

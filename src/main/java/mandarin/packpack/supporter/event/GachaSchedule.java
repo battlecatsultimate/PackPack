@@ -216,7 +216,9 @@ public class GachaSchedule extends EventFactor implements Schedule {
         result.append(date.dateStart.day)
                 .append(getNumberWithDayFormat(date.dateStart.day, lang));
 
-        if(date.section.start.hour * 100 + date.section.start.minute != 1100 && date.section.start.hour * 100 + date.section.start.minute != 0) {
+        int startTime = date.section.start.hour * 100 + date.section.start.minute;
+
+        if(startTime != 1100 && startTime != 0) {
             result.append(" ")
                     .append(duo(date.section.start.hour))
                     .append(":")
@@ -247,7 +249,9 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 result.append(date.dateEnd.day)
                         .append(getNumberWithDayFormat(date.dateEnd.day, lang));
 
-                if(date.section.end.hour * 100 + date.section.end.minute != 1100 && date.section.end.hour * 100 + date.section.end.minute != 2359) {
+                final int endTime = date.section.end.hour * 100 + date.section.end.minute;
+
+                if(endTime != 1100 && endTime != 2359) {
                     result.append(" ")
                             .append(duo(date.section.end.hour))
                             .append(":")

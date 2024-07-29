@@ -119,10 +119,7 @@ object SlotEmojiContainer {
 
     private fun updateEmojiStatus() {
         StaticStore.holders.forEach { (_, hub) ->
-            val componentHolder = hub.componentHolder
-
-            if (componentHolder == null || componentHolder.expired)
-                return@forEach
+            val componentHolder = hub.componentHolder ?: return@forEach
 
             when(componentHolder) {
                 is SlotMachineCardRewardHolder -> componentHolder.updateEmojiStatus()

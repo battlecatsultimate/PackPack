@@ -34,8 +34,6 @@ public class EnemyStatMessageHolder extends SearchHolder {
         this.isExtra = isExtra;
         this.isCompact = isCompact;
         this.treasure = treasure;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

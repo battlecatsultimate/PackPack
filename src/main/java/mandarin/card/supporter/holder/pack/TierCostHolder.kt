@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -22,14 +23,23 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.util.concurrent.TimeUnit
 
 class TierCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
     override fun clean() {
 
     }
 
-    override fun onExpire(id: String?) {
-
+    override fun onExpire() {
+        message.editMessage("Card pack manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -72,9 +82,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
                     .setEphemeral(true)
                     .queue()
 
-                expired = true
-
-                parent?.goBack()
+                goBackTo(CardPackCostHolder::class.java)
             }
             "back" -> {
                 if (new) {
@@ -86,11 +94,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
                     StaticStore.removeHolder(authorMessage.author.id, this)
 
                     StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        expired = true
-
-                        e.deferEdit().queue()
-
-                        parent?.goBack()
+                        goBackTo(e, CardPackCostHolder::class.java)
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
 
@@ -115,8 +119,6 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
                 StaticStore.removeHolder(authorMessage.author.id, this)
 
                 StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                    expired = true
-
                     pack.cost.cardsCosts.remove(cardCost)
 
                     if (pack in CardData.cardPacks) {
@@ -138,7 +140,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
         }
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
@@ -156,7 +158,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
             .queue()
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

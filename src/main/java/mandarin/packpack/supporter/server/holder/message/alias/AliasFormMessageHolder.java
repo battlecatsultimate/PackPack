@@ -36,16 +36,7 @@ public class AliasFormMessageHolder extends MessageHolder {
         this.mode = mode;
         this.aliasName = aliasName;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), AliasFormMessageHolder.this);
-
-            message.editMessage(LangID.getStringByID("ui.search.expired", lang)).queue();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
@@ -211,14 +202,7 @@ public class AliasFormMessageHolder extends MessageHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("ui.search.expired", lang))
                 .mentionRepliedUser(false)
                 .queue();

@@ -26,8 +26,6 @@ public class EnemyDPSHolder extends SearchHolder {
         this.form = form;
         this.magnification = magnification;
         this.t = t;
-
-        registerAutoFinish(this, msg, FIVE_MIN);
     }
 
     @Override

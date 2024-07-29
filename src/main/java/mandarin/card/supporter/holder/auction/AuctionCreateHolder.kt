@@ -2,10 +2,10 @@ package mandarin.card.supporter.holder.auction
 
 import common.CommonStatic
 import mandarin.card.CardBot
-import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.AuctionSession
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.holder.modal.auction.AuctionAutoCloseHolder
 import mandarin.card.supporter.holder.modal.auction.AuctionEndTimeHolder
 import mandarin.card.supporter.holder.modal.auction.AuctionInitialPriceHolder
@@ -17,6 +17,7 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -33,11 +34,11 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
     private var autoClose = false
     private var autoCloseTime = CardData.AUTO_CLOSE_TIME
 
-    override fun clean() {
-
+    init {
+        registerAutoExpiration(FIVE_MIN)
     }
 
-    override fun onExpire(id: String?) {
+    override fun clean() {
 
     }
 
@@ -180,9 +181,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
-
-                expire()
+                end()
             }
             "cancel" -> {
                 event.deferEdit()
@@ -192,12 +191,12 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
                     .mentionRepliedUser(false)
                     .queue()
 
-                expired = true
+                end()
             }
         }
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponent())
@@ -209,6 +208,14 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
     override fun onBack(child: Holder) {
         message.editMessage(getContent())
             .setComponents(getComponent())
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
+
+    override fun onExpire() {
+        message.editMessage("Auction creation expired")
+            .setComponents()
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
             .queue()

@@ -13,11 +13,13 @@ import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.io.File
 import java.nio.file.Files
+import java.util.concurrent.TimeUnit
 
 class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
     private val card: Card
@@ -33,6 +35,22 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
     constructor(author: Message, channelID: String, message: Message, card: Card, skin: Skin) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.skin = skin
         this.card = card
+    }
+
+    init {
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
+    }
+
+    override fun clean() {
+
+    }
+
+    override fun onExpire() {
+        message.editMessage("Skin manager expired")
+            .setComponents()
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -60,7 +78,7 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
                         .mentionRepliedUser(false)
                         .queue()
 
-                    expired = true
+                    end()
                 }, CommonStatic.Lang.Locale.EN))
             }
         }
@@ -68,14 +86,6 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
 
     override fun onMessageUpdated(message: Message) {
         this.message = message
-    }
-
-    override fun clean() {
-
-    }
-
-    override fun onExpire(id: String?) {
-
     }
 
     override fun onMessageDetected(msg: Message) {
@@ -173,15 +183,18 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
         }
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onConnected(event: IMessageEditCallback) {
         applyResult(event)
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
         applyResult(event)
     }
 
-    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+    private fun applyResult(event: IMessageEditCallback) {
+        if (event !is GenericComponentInteractionCreateEvent)
+            return
+
         var builder = event.deferEdit()
             .setContent(getContents())
             .setComponents(getComponents())

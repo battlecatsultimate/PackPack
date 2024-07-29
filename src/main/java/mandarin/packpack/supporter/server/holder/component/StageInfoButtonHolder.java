@@ -29,21 +29,12 @@ public class StageInfoButtonHolder extends ComponentHolder {
         this.st = st;
         this.compact = compact;
 
-        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
-            if(expired)
-                return;
-
-            expired = true;
-
-            StaticStore.removeHolder(author.getAuthor().getId(), StageInfoButtonHolder.this);
-
-            expire();
-        });
+        registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent ev) {
-        expire();
+        disableButtons();
 
         if(!(ev instanceof ButtonInteractionEvent event)) {
             return;
@@ -110,6 +101,8 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 }
             }
         }
+
+        end();
     }
 
     @Override
@@ -118,7 +111,11 @@ public class StageInfoButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onExpire(String id) {
+    public void onExpire() {
+        disableButtons();
+    }
+
+    private void disableButtons() {
         if(compact) {
             message.editMessageComponents()
                     .mentionRepliedUser(false)
@@ -134,7 +131,5 @@ public class StageInfoButtonHolder extends ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue();
         }
-
-        expired = true;
     }
 }

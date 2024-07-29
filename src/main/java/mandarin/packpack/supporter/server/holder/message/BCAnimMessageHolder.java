@@ -124,18 +124,13 @@ public class BCAnimMessageHolder extends MessageHolder {
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, "animationAnalyze.expired", TimeUnit.MINUTES.toMillis(5));
+            registerAutoExpiration(FIVE_MIN);
         }
     }
 
     @Override
     public STATUS onReceivedEvent(MessageReceivedEvent event) {
         try {
-            if(expired) {
-                System.out.println("Expired!!");
-                return STATUS.FAIL;
-            }
-
             MessageChannel ch = event.getMessage().getChannel();
 
             if(!ch.getId().equals(channelID))
@@ -218,15 +213,9 @@ public class BCAnimMessageHolder extends MessageHolder {
     }
 
     @Override
-    public void onExpire(String id) {
-        if(expired)
-            return;
-
-        expired = true;
-
-        StaticStore.removeHolder(id, this);
-
+    public void onExpire() {
         message.editMessage(LangID.getStringByID("ui.search.expired", lang))
+                .setComponents()
                 .mentionRepliedUser(false)
                 .queue();
     }

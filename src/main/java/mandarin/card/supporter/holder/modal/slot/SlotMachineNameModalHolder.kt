@@ -24,10 +24,6 @@ class SlotMachineNameModalHolder : ModalHolder {
 
     }
 
-    override fun onExpire(id: String?) {
-
-    }
-
     override fun onEvent(event: ModalInteractionEvent) {
         val p = parent ?: return
 
