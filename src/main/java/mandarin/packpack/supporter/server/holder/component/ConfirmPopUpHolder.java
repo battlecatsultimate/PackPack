@@ -49,6 +49,11 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     }
 
     @Override
+    public void onConnected() {
+
+    }
+
+    @Override
     public void clean() {
 
     }
