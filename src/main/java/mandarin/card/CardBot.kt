@@ -17,6 +17,7 @@ import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotEmojiContainer
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.*
+import mandarin.packpack.supporter.bc.DataToString
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
@@ -338,6 +339,16 @@ object CardBot : ListenerAdapter() {
                             }
                         }
                     }
+
+                    val f = Runtime.getRuntime().freeMemory()
+                    val t = Runtime.getRuntime().totalMemory()
+                    val m = Runtime.getRuntime().maxMemory()
+
+                    val percentage = 100.0 * (t - f) / m
+
+                    if (percentage >= 90.0) {
+                        StaticStore.logger.uploadLog("Warning : Memory is at danger, above 90% (${DataToString.df.format(percentage)}%)")
+                    }
                 } catch(e: Exception) {
                     StaticStore.logger.uploadErrorLog(e, "CardBot::saver - Failed to perform background thread")
                 }
@@ -608,6 +619,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}ii" -> InjectInventory().execute(event)
             "${globalPrefix}ejectinventory",
             "${globalPrefix}ei" -> EjectInventory().execute(event)
+            "${globalPrefix}memory",
+            "${globalPrefix}mm" -> Memory().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
