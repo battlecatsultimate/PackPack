@@ -47,7 +47,7 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -108,7 +108,7 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -214,7 +214,7 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
 
         builder.append("\n```md\n")
 
-        if (cards.size > 0) {
+        if (cards.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 

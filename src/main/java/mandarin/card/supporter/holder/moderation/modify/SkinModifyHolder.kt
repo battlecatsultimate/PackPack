@@ -151,7 +151,7 @@ class SkinModifyHolder(author: Message, channelID: String, message: Message, pri
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

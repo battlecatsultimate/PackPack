@@ -53,7 +53,7 @@ class SalvageTierSelectHolder(author: Message, channelID: String, message: Messa
 
             expired = true
 
-            expire(authorMessage.author.id)
+            expire()
         }
     }
 

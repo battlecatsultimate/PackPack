@@ -37,13 +37,13 @@ public class StageInfoButtonHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), StageInfoButtonHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent ev) {
-        expire(userID);
+        expire();
 
         if(!(ev instanceof ButtonInteractionEvent event)) {
             return;

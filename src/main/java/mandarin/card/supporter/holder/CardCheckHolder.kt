@@ -58,7 +58,7 @@ class CardCheckHolder(author: Message, channelID: String, message: Message, priv
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

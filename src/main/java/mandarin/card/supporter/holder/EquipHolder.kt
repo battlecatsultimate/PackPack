@@ -60,7 +60,7 @@ class EquipHolder(author: Message, channelID: String, message: Message, private 
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
             else -> {
                 if (event !is ButtonInteractionEvent)

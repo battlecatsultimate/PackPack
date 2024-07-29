@@ -82,7 +82,7 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
                     .mentionRepliedUser(false)
                     .queue()
 
-                expire(authorMessage.author.id)
+                expire()
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)

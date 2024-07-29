@@ -118,7 +118,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 expired = true;
 
-                expire(userID);
+                expire();
             }
             case "cancel" -> {
                 event.editMessage(LangID.getStringByID("treasure.canceled", lang))
@@ -135,7 +135,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 expired = true;
 
-                expire(userID);
+                expire();
             }
         }
     }

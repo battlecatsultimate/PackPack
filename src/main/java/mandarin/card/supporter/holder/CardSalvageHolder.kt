@@ -101,7 +101,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
 
                     expired = true
 
-                    expire(authorMessage.author.id)
+                    expire()
                 }
 
                 if (shard >= 100 || selectedCard.size >= 20) {
@@ -126,7 +126,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
                         .mentionRepliedUser(false)
                         .queue()
 
-                expire(authorMessage.author.id)
+                expire()
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)

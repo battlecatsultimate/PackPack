@@ -76,7 +76,7 @@ class PackSelectHolder(
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
             "prev" -> {
                 page--

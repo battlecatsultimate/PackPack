@@ -29,7 +29,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), ConfirmPopUpHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 
@@ -47,7 +47,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), ConfirmPopUpHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 

@@ -52,7 +52,7 @@ public class FormButtonHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), FormButtonHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 

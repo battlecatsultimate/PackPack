@@ -23,7 +23,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), ConfirmButtonHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 

@@ -48,7 +48,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), ConfigButtonHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 

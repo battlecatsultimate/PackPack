@@ -39,7 +39,7 @@ public class EnemyButtonHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), EnemyButtonHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 

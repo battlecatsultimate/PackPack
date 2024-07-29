@@ -79,7 +79,7 @@ class CraftCostHolder(author: Message, channelID: String, message: Message) : Co
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

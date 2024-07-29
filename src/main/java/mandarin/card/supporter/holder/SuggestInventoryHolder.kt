@@ -142,7 +142,7 @@ class SuggestInventoryHolder(
 
                 CardBot.saveCardData()
 
-                expire(authorMessage.author.id)
+                expire()
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -325,7 +325,7 @@ class SuggestInventoryHolder(
                     .setComponents()
                     .queue()
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

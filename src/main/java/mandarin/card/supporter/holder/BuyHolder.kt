@@ -141,7 +141,7 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                     .mentionRepliedUser(false)
                     .queue()
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

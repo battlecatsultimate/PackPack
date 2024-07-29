@@ -105,7 +105,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

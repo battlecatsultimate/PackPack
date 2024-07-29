@@ -61,7 +61,7 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
             else -> {
                 if (event !is ButtonInteractionEvent)

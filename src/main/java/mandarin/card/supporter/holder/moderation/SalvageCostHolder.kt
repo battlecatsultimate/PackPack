@@ -81,7 +81,7 @@ class SalvageCostHolder(author: Message, channelID: String, message: Message) : 
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

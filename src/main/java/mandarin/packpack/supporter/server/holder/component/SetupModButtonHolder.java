@@ -40,7 +40,7 @@ public class SetupModButtonHolder extends ComponentHolder {
 
             StaticStore.removeHolder(author.getAuthor().getId(), SetupModButtonHolder.this);
 
-            expire(userID);
+            expire();
         });
     }
 

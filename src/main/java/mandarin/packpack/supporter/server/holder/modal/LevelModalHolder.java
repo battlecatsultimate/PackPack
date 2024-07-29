@@ -39,7 +39,7 @@ public class LevelModalHolder extends ModalHolder {
             }
         }
 
-        expire(userID);
+        expire();
     }
 
     @Override

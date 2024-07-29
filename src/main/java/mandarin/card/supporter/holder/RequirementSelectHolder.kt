@@ -85,7 +85,7 @@ class RequirementSelectHolder : ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue()
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }

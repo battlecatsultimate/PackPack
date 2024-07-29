@@ -165,7 +165,7 @@ class FilterProcessHolder : ComponentHolder {
 
                     expired = true
 
-                    expire(authorMessage.author.id)
+                    expire()
                 }
             }
             "category" -> {
@@ -275,7 +275,7 @@ class FilterProcessHolder : ComponentHolder {
 
                 expired = true
 
-                expire(authorMessage.author.id)
+                expire()
             }
         }
     }
