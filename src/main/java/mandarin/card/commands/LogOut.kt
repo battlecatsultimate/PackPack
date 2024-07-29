@@ -58,6 +58,8 @@ class LogOut : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), CommonStatic.Lang.Locale.EN).queue { msg ->
+            StaticStore.logger.uploadLog("Logging out : ${loader.user.asMention}")
+
             StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
                 val self = ch.jda.selfUser.asMention
                 val channel = loader.guild.getGuildChannelById(CardData.statusChannel)

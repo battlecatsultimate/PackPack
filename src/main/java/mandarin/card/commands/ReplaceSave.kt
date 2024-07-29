@@ -38,6 +38,8 @@ class ReplaceSave : Command(CommonStatic.Lang.Locale.EN, true) {
         CardBot.forceReplace = true
 
         try {
+            StaticStore.logger.uploadLog("Replacing save file : ${loader.user.asMention}")
+
             val realFile = File("./data/cardSave.json")
 
             val downloader = StaticStore.getDownloader(saveFile, folder)
