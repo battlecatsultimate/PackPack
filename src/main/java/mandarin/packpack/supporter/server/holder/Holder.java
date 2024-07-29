@@ -516,8 +516,11 @@ public abstract class Holder {
 
     public void registerAutoExpiration(long delayedTime) {
         schedule = StaticStore.executorHandler.postDelayed(delayedTime, () -> {
-            if(expired)
+            if(expired) {
+                StaticStore.logger.uploadLog("W/Holder::registerAutoExpiration - Bot found expired holder being auto-expired. Maybe forgot to cancel the schedule?\nHolder = " + this.getClass());
+
                 return;
+            }
 
             expire();
 
@@ -533,8 +536,11 @@ public abstract class Holder {
      */
     public void registerAutoExpiration(String code, boolean raw, long delayedTime) {
         schedule = StaticStore.executorHandler.postDelayed(delayedTime, () -> {
-            if(expired)
+            if(expired) {
+                StaticStore.logger.uploadLog("W/Holder::registerAutoExpiration - Bot found expired holder being auto-expired. Maybe forgot to cancel the schedule?\nHolder = " + this.getClass());
+
                 return;
+            }
 
             expired = true;
 
