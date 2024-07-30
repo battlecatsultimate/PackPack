@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch
 
 class Skin {
     companion object {
-        fun fromJson(obj: JsonObject) : Skin {
+        fun fromJson(obj: JsonObject) : Skin? {
             if (!StaticStore.hasAllTag(obj, "cost", "public", "creator", "card", "skinID", "name")) {
                 throw IllegalStateException("E/Skin::fromJson - Invalid json format")
             }
@@ -39,7 +39,14 @@ class Skin {
             val files = folder.listFiles() ?: throw NullPointerException("E/Skin::fromJson - Failed to list skin folder")
 
             val file = files.find { f -> StaticStore.isNumeric(f.nameWithoutExtension) && f.nameWithoutExtension.toInt() == skinID }
-                ?: throw NullPointerException("E/skin::fromJson - Failed to find skin file $skinID")
+
+            if (file == null) {
+                if (CardBot.test) {
+                    return null
+                } else {
+                    throw NullPointerException("E/skin::fromJson - Failed to find skin file $skinID")
+                }
+            }
 
             val skin = Skin(skinID, file, creator, card, cost)
 

@@ -948,7 +948,9 @@ object CardBot : ListenerAdapter() {
             val arr = obj.getAsJsonArray("skins")
 
             arr.forEach { e ->
-                CardData.skins.add(Skin.fromJson(e.asJsonObject))
+                val skin = Skin.fromJson(e.asJsonObject) ?: return@forEach
+
+                CardData.skins.add(skin)
             }
         }
 
