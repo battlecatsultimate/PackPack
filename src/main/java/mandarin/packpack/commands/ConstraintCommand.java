@@ -1,6 +1,7 @@
 package mandarin.packpack.commands;
 
 import common.CommonStatic;
+import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -211,7 +212,13 @@ public abstract class ConstraintCommand extends Command {
             StaticStore.executed++;
 
             try {
-                RecordableThread t = new RecordableThread(() -> doSomething(loader), e -> {
+                RecordableThread t = new RecordableThread(() -> {
+                    if (StaticStore.logCommand) {
+                        Logger.addLog(this.getClass() + " called");
+                    }
+
+                    doSomething(loader);
+                }, e -> {
                     String data = "Command : " + loader.getContent() + "\n\n" +
                             "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                             "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";

@@ -1,6 +1,7 @@
 package mandarin.packpack.commands;
 
 import common.CommonStatic;
+import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -215,6 +216,10 @@ public abstract class TimedConstraintCommand extends Command {
 
             try {
                 RecordableThread t = new RecordableThread(() -> {
+                    if (StaticStore.logCommand) {
+                        Logger.addLog(this.getClass() + " called");
+                    }
+
                     doSomething(loader);
 
                     if(startTimer && !memberID.isBlank()) {

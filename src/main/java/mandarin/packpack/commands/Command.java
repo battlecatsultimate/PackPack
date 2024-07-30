@@ -2,6 +2,7 @@ package mandarin.packpack.commands;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
+import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -321,7 +322,13 @@ public abstract class Command {
             }
 
             try {
-                RecordableThread t = new RecordableThread(() -> doSomething(loader), e -> {
+                RecordableThread t = new RecordableThread(() -> {
+                    doSomething(loader);
+
+                    if (StaticStore.logCommand) {
+                        Logger.addLog(this.getClass() + " called");
+                    }
+                }, e -> {
                     String data = "Command : " + loader.getContent() + "\n\n" +
                             "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                             "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";

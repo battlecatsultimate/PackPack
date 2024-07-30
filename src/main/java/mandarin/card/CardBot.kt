@@ -847,6 +847,8 @@ object CardBot : ListenerAdapter() {
         readCardData()
 
         Initializer.checkAssetDownload(false)
+
+        StaticStore.logCommand = true
     }
 
     private fun readCardData() {
