@@ -110,7 +110,7 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                end();
+                end(true);
             }
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
@@ -125,7 +125,7 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
 
                     holder.inject(backup);
 
-                    end();
+                    end(true);
                 }, lang));
             }
             case "back" -> goBack(event);

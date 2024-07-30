@@ -67,7 +67,7 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
                         .mentionRepliedUser(false)
                         .queue()
 
-                    end()
+                    end(true)
                 }, CommonStatic.Lang.Locale.EN))
             }
             "prev" -> {
@@ -98,7 +98,7 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

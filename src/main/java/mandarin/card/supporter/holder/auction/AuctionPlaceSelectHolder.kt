@@ -71,7 +71,7 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
                             .mentionRepliedUser(false)
                             .queue()
 
-                        end()
+                        end(true)
                     }, CommonStatic.Lang.Locale.EN))
                 })
             }
@@ -83,7 +83,7 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

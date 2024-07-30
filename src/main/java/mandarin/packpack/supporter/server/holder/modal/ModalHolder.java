@@ -19,6 +19,8 @@ public abstract class ModalHolder extends Holder {
     public final STATUS handleEvent(@Nonnull Event event) {
         if(event instanceof ModalInteractionEvent modalEvent && canHandleEvent(modalEvent)) {
             onEvent(modalEvent);
+
+            return STATUS.FINISH;
         }
 
         return STATUS.WAIT;

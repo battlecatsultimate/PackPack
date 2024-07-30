@@ -143,7 +143,7 @@ class SuggestInventoryHolder(
 
                 CardBot.saveCardData()
 
-                end()
+                end(true)
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -324,7 +324,7 @@ class SuggestInventoryHolder(
                     .setComponents()
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

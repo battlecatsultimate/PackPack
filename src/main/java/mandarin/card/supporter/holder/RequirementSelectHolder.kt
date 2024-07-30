@@ -92,7 +92,7 @@ class RequirementSelectHolder : ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

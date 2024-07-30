@@ -68,7 +68,7 @@ class ManualRollSelectHolder(author: Message, channelID: String, message: Messag
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
             "prev" -> {
                 page--

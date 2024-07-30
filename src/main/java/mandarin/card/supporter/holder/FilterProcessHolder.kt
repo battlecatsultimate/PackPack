@@ -172,7 +172,7 @@ class FilterProcessHolder : ComponentHolder {
 
                     LogSession.session.logBuy(authorMessage.author.idLong, spentCard)
 
-                    end()
+                    end(true)
                 }
             }
             "category" -> {
@@ -280,7 +280,7 @@ class FilterProcessHolder : ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

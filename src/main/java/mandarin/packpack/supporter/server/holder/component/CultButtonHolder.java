@@ -25,7 +25,7 @@ public class CultButtonHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                end();
+                end(true);
             }
             case "no" -> {
                 message.editMessage(LangID.getStringByID("hi.special.denial", lang))
@@ -33,7 +33,7 @@ public class CultButtonHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                end();
+                end(true);
             }
         }
     }

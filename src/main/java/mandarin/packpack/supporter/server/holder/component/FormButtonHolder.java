@@ -98,7 +98,7 @@ public class FormButtonHolder extends ComponentHolder {
             }
         }
 
-        end();
+        end(true);
     }
 
     @Override

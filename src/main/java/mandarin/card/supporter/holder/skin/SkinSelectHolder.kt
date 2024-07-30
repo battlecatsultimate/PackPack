@@ -86,7 +86,7 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

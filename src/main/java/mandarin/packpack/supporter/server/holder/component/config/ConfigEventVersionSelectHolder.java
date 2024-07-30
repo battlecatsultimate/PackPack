@@ -44,7 +44,7 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                end();
+                end(true);
             }
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
@@ -59,7 +59,7 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
 
                     holder.inject(backup);
 
-                    end();
+                    end(true);
                 }, lang));
             }
         }

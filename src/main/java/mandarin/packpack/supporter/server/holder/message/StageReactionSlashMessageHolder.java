@@ -106,7 +106,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
                 message.clearReactions().queue();
             }
 
-            end();
+            end(true);
         }
 
         return emojiClicked ? STATUS.FINISH : STATUS.WAIT;

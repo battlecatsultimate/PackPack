@@ -68,7 +68,7 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
             else -> {
                 if (event !is ButtonInteractionEvent)

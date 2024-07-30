@@ -100,7 +100,7 @@ class UserBanHolder(author: Message, channelID: String, message: Message) : Comp
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

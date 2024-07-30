@@ -266,7 +266,7 @@ class CardModifyHolder(author: Message, channelID: String, message: Message, pri
                     .setAllowedMentions(ArrayList())
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

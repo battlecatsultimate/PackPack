@@ -102,7 +102,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
             }
         }
 
-        end();
+        end(true);
     }
 
     @Override

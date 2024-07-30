@@ -85,7 +85,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                             .setComponents()
                             .queue();
 
-                    end();
+                    end(true);
                 } else {
                     event.deferEdit()
                             .setContent(LangID.getStringByID("subscribeScamDetector.failed.noMuteRole", lang))
@@ -99,7 +99,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                         .setComponents()
                         .queue();
 
-                end();
+                end(true);
             }
         }
     }

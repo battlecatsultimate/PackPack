@@ -84,7 +84,7 @@ class PackSelectHolder(
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
             "prev" -> {
                 page--

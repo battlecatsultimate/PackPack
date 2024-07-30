@@ -113,7 +113,7 @@ class TransferInventoryTargetHolder(
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

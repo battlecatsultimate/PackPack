@@ -56,7 +56,7 @@ class CardPackManageHolder(author: Message, channelID: String, message: Message)
 
                 CardBot.saveCardData()
 
-                end()
+                end(true)
             }
             "pack" -> {
                 if (event !is StringSelectInteractionEvent)

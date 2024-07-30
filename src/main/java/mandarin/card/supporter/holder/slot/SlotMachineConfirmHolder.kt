@@ -69,7 +69,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                                 slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
                             }
 
-                        end()
+                        end(true)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
                     val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
@@ -113,7 +113,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                                         slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
                                     }
 
-                                end()
+                                end(true)
                             }, CommonStatic.Lang.Locale.EN))
                         })
                 }

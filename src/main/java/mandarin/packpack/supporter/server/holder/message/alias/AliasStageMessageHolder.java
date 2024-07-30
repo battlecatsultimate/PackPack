@@ -170,7 +170,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
             clean();
 
-            end();
+            end(true);
 
             return STATUS.WAIT;
         } else if(content.equals("c")) {
@@ -178,7 +178,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
             cleaner.add(event.getMessage());
 
-            end();
+            end(true);
 
             return STATUS.FINISH;
         } else if(content.startsWith("n ")) {

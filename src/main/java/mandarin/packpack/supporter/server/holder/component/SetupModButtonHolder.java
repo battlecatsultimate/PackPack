@@ -67,7 +67,7 @@ public class SetupModButtonHolder extends ComponentHolder {
                         .setComponents()
                         .queue();
 
-                end();
+                end(true);
             });
             case "cancel" -> {
                 event.deferEdit()
@@ -75,7 +75,7 @@ public class SetupModButtonHolder extends ComponentHolder {
                         .setComponents()
                         .queue();
 
-                end();
+                end(true);
             }
         }
     }

@@ -68,7 +68,7 @@ class TransferInventorySourceHolder(author: Message, channelID: String, message:
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

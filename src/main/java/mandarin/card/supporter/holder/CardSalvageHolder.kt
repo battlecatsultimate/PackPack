@@ -107,7 +107,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
 
                     CardBot.saveCardData()
 
-                    end()
+                    end(true)
                 }
 
                 if (shard >= 100 || selectedCard.size >= 20) {
@@ -130,7 +130,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
                         .mentionRepliedUser(false)
                         .queue()
 
-                end()
+                end(true)
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)

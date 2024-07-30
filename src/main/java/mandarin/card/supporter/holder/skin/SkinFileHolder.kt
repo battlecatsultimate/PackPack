@@ -78,7 +78,7 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
                         .mentionRepliedUser(false)
                         .queue()
 
-                    end()
+                    end(true)
                 }, CommonStatic.Lang.Locale.EN))
             }
         }

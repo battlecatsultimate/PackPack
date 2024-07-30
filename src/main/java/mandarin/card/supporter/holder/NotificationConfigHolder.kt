@@ -75,7 +75,7 @@ class NotificationConfigHolder(author: Message, channelID: String, message: Mess
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

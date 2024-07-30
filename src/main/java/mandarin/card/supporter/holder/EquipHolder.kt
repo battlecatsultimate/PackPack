@@ -66,7 +66,7 @@ class EquipHolder(author: Message, channelID: String, message: Message, private 
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
             else -> {
                 if (event !is ButtonInteractionEvent)

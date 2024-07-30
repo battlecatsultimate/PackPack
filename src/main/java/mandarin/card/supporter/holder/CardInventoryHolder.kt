@@ -85,7 +85,7 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)

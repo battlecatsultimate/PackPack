@@ -59,7 +59,7 @@ class SalvageTierSelectHolder(author: Message, channelID: String, message: Messa
                 .mentionRepliedUser(false)
                 .queue()
 
-            end()
+            end(true)
         }
     }
 

@@ -68,7 +68,7 @@ class ModifyCategoryHolder(author: Message, channelID: String, message: Message,
                     .setAllowedMentions(ArrayList())
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

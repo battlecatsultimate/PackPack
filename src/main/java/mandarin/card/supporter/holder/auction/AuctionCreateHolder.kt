@@ -181,7 +181,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
             "cancel" -> {
                 event.deferEdit()
@@ -191,7 +191,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

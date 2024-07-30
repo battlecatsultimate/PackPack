@@ -27,7 +27,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
             case "cancel" -> message.delete().queue();
         }
 
-        end();
+        end(false);
     }
 
     @Override

@@ -116,7 +116,7 @@ public class TreasureButtonHolder extends ComponentHolder {
 
                 StaticStore.treasure.put(userID, treasure);
 
-                end();
+                end(true);
             }
             case "cancel" -> {
                 event.editMessage(LangID.getStringByID("treasure.canceled", lang))
@@ -131,7 +131,7 @@ public class TreasureButtonHolder extends ComponentHolder {
                     StaticStore.treasure.put(userID, backup);
                 }
 
-                end();
+                end(true);
             }
         }
     }

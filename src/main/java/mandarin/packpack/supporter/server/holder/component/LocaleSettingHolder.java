@@ -93,7 +93,7 @@ public class LocaleSettingHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .queue();
 
-                end();
+                end(true);
             }
         }
     }

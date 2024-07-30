@@ -123,7 +123,7 @@ public abstract class Holder {
         StaticStore.removeHolder(userID, this);
     }
 
-    public final void end() {
+    public final void end(boolean finishAll) {
         expired = true;
 
         if (schedule != null) {
@@ -142,16 +142,18 @@ public abstract class Holder {
             childHolder = childHolder.child;
         }
 
-        Holder parentHolder = parent;
+        if (finishAll) {
+            Holder parentHolder = parent;
 
-        while (parentHolder != null) {
-            parentHolder.expired = true;
+            while (parentHolder != null) {
+                parentHolder.expired = true;
 
-            if (parentHolder.schedule != null) {
-                parentHolder.schedule.cancel(true);
+                if (parentHolder.schedule != null) {
+                    parentHolder.schedule.cancel(true);
+                }
+
+                parentHolder = parentHolder.parent;
             }
-
-            parentHolder = parentHolder.parent;
         }
 
         HolderHub hub = StaticStore.getHolderHub(userID);

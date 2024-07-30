@@ -86,7 +86,7 @@ class CraftCostHolder(author: Message, channelID: String, message: Message) : Co
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

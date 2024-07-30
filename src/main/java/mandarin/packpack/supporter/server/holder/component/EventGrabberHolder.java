@@ -68,7 +68,7 @@ public class EventGrabberHolder extends ComponentHolder {
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
 
-                end();
+                end(true);
             }
         }
     }

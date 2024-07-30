@@ -74,7 +74,7 @@ public abstract class SearchHolder extends ComponentHolder {
     public void finish(GenericComponentInteractionCreateEvent event) {
         onSelected(event);
 
-        end();
+        end(true);
     }
 
     public void cancel(GenericComponentInteractionCreateEvent event) {
@@ -85,7 +85,7 @@ public abstract class SearchHolder extends ComponentHolder {
                 .mentionRepliedUser(false)
                 .queue();
 
-        end();
+        end(true);
     }
 
     protected String getPage() {

@@ -141,7 +141,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                     StaticStore.config.put(userID, config);
                 }
 
-                end();
+                end(true);
             }
             case "cancel" -> {
                 if(StaticStore.config.containsKey(userID)) {
@@ -153,7 +153,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                         .setComponents()
                         .queue();
 
-                end();
+                end(true);
             }
         }
     }

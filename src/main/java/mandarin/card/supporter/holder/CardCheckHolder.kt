@@ -65,7 +65,7 @@ class CardCheckHolder(author: Message, channelID: String, message: Message, priv
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

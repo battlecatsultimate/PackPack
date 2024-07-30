@@ -48,7 +48,7 @@ public class EnemyButtonHolder extends ComponentHolder {
             }
         }
 
-        end();
+        end(true);
     }
 
     @Override

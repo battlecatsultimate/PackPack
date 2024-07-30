@@ -148,7 +148,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
 
             cleaner.add(event.getMessage());
 
-            end();
+            end(true);
 
             return STATUS.FINISH;
         } else if(content.equals("c")) {
@@ -156,7 +156,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
 
             cleaner.add(event.getMessage());
 
-            end();
+            end(true);
 
             return STATUS.FINISH;
         } else if(content.startsWith("n ")) {

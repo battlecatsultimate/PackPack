@@ -38,8 +38,6 @@ public class LevelModalHolder extends ModalHolder {
                 editor.accept(event);
             }
         }
-
-        end();
     }
 
     @Override

@@ -112,7 +112,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
                     .setAllowedMentions(ArrayList())
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }

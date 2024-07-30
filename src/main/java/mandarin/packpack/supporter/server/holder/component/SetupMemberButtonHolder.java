@@ -77,7 +77,7 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                         .setComponents()
                         .queue();
 
-                end();
+                end(true);
             }
             case "cancel" -> {
                 event.deferEdit()
@@ -85,7 +85,7 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                         .setComponents()
                         .queue();
 
-                end();
+                end(true);
             }
         }
     }

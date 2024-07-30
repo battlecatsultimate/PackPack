@@ -95,7 +95,7 @@ class SlotMachineListHolder(author: Message, channelID: String, message: Message
                     .mentionRepliedUser(false)
                     .queue()
 
-                end()
+                end(true)
             }
         }
     }
