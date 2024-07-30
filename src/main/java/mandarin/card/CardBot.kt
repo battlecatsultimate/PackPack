@@ -351,6 +351,8 @@ object CardBot : ListenerAdapter() {
                     if (percentage >= 90.0) {
                         StaticStore.logger.uploadLog("Warning : Memory is at danger, above 90% (${DataToString.df.format(percentage)}%)")
                     }
+
+                    Logger.writeLog(Logger.BotInstance.CARD_DEALER)
                 } catch(e: Exception) {
                     StaticStore.logger.uploadErrorLog(e, "CardBot::saver - Failed to perform background thread")
                 }
