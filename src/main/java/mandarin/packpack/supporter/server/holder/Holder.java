@@ -130,8 +130,6 @@ public abstract class Holder {
             schedule.cancel(true);
         }
 
-        System.out.println(1);
-
         Holder childHolder = child;
 
         while (childHolder != null) {
@@ -144,8 +142,6 @@ public abstract class Holder {
             childHolder = childHolder.child;
         }
 
-        System.out.println(2);
-
         Holder parentHolder = parent;
 
         while (parentHolder != null) {
@@ -157,8 +153,6 @@ public abstract class Holder {
 
             parentHolder = parentHolder.parent;
         }
-
-        System.out.println(3);
 
         HolderHub hub = StaticStore.getHolderHub(userID);
 
