@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.File;
@@ -55,6 +56,8 @@ public class PackBot {
         Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
                 StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Uncaught exception found : " + t.getName())
         );
+
+        RestActionImpl.setDefaultFailure(e -> StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task"));
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--test") && i < args.length - 1) {

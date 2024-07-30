@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.dv8tion.jda.internal.requests.RestActionImpl
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -77,6 +78,10 @@ object CardBot : ListenerAdapter() {
                     StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Uncaught exception found : ${t?.name}")
                 }
             }
+        }
+
+        RestActionImpl.setDefaultFailure { e ->
+            StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task")
         }
 
         args.forEachIndexed { index, arg ->
