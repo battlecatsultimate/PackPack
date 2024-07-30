@@ -5,7 +5,9 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -59,6 +61,21 @@ public abstract class ModalHolder extends Holder {
         return Type.MODAL;
     }
 
+    @Override
+    public final void onConnected(Holder parent) {
+
+    }
+
+    @Override
+    public final void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
+
+    }
+
+    @Override
+    public final void onExpire() {
+
+    }
+
     private boolean canHandleEvent(ModalInteractionEvent event) {
         boolean result = event.getChannel().getId().equals(channelID);
 
@@ -67,10 +84,5 @@ public abstract class ModalHolder extends Holder {
         result &= event.getUser().getId().equals(userID);
 
         return result;
-    }
-
-    @Override
-    public final void onExpire() {
-
     }
 }
