@@ -10,6 +10,7 @@ import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Member
@@ -270,7 +271,7 @@ class CardModifyHolder(author: Message, channelID: String, message: Message, pri
         }
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         filterCards()
 
         applyResult(event)

@@ -5,6 +5,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -105,7 +106,7 @@ class SlotMachinePackImportHolder(author: Message, channelID: String, message: M
         }
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

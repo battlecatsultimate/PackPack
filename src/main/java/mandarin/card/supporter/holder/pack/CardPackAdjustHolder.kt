@@ -150,7 +150,7 @@ class CardPackAdjustHolder(
         }
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

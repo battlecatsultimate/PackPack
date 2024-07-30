@@ -156,7 +156,7 @@ class BannerCostHolder(author: Message, channelID: String, message: Message, pri
         }
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

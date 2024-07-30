@@ -184,7 +184,7 @@ class CardFavoriteHolder(author: Message, channelID: String, message: Message, p
         applyResult()
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

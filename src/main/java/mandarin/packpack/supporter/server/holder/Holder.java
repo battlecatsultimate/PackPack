@@ -185,20 +185,20 @@ public abstract class Holder {
                 .queue();
     }
 
-    public void onConnected(@Nonnull IMessageEditCallback event) {
-        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection");
+    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
+        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
     }
 
-    public void onConnected() {
-        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection");
+    public void onConnected(Holder parent) {
+        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
     }
 
     public void onBack(@Nonnull Holder child) {
-        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler");
+        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
     }
 
     public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
-        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler");
+        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
     }
 
     public void handleMessageDetected(@Nonnull Message message) {
@@ -250,7 +250,7 @@ public abstract class Holder {
         StaticStore.putHolder(userID, holder);
 
         holder.isRoot = false;
-        holder.onConnected();
+        holder.onConnected(this);
     }
 
     public void connectTo(@Nonnull IMessageEditCallback event, Holder holder) {
@@ -268,7 +268,7 @@ public abstract class Holder {
         StaticStore.putHolder(userID, holder);
 
         holder.isRoot = false;
-        holder.onConnected(event);
+        holder.onConnected(event, this);
     }
 
     public void goBack() {

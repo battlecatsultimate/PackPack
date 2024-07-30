@@ -12,6 +12,7 @@ import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -227,7 +228,7 @@ class CardCostPayHolder(
         this.message = message
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         filterCards()
         applyResult(event)
     }

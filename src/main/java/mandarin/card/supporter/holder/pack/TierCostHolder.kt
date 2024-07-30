@@ -140,7 +140,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
         }
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.holder.component;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     }
 
     @Override
-    public void onConnected() {
+    public void onConnected(Holder parent) {
 
     }
 

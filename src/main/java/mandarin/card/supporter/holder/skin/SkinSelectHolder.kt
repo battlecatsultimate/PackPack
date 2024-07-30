@@ -95,7 +95,7 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
         this.message = message
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

@@ -161,7 +161,7 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
         applyResult()
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         filterCards()
 
         applyResult(event)

@@ -145,7 +145,7 @@ class SkinPurchaseCardHolder(author: Message, channelID: String, message: Messag
         }
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

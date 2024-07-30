@@ -142,7 +142,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
         applyResult(event)
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

@@ -121,7 +121,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
         applyResult()
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

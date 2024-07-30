@@ -114,7 +114,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onConnected(@NotNull IMessageEditCallback event) {
+    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
         applyResult(event);
     }
 

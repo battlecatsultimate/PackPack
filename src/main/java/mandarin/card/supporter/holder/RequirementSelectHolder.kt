@@ -101,7 +101,7 @@ class RequirementSelectHolder : ComponentHolder {
         applyResult()
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         if (product.requiredFilter == product.possibleFilters.size && product.possibleFilters.any { f -> !f.match(inventory.cards.keys.toList(), inventory)}) {
             event.deferEdit()
                 .setContent("It seems you can't afford this role with your cards")

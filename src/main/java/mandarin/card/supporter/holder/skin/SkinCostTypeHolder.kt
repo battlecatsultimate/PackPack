@@ -10,6 +10,7 @@ import mandarin.card.supporter.pack.CardCost
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -67,7 +68,7 @@ class SkinCostTypeHolder(author: Message, channelID: String, message: Message, p
         }
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         val options = ArrayList<SelectOption>()
 
         for (type in CardCost.CostType.entries) {

@@ -133,7 +133,7 @@ class SkinCostManageHolder(author: Message, channelID: String, message: Message,
         this.message = message
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

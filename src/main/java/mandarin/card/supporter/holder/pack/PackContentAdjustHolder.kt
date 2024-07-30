@@ -144,7 +144,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
         applyResult()
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

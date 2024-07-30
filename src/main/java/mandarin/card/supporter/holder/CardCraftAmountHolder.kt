@@ -129,11 +129,11 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
         }
     }
 
-    override fun onConnected() {
+    override fun onConnected(parent: Holder) {
         applyResult()
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 

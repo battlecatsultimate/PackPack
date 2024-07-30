@@ -201,11 +201,11 @@ class SkinModifyHolder(
         println(message.attachments)
     }
 
-    override fun onConnected() {
+    override fun onConnected(parent: Holder) {
         applyResult()
     }
 
-    override fun onConnected(event: IMessageEditCallback) {
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
 
