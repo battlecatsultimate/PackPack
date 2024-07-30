@@ -325,7 +325,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
     @Override
     public void doSomething(@NotNull CommandLoader loader) throws Exception {
         if (StaticStore.logCommand) {
-            Logger.addLog(this.getClass() + " called");
+            Logger.addLog(this.getClass() + " called : " + loader.getContent());
         }
 
         doThing(loader);

@@ -326,7 +326,7 @@ public abstract class Command {
                     doSomething(loader);
 
                     if (StaticStore.logCommand) {
-                        Logger.addLog(this.getClass() + " called");
+                        Logger.addLog(this.getClass() + " called : " + loader.getContent());
                     }
                 }, e -> {
                     String data = "Command : " + loader.getContent() + "\n\n" +

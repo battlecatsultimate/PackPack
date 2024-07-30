@@ -217,7 +217,7 @@ public abstract class TimedConstraintCommand extends Command {
             try {
                 RecordableThread t = new RecordableThread(() -> {
                     if (StaticStore.logCommand) {
-                        Logger.addLog(this.getClass() + " called");
+                        Logger.addLog(this.getClass() + " called : " + loader.getContent());
                     }
 
                     doSomething(loader);
