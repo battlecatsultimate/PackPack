@@ -112,8 +112,6 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

@@ -110,8 +110,6 @@ class PackSelectHolder(
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

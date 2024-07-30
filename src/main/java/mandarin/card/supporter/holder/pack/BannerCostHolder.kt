@@ -161,8 +161,6 @@ class BannerCostHolder(author: Message, channelID: String, message: Message, pri
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

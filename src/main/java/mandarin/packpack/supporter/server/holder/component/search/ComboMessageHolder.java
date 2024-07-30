@@ -97,7 +97,5 @@ public class ComboMessageHolder extends SearchHolder {
     public void onExpire() {
         if(fMsg != null)
             fMsg.delete().queue();
-
-        super.onExpire();
     }
 }

@@ -141,8 +141,6 @@ class PackContentAdjustHolder(author: Message, channelID: String,
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

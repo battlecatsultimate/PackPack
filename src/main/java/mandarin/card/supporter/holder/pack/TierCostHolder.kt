@@ -145,8 +145,6 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

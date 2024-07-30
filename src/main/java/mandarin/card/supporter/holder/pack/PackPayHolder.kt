@@ -163,22 +163,16 @@ class PackPayHolder(
                     registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        e.deferEdit().queue()
-
-                        goBack()
+                        goBack(e)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
-                    event.deferEdit().queue()
-
-                    goBack()
+                    goBack(event)
                 }
             }
         }
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

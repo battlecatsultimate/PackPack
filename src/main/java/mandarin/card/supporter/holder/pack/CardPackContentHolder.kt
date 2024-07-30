@@ -66,8 +66,6 @@ class CardPackContentHolder(
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

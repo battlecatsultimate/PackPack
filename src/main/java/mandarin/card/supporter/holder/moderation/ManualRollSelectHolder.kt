@@ -98,8 +98,6 @@ class ManualRollSelectHolder(author: Message, channelID: String, message: Messag
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

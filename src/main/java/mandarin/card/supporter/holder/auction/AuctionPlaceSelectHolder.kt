@@ -93,8 +93,6 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         message.editMessage(
             "Please select auction place where you want to bid\n" +
                     "\n" +

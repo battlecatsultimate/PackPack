@@ -145,8 +145,6 @@ class SkinTierCostHolder(author: Message, channelID: String, message: Message, p
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

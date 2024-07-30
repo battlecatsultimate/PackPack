@@ -135,8 +135,6 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

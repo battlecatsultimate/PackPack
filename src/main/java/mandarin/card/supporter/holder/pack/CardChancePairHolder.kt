@@ -192,8 +192,6 @@ class CardChancePairHolder(
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 

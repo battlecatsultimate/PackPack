@@ -162,8 +162,6 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
     }
 
     override fun onBack(child: Holder) {
-        super.onBack(child)
-
         applyResult()
     }
 
