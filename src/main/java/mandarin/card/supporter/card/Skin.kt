@@ -197,19 +197,20 @@ class Skin {
 
             containers.forEach { container -> creatorInventory.addCards(container.pickedCards) }
 
-            if (creator in CardData.purchaseNotifier) {
-                val purchaseSize = CardData.inventories.values.count { i -> this in i.skins }
-
-                val message = "User <@$purchaser> has purchased your skin!\n\n### Skin Name : $name [$skinID]\n### Total Purchase Count : $purchaseSize"
-
-                client.retrieveUserById(creator).queue { u ->
-                    u.openPrivateChannel().queue { ch ->
-                        ch.sendMessage(message)
-                            .setAllowedMentions(ArrayList())
-                            .queue()
-                    }
-                }
-            }
+            //TODO(Resolve private message sending problem)
+//            if (creator in CardData.purchaseNotifier) {
+//                val purchaseSize = CardData.inventories.values.count { i -> this in i.skins }
+//
+//                val message = "User <@$purchaser> has purchased your skin!\n\n### Skin Name : $name [$skinID]\n### Total Purchase Count : $purchaseSize"
+//
+//                client.retrieveUserById(creator).queue { u ->
+//                    u.openPrivateChannel().queue { ch ->
+//                        ch.sendMessage(message)
+//                            .setAllowedMentions(ArrayList())
+//                            .queue()
+//                    }
+//                }
+//            }
         }
 
         CardBot.saveCardData()

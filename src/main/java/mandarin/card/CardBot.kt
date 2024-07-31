@@ -177,13 +177,14 @@ object CardBot : ListenerAdapter() {
                                     }
                                 }
 
-                                if (messageContent.isNotBlank()) {
-                                    client.retrieveUserById(id).queue { u ->
-                                        u.openPrivateChannel().queue { pc ->
-                                            pc.sendMessage(messageContent).queue()
-                                        }
-                                    }
-                                }
+                                //TODO(Resolve private message sending problem)
+//                                if (messageContent.isNotBlank()) {
+//                                    client.retrieveUserById(id).queue { u ->
+//                                        u.openPrivateChannel().queue { pc ->
+//                                            pc.sendMessage(messageContent).queue()
+//                                        }
+//                                    }
+//                                }
 
                                 CardData.cooldown.forEach { (_, cooldownMap) ->
                                     cooldownMap.forEach { (uuid, cd) ->
@@ -230,14 +231,15 @@ object CardBot : ListenerAdapter() {
                                     g.removeRoleFromMember(UserSnowflake.fromId(userID), collectorRole).queue()
                                 }
 
-                                client.retrieveUserById(userID).queue { u ->
-                                    u.openPrivateChannel().queue({ privateChannel ->
-                                        privateChannel.sendMessage("Your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
-                                                "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
-                                                "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
-                                                "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}").queue(null) { _ -> }
-                                    }, { _ -> })
-                                }
+                                //TODO(Resolve private message sending problem)
+//                                client.retrieveUserById(userID).queue { u ->
+//                                    u.openPrivateChannel().queue({ privateChannel ->
+//                                        privateChannel.sendMessage("Your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
+//                                                "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
+//                                                "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
+//                                                "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}").queue(null) { _ -> }
+//                                    }, { _ -> })
+//                                }
                             }
                         }
                     } else {
