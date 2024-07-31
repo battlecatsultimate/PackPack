@@ -46,6 +46,7 @@ public class PackBot {
     public static int udp = 0;
     public static int log = 0;
     public static int backup = 0;
+    public static int updateStatus = 0;
 
     public static final String normal = "p!help for command info!";
 
@@ -230,6 +231,16 @@ public class PackBot {
                 } else {
                     log++;
                 }
+
+                if (!test) {
+                    if (updateStatus % 60 == 0) {
+                        updateStatus = 1;
+
+                        BotListPlatformHandler.handleUpdatingBotStatus(client);
+                    } else {
+                        updateStatus++;
+                    }
+                }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1));
     }
@@ -256,6 +267,8 @@ public class PackBot {
             GachaSet.initialize();
 
             EventFactor.readMissionReward();
+
+            BotListPlatformHandler.initialize();
 
             try {
                 EventFileGrabber.initialize();

@@ -4,14 +4,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mandarin.packpack.supporter.StaticStore;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.mime.FileBody;
+import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -135,7 +135,7 @@ public class ImgurDataHolder {
         this.clientID = clientID;
     }
 
-    public String uploadFile(File image) throws Exception {
+    public String uploadFile(File image) {
         String type;
         String link;
 
@@ -154,7 +154,7 @@ public class ImgurDataHolder {
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+        builder.setMode(HttpMultipartMode.LEGACY);
 
         FileBody fileBody = new FileBody(image);
 
@@ -165,43 +165,47 @@ public class ImgurDataHolder {
 
         post.setEntity(entity);
 
-        CloseableHttpClient client = HttpClientBuilder.create().build();
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            ClassicHttpResponse response = client.executeOpen(null, post, null);
 
-        HttpResponse response = client.execute(post);
+            StringBuilder result = new StringBuilder();
 
-        StringBuilder result = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            String line;
 
-        String line;
+            while((line = reader.readLine()) != null) {
+                result.append(line).append("\n");
+            }
 
-        while((line = reader.readLine()) != null) {
-            result.append(line).append("\n");
-        }
+            JsonObject obj = JsonParser.parseString(result.toString()).getAsJsonObject();
 
-        JsonObject obj = JsonParser.parseString(result.toString()).getAsJsonObject();
+            StaticStore.logger.uploadLog("Tried to upload file to imgur\nPath : "+image.getAbsolutePath()+"\nSize : "+StaticStore.beautifyFileSize(image)+"\nResult : \n```json\n"+ result +"\n```");
 
-        StaticStore.logger.uploadLog("Tried to upload file to imgur\nPath : "+image.getAbsolutePath()+"\nSize : "+StaticStore.beautifyFileSize(image)+"\nResult : \n```json\n"+ result +"\n```");
+            if (obj.has("data")) {
+                JsonObject data = obj.get("data").getAsJsonObject();
 
-        if (obj.has("data")) {
-            JsonObject data = obj.get("data").getAsJsonObject();
-
-            if(data.has("link")) {
-                return data.get("link").getAsString();
+                if(data.has("link")) {
+                    return data.get("link").getAsString();
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
-        } else {
-            return null;
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/ImgurDataHolder::uploadFile - Failed to open http client");
         }
+
+        return null;
     }
 
-    public String uploadCatbox(File image) throws Exception {
+    public String uploadCatbox(File image) {
         HttpPost post = new HttpPost("https://catbox.moe/user/api.php");
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+        builder.setMode(HttpMultipartMode.LEGACY);
 
         FileBody fileBody = new FileBody(image);
 
@@ -212,21 +216,25 @@ public class ImgurDataHolder {
 
         post.setEntity(entity);
 
-        CloseableHttpClient client = HttpClientBuilder.create().build();
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            ClassicHttpResponse response = client.executeOpen(null, post, null);
 
-        HttpResponse response = client.execute(post);
+            StringBuilder result = new StringBuilder();
 
-        StringBuilder result = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            String line;
 
-        String line;
+            while((line = reader.readLine()) != null) {
+                result.append(line).append("\n");
+            }
 
-        while((line = reader.readLine()) != null) {
-            result.append(line).append("\n");
+            return result.toString().trim();
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/ImgurDataHolder::uploadCatbox - Failed to open http client");
         }
 
-        return result.toString().trim();
+        return null;
     }
 
     private void reformatData() {
