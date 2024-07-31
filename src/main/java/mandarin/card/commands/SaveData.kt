@@ -8,15 +8,15 @@ import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.utils.FileUpload
 import java.io.File
 
-class SaveData : Command(CommonStatic.Lang.Locale.EN, true) {
+class SaveData : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val m = loader.member
+        val u = loader.user
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
+        if (u.id != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid")) {
             return
         }
 
-        m.user.openPrivateChannel().queue { pv ->
+        u.openPrivateChannel().queue { pv ->
             pv.sendMessage("Send save data")
                 .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
                 .queue()
