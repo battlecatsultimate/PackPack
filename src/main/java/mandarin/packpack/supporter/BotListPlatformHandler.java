@@ -22,10 +22,14 @@ public class BotListPlatformHandler {
     private static String topGGToken = null;
     private static String discordBotListToken = null;
     private static String koreanDiscordListToken = null;
+    private static String discordBotGGToken = null;
+
+    private static final long discordBotGGRateLimit = 200;
 
     private static final String topGGDomain = "https://top.gg/api/";
     private static final String discordBotListDomain = "https://discordbotlist.com/api/v1/";
     private static final String koreanDiscordListDomain = "https://koreanbots.dev/api/v2/";
+    private static final String discordBogGGDomain = "https://discord.bots.gg/api/v1/";
 
     public static void initialize() {
         File jsonFile = new File("./data/botListPlatformTokens.json");
@@ -53,6 +57,10 @@ public class BotListPlatformHandler {
             if (tokenObject.has("koreanDiscordList")) {
                 koreanDiscordListToken = tokenObject.get("koreanDiscordList").getAsString();
             }
+
+            if (tokenObject.has("discordBotGG")) {
+                discordBotGGToken = tokenObject.get("discordBotGG").getAsString();
+            }
         } catch (IOException e) {
             StaticStore.logger.uploadErrorLog(e, "E/BotListPlatformHandler::initialize - Failed to open reader for json file");
         }
@@ -67,6 +75,7 @@ public class BotListPlatformHandler {
         handleTopGG(manager, botID);
         handleDiscordBotList(manager, botID);
         handleKoreanDiscordList(manager, botID);
+        handleDiscordBotGG(manager, botID);
     }
 
     private static void handleTopGG(@Nonnull ShardManager manager, String botID) {
@@ -206,6 +215,71 @@ public class BotListPlatformHandler {
             }
         } catch (IOException e) {
             StaticStore.logger.uploadErrorLog(e, "E/BotListPlatformHandler::handleKoreanDiscordList - Failed to open http client");
+        }
+    }
+
+    public static void handleDiscordBotGG(ShardManager manager, String botID) {
+        if (discordBotGGToken == null)
+            return;
+
+        String requestLink = discordBogGGDomain + "bots/" + botID + "/stats";
+
+        long[] guilds = getShardGuildNumbers(manager);
+        long shardCount = getShardCount(manager);
+
+        for (int i = 0; i < guilds.length; i++) {
+            JsonObject bodyObject = new JsonObject();
+
+            bodyObject.addProperty("guildCount", guilds[i]);
+            bodyObject.addProperty("shardCount", shardCount);
+            bodyObject.addProperty("shardId", i);
+
+            HttpPost post = new HttpPost(requestLink);
+
+            post.setHeader("Authorization", discordBotGGToken);
+            post.setHeader("Content-Type", "application/json");
+
+            post.setEntity(new StringEntity(bodyObject.toString()));
+
+            long startTime = System.currentTimeMillis();
+            long endTime;
+
+            try (
+                    CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                    ClassicHttpResponse response = httpClient.executeOpen(null, post, null)
+            ) {
+                endTime = System.currentTimeMillis();
+
+                if (response.getCode() != 200) {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+                        StringBuilder result = new StringBuilder();
+
+                        String line;
+
+                        while((line = reader.readLine()) != null) {
+                            result.append(line).append("\n");
+                        }
+
+                        StaticStore.logger.uploadLog("W/BotListPlatformHandler::handleDiscordBotGG - Got non-200 code from discord.bots.gg\nStatus Code = %d\nReason Phrase = %s\nBody = %s".formatted(response.getCode(), response.getReasonPhrase(), result.toString()));
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/BotListPlatformHandler::handleDiscordBotGG - Failed to read body from response");
+                    }
+                }
+            } catch (IOException e) {
+                endTime = System.currentTimeMillis();
+                StaticStore.logger.uploadErrorLog(e, "E/BotListPlatformHandler::handleDiscordBotGG - Failed to open http client");
+            }
+
+            long waitTime = discordBotGGRateLimit - (endTime - startTime);
+
+            if (waitTime > 0) {
+                try {
+                    Thread.sleep(waitTime);
+                } catch (InterruptedException e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/BotListPlatformHandler::handleDiscordBotGG - Failed to wait for rate limit");
+                    return;
+                }
+            }
         }
     }
 
