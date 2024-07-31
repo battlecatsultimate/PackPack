@@ -233,8 +233,8 @@ public class PackBot {
                 }
 
                 if (!test) {
-                    if (updateStatus % 60 == 0) {
-                        updateStatus = 1;
+                    if (updateStatus == 5) {
+                        updateStatus = 0;
 
                         BotListPlatformHandler.handleUpdatingBotStatus(client);
                     } else {
