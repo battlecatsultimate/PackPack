@@ -11,10 +11,7 @@ import mandarin.packpack.supporter.lwjgl.LwjglContext;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -237,6 +234,14 @@ public class PackBot {
                         updateStatus = 0;
 
                         BotListPlatformHandler.handleUpdatingBotStatus(client);
+
+                        Set<String> guilds = new HashSet<>();
+
+                        for(JDA shard : client.getShards()) {
+                            guilds.addAll(shard.getGuilds().stream().map(ISnowflake::getId).toList());
+                        }
+
+                        StaticStore.holders.entrySet().removeIf(e -> guilds.contains(e.getKey()));
                     } else {
                         updateStatus++;
                     }
