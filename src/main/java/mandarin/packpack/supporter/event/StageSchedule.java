@@ -275,6 +275,17 @@ public class StageSchedule extends EventFactor implements Schedule {
 
             result.append(mapName);
 
+            if (map.getCont().getSID().equals("000036")) {
+                String id = "event.sale.colosseumType." + map.id.id;
+                String type = LangID.getStringByID(id, lang);
+
+                if (type.equals(id)) {
+                    StaticStore.logger.uploadLog("W/StageSchedule::dataToString - Unknown colosseum type " + map.id.id);
+                } else {
+                    result.append(" [").append(type).append("]");
+                }
+            }
+
             if(i < stages.size() - 1)
                 result.append(", ");
         }
@@ -442,6 +453,17 @@ public class StageSchedule extends EventFactor implements Schedule {
                 }
 
                 result.append(mapName);
+
+                if (map.getCont().getSID().equals("000036")) {
+                    String id = "event.sale.colosseumType." + map.id.id;
+                    String type = LangID.getStringByID(id, lang);
+
+                    if (type.equals(id)) {
+                        StaticStore.logger.uploadLog("W/StageSchedule::dataToString - Unknown colosseum type " + map.id.id);
+                    } else {
+                        result.append(" [").append(type).append("]");
+                    }
+                }
 
                 if(i < stages.size() - 1) {
                     result.append(", ");

@@ -1345,7 +1345,11 @@
       "22000" : "CotC Ch.1 Zombie",
       "22001" : "CotC Ch.2 Zombie",
       "22002" : "CotC Ch.3 Zombie",
-      "33000" : "Labyrinth Stage"
+      "33000" : "Labyrinth Stage",
+      "colosseumType" : {
+        "0" : "Money Limit",
+        "1" : "Cooldown Limit"
+      }
     },
     "section" : {
       "gacha" : "**Gacha**",
