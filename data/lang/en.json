@@ -1483,7 +1483,7 @@
     "alias" : {
       "description" : "Get aliases by getting data from specified name. `al` is also valid command",
       "example" : "`p!al -f Ururun Wolf`\n`p!al -s Floor 47 -stm Heavenly Tower`",
-      "parameter" : "- `-f`\nSet type ad Unit mode\n- `-e`\nSet type as Enemy mode\n- `-s`\nSet type as Stage mode\n- `-stm`\nSpecify stage map's name, only available when type is stage mode\n- `-mc`\nSpecify map collection's name, only available when type is stage mode",
+      "parameter" : "- `-f`\nSet type as Unit mode\n- `-e`\nSet type as Enemy mode\n- `-s`\nSet type as Stage mode\n- `-stm`\nSpecify stage map's name, only available when type is stage mode\n- `-mc`\nSpecify map collection's name, only available when type is stage mode",
       "tip" : "You have to specify type right next to command. For example, `p!al -f` or `p!al -e`. Then you have to specify name to search. Bot will give you registered aliases from search result",
       "usage" : "`p!alias [Type] [Name]`"
     },
