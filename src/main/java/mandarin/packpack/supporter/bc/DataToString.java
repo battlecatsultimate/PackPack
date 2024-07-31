@@ -1333,7 +1333,7 @@ public class DataToString extends Data {
         StageMap map = st.getCont();
 
         if (map.stageLimit != null) {
-            if (map.stageLimit.globalCooldown != -1) {
+            if (map.stageLimit.globalCooldown > 0) {
                 String time;
 
                 if (isFrame) {
@@ -1345,7 +1345,7 @@ public class DataToString extends Data {
                 res.add(LangID.getStringByID("data.stage.limit.cooldown.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.description", lang).formatted(time));
             }
 
-            if (map.stageLimit.maxMoney != -1) {
+            if (map.stageLimit.maxMoney > 0) {
                 res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(map.stageLimit.maxMoney));
             }
 
