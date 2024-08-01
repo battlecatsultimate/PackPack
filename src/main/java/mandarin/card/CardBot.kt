@@ -632,6 +632,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}ei" -> EjectInventory().execute(event)
             "${globalPrefix}memory",
             "${globalPrefix}mm" -> Memory().execute(event)
+            "${globalPrefix}extractjson",
+            "${globalPrefix}ej" -> ExtractJson().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
