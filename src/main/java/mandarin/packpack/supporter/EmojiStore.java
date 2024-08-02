@@ -73,6 +73,8 @@ public class EmojiStore {
         CROSS = getEmoteWitNameAndID(loader, "Cross", 1237662049031684136L);
         BACK = getEmoteWitNameAndID(loader, "Back", 1237685808354426921L);
 
+        CAT = Emoji.fromCustom("Cat", 1268786079041851526L, false);
+
         File iconData = new File("./data/abilityIcons.txt");
 
         if(iconData.exists()) {
@@ -221,6 +223,8 @@ public class EmojiStore {
     public static Emoji CROSS;
     public static Emoji BACK;
 
+    public static Emoji CAT;
+
     public static final Map<String, Emoji> ABILITY = new HashMap<>();
     public static final MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();
     public static final Map<CardPack, ArrayList<Emoji>> PACK = new HashMap<>();
@@ -307,7 +311,7 @@ public class EmojiStore {
         if(emotes.isEmpty()) {
             StaticStore.logger.uploadLog("Failed to find emoji : " + name + " ID : " + id);
 
-            return Emoji.fromUnicode("❔");
+            return Emoji.fromCustom(name, id, false);
         }
 
         for(RichCustomEmoji e : emotes) {
@@ -315,6 +319,6 @@ public class EmojiStore {
                 return e;
         }
 
-        return Emoji.fromUnicode("❔");
+        return Emoji.fromCustom(name, id, false);
     }
 }

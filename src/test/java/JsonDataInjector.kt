@@ -3,13 +3,10 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import mandarin.packpack.supporter.StaticStore
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.nio.file.Files
-
-val localeCode = arrayOf("en", "jp", "kr", "ru", "zh")
 
 fun main() {
     val fixedFolder = File("./data/lang/fixed/")
@@ -38,18 +35,12 @@ fun main() {
         if (obj !is JsonObject)
             return
 
-        val newObj = JsonObject()
-
-        enObj.keySet().forEach { key ->
-            if (obj.has(key)) {
-
-            }
-        }
+        injectMissingData(enObj, obj)
 
         val mapper = ObjectMapper()
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
 
-        val json = sortNode(newObj).toString()
+        val json = sortNode(obj).toString()
         val tree = mapper.readTree(json)
 
         val targetFile = File(fixedFolder, "$code.json")
@@ -62,6 +53,21 @@ fun main() {
 
         writer.write(mapper.writeValueAsString(tree))
         writer.close()
+    }
+}
+
+private fun injectMissingData(src: JsonObject, target: JsonObject) {
+    src.keySet().forEach { key ->
+        if (!target.has(key)) {
+            target.add(key, src.get(key))
+        } else {
+            val subSource = src.get(key)
+            val subTarget = target.get(key)
+
+            if (subSource is JsonObject && subTarget is JsonObject) {
+                injectMissingData(subSource, subTarget)
+            }
+        }
     }
 }
 
@@ -111,51 +117,4 @@ private fun sortNode(obj: JsonObject) : JsonObject {
     }
 
     return fixed
-}
-
-class StringNumberComparator : Comparator<String> {
-    override fun compare(o1: String?, o2: String?): Int {
-        if (o1 == null && o2 == null)
-            return 0
-
-        o1 ?: return 1
-        o2 ?: return -1
-
-        if (StaticStore.isNumeric(o1) && StaticStore.isNumeric(o2)) {
-            return StaticStore.safeParseLong(o1).compareTo(StaticStore.safeParseLong(o2))
-        }
-
-        val eliminated1 = eliminateMatchingStarts(o2, o1)
-        val eliminated2 = eliminateMatchingStarts(o1, o2)
-
-        if (StaticStore.isNumeric(eliminated1) && StaticStore.isNumeric(eliminated2)) {
-            return StaticStore.safeParseLong(eliminated1).compareTo(StaticStore.safeParseLong(eliminated2))
-        }
-
-        return eliminated1.compareTo(eliminated2)
-    }
-
-    private fun eliminateMatchingStarts(src: String, target: String) : String {
-        var matching = 0
-
-        src.forEachIndexed { index, letter ->
-            if (index >= target.length)
-                return if (matching == target.length)
-                    ""
-                else
-                    target.substring(matching, target.length)
-
-            val l = target[index]
-
-            if (letter == l)
-                matching++
-            else
-                return target.substring(matching, target.length)
-        }
-
-        return if (matching == target.length)
-            ""
-        else
-            target.substring(matching, target.length)
-    }
 }

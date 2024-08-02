@@ -1,20 +1,39 @@
 package mandarin.packpack.commands;
 
 import common.CommonStatic;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.component.help.HelpCategoryHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class Help extends Command {
+    public enum HelpCategory {
+        NORMAL,
+        MATH,
+        BC,
+        SERVER,
+        DATA,
+        BOT
+    }
+
     @Nullable
     private final IDHolder holder;
 
@@ -40,17 +59,22 @@ public class Help extends Command {
         } else {
             EmbedBuilder builder = new EmbedBuilder();
 
+            int color = StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)];
+
             builder.setTitle(LangID.getStringByID("help.main.command", lang))
                     .setDescription(LangID.getStringByID("help.main.description", lang))
-                    .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
+                    .setColor(color)
                     .addField(LangID.getStringByID("help.main.category.normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help.main.category.math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
                     .addField(LangID.getStringByID("help.main.category.bc", lang), "```background, castle, catcombo, enemydps, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formdps, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
-                    .addField(LangID.getStringByID("help.main.category.server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, clearcache, eventmessage, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help.main.category.server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, serverconfig, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help.main.category.data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
-                    .addField(LangID.getStringByID("help.format.packPack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
+                    .addField(LangID.getStringByID("help.main.category.bot", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, save, serverjson, statistic, suggest, unregisterscamlink```", false);
 
-            replyToMessageSafely(ch, "", loader.getMessage(), a -> a.setEmbeds(builder.build()));
+            replyToMessageSafely(ch, "", loader.getMessage(),
+                    a -> a.setEmbeds(builder.build()).setComponents(getComponents()),
+                    msg -> StaticStore.putHolder(loader.getUser().getId(), new HelpCategoryHolder(loader.getMessage(), ch.getId(), msg, CommonStatic.Lang.Locale.EN, color))
+            );
         }
     }
 
@@ -96,8 +120,6 @@ public class Help extends Command {
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyGif", true, true, true)));
             case "idset" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("idset", true, true, true)));
-            case "clearcache" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("clearCache", false, false, false)));
             case "aa", "animanalyzer" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("animationAnalyzer", true, false, true)));
             case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
@@ -254,18 +276,21 @@ public class Help extends Command {
     }
 
     private MessageEmbed addFields(String mainCommand, boolean parameter, boolean example, boolean tip) {
+        String usage = LangID.getStringByID("help."+mainCommand+".usage", lang).formatted(holder == null ? StaticStore.globalPrefix : holder.config.prefix);
+        String command = usage.split(" ")[0].replace("`", "");
+
         EmbedBuilder builder = new EmbedBuilder();
 
         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
         if(LangID.hasID("help." + mainCommand + ".url", lang)) {
-            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.config.prefix) + mainCommand, LangID.getStringByID("help." + mainCommand + ".url", lang));
+            builder.setTitle(command, LangID.getStringByID("help." + mainCommand + ".url", lang));
             builder.setDescription(LangID.getStringByID("help.format.guide", lang));
         } else {
-            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.config.prefix) + mainCommand);
+            builder.setTitle(command);
         }
 
-        builder.addField(LangID.getStringByID("help.format.usage", lang), LangID.getStringByID("help."+mainCommand+".usage", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), false);
+        builder.addField(LangID.getStringByID("help.format.usage", lang), usage, false);
         builder.addField(LangID.getStringByID("help.format.description", lang), LangID.getStringByID("help."+mainCommand+".description", lang), false);
 
         if(parameter) {
@@ -293,5 +318,34 @@ public class Help extends Command {
         }
 
         return builder.build();
+    }
+
+    private List<LayoutComponent> getComponents() {
+        List<LayoutComponent> result = new ArrayList<>();
+
+        List<SelectOption> categoryOptions = new ArrayList<>();
+
+        for (HelpCategory category : HelpCategory.values()) {
+            SelectOption option = SelectOption.of(LangID.getStringByID("help.main.category." + category.name().toLowerCase(Locale.ENGLISH), CommonStatic.Lang.Locale.EN), category.name());
+
+            switch (category) {
+                case BC -> option = option.withEmoji(EmojiStore.CAT);
+                case DATA -> option = option.withEmoji(EmojiStore.FILE);
+                case MATH -> option = option.withEmoji(Emoji.fromUnicode("📟"));
+                case NORMAL -> option = option.withEmoji(Emoji.fromUnicode("🎚️"));
+                case SERVER -> option = option.withEmoji(EmojiStore.MODERATOR);
+            }
+
+            categoryOptions.add(option);
+        }
+
+        result.add(ActionRow.of(
+                StringSelectMenu.create("category")
+                        .addOptions(categoryOptions)
+                        .setPlaceholder(LangID.getStringByID("help.main.selectCategory", CommonStatic.Lang.Locale.EN))
+                        .build()
+        ));
+
+        return result;
     }
 }

@@ -41,12 +41,11 @@ public abstract class ComponentHolder extends Holder {
     }
 
     public int getTotalPage(int size) {
-        int totalPage = size / SearchHolder.PAGE_CHUNK;
+        return (int) Math.ceil(size * 1.0 / SearchHolder.PAGE_CHUNK);
+    }
 
-        if (size % SearchHolder.PAGE_CHUNK != 0)
-            totalPage++;
-
-        return totalPage;
+    public int getTotalPage(int size, int chunk) {
+        return (int) Math.ceil(size * 1.0 / chunk);
     }
 
     private boolean canHandleEvent(GenericComponentInteractionCreateEvent event) {

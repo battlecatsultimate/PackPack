@@ -1486,7 +1486,7 @@
       "example" : "`p!al -f Ururun Wolf`\n`p!al -s Floor 47 -stm Heavenly Tower`",
       "parameter" : "- `-f`\nSet type as Unit mode\n- `-e`\nSet type as Enemy mode\n- `-s`\nSet type as Stage mode\n- `-stm`\nSpecify stage map's name, only available when type is stage mode\n- `-mc`\nSpecify map collection's name, only available when type is stage mode",
       "tip" : "You have to specify type right next to command. For example, `p!al -f` or `p!al -e`. Then you have to specify name to search. Bot will give you registered aliases from search result",
-      "usage" : "`p!alias [Type] [Name]`"
+      "usage" : "`%salias [Type] [Name]`"
     },
     "aliasAdd" : {
       "alias" : "`ala`",
@@ -1494,7 +1494,7 @@
       "example" : "`p!ala -e Ururun Wolf -> Ururun Doge`\n`p!ala -s Floor 47 -stm Heavenly Tower -> F47`",
       "parameter" : "- `-f`\nSet type ad Unit mode\n- `-e`\nSet type as Enemy mode\n- `-s`\nSet type as Stage mode\n- `-stm`\nSpecify stage map's name, only available when type is stage mode\n- `-mc`\nSpecify map collection's name, only available when type is stage mode",
       "tip" : "You have to specify type right next to command. For example, `p!ala -f` or `p!ala -e`. Then you have to specify name to search\n\nYou can specify alias name by typing `->`, there must be spaces between `->`. For example, `p!ala -u Ururun Wolf -> woof`, then alias name will be specified as `woof`",
-      "usage" : "`p!aliasadd [Type] [Name] -> [Alias Name]`"
+      "usage" : "`%saliasadd [Type] [Name] -> [Alias Name]`"
     },
     "aliasRemove" : {
       "alias" : "`alr`",
@@ -1502,56 +1502,56 @@
       "example" : "`p!alr -f Ururun Wolf -> Ururun Doge`\n`p!alr -s Floor 47 -stm Heavenly Tower -> F47`",
       "parameter" : "- `-f`\nSet type ad Unit mode\n- `-e`\nSet type as Enemy mode\n- `-s`\nSet type as Stage mode\n- `-stm`\nSpecify stage map's name, only available when type is stage mode\n- `-mc`\nSpecify map collection's name, only available when type is stage mode",
       "tip" : "You have to specify type right next to command. For example, `p!alr -f` or `p!alr -e`. Then you have to specify name to search\n\nYou can specify alias name by typing `->`, there must be spaces between `->`. For example, `p!alr -u Ururun Wolf -> woof`, then alias name will be specified as `woof`",
-      "usage" : "`p!aliasremove [Type] [Name] -> [Alias Name]`"
+      "usage" : "`%saliasremove [Type] [Name] -> [Alias Name]`"
     },
     "analyze" : {
       "description" : "Must be used with attached pack.bcuzip file. Under construction",
-      "usage" : "`_analyze [Files]`"
+      "usage" : "`%sanalyze [Files]`"
     },
     "animationAnalyzer" : {
       "alias" : "`aa`",
       "description" : "Analyze custom animation files. Type `c` to cancel analyzing process or will be expired 5 mins later. **Only Trusted can use this command because this command can potentially cause internal error with misusing**",
       "parameter" : "- `-d`\nEnable debug mode\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result\n- `-a` or `-anim`\nDecide number of maanim files which will be uploaded, 1 as default\n- `-bc` or `-b`\nEnables BC animation analyzer, it also enables mp4 generating mode automatically\n- `-zombie` or `-z`\nEnables zombie mode when BC animation analyzer mode is activated\n- `-a` or `-apk`\nMake bot use analyzed apk file instead, so you won't need to send files tediously\n- `-en/jp/tw/kr`\nDecide BC version when `-apk` mode is turned on",
       "tip" : "This command requires 4 things : Png, Imgcut, Mamodel, and Maanim file. If you upload one of these files, it will try to grab them and validate if these files have valid format. After getting all 4 files, it will generate gif/mp4 of analyzed animation",
-      "usage" : "`p!animanalyzer <File>`"
+      "usage" : "`%sanimanalyzer <File>`"
     },
     "announcement" : {
       "alias" : "`ann`",
       "description" : "Upload BC announcement link which lasts for 5 minutes (The link when you tap \"i\" button in main menu of BC). If parameter isn't specified it uploads link syncing with user's locale",
       "example" : "`p!ann`\n`p!ann -en`",
       "parameter" : "- `-en`\nUpload BCEN announcement link\n- `-jp`\nUpload BCJP announcement link\n- `-kr`\nUpload BCKR announcement link\n- `-tw`\nUpload BCTW announcement link",
-      "usage" : "`p!announcement <locale>`"
+      "usage" : "`%sannouncement <locale>`"
     },
     "assetBrowser" : {
       "alias" : "`abrowser`, `assetb`, `ab`",
       "description" : "Bring asset browser, and upload picked file data. **This can be used by only trusted users because it gives raw files of BC**",
-      "usage" : "`p!aasetbrowser`"
+      "usage" : "`%saasetbrowser`"
     },
     "background" : {
       "alias" : "`bg`",
       "description" : "Try to find background with specified id, and display image of it",
       "example" : "`p!bg 000`\n`p!bg 0 -w 1920`\n`p!bg 23 -w 500 -h 400`\n`p!bg -a 128` (If user isn't trusted, then `-a` will be ignored)",
       "parameter" : "- `-w`\nSpecify width of image (Max 1920)\n- `-h`\nSpecify height of image (Max 1080)\n- `-e` or `-effect`\nTry to generate bg with effect\n- `-a` or `-anim`\nGenerate 15 sec length of mp4 file of bg animation with effect. **This process is really heavy, so only trusted users can use this parameter**",
-      "usage" : "`_background [BG ID]`"
+      "usage" : "`%sbackground [BG ID]`"
     },
     "boosterEmoji" : {
       "alias" : "`boostere`, `bemoji`, `be`",
       "description" : "Add booster's special custom emoji. To use this command, moderators must set booster role via `p!idset` command. Only moderators can use this command because this command manage server's emoji",
       "example" : "`p!be @userNameExample emojiname1`",
       "tip" : "Custom emoji system is that you allow boosters to have their own custom emoji until that user's server boost expires. This command can automate managing such custom emojis, so those emojis will automatically be removed if their boost ends\n\nEmoji name can be anything, but it's better to remove spaces between name. Moderator has to upload image file together, and bot accepts only png/gif file",
-      "usage" : "`p!boosteremoji [User ID] [Emoji Name] [Emoji File (Png or Gif)]`"
+      "usage" : "`%sboosteremoji [User ID] [Emoji Name] [Emoji File (Png or Gif)]`"
     },
     "boosterEmojiRemove" : {
       "alias" : "`boosteremojirem`, `beremove`, `berem`, `ber`",
       "description" : "Remove assigned custom booster emoji from booster member if possible. Only moderators can use this command because this command manages server's emoji",
       "parameter" : "- `-l` or `-leave`\nMake bot not remove custom booster emoji, and only remove assigned data of this booster member",
-      "usage" : "`p!boosteremojiremove [User ID]`"
+      "usage" : "`%sboosteremojiremove [User ID]`"
     },
     "boosterPin" : {
       "alias" : "`bp`",
       "description" : "If moderator allowed boosters to pin/unpin messages, they can make bot pin/unpin messages for them even though boosters don't have message manage permission. Message must be specified via either message ID, message link, or reply",
       "example" : "`p!bp 12367890123456`\n`p!bp https://cdn.discord.com/....`",
-      "usage" : "`p!boosterpin [Message]`"
+      "usage" : "`%sboosterpin [Message]`"
     },
     "boosterRole" : {
       "alias" : "`boosterr`, `brole`, `br`",
@@ -1559,62 +1559,58 @@
       "example" : "`p!br @memberNameExample \"Name can be anything allowing \" in middle\" -h 8dd145`\n`p!br @memberNameExample \"Role name\" -r 141 -g 209 -b 69`",
       "parameter" : "- `-h` or `-hex`\nDecide color hex code of this booster role\n- `-r` or `-red`\nDecide red color in rgb of role color\n- `-g` or `-green`\nDecide green color in rgb of role color\n- `-b` or `-blue`\nDecide blue color in rgb of role color",
       "tip" : "Custom role system is that you allow booster to have their own custom role until server boost expires for that user. This command can automate managing such custom roles, so those roles will automatically be removed if their boost ends\n\nRole name must be wrapped by \" quotation marks. Color must be specified by either `-h` or `-r,-g,-b` parameter. If both are specified, `-h` will take higher priority\n\n`-r,-g,-b` parameter must have 0~255 value, and `-h` must have 6 hex value, `-h` can have `#` at start\n\nThis command will be denied if member doesn't have booster role, or member already has assigned booster role",
-      "usage" : "`p!boosterrole [User ID] \"Role Name\" [-h [Hex] / -r [Red] -g [Green] -b [Blue]]`"
+      "usage" : "`%sboosterrole [User ID] \"Role Name\" [-h [Hex] / -r [Red] -g [Green] -b [Blue]]`"
     },
     "boosterRoleRemove" : {
       "alias" : "`boosterrolerem`, `brremove`, `brrem`. `brr`",
       "description" : "Remove assigned custom booster role from booster member if possible. Only moderators can use this command because this command manages server's role",
       "parameter" : "- `-l` or `-leave`\nMake bot not remove custom booster role, and only remove assigned data of this booster member",
-      "usage" : "`p!boosterroleremove [User ID]`"
+      "usage" : "`%sboosterroleremove [User ID]`"
     },
     "calculator" : {
       "alias" : "`calc`, `c`",
       "description" : "Calculate the equation that is provided. It supports functions blow\n\n`Basic calculations`\n`sin/cos/tan`\n`csc/sec/cot`\n`arcsin/arccos/arctan`\n`arccsc/arcsec/arccot`\n`ln/log/logN`\n`sqrt/sqrtN`\n`nPr/nCr`",
       "example" : "`p!c ln(e) + sin(pi/2) * cos(pi/4) * sqrt(2) - log5(25) + cos(arcsin(1) * 2) + sqrt3(8)`",
       "tip" : "`logN` means log whose base is `N`, so if you want to perform log with base of 2, then you have to call something like `log2(4)`\n\nSame for `sqrtN`, it's `sqrt`, but base is `N`, which is identical to `V^(1/N)` = `sqrtN(V)`. So if you want to perform `8^(1/3)`, then you have to call `sqrt3(8)`\n\nWhen you write number and parenthesis, you really don't need to put `*` manually. For example, `2(2+5)` will give you `14` automatically",
-      "usage" : "`p!calculator [Equation]`"
+      "usage" : "`%scalculator [Equation]`"
     },
     "castle" : {
       "alias" : "`cas`",
       "description" : "Upload castle image with specified ID",
       "example" : "`p!cas 000`\n`p!cas -ec 30`",
       "parameter" : "- `-rc`\nUpload `Normal Stage` castles\n- `-ec`\nUpload `Empire of Cats` castles\n- `-wc`\nUpload `Into the Future` castles\n- `-sc`\nUpload `Cats of the Cosmos` castles",
-      "usage" : "`_castle [ID]`"
+      "usage" : "`%scastle [ID]`"
     },
     "catCombo" : {
       "alias" : "`combo`, `cc`",
       "description" : "Try to search cat combo with specified name, and upload info of it",
       "example" : "`p!cc You Will Find Happiness`\n`p!cc yesterday -u ururun`",
       "parameter" : "- `-u`\nTry to search cat combo via unit's name",
-      "usage" : "`p!catcombo <Cat Combo>`"
+      "usage" : "`%scatcombo <Cat Combo>`"
     },
     "channelPermission" : {
       "alias" : "`channelperm`, `chpermission`, `chperm`, `chp`",
       "description" : "Allow or Disallow users who have specific role to use bot's commands in specified channels. **Only Moderators can use this command because it touches permission of each role**",
-      "usage" : "`p!channelpermission <Mode> <[Role] [Channel ID]> ...`"
+      "usage" : "`%schannelpermission <Mode> <[Role] [Channel ID]> ...`"
     },
     "checkEventUpdate" : {
       "alias" : "`ceu`",
       "description" : "Check event data right now. If bot could find new event data, it will automatically upload analyzed result to servers. **Only trusted users can use this command**",
-      "usage" : "`p!checkeventupdate`"
-    },
-    "clearCache" : {
-      "description" : "Clear all image link caches. (Bot caches all gif/mp4 which were generated by `p!fg` and `p!eg`)",
-      "usage" : "`p!clearcache`"
+      "usage" : "`%scheckeventupdate`"
     },
     "comboAnalyzer" : {
       "alias" : "`catcomboanalyzer`, `cca`, `ca`",
       "description" : "Find new cat combo data, or specified one, anlyze them, and upload images of analyzed result. **Only Trusted users can use this command**",
       "parameter" : "- `-c` or `-cid`\nDecide ID of combo\n- `-en/tw/kr/jp`\nDecide BC version which you will use",
       "tip" : "You can make bot analyze new cat combo only, or analyze specific combo by passing its ID. You can't decide name for this, but bot will automatically grab combo name from files",
-      "usage" : "`p!comboanalyzer <-c [Combo ID]>`"
+      "usage" : "`%scomboanalyzer <-c [Combo ID]>`"
     },
     "config" : {
       "description" : "Adjust config, so bot can apply your preferences automatically",
       "tip" : "When you call this command, bot will show 5 things which can be adjusted : Language, Default level, Extra information, Unit, Compact embed, True form search mode, Treasure\n\n**Language** - language is that you can make bot show text with difference supporting language\n\n**Default level** - You can make bot apply specific level automatically without calling `-lv` parameter\n\n**Extra information** - You can make bot always show extra information (catfruit evolve data for unit, ex stage data for stage, etc.) without calling `-e` parameter\n\n**Unit** - You can make bot always use frame/second unit for time-related data automatically without calling `-s` parameter\n\n**Compact embed** - In mobile discord, there's problem that bot floods the chat when showing stat embed. This config merges multiple fields into one field, compressing embed messages without calling `-c` parameter",
       "tip2" : "**True form search mode** - True form search mode allows bot to directly select true form (evolved form if unit doesn't have true form) first without user manually selecting it. For example, searching `sodom` will give 3 forms of sodom, but being same unit, because all 3 forms contain word `sodom`. True form search mode filters out such overlapped unit, picking 3rd or 2nd form\n\n**Treasure** - If you have your own custom treasure, you can call `-tr` in `p!fs` command to see stats with considering your custom treasure. You can make bot always use this feature",
       "url" : "https://github.com/battlecatsultimate/PackPack/wiki/p!config",
-      "usage" : "`p!config`"
+      "usage" : "`%sconfig`"
     },
     "differentiate" : {
       "alias" : "`diff`, `dx`",
@@ -1622,27 +1618,27 @@
       "example" : "`p!dx sin(x) -v [pi + 2]` [This will have same value of `cos(pi + 2)`]",
       "parameter" : "- `-v` or `-value`\nDefine value, must be wrapped with square brackets (`[]`)\n- `-s` or `-step`\nDefine step size, must be wrapped with square brackets (`[]`)\n- `-f` or `-front`\nApply forward difference method algorithm\n- `-c` or `-center`\nApply central difference method algorithm\n- `-b` or `-back`\nApply backward difference method algorithm",
       "tip" : "When you writing value or step size, you hve to wrap them with `[]` square brackets. For example, `[3]`, `[0]`, etc. Also, you can put calculator function as ell, such as `[sqrt(2)]`, `[2 * pi]`, etc.\n\nBot allows 3 types of algorithm for differentiation; Forward/Central/Backward Difference Method. Keep in mind that central one has O(h²), while others have O(h) accuracy\n\nDeciding too small step size may rather result in bad accuracy. Default step size is 10⁻⁸",
-      "usage" : "`p!differentiate [Formula] [-v [Value]] <-s [Step]> <Algorithm>`"
+      "usage" : "`%sdifferentiate [Formula] [-v [Value]] <-s [Step]> <Algorithm>`"
     },
     "donate" : {
       "alias" : "`donation`, `don`",
       "description" : "Uploads embed that contains donation links for supporting the bot",
       "url" : "https://github.com/battlecatsultimate/PackPack/wiki/p!donate",
-      "usage" : "`p!donate`"
+      "usage" : "`%sdonate`"
     },
     "downloadApk" : {
       "alias" : "`da`",
       "description" : "Download apk from server directly, and extracts data inside of it. This will be used when you need to analyze stat (`p!sa`) or animation (`p!aa`). **Since this process is very heavy, only trusted users can use this command**",
       "example" : "`p!da -jp`\n`p!da -en`",
       "parameter" : "- `-en/jp/tw/kr`\nDecide BC version which bot will download and analyze",
-      "usage" : "`p!downloadapk [Locale]`"
+      "usage" : "`%sdownloadapk [Locale]`"
     },
     "enemyDps" : {
       "alias" : "`edps`, `ed`",
       "description" : "Show DPS graph of specified enemy depending on range",
       "example" : "`p!ed Kappy Jr. -m 200`",
       "parameter" : "- `-m`\nSet attack magnification of this enemy",
-      "usage" : "`p!enemydps [Enemy Name]`"
+      "usage" : "`%senemydps [Enemy Name]`"
     },
     "enemyGif" : {
       "alias" : "`egif`, `eg`",
@@ -1650,7 +1646,7 @@
       "example" : "`p!eg -d Doge -f 10`\n`p!eg -r 535 -m attack` [Trusted only or `-r` will be ignored]",
       "parameter" : "- `-d`\nEnable debug mode\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
       "tip" : "When typing mode, you don't need to exactly specify name of mode. For example, if mode is `att`, since `Attack` contains these letters, you can activate attack mode. Similarly, same for other modes, for example, `hit` can activate `hitback` mode\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
-      "usage" : "`_enemygif [Enemy Name]`"
+      "usage" : "`%senemygif [Enemy Name]`"
     },
     "enemyImage" : {
       "alias" : "`enemyimg`, `eimage`, `eimg`",
@@ -1658,21 +1654,21 @@
       "example" : "`p!eimg -t Curseblast Doge Base -m Attack -f 100`\n`p!eimg -t 284 -m burrow down -f 5` or `p!eimg -t 284 -m bd -f 5`",
       "parameter" : "- `-t`\nDisplay image with transparent mode\n- `-d` or `-debug`\nEnable debug mode\n- `-f` or `-fr`\nDecide frame of animation\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode",
       "tip" : "When typing mode, you don't need to exactly specify name of mode. For example, if mode is `att`, since `Attack` contains these letters, you can activate attack mode. Similarly, same for other modes, for example, `hit` can activate `hitback` mode\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
-      "usage" : "`_enemyimage [Enemy Name]`"
+      "usage" : "`%senemyimage [Enemy Name]`"
     },
     "enemySprite" : {
       "alias" : "`esprite`, `enemysp`, `esp`",
       "description" : "Try to search enemy with specified name, and upload raw image file of it",
       "example" : "`p!esp Doge`\n`p!esp -edi Relic Bun-Bun`\n`p!esp 535`",
       "parameter" : "- `-edi`\nTry to upload edi icon",
-      "usage" : "`p!enemysprite [Enemy Name]`"
+      "usage" : "`%senemysprite [Enemy Name]`"
     },
     "enemyStat" : {
       "alias" : "`es`",
       "description" : "Try to search enemy with specified name, and display info of it",
       "example" : "`p!es -s Doge -m 200`\n`p!es 024 -m 200, 100 -e`",
       "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-m`\nCustomize this enemy's magnification, can handle both hp, atk magnification. With order of `HP magnification, atk magnification`\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
-      "usage" : "`_enemystat [Name]`"
+      "usage" : "`%senemystat [Name]`"
     },
     "enemyStatAnalyzer" : {
       "alias" : "`estatanalyzer`, `enemysa`, `esa`",
@@ -1680,21 +1676,21 @@
       "example" : "`p!esa -e 612 -s -m 200 -n Haniwanwan -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
       "parameter" : "- `-e` or `-eid`\nDecide ID of enemy\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of enemy\n- `-m`\nSet magnification of this enemy\n- `-p` or `-proc`\nAdd data of chance-related abilities\n- `-a` or `-abil`\nAdd data of passive abilities\n- `-t` or `-trait`\nAdd data of trait\n- `-c` or `-cell`\nAdd data which required to be analyzed\n- `-apk`\nUse analyzed apk data, so that you won't need to send raw files tediously\n- `-en/tw/kr/jp`\nDecide BC version which you will use, it will be used only when `-apk` is turned on",
       "tip" : "This will be the most complicated command and requires basic knowledge of data mining, and access to BC files. I made bot able to handle new data which bot can't catch as possible as I can\n\nIndex starts from 0. This index here means index of values in stat file\n\nData set must be wrapped with {} (i.e. {1, Test Trait})\n\nArrays must be wrapped with [] (i.e. [1,2,3], [t,t,f])\n\nIf array requires boolean data, you don't need to put full `true` or `false`. Just put `t` for `true`, and `f` for `false`, so you can reduce command writing time",
-      "usage" : "`p!enemystatanalyzer -e [Enemy ID]`"
+      "usage" : "`%senemystatanalyzer -e [Enemy ID]`"
     },
     "eventDataArchive" : {
       "alias" : "`eventdataa`, `earchive`, `eda`",
       "description" : "Bring archived event data on specific locale and file type, and upload file of it",
       "example" : "`p!eda -en -i`\n`p!eda -jp -s`",
       "parameter" : "- `-en/jp/tw/kr`\nDecide locale of BC\n- `-g` or `-gatya` or `-gacha`\nFind gacha event data archive\n- `-i` or `-item`\nFind item event data archive\n- `-s` or `-sale`\nFind sale event data archive",
-      "usage" : "`p!eventdataarchive <Locale> <File>`"
+      "usage" : "`%seventdataarchive <Locale> <File>`"
     },
     "findReward" : {
       "alias" : "`freward`, `findr`, `fr`",
       "description" : "Try to search stage with specified reward name, and upload info of it if exists",
       "example" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
       "parameter" : "- `-ch` or `-chance`\nFilter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n- `-a` or `-amount`\nFind reward whose amount is higher or same than specified value\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
-      "usage" : "`p!findreward [Reward Name]`"
+      "usage" : "`%sfindreward [Reward Name]`"
     },
     "findStage" : {
       "alias" : "`findst`, `fstage`, `fst`",
@@ -1703,14 +1699,14 @@
       "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv`\nApply level (new name of star) data\n- `-e` or `-extra`\nShow extra information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-o` or `-or`\nActivate `OR` operation\n- `-a` or `-and`\nActivate `AND` operation\n- `-bg` or `-background`\nSet background ID to filter with\n- `-cs` or `-castle`\nSet castle ID to filter with\n- `-ms` or `-music`\nSet music ID to filter with\n- `-b` or `-boss`\nFind the stage which contains boss\n- `-m` or `-monthly`\nActivate monthly mission filter mode",
       "tip" : "You can provide multiple enemies to filter with. To perform this, provide enemy names, separated with `/` separator. For example, if you want to provide 2 names; `Doge` and `Snache`, then what you will have to write is `Doge/Snache`. **You can provide only up to 5 enemies**\n\n`Or` or `And` operation decides how bot will filter stage with provided enemy combinations. For example, if `Or` operation is activated, then bot will filter stage which contains this enemy **OR** that enemy. If it's `And` operation, then bot will filter stage which contains this enemy **AND** that enemy. `And` operation is turned on as default, and if you provide both `-o` and `-a` parameters, `-a` will have higher priority\n\n",
       "tip2" : "Crystal modifier can adjust status of crystal treasure. For example, you may have beaten only up to ItF Ch.2, so aliens in Ch.3 may have different magnification than full treasure. In this case, you can adjust crystal modifier by passing number of chapter that you finished\n\nFor example, if you are beating Itf Ch.1, then you can pass `-i0` parameter. If you are beating CotC Ch.3, then you can pass `-c2`, and so on",
-      "usage" : "`p!findstage [Filter Data]`"
+      "usage" : "`%sfindstage [Filter Data]`"
     },
     "formDps" : {
       "alias" : "`catdps`, `unitdps`, `fdps`, `cdps`, `udps`, `fd`, `cd`, `ud`",
       "description" : "Show DPS graph of specified unit depending on range",
       "example" : "`p!fdps Fabled Adventure Girl Kanna -lv 50`",
       "parameter" : "- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 8 level`\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
-      "usage" : "`p!formdps [Unit Name]`"
+      "usage" : "`%sformdps [Unit Name]`"
     },
     "formGif" : {
       "alias" : "`fgif`, `fg`, `cg`, `ug`",
@@ -1718,7 +1714,7 @@
       "example" : "`p!fg -d Cat -f 10`\n`p!fg -r 493001 -m attack` [Trusted only or `-r` will be ignored]",
       "parameter" : "- `-d`\nEnable debug mode\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
       "tip" : "When typing mode, you don't need to exactly specify name of mode. For example, if mode is `att`, since `Attack` contains these letters, you can activate attack mode. Similarly, same for other modes, for example, `hit` can activate `hitback` mode\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
-      "usage" : "`_formgif [Unit Name]`"
+      "usage" : "`%sformgif [Unit Name]`"
     },
     "formImage" : {
       "alias" : "`formimg`, `fimage`, `fimg`, `cimg`, `uimg`",
@@ -1726,27 +1722,27 @@
       "example" : "`p!fimg -t Immortal Yukimura -m Attack -f 8`\n`p!fimg -t -d high lord babel -m att -f 120`\n`p!fimg flight unit r.e.i -m hitback` or `p!fimg flight unit r.e.i -m hb`",
       "parameter" : "- `-t`\nDisplay image with transparent mode\n- `-d` or `-debug`\nEnable debug mode\n- `-f` or `-fr`\nDecide frame of animation\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode",
       "tip" : "When typing mode, you don't need to exactly specify name of mode. For example, if mode is `att`, since `Attack` contains these letters, you can activate attack mode. Similarly, same for other modes, for example, `hit` can activate `hitback` mode\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
-      "usage" : "`_formimage [Unit Name]`"
+      "usage" : "`%sformimage [Unit Name]`"
     },
     "formSprite" : {
       "alias" : "`fsprite`, `formsp`, `fsp`, `csp`, `usp`",
       "description" : "Try to search unit with specified name, and upload raw image file of it",
       "example" : "`p!fsp Cat`\n`p!fsp -uni High Lord Babel`\n`p!fsp 071-002`",
       "parameter" : "- `-uni`\nTry to upload uni icon, aka deploy icon\n- `-udi`\nTry to upload udi icon\n- `-edi`\nTry to upload edi icon",
-      "usage" : "`p!formsprite [Unit Name]`"
+      "usage" : "`%sformsprite [Unit Name]`"
     },
     "formStat" : {
       "alias" : "`catstat`, `unitstat`, `fs`, `cs`, `us`",
       "description" : "Try to search unit with specified name, and display info of it",
       "example" : "`p!fs -s -t Cat -lv 30`\n`p!fs -t -e 071002 -lv 50, 1, 1, 1, 1, 1`",
       "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 5 level`\n- `-e` or `-extra`\nShow extra information such as description, catfruit evolve information\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
-      "usage" : "`_formstat [Name]`"
+      "usage" : "`%sformstat [Name]`"
     },
     "format" : {
+      "alias" : "Alias",
       "description" : "Description",
       "example" : "Example",
       "guide" : "Click link above for more detailed guide or explanation",
-      "packPack" : "PackPack Related Commands",
       "parameter" : "Parameters",
       "tip" : "Tips",
       "usage" : "Usage"
@@ -1754,12 +1750,12 @@
     "hasRole" : {
       "alias" : "`hr``",
       "description" : "Find list of users who have specified role. Role must be offered as either mention or ID. **Only Moderators can use this command**",
-      "usage" : "`p!hasrole [Role]`"
+      "usage" : "`%shasrole [Role]`"
     },
     "idSet" : {
       "description" : "Manage the roles that bot will recognize",
       "tip" : "If bot can't specially recognize server's structure, this server will have role called `PackPackMod`. Command which requires **Moderator** command will be able to be used only by users who have `PackPackMod` role at first until they manually set mod role id",
-      "usage" : "`p!idset`"
+      "usage" : "`%sidset`"
     },
     "integrate" : {
       "alias" : "`int`",
@@ -1767,22 +1763,24 @@
       "example" : "`p!int sin(x) -r [0, pi]` (= 2)\n`p!int x^2 -r [0, 3] -b -s [4 * 20]` (= 9)",
       "parameter" : "- `-r` or `-range`\nDefine range, must be wrapped with square brackets (`[]`)\n- `-s` or `-section`\nDefine number of section, must be wrapped with square brackets (`[]`)\n- `-t` or `-trapezoidal`\nApply trapezoidal rule algorithm\n- `-si` or `-simpson`\nApply Simpson's rule algorithm\n- `-s38` or `-simpson38`\nApply Simpson's 3/8 rule algorithm\n- `-b` or `-boole`\nApply Boole's rule algorithm",
       "tip" : "When you writing range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc.\nSame for number of section, such as `[25]`, `[3 * 30]`, etc. Max number of section is 1000\n\nBot provides 4 types of algorithm : Trapezoidal Rule, Simpson's Rule, Simpson's 3/8 Rule, Boole's Rule\n\nNumber of section must be multiples of 2 when using Simpson's Rule\nNumber of section must be multiples of 3 when using Simpson's 3/8 Rule\nNumber of sections must be multiple of 4 when using Boole's Rule\n\nIf algorithm isn't specified, it will perform Closed Newton-Cotes Rule",
-      "usage" : "`p!integrate [Formula] [-r [Range Start, Range End]] <-s Number of Section> <Algorithm>`"
+      "usage" : "`%sintegrate [Formula] [-r [Range Start, Range End]] <-s Number of Section> <Algorithm>`"
     },
     "locale" : {
       "alias" : "`loc`",
       "description" : "Set bot's language only for you",
       "tip" : "If you set your locale to Auto, then your locale will automatically follow server's locale",
       "url" : "https://github.com/battlecatsultimate/PackPack/wiki/p!locale",
-      "usage" : "`_locale [Locale]`"
+      "usage" : "`%slocale [Locale]`"
     },
     "main" : {
       "command" : "Command List",
       "description" : "This embed text contains all commands\nUse `p!help [Command Name]` (without bracket) to see detailed info of specified command directly",
       "selectCategory" : "Please select command category",
       "selectCommand" : "Select command to see details",
+      "commandDetail" : "You can select menu below to see the details of each commands",
       "category" : {
         "bc" : "BC Related Commands",
+        "bot" : "PackPack Related Commands",
         "data" : "Data Analyzing Commands",
         "math" : "Math-Related Commands",
         "normal" : "Normal Commands",
@@ -1793,22 +1791,22 @@
       "alias" : "`md`",
       "description" : "Try to search medal with specified name, and upload info of it",
       "example" : "`p!medal Builder of Empires 3`\n`p!medal 086`",
-      "usage" : "`p!medal [Medal Name]`"
+      "usage" : "`%smedal [Medal Name]`"
     },
     "memory" : {
       "alias" : "`mm`",
       "description" : "Show bot's memory status. **Only Moderators can use this command**",
-      "usage" : "`p!memory`"
+      "usage" : "`%smemory`"
     },
     "music" : {
       "alias" : "`ms`",
       "description" : "Upload music with specified ID. Can be used every 5 seconds",
-      "usage" : "`_music [ID]`"
+      "usage" : "`%smusic [ID]`"
     },
     "optOut" : {
       "description" : "Server may be using DM monitor system or scam link detecting feature of this bot. This means that your message may be being tracked, and users should be able to decide whether they will allow bot to track their messages or not. With this command, you can make bot not track your message anymore, but this will make bot not recognize you, and **it cannot be undone**",
       "url" : "https://github.com/battlecatsultimate/PackPack/wiki/p!optout",
-      "usage" : "`p!optout`"
+      "usage" : "`%soptout`"
     },
     "plot" : {
       "alias" : "`p`",
@@ -1816,7 +1814,7 @@
       "example" : "`p!p x + 2`\n`p!p x^4 + x^3 - 2x^2 - x -xr [-10, 6]`\n`p!p sin(x^2)+sin(y^2)=1`",
       "parameter" : "- `-xr`\nDecide X range, must be wrapped with square brackets (`[]`)\n- `-yr`\nDecide Y range, must be wrapped with square brackets (`[]`)\n- `-r` or `-ratio`\nKeep ratio between X range and Y range 1:1",
       "tip" : "When you writing x/y range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it. Default x range is `[-5, 5]` if not specified\n\nIt only accepts two variables as max. You don't need to use `x` as variable always, any set of letters can be variable like `a`, `b`, etc.",
-      "usage" : "`p!plot [Formula] <-xr X Range> <-yr Y Range>`"
+      "usage" : "`%splot [Formula] <-xr X Range> <-yr Y Range>`"
     },
     "plotRTheta" : {
       "alias" : "`plotrt`, `prtheta`, `prt`, `rt`",
@@ -1824,80 +1822,80 @@
       "example" : "`p!rt r = 1`\n`p!rt r = sin(8 * t / 5) -tr [0, 10 * pi] -xr [-2 , 2]`",
       "parameter" : "- `-xr`\nDecide X range, must be wrapped with square brackets (`[]`)\n- `-yr`\nDecide Y range, must be wrapped with square brackets (`[]`)\n- `-rr`\nDecide r range, must be wrapped with square brackets (`[]`)\n- `-tr`\nDecide θ range, must be wrapped with square brackets (`[]`)",
       "tip" : "When you writing x/y/r/θ range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it\n\nIt's recommended to use `r`, and `t` as variable, `r` being r, and `t` being θ. Then bot will calculate variables with correct order",
-      "usage" : "`p!plotrtheta [Formula] <-tr [θ Range]> <-rr [r Range]>`"
+      "usage" : "`%splotrtheta [Formula] <-tr [θ Range]> <-rr [r Range]>`"
     },
     "prefix" : {
       "description" : "Set your own prefix to make bot recognize your command",
       "url" : "https://github.com/battlecatsultimate/PackPack/wiki/p!prefix",
-      "usage" : "`_prefix [Prefix]`"
+      "usage" : "`%sprefix [Prefix]`"
     },
     "printEvent" : {
       "alias" : "`pe`",
       "description" : "Print all event data (gacha, stage, item). **This command may create long message, so only moderators can use this command to prevent spamming**",
       "example" : "`p!pe -s -en`\n`p!pe -s -f -jp`\n`p!pe -r -s`",
       "parameter" : "- `-en`\nBring BCEN event data\n- `-tw`\nBring BCTW event data\n- `-kr`\nBring BCKR event data\n- `-jp`\nBring BCJP event data\n- `-s`\nFollow server's locale data\n- `-f`\nUpload full event data instead of only newly caught ones\n- `-r` or `-raw`\nShow event data without sorting order of date",
-      "usage" : "`p!printevent`"
+      "usage" : "`%sprintevent`"
     },
     "printGachaEvent" : {
       "alias" : "`pge`",
       "description" : "Print analyzed gacha event data. If locale isn't specified, it will print use server's locale automatically",
       "example" : "`p!pge`\n`p!pge -en`\n`p!pge -f -r`\n`p!pge -r -n`",
       "parameter" : "- `-en`\nBring BCEN gacha data\n- `-tw`\nBring BCTW gacha data\n- `-kr`\nBring BCKR gacha data\n- `-jp`\nBring BCJP gacha data\n- `-f` or `-full`\nBring full data list instead of newly caught event data\n- `-r` or `-raw`\nShow event data without sorting order of date\n- `-n` or `-now`\nShow only on-going event data considering timezone",
-      "usage" : "`p!printgachaevent <Locale>`"
+      "usage" : "`%sprintgachaevent <Locale>`"
     },
     "printItemEvent" : {
       "alias" : "`pie`",
       "description" : "Print analyzed item/sale event data. If locale isn't specified, it will print use server's locale automatically",
       "example" : "`p!pie`\n`p!pie -en`\n`p!pie -f -r`\n`p!pie -r -n`",
       "parameter" : "- `-en`\nBring BCEN item/sale data\n- `-tw`\nBring BCTW item/sale data\n- `-kr`\nBring BCKR item/sale data\n- `-jp`\nBring BCJP item/sale data\n- `-f` or `-full`\nBring full data list instead of newly caught event data\n- `-r` or `-raw`\nShow event data without sorting order of date\n- `-n` or `-now`\nShow only on-going event data considering timezone",
-      "usage" : "`p!printitemevent <Locale>`"
+      "usage" : "`%sprintitemevent <Locale>`"
     },
     "printStageEvent" : {
       "alias" : "`pse`",
       "description" : "Print analyzed stage/event event data. If locale isn't specified, it will print use server's locale automatically",
       "example" : "`p!pse`\n`p!pse -en`\n`p!pse -f -r`\n`p!pse -r -n`",
       "parameter" : "- `-en`\nBring BCEN stage/event data\n- `-tw`\nBring BCTW stage/event data\n- `-kr`\nBring BCKR stage/event data\n- `-jp`\nBring BCJP stage/event data\n- `-f` or `-full`\nBring full data list instead of newly caught event data\n- `-r` or `-raw`\nShow event data without sorting order of date\n- `-n` or `-now`\nShow only on-going event data considering timezone",
-      "usage" : "`p!printstageevent <Locale>`"
+      "usage" : "`%sprintstageevent <Locale>`"
     },
     "registerScamLink" : {
       "alias" : "`rsl`",
       "description" : "Register scam link to database which will be used to auto-moderate compromised users. This command can affect bot's moderating status, so **only allowed servers' moderators can use this command**",
       "tip" : "If you are moderator who has permission, and somehow found this, **__don't use this command for fun__**\n\nWhen registering scam link, try to register link's domain only. For example, if link is `http://something.com/someCode`, then domain will be `http://something.com/`, so you can exclude `someCode` part. This will help bot to moderate users more fluently",
-      "usage" : "`p!registerscamlink [Scam Link]`"
+      "usage" : "`%sregisterscamlink [Scam Link]`"
     },
     "save" : {
       "description" : "Save collected information to server directly. **Only Trusted can use this command because this touches bot's data**",
-      "usage" : "`p!save`"
+      "usage" : "`%ssave`"
     },
     "serverConfig" : {
       "alias" : "`serverc`, `sconfig`, `sc`",
       "description" : "Adjust config of server, so bot can apply preferences automatically. **Only moderators can use this command**",
       "tip" : "When you call this command, bot will show 5 things which can be adjusted : Language, Default level, Extra information, Unit, Compact embed\n\n**Language** - language is that you can make bot show text with difference supporting language\n\n**Default level** - You can make bot apply specific level automatically without calling `-lv` parameter\n\n**Extra information** - You can make bot always show extra information (catfruit evolve data for unit, ex stage data for stage, etc.) without calling `-e` parameter\n\n**Unit** - You can make bot always use frame/second unit for time-related data automatically without calling `-s` parameter\n\n**Compact embed** - In mobile discord, there's problem that bot floods the chat when showing stat embed. This config merges multiple fields into one field, compressing embed messages without calling `-c` parameter",
-      "usage" : "`p!serverconfig`"
+      "usage" : "`%sserverconfig`"
     },
     "serverJson" : {
       "alias" : "`json`, `sj`",
       "description" : "Send server data as json file via DM. **This gives data which are collected by bot, so only trusted can use this command**",
-      "usage" : "`p!serverjson`"
+      "usage" : "`%sserverjson`"
     },
     "serverLocale" : {
       "alias" : "`serverloc`, `slocale`, `sloc`",
       "description" : "Set server's bot language",
-      "usage" : "`_serverlocale [Locale]`"
+      "usage" : "`%sserverlocale [Locale]`"
     },
     "serverPrefix" : {
       "description" : "Set server prefix to make bot recognize user's command. Only **moderators** of server can use this command",
-      "usage" : "`_serverpre [Prefix]`"
+      "usage" : "`%sserverpre [Prefix]`"
     },
     "serverStat" : {
       "alias" : "`ss`",
       "description" : "Display user statistics of this server with percentage data. It will display percentage per assigned role for this server",
-      "usage" : "`_serverstat`"
+      "usage" : "`%sserverstat`"
     },
     "setup" : {
       "description" : "Setup PackPack, so users in this server can use commands properly. **This affects permission of commands for users, so only moderator of this server can use this command**",
       "tip" : "Most of PackPack commands require specific role to be used, so moderators need to give permission to specific role for using these commands. PackPack adds role called `PackPackMod` if there isn't any specified moderator role or member role set. Moderator can add this role and call this command to themselves to firstly initialize role data to restrict uses of commands for users",
-      "usage" : "`p!setup`"
+      "usage" : "`%ssetup`"
     },
     "solve" : {
       "alias" : "`sv`",
@@ -1905,47 +1903,47 @@
       "example" : "`p!sv sin(x)` [3 solutions will be found]\n`p!sv x - 2 = -x^2` [2 solutions will be found]",
       "parameter" : "- `-n` or `-newton`\nUse Newton-Raphson/Newton method algorithm\n- `-b` or `-bisection`\nApply bisection method algorithm\n- `-s` or `-secant`\nApply secant method algorithm\n- `-f` or `-false`\nApply false position method algorithm\n- `-r` or `-range`\nApply range for finding solutions\n- `-i` or `-iteration`\nDefine how many times bot will perform repeated-calculations\n- `-e` or `-error`\nDefine what margin error will be that will make bot stop repeated-calculations",
       "tip" : "Bot provides 4 numerical methods to perform root finding; Newton-Raphson Method, Bisection Method, Secant Method, False Position Method. Keep in mind that algorithm can diverge depending on situations\n\nMaximum iteration is limited as 100. 0% margin error is allowed, but most of time, it will fail to reach this error. If neither error nor iteration are defined, it will follow 0.001% default margin error\n\nYou can pass `f(x) = g(x)` format, or `f(x)` only. If only `f(x)` is passed, then it will assume `f(x) = 0`",
-      "usage" : "`p!solve [Equation] <Algorithm> <Range> <Iteration|Margin Error>`"
+      "usage" : "`%ssolve [Equation] <Algorithm> <Range> <Iteration|Margin Error>`"
     },
     "soul" : {
       "alias" : "`sl`",
       "description" : "Upload animation of soul with specified ID",
       "example" : "`p!sl -d 0 -f 10`\n`p!sl -r 2` [Trusted only or `-r` will be ignored]",
       "parameter" : "- `-d`\nEnable debug mode\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
-      "usage" : "`p!soul [Soul ID]`"
+      "usage" : "`%ssoul [Soul ID]`"
     },
     "soulImage" : {
       "alias" : "`soulimg`, `simage`, `simg`",
       "description" : "Upload image of soul with specified ID",
       "example" : "`p!simg -t 0 -f 30`",
       "parameter" : "- `-t`\nDisplay image with transparent mode\n- `-d` or `-debug`\nEnable debug mode\n- `-f` or `-fr`\nDecide frame of animation",
-      "usage" : "`p!soulimage [Soul ID]`"
+      "usage" : "`%ssoulimage [Soul ID]`"
     },
     "soulSprite" : {
       "alias" : "`soulsp`, `ssprite`, `ssp`",
       "description" : "Upload sprite of soul with specified ID",
-      "usage" : "`p!soulsprite [Soul ID]`"
+      "usage" : "`%ssoulsprite [Soul ID]`"
     },
     "stageImage" : {
       "alias" : "`stimg`, `stimage`, `stageimg`",
       "description" : "Try to generate stage image if it can. It will use BCEN font images if it can as default",
       "example" : "`p!stimg -f Force to use Noto Font`\n`p!stimg -r With Battle Cat's File Format`\n`p!stimg -r -f Now with both parameter`",
       "parameter" : "- `-f`\nForce bot to use noto fonts whether it can generate image with BCEN fonts or not\n- `-r`\nGenerate image with BC image format",
-      "usage" : "`_stageimage [Text]`"
+      "usage" : "`%sstageimage [Text]`"
     },
     "stageInfo" : {
       "alias" : "`si`",
       "description" : "Try to search stage with specified name, and display info of it",
       "example" : "`p!si -s -lv 3 DNA & DHA`\n`p!si -s Eldritch -mc Extra Stages`\n`p!si Jamaica -stm Itf ch.1 zombie`\n`p!si -e -lv 3 2-128-2`",
       "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv` or `-lvl`\nApply level (new name of star) data\n- `-stm`\nSpecify stage map name to be filtered. Must be used after specifying stage name first\n- `-mc`\nSpecify map collection name to be filtered. Must be used after specifying stage name first\n- `-e` or `-extra`\nShow extra stage information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
-      "usage" : "`_stageinfo [Stage Name]`"
+      "usage" : "`%sstageinfo [Stage Name]`"
     },
     "stageMapImage" : {
       "alias" : "`stmimg`, `stagemapimg`, `stmimage`",
       "description" : "Try to generate stage map image if it can",
       "example" : "`p!stmimg -jp The Battle Cats Japanese Font`\n`p!stmimg -r With Battle Cat's File Format`\n`p!stmimg -r -jp Now with both parameters`",
       "parameter" : "- `-jp`\nGenerate image with BCJP fonts\n- `-r`\nGenerate image with BC image format",
-      "usage" : "`_stmimage [Text]`"
+      "usage" : "`%sstmimage [Text]`"
     },
     "stageStatAnalyzer" : {
       "alias" : "`sstatanalyzer`, `stagesa`, `ssa`",
@@ -1953,7 +1951,7 @@
       "example" : "`p!ssa -m 1278 -c S`",
       "parameter" : "- `-m` or `-mid`\nDecide ID of map, for example, 1278, 2180, etc.\n- `-c` or `-code`\nDecide code of map, such as `S`, `C`, etc.\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of stages\n- `-lv`\nSet level of these stages\n- `-en/tw/kr/jp`\nDecide BC version which you will use\n- `-r` or `-range`\nDecide which stages you will analyze specifically",
       "tip" : "This analyzer uses apk file automatically unlike other analyzers due to its complexity\n\nMap ID here isn't just index of map collection. Each map collection code has their own numeric value. For example, code `S` is 1000, `E` is 4000, etc. You have to include this numeric code value, so that ID's format becomes `Code value + Index value`\n\nIf code is same with map code of Gauntlet Stage (RA), or Collaboration Gauntlet Stage (CA), it will generate 10s stages only (1, 11, 21, ..., and max)\n\nWhen deciding range of stage that will be analyzed, you can pass stage ID, with `,` (i.e. `1, 2, 4`). Or, you can perform range with `-` (i.e. `1-3, 4-6`). For example, combination of these two will be `1, 3, 5-8, 10`, then bot will analyze only stage `1, 3, 5, 6, 7, 8, 10`",
-      "usage" : "`p!stagestatanalyzer -c [Code] -m [Map ID] -n <Name>`"
+      "usage" : "`%sstagestatanalyzer -c [Code] -m [Map ID] -n <Name>`"
     },
     "statAnalyzer" : {
       "active" : "Format : `{indexArray, format, isTimeUnitArray, ignoreIndex} <intArray, string, booleanArray, int>`\n\n - ignoreIndex is the index of element which will be checked. If you want to check 1st element, then pass this as `0`. If specified element in array is 0, then bot will consider this unit doesn't have ability, so it won't add description about this data. This is for preventing `0% chance to ...`\n\n - isTimeUnitArray decides whether specific index of element is time unit (Data which has to be displayed with frame/second unit). If you passed [t, f] as data, when bot writing ability description about first data, it will write data with frame or second data\n\n - To put data of indexArray into text, you have to wrap with underscores (_), for example, if you want to put 1st data of indexArray, put `_0_`, 2nd will be `_1_`, and so on. For example, if data is [1,2] and you wrote text as `_0_% chance to do for _1_`, then result will be `1% chance to do for 2`",
@@ -1967,31 +1965,31 @@
       "passive" : "Format : `{index, text} <int, string>`\n\nUse this parameter when bot can't handle specific new passive ability",
       "tip" : "This will be the most complicated command and requires basic knowledge of data mining, and access to BC files. I made bot able to handle new data which bot can't catch as possible as I can\n\nIndex starts from 0. This index here means index of values in stat file\n\nData set must be wrapped with {} (i.e. {1, Test Trait})\n\nArrays must be wrapped with [] (i.e. [1,2,3], [t,t,f])\n\nIf array requires boolean data, you don't need to put full `true` or `false`. Just put `t` for `true`, and `f` for `false`, so you can reduce command writing time",
       "trait" : "Format : `{index, name} <int, string>`\n\nUse this parameter when bot can't handle specific new trait",
-      "usage" : "`p!statanalyzer -u [Unit ID] -l [Length]`"
+      "usage" : "`%sstatanalyzer -u [Unit ID] -l [Length]`"
     },
     "statistic" : {
       "alias" : "`stat`",
       "description" : "Show bot's useless, but interesting information",
-      "usage" : "`p!statistic`"
+      "usage" : "`%sstatistic`"
     },
     "subscribeEvent" : {
       "alias" : "`se`",
       "description" : "Subscribe event data and decide channel where bot will upload new event data. Can subscribe to multiple BC version (EN, TW, KR, JP). **Only moderators can use this command**",
-      "usage" : "`p!subscribeevent`"
+      "usage" : "`%ssubscribeevent`"
     },
     "subscribeScamLinkDetector" : {
       "alias" : "`ssld`, `ssd`",
       "description" : "Subscribe to feature of bot, which detects scam link automatically and auto-moderate users who sent links. **Only moderators can use this command**",
       "parameter" : "- `-m`\nDecide mute role. Must be provided with its raw numeric ID",
       "tip" : "This feature was made to establish scam link database, and help moderators to moderate compromised accounts. Moderators can choose 3 kinds of action for them : \n\n - Mute\n - Kick (Need reconsidering)\n - Ban (Not recommended)\n\nModerators must provide mute role ID via `-m` parameter if they want to choose mute action. If bot could catch compromised account and if this user is in this server, it will report user to specified report channel. Moderators also can decide to make bot upload info about those who aren't in server as well\n\nBe aware that don't rely on this bot too much. It can do false moderation to users, so too strong action such as ban may lead to bad situation",
-      "usage" : "`p!subscribescamlinkdetector [Report Channel] <-m Mute Role ID>`"
+      "usage" : "`%ssubscribescamlinkdetector [Report Channel] <-m Mute Role ID>`"
     },
     "suggest" : {
       "description" : "Suggest your idea or report PackPack's bug directly to developer. There is 1 hour cool down per suggestion/report individually",
       "example" : "`p!suggest Can we make X feature able to be used by Members?`\n`p!suggest Add X feature -d It will be useful when doing Y`",
       "parameter" : "- `-d`\nAdd description / explanation about your suggestion / report",
       "tip" : "When you use this command, **bot directly sends what you suggested to developer via DM**. Be aware that __abusing this command will lead to ban from suggestion permanently__. This feature is implemented for fluent feedbacks from users, so if abusing case appears too much, this feature may be removed in future",
-      "usage" : "`p!suggest [Suggestion Title]`"
+      "usage" : "`%ssuggest [Suggestion Title]`"
     },
     "tPlot" : {
       "alias" : "`tp`",
@@ -1999,32 +1997,32 @@
       "example" : "`p!tp -xt sin(t) -yt cos(t) -tr [0, 2 * pi]`\n`p!tp -xt 2 * cos(t) + sin(2t) * cos(60t) -yt sin(2t) + sin(60t) -tr [0, 2 * pi] -r`",
       "parameter" : "- `-xt`\nDefine x(t)\n- `-yt`\nDefine y(t)\n- `-tr`\nDecide T range, must be wrapped with square brackets(`[]`)\n- `-r` or `-ratio`\nKeep ratio between X range and Y range 1:1",
       "tip" : "When you writing t range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it. Default x range is `[-5, 5]` if not specified",
-      "usage" : "`p!tplot [-xt X Function] [-yt Y Function]`"
+      "usage" : "`%stplot [-xt X Function] [-yt Y Function]`"
     },
     "talentAnalyzer" : {
       "alias" : "`tala`, `ta`",
       "description" : "Analyze talent data of specified unit from apk file, and upload image of analysis. **Only Trusted users can use this command**",
       "example" : "`p!ta -u 534`\n`p!ta -u 417 -n Subterra Sentinels`",
       "parameter" : "- `-u` or `-uid`\nDecide ID of unit\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of this unit\n- `-en/tw/kr/jp`\nDecide BC version which you will use",
-      "usage" : "`p!talentanalyzer -u [Unit ID]`"
+      "usage" : "`%stalentanalyzer -u [Unit ID]`"
     },
     "talentInfo" : {
       "alias" : "`ti`",
       "description" : "Try to search talent of this unit with specified name, and upload info of it if exists",
       "parameter" : "- `-s` or `-second`\nDisplay info with seconds instead of frames\n- `-f` or `-fr` or -`frame`\nDisplay info with frames instead of seconds",
-      "usage" : "`p!talentinfo [Unit Name]`"
+      "usage" : "`%stalentinfo [Unit Name]`"
     },
     "timezone" : {
       "alias" : "`tz`",
       "description" : "Register your timezone, so bot can consider your time when using some commands. Timezone relies on GMT format. For example, if you passed 3, then it means GMT+3. If you passed -2, then it means GMT-2. Timezone range is from -12 to 12",
       "example" : "`p!tz 3`\n`p!tz -10`",
-      "usage" : "`p!timezone [Time]`"
+      "usage" : "`%stimezone [Time]`"
     },
     "treasure" : {
       "alias" : "`tr`",
       "description" : "Customized personal treasure data which can be used for other commands",
       "tip" : "Sometimes you may have non-full treasures due to your account's progression. In this case, you can modify your treasure setting to make bot show stats with considering your progression. Keep in mind that server has ability to force you to use full treasure always, so your custom treasure setting may not be applied to other commands. In this case, you can DM to bot to use your treasure setting",
-      "usage" : "`p!treasure`"
+      "usage" : "`%streasure`"
     },
     "trueFormAnalyzer" : {
       "alias" : "`tfanalyzer`, `trueforma`, `tfa`",
@@ -2032,22 +2030,22 @@
       "example" : "`p!tfa -u 665 -s -lv 50 -n Exorcist Cat -c {[0], Test Data, false, false, false} -t {0, Test Trait} -p {[0, 1, 2], _0_% chance to do something to _1_ for _2_, [f, f, t], 0}`",
       "parameter" : "- `-u` or `-uid`\nDecide ID of unit\n- `-s` or `-second`\nUse second unit\n- `-n` or `-name`\nDecide custom name of this unit, must provide same number with number of forms. `,` is separator\n- `-lv`\nSet level of this unit\n- `-p` or `-proc`\nAdd data of chance-related abilities\n- `-a` or `-abil`\nAdd data of passive abilities\n- `-t` or `-trait`\nAdd data of trait\n- `-c` or `-cell`\nAdd data which required to be analyzed\n- `-apk`\nUse analyzed apk data, so that you won't need to send raw files tediously\n- `-en/tw/kr/jp`\nDecide BC version which you will use, it will be used only when `-apk` is turned on",
       "tip" : "This will be the most complicated command and requires basic knowledge of data mining, and access to BC files. I made bot able to handle new data which bot can't catch as possible as I can\n\nIndex starts from 0. This index here means index of values in stat file\n\nData set must be wrapped with {} (i.e. {1, Test Trait})\n\nArrays must be wrapped with [] (i.e. [1,2,3], [t,t,f])\n\nIf array requires boolean data, you don't need to put full `true` or `false`. Just put `t` for `true`, and `f` for `false`, so you can reduce command writing time",
-      "usage" : "`p!trueformanalyzer -u [Unit ID]`"
+      "usage" : "`%strueformanalyzer -u [Unit ID]`"
     },
     "unregisterScamLink" : {
       "alias" : "`usl`",
       "description" : "Unregister scam link from database which will be used to auto-moderate compromised users. This command can affect bot's moderating status, so **only allowed servers' moderators can use this command**",
-      "usage" : "`p!unregisterscamlink [Scam Link]`"
+      "usage" : "`%sunregisterscamlink [Scam Link]`"
     },
     "unsubscribeScamLinkDetector" : {
       "alias" : "`usld`, `usd`",
       "description" : "Unsubscribe from feature of bot, which detects scam link automatically and auto-moderate users who sent these kinds of links. **Only moderators can use this command**",
-      "usage" : "`p!unsubscribescamlinkdetector`"
+      "usage" : "`%sunsubscribescamlinkdetector`"
     },
     "watchDM" : {
       "alias" : "`wd`",
       "description" : "Detect users sending potential compromised link to the bot's DM. **Only moderators can use this command**",
-      "usage" : "_watchdm"
+      "usage" : "%swatchdm"
     }
   },
   "hi" : {
