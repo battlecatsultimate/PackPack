@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
@@ -565,6 +566,15 @@ public class AllEventAdapter extends ListenerAdapter {
             case "hasrole", "hr" -> new HasRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "optin", "oi" -> new OptIn(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
+    }
+
+    @Override
+    public void onMessageDelete(@NotNull MessageDeleteEvent event) {
+        super.onMessageDelete(event);
+
+        String messageID = event.getMessageId();
+
+        StaticStore.holders.values().forEach(hub -> hub.handleMessageDelete(messageID));
     }
 
     @Override
