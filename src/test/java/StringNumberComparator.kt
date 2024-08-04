@@ -17,16 +17,6 @@ fun main() {
     if (!fixedFolder.exists() && !fixedFolder.mkdirs())
         return
 
-    val enJson = File("./data/lang/en.json")
-
-    val enReader = FileReader(enJson)
-    val enObj = JsonParser.parseReader(enReader)
-
-    enReader.close()
-
-    if (enObj !is JsonObject)
-        return
-
     localeCode.forEach { code ->
         val f = File("./data/lang/$code.json")
 
@@ -40,9 +30,46 @@ fun main() {
 
         val newObj = JsonObject()
 
-        enObj.keySet().forEach { key ->
-            if (obj.has(key)) {
+        obj.keySet().forEach { key ->
+            val pathData = key.split(".")
+            var o: JsonObject? = null
 
+            pathData.forEachIndexed { index, path ->
+                if (index == pathData.lastIndex) {
+                    if (o == null) {
+                        newObj.addProperty(path, obj.get(key).asString)
+                    } else {
+                        o.addProperty(path, obj.get(key).asString)
+                    }
+                } else {
+                    o = if (o == null) {
+                        if (newObj.has(path)) {
+                            newObj.getAsJsonObject(path)
+                        } else {
+                            val temp = JsonObject()
+
+                            newObj.add(path, temp)
+
+                            temp
+                        }
+                    } else {
+                        if (o.has(path)) {
+                            val check = o.get(path)
+
+                            if (check is JsonObject) {
+                                check.asJsonObject
+                            } else {
+                                throw IllegalStateException("${pathData.subList(0, index + 1).joinToString(".")} is already registered as string for $key")
+                            }
+                        } else {
+                            val temp = JsonObject()
+
+                            o.add(path, temp)
+
+                            temp
+                        }
+                    }
+                }
             }
         }
 
