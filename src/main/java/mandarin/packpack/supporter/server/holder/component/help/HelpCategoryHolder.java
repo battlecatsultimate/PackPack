@@ -56,8 +56,7 @@ public class HelpCategoryHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
-        message.editMessageEmbeds(getEmbed())
-                .setComponents()
+        message.editMessageComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();

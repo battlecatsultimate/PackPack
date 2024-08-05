@@ -49,7 +49,10 @@ public class HelpDetailHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
-
+        message.editMessageComponents()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
     }
 
     @Override
