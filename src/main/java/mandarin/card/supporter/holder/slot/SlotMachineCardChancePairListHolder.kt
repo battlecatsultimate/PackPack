@@ -46,7 +46,7 @@ class SlotMachineCardChancePairListHolder(
     }
 
     override fun onExpire() {
-        message.editMessage("Skin manager expired")
+        message.editMessage("Slot machine manager expired")
             .setComponents()
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
