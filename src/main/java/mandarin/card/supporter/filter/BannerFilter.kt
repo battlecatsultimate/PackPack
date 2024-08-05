@@ -16,7 +16,7 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
         fun getBannerName(banner: Banner) : String {
             return when(banner) {
                 Banner.DarkHeroes -> "Dark Heroes"
-                Banner.DragonEmperors -> "Dragone Emperors"
+                Banner.DragonEmperors -> "Dragon Emperors"
                 Banner.Dynamites -> "Dynamites"
                 Banner.ElementalPixies -> "Elemental Pixies"
                 Banner.GalaxyGals -> "Galaxy Girls"
