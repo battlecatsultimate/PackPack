@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
@@ -181,7 +182,11 @@ public class Logger {
         if(ch == null)
             return;
 
-        ch.sendMessage(content).queue();
+        if (content.length() > Message.MAX_CONTENT_LENGTH) {
+            ch.sendMessage(content.substring(0, Message.MAX_CONTENT_LENGTH) + "...").queue();
+        } else {
+            ch.sendMessage(content).queue();
+        }
     }
 
     public static void addLog(String content) {
@@ -202,9 +207,15 @@ public class Logger {
     }
 
     private void createMessageWithNoPings(GuildMessageChannel ch, String content) {
-        ch.sendMessage(content)
-                .setAllowedMentions(new ArrayList<>())
-                .queue();
+        if (content.length() > Message.MAX_CONTENT_LENGTH) {
+            ch.sendMessage(content.substring(0, Message.MAX_CONTENT_LENGTH - 3) + "...")
+                    .setAllowedMentions(new ArrayList<>())
+                    .queue();
+        } else {
+            ch.sendMessage(content)
+                    .setAllowedMentions(new ArrayList<>())
+                    .queue();
+        }
     }
 
     private void createMessageWithNoPingsWithFile(GuildMessageChannel ch, String content, Runnable run, File... files) {
@@ -214,8 +225,15 @@ public class Logger {
             }
         }
 
-        MessageCreateAction action = ch.sendMessage(content)
-                .setAllowedMentions(new ArrayList<>());
+        MessageCreateAction action;
+
+        if (content.length() > Message.MAX_CONTENT_LENGTH) {
+            action = ch.sendMessage(content.substring(0, Message.MAX_CONTENT_LENGTH - 3) + "...")
+                    .setAllowedMentions(new ArrayList<>());
+        } else {
+            action = ch.sendMessage(content)
+                    .setAllowedMentions(new ArrayList<>());
+        }
 
         for(int i = 0; i < files.length; i++) {
             action = action.addFiles(FileUpload.fromData(files[i], files[i].getName()));
