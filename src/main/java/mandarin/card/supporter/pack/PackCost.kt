@@ -130,52 +130,7 @@ class PackCost(
                 val totalCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.unitID in cost.banner.getBannerData()) amount else 0 }
                 val existingCards = totalCards - (bannerCards[cost.banner] ?: 0)
 
-                val bannerName = when(cost.banner) {
-                    BannerFilter.Banner.DarkHeroes -> "Dark Heroes"
-                    BannerFilter.Banner.DragonEmperors -> "Dragone Emperors"
-                    BannerFilter.Banner.Dynamites -> "Dynamites"
-                    BannerFilter.Banner.ElementalPixies -> "Elemental Pixies"
-                    BannerFilter.Banner.GalaxyGals -> "Galaxy Girls"
-                    BannerFilter.Banner.IronLegion -> "Iron Legion"
-                    BannerFilter.Banner.SengokuWargods -> "Sengoku Wargods"
-                    BannerFilter.Banner.TheNekolugaFamily -> "The Nekoluga Family"
-                    BannerFilter.Banner.UltraSouls -> "Ultra Souls"
-                    BannerFilter.Banner.GirlsAndMonsters -> "Girls And Monsters"
-                    BannerFilter.Banner.TheAlimighties -> "The Almighties"
-                    BannerFilter.Banner.EpicfestExclusives -> "Epicfest Exclusives"
-                    BannerFilter.Banner.UberfestExclusives -> "Uberfest Exclusives"
-                    BannerFilter.Banner.OtherExclusives -> "Other Exclusives"
-                    BannerFilter.Banner.BusterExclusives -> "Buster Exclusives"
-                    BannerFilter.Banner.Valentine -> "Valentine's Day"
-                    BannerFilter.Banner.Whiteday -> "White Day"
-                    BannerFilter.Banner.Easter -> "Easter"
-                    BannerFilter.Banner.JuneBride -> "June Bride"
-                    BannerFilter.Banner.SummerGals -> "Summer Gals"
-                    BannerFilter.Banner.Halloweens -> "Halloween"
-                    BannerFilter.Banner.XMas -> "X-Max"
-                    BannerFilter.Banner.Bikkuriman -> "Bikkuriman"
-                    BannerFilter.Banner.CrashFever -> "Crash Fever"
-                    BannerFilter.Banner.Fate -> "Fate Stay/Night"
-                    BannerFilter.Banner.Miku -> "Hatsune Miku"
-                    BannerFilter.Banner.MercStroia -> "Merc Storia"
-                    BannerFilter.Banner.Evangelion -> "Evangelion"
-                    BannerFilter.Banner.PowerPro -> "Power Pro Baseball"
-                    BannerFilter.Banner.Ranma -> "Ranma 1/2"
-                    BannerFilter.Banner.RiverCity -> "River City"
-                    BannerFilter.Banner.ShoumetsuToshi -> "Annihilated City"
-                    BannerFilter.Banner.StreetFighters -> "Street Fighters"
-                    BannerFilter.Banner.MolaSurvive -> "Survive! Mola Mola!"
-                    BannerFilter.Banner.MetalSlug -> "Metal Slug"
-                    BannerFilter.Banner.PrincessPunt -> "Princess Punt"
-                    BannerFilter.Banner.Collaboration,
-                    BannerFilter.Banner.Seasonal,
-                    BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner ${cost.banner} found")
-
-                    BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
-                    BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
-                    BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                    BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
-                }
+                val bannerName = BannerFilter.getBannerName(cost.banner)
 
                 if (existingCards < cost.amount) {
                     builder.append("- You don't have enough $bannerName cards. You currently have $totalCards card(s)\n")

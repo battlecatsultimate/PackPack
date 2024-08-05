@@ -442,7 +442,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
         val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
             .filter { c ->
                 when (salvageMode) {
-                    CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                    CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlmighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
                     CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
                     CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
                     else -> true
