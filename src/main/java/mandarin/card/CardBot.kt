@@ -659,6 +659,8 @@ object CardBot : ListenerAdapter() {
                 skin.cacheLink = ""
             }
         }
+
+        StaticStore.holders.values.forEach { hub -> hub.handleMessageDelete(event.messageId) }
     }
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {

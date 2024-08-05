@@ -78,4 +78,18 @@ public class HolderHub {
             default -> { }
         }
     }
+
+    public void handleMessageDelete(String messageID) {
+        if (messageHolder != null && messageHolder.message.getId().equals(messageID)) {
+            messageHolder.end(true);
+        }
+
+        if (componentHolder != null && componentHolder.message.getId().equals(messageID)) {
+            componentHolder.end(true);
+        }
+
+        if (modalHolder != null && modalHolder.message.getId().equals(messageID)) {
+            modalHolder.end(true);
+        }
+    }
 }

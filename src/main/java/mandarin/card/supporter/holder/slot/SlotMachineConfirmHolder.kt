@@ -39,7 +39,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
     }
 
     override fun onExpire() {
-        message.editMessage("Skin manager expired")
+        message.editMessage("Slot machine select expired")
             .setComponents()
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)

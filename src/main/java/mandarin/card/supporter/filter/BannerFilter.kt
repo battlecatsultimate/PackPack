@@ -12,6 +12,57 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
             banner != Banner.LegendRare &&
             banner != Banner.Collaboration
         }
+
+        fun getBannerName(banner: Banner) : String {
+            return when(banner) {
+                Banner.DarkHeroes -> "Dark Heroes"
+                Banner.DragonEmperors -> "Dragon Emperors"
+                Banner.Dynamites -> "Dynamites"
+                Banner.ElementalPixies -> "Elemental Pixies"
+                Banner.GalaxyGals -> "Galaxy Girls"
+                Banner.IronLegion -> "Iron Legion"
+                Banner.SengokuWargods -> "Sengoku Wargods"
+                Banner.TheNekolugaFamily -> "The Nekoluga Family"
+                Banner.UltraSouls -> "Ultra Souls"
+                Banner.GirlsAndMonsters -> "Girls And Monsters"
+                Banner.TheAlmighties -> "The Almighties"
+                Banner.EpicfestExclusives -> "Epicfest Exclusives"
+                Banner.UberfestExclusives -> "Uberfest Exclusives"
+                Banner.OtherExclusives -> "Other Exclusives"
+                Banner.BusterExclusives -> "Buster Exclusives"
+                Banner.Valentine -> "Valentine's Day"
+                Banner.Whiteday -> "White Day"
+                Banner.Easter -> "Easter"
+                Banner.JuneBride -> "June Bride"
+                Banner.SummerGals -> "Summer Gals"
+                Banner.Halloweens -> "Halloween"
+                Banner.XMas -> "X-Max"
+                Banner.Bikkuriman -> "Bikkuriman"
+                Banner.CrashFever -> "Crash Fever"
+                Banner.Fate -> "Fate Stay/Night"
+                Banner.Miku -> "Hatsune Miku"
+                Banner.MercStroia -> "Merc Storia"
+                Banner.Evangelion -> "Evangelion"
+                Banner.PowerPro -> "Power Pro Baseball"
+                Banner.Ranma -> "Ranma 1/2"
+                Banner.RiverCity -> "River City"
+                Banner.ShoumetsuToshi -> "Annihilated City"
+                Banner.StreetFighters -> "Street Fighters"
+                Banner.MolaSurvive -> "Survive! Mola Mola!"
+                Banner.MetalSlug -> "Metal Slug"
+                Banner.PrincessPunt -> "Princess Punt"
+                Banner.TowerOfSavior -> "Tower of Savior"
+                Banner.RurouniKenshin -> "Rurouni Kenshin"
+                Banner.Collaboration,
+                Banner.Seasonal,
+                Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner $banner found")
+
+                Banner.CheetahT1 -> "Tier 1 [Common]"
+                Banner.CheetahT2 -> "Tier 2 [Uncommon]"
+                Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+                Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
+            }
+        }
     }
 
     enum class Banner(val tier: CardData.Tier, val category: Int) {
@@ -25,7 +76,7 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
         TheNekolugaFamily(CardData.Tier.COMMON, 7),
         UltraSouls(CardData.Tier.COMMON, 8),
         GirlsAndMonsters(CardData.Tier.UNCOMMON, 0),
-        TheAlimighties(CardData.Tier.UNCOMMON, 1),
+        TheAlmighties(CardData.Tier.UNCOMMON, 1),
         Valentine(CardData.Tier.UNCOMMON,4),
         Whiteday(CardData.Tier.UNCOMMON, 5),
         Easter(CardData.Tier.UNCOMMON, 6),
@@ -47,6 +98,8 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
         MolaSurvive(CardData.Tier.UNCOMMON, 22),
         MetalSlug(CardData.Tier.UNCOMMON, 23),
         PrincessPunt(CardData.Tier.UNCOMMON, 24),
+        TowerOfSavior(CardData.Tier.UNCOMMON, 25),
+        RurouniKenshin(CardData.Tier.UNCOMMON, 26),
         EpicfestExclusives(CardData.Tier.ULTRA, 0),
         UberfestExclusives(CardData.Tier.ULTRA, 1),
         OtherExclusives(CardData.Tier.ULTRA, 2),

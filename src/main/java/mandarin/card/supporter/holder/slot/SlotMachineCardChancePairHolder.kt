@@ -50,7 +50,7 @@ class SlotMachineCardChancePairHolder(
     }
 
     override fun onExpire() {
-        message.editMessage("Skin manager expired")
+        message.editMessage("Slot machine manager expired")
             .setComponents()
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
@@ -265,52 +265,7 @@ class SlotMachineCardChancePairHolder(
         val size = min((page + 1) * SearchHolder.PAGE_CHUNK, BannerFilter.pureBanners.size)
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            val bannerName = when(BannerFilter.pureBanners[i]) {
-                BannerFilter.Banner.DarkHeroes -> "Dark Heroes"
-                BannerFilter.Banner.DragonEmperors -> "Dragone Emperors"
-                BannerFilter.Banner.Dynamites -> "Dynamites"
-                BannerFilter.Banner.ElementalPixies -> "Elemental Pixies"
-                BannerFilter.Banner.GalaxyGals -> "Galaxy Girls"
-                BannerFilter.Banner.IronLegion -> "Iron Legion"
-                BannerFilter.Banner.SengokuWargods -> "Sengoku Wargods"
-                BannerFilter.Banner.TheNekolugaFamily -> "The Nekoluga Family"
-                BannerFilter.Banner.UltraSouls -> "Ultra Souls"
-                BannerFilter.Banner.GirlsAndMonsters -> "Girls And Monsters"
-                BannerFilter.Banner.TheAlimighties -> "The Almighties"
-                BannerFilter.Banner.EpicfestExclusives -> "Epicfest Exclusives"
-                BannerFilter.Banner.UberfestExclusives -> "Uberfest Exclusives"
-                BannerFilter.Banner.OtherExclusives -> "Other Exclusives"
-                BannerFilter.Banner.BusterExclusives -> "Buster Exclusives"
-                BannerFilter.Banner.Valentine -> "Valentine's Day"
-                BannerFilter.Banner.Whiteday -> "White Day"
-                BannerFilter.Banner.Easter -> "Easter"
-                BannerFilter.Banner.JuneBride -> "June Bride"
-                BannerFilter.Banner.SummerGals -> "Summer Gals"
-                BannerFilter.Banner.Halloweens -> "Halloween"
-                BannerFilter.Banner.XMas -> "X-Max"
-                BannerFilter.Banner.Bikkuriman -> "Bikkuriman"
-                BannerFilter.Banner.CrashFever -> "Crash Fever"
-                BannerFilter.Banner.Fate -> "Fate Stay/Night"
-                BannerFilter.Banner.Miku -> "Hatsune Miku"
-                BannerFilter.Banner.MercStroia -> "Merc Storia"
-                BannerFilter.Banner.Evangelion -> "Evangelion"
-                BannerFilter.Banner.PowerPro -> "Power Pro Baseball"
-                BannerFilter.Banner.Ranma -> "Ranma 1/2"
-                BannerFilter.Banner.RiverCity -> "River City"
-                BannerFilter.Banner.ShoumetsuToshi -> "Annihilated City"
-                BannerFilter.Banner.StreetFighters -> "Street Fighters"
-                BannerFilter.Banner.MolaSurvive -> "Survive! Mola Mola!"
-                BannerFilter.Banner.MetalSlug -> "Metal Slug"
-                BannerFilter.Banner.PrincessPunt -> "Princess Punt"
-                BannerFilter.Banner.Collaboration,
-                BannerFilter.Banner.Seasonal,
-                BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner ${BannerFilter.pureBanners[i]} found")
-
-                BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
-                BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
-                BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
-            }
+            val bannerName = BannerFilter.getBannerName(BannerFilter.pureBanners[i])
 
             val emoji = if (BannerFilter.pureBanners[i] in pair.cardGroup.extra) {
                 EmojiStore.SWITCHON.formatted
@@ -359,52 +314,7 @@ class SlotMachineCardChancePairHolder(
         val size = min((page + 1) * SearchHolder.PAGE_CHUNK, BannerFilter.pureBanners.size)
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            val bannerName = when(BannerFilter.pureBanners[i]) {
-                BannerFilter.Banner.DarkHeroes -> "Dark Heroes"
-                BannerFilter.Banner.DragonEmperors -> "Dragone Emperors"
-                BannerFilter.Banner.Dynamites -> "Dynamites"
-                BannerFilter.Banner.ElementalPixies -> "Elemental Pixies"
-                BannerFilter.Banner.GalaxyGals -> "Galaxy Girls"
-                BannerFilter.Banner.IronLegion -> "Iron Legion"
-                BannerFilter.Banner.SengokuWargods -> "Sengoku Wargods"
-                BannerFilter.Banner.TheNekolugaFamily -> "The Nekoluga Family"
-                BannerFilter.Banner.UltraSouls -> "Ultra Souls"
-                BannerFilter.Banner.GirlsAndMonsters -> "Girls And Monsters"
-                BannerFilter.Banner.TheAlimighties -> "The Almighties"
-                BannerFilter.Banner.EpicfestExclusives -> "Epicfest Exclusives"
-                BannerFilter.Banner.UberfestExclusives -> "Uberfest Exclusives"
-                BannerFilter.Banner.OtherExclusives -> "Other Exclusives"
-                BannerFilter.Banner.BusterExclusives -> "Buster Exclusives"
-                BannerFilter.Banner.Valentine -> "Valentine's Day"
-                BannerFilter.Banner.Whiteday -> "White Day"
-                BannerFilter.Banner.Easter -> "Easter"
-                BannerFilter.Banner.JuneBride -> "June Bride"
-                BannerFilter.Banner.SummerGals -> "Summer Gals"
-                BannerFilter.Banner.Halloweens -> "Halloween"
-                BannerFilter.Banner.XMas -> "X-Max"
-                BannerFilter.Banner.Bikkuriman -> "Bikkuriman"
-                BannerFilter.Banner.CrashFever -> "Crash Fever"
-                BannerFilter.Banner.Fate -> "Fate Stay/Night"
-                BannerFilter.Banner.Miku -> "Hatsune Miku"
-                BannerFilter.Banner.MercStroia -> "Merc Storia"
-                BannerFilter.Banner.Evangelion -> "Evangelion"
-                BannerFilter.Banner.PowerPro -> "Power Pro Baseball"
-                BannerFilter.Banner.Ranma -> "Ranma 1/2"
-                BannerFilter.Banner.RiverCity -> "River City"
-                BannerFilter.Banner.ShoumetsuToshi -> "Annihilated City"
-                BannerFilter.Banner.StreetFighters -> "Street Fighters"
-                BannerFilter.Banner.MolaSurvive -> "Survive! Mola Mola!"
-                BannerFilter.Banner.MetalSlug -> "Metal Slug"
-                BannerFilter.Banner.PrincessPunt -> "Princess Punt"
-                BannerFilter.Banner.Collaboration,
-                BannerFilter.Banner.Seasonal,
-                BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner ${BannerFilter.pureBanners[i]} found")
-
-                BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
-                BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
-                BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
-            }
+            val bannerName = BannerFilter.getBannerName(BannerFilter.pureBanners[i])
 
             bannerOptions.add(SelectOption.of(bannerName, BannerFilter.pureBanners[i].name))
         }

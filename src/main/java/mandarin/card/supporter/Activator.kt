@@ -22,10 +22,11 @@ enum class Activator(val tier: CardData.Tier, val banner: Int, val title: String
     RiverCity(CardData.Tier.UNCOMMON, 19, "River City Clash Capsules"),
     ShoumetsuToshi(CardData.Tier.UNCOMMON, 20, "Shoumetsu Toshi"),
     StreetFighters(CardData.Tier.UNCOMMON, 21, "Street Fighters Red/Blue"),
-    SuriveMola(CardData.Tier.UNCOMMON, 22, "Survive! Mola Mola!"),
+    SurviveMola(CardData.Tier.UNCOMMON, 22, "Survive! Mola Mola!"),
     MetalSlug(CardData.Tier.UNCOMMON, 23, "Metal Slug"),
     PrincessPunt(CardData.Tier.UNCOMMON, 24, "Princess Punt"),
     TowerOfSavior(CardData.Tier.UNCOMMON, 25, "Tower of Savior"),
+    RurouniKenshin(CardData.Tier.UNCOMMON, 26, "Rurouni Kenshin"),
 
     //Valkyrie
     LilValkyrie(CardData.Tier.ULTRA, 3, "Li'l Valkyrie"),
