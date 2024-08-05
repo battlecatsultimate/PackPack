@@ -514,7 +514,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     } else {
                         String langID = "event.sale."+id;
 
-                        String temp = LangID.getStringByID(langID, lang);
+                        String temp = LangID.getStringByIDSuppressed(langID, lang);
 
                         if(!temp.equals(langID)) {
                             result.append(temp);

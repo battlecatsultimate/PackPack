@@ -422,7 +422,7 @@ public class EventFactor {
         if(item == null || item.isBlank()) {
             String id = "event.item."+itemID;
 
-            item = LangID.getStringByID(id, lang);
+            item = LangID.getStringByIDSuppressed(id, lang);
 
             if (item.equals(id)) {
                 if(itemID >= 800 && itemID < 900) {
