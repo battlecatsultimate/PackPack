@@ -46,6 +46,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
@@ -95,7 +96,13 @@ public class AllEventAdapter extends ListenerAdapter {
 
             findInviter(g).queue(m ->
                 m.getUser().openPrivateChannel().queue(ch ->
-                        ch.sendMessage(LangID.getStringByID("bot.directMessage.invitation", holder.config.lang).formatted(g.getName())).queue(),
+                        ch.sendMessage(LangID.getStringByID("bot.directMessage.invitation", holder.config.lang).formatted(g.getName())).queue(null, e -> {
+                            if (e instanceof ErrorResponseException err && err.getResponse().code == 50007) {
+                                return;
+                            }
+
+                            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Failed to send message to inviter");
+                        }),
                     e ->
                         StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Failed to open private channel to inviter")
                 )
