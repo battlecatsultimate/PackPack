@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -79,103 +80,115 @@ public class Help extends Command {
     }
 
     public void createEmbedOfSpecificCommand(String command, MessageChannel ch, Message reference) {
+        String prefix;
+
+        if (ch instanceof GuildChannel) {
+            if (holder == null) {
+                prefix = StaticStore.globalPrefix;
+            } else {
+                prefix = holder.config.prefix;
+            }
+        } else {
+            prefix = StaticStore.globalPrefix;
+        }
+
         switch (command) {
             case "serverstat", "ss" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverStat", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverStat", prefix)));
             case "analyze" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("analyze", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("analyze", prefix)));
             case "prefix" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("prefix", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("prefix", prefix)));
             case "serverpre" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverPrefix", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverPrefix", prefix)));
             case "save" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("save", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("save", prefix)));
             case "stimg", "stimage", "stageimg", "stageimage" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageImage", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageImage", prefix)));
             case "stmimg", "stmimage", "stagemapimg", "stagemapimage" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageMapImage", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageMapImage", prefix)));
             case "formstat", "fs", "catstat", "cs", "unitstat", "us" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formStat", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formStat", prefix)));
             case "locale", "loc" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("locale", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("locale", prefix)));
             case "music", "ms" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("music", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("music", prefix)));
             case "enemystat", "es" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyStat", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyStat", prefix)));
             case "castle", "cas" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("castle", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("castle", prefix)));
             case "stageinfo", "si" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageInfo", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageInfo", prefix)));
             case "memory", "mm" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("memory", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("memory", prefix)));
             case "formimage", "formimg", "fimage", "fimg", "catimage", "catimg", "cimage", "cimg", "unitimage", "unitimg", "uimage", "uimg" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formImage", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formImage", prefix)));
             case "enemyimage", "enemyimg", "eimage", "eimg" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyImage", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyImage", prefix)));
             case "background", "bg" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("background", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("background", prefix)));
             case "formgif", "fgif", "fg", "catgif", "cgif", "cg", "unitgif", "ugif", "ug" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formGif", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formGif", prefix)));
             case "enemygif", "egif", "eg" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyGif", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyGif", prefix)));
             case "idset" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("idset", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("idset", prefix)));
             case "aa", "animanalyzer" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("animationAnalyzer", true, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("animationAnalyzer", prefix)));
             case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("channelPermission", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("channelPermission", prefix)));
             case "formsprite", "fsprite", "formsp", "fsp", "catsprite", "csprite", "catsp", "csp", "unitsprite", "usprite", "unitsp", "usp" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formSprite", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formSprite", prefix)));
             case "enemysprite", "esprite", "enemysp", "esp" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemySprite", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemySprite", prefix)));
             case "medal", "md" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("medal", false, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("medal", prefix)));
             case "announcement", "ann" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcement", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcement", prefix)));
             case "catcombo", "combo", "cc" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("catCombo", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("catCombo", prefix)));
             case "serverjson", "json", "sj" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverJson", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverJson", prefix)));
             case "findstage", "findst", "fstage", "fst" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findStage", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findStage", prefix)));
             case "suggest" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("suggest", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("suggest", prefix)));
             case "alias", "al" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("alias", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("alias", prefix)));
             case "aliasadd", "ala" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("aliasAdd", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("aliasAdd", prefix)));
             case "aliasremove", "alr" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("aliasRemove", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("aliasRemove", prefix)));
             case "statistic", "stat" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("statistic", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("statistic", prefix)));
             case "serverlocale", "slocale", "serverloc", "sloc" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverLocale", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverLocale", prefix)));
             case "boosterrole", "boosterr", "brole", "br" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterRole", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterRole", prefix)));
             case "boosterroleremove", "brremove", "boosterrolerem", "brrem", "brr" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterRoleRemove", true, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterRoleRemove", prefix)));
             case "boosteremoji", "boostere", "bemoji", "be" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterEmoji", false, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterEmoji", prefix)));
             case "boosteremojiremove", "beremove", "boosteremojirem", "berem", "ber" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterEmojiRemove", true, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterEmojiRemove", prefix)));
             case "setup" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("setup", false, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("setup", prefix)));
             case "watchdm", "wd" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("watchDM", false, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("watchDM", prefix)));
             case "checkeventupdate", "ceu" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkEventUpdate", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkEventUpdate", prefix)));
             case "printgachaevent", "pge" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printGachaEvent", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printGachaEvent", prefix)));
             case "printitemevent", "pie" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printItemEvent", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printItemEvent", prefix)));
             case "printstageevent", "pse" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printStageEvent", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printStageEvent", prefix)));
             case "subscribeevent", "se" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeEvent", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeEvent", prefix)));
             case "printevent", "pe" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printEvent", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printEvent", prefix)));
             case "statanalyzer", "sa" -> {
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("statAnalyzer", true, true, true)));
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("statAnalyzer", prefix)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                         .setDescription(LangID.getStringByID("help.statAnalyzer.additionalDescription", lang))
@@ -187,21 +200,21 @@ public class Help extends Command {
                         .build()));
             }
             case "registerscamlink", "rsl" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("registerScamLink", false, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("registerScamLink", prefix)));
             case "unregisterscamlink", "usl" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unregisterScamLink", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unregisterScamLink", prefix)));
             case "subscribescamlinkdetector", "ssld", "ssd" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeScamDetector", true, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeScamDetector", prefix)));
             case "unsubscribescamlinkdetector", "usld", "usd" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unsubscribeScamDetector", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unsubscribeScamDetector", prefix)));
             case "optout" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("optOut", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("optOut", prefix)));
             case "config" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("config", false, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("config", prefix)));
             case "downloadapk", "da" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("downloadApk", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("downloadApk", prefix)));
             case "trueformanalyzer", "tfanalyzer", "trueforma", "tfa" -> {
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("trueFormAnalyzer", true, true, true)));
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("trueFormAnalyzer", prefix)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                         .setDescription(LangID.getStringByID("help.statAnalyzer.additionalDescription", lang))
@@ -213,7 +226,7 @@ public class Help extends Command {
                         .build()));
             }
             case "enemystatanalyzer", "estatanalyzer", "enemysa", "esa" -> {
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyStatAnalyzer", true, true, true)));
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyStatAnalyzer", prefix)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                         .setDescription(LangID.getStringByID("help.statAnalyzer.additionalDescription", lang))
@@ -225,96 +238,96 @@ public class Help extends Command {
                         .build()));
             }
             case "stagestatanalyzer", "sstatanalyzer", "stagesa", "ssa" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageStatAnalyzer", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageStatAnalyzer", prefix)));
             case "serverconfig", "sconfig", "serverc", "sc" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverConfig", false, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverConfig", prefix)));
             case "talentinfo", "ti" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentInfo", true, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentInfo", prefix)));
             case "soul", "sl" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soul", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soul", prefix)));
             case "soulimage", "soulimg", "simage", "simg" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulImage", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulImage", prefix)));
             case "soulsprite", "ssprite", "soulsp", "ssp" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulSprite", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulSprite", prefix)));
             case "calculator", "calc", "c" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("calculator", false, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("calculator", prefix)));
             case "findreward", "freward", "findr", "fr" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findReward", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findReward", prefix)));
             case "eventdataarchive", "eventddataa", "earchive", "eda" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventDataArchive", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventDataArchive", prefix)));
             case "talentanalyzer", "tala", "ta" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentAnalyzer", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentAnalyzer", prefix)));
             case "comboanalyzer", "catcomboanalyzer", "cca", "ca" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("comboAnalyzer", true, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("comboAnalyzer", prefix)));
             case "plot", "p" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plot", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plot", prefix)));
             case "tplot", "tp" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("tPlot", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("tPlot", prefix)));
             case "solve", "sv" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("solve", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("solve", prefix)));
             case "differentiate", "diff", "dx" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("differentiate", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("differentiate", prefix)));
             case "integrate", "int" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("integrate", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("integrate", prefix)));
             case "plotrtheta", "prtheta", "plotrt", "prt", "rt" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plotRTheta", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plotRTheta", prefix)));
             case "donate", "donation", "don" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("donate", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("donate", prefix)));
             case "treasure", "tr" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("treasure", false, false, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("treasure", prefix)));
             case "boosterpin", "bp" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterPin", false, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterPin", prefix)));
             case "formdps", "catdps", "unitdps", "fdps", "cdps", "udps", "fd", "cd", "ud" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formDps", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formDps", prefix)));
             case "enemydps", "edps", "ed" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyDps", true, true, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyDps", prefix)));
             case "hasrole", "hr" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("hasRole", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("hasRole", prefix)));
             default ->
                     replyToMessageSafely(ch, LangID.getStringByID("help.noCommand", lang).replace("_", command), reference, a -> a);
         }
     }
 
-    private MessageEmbed addFields(String mainCommand, boolean parameter, boolean example, boolean tip) {
-        String usage = LangID.getStringByID("help."+mainCommand+".usage", lang).formatted(holder == null ? StaticStore.globalPrefix : holder.config.prefix);
-        String command = usage.split(" ")[0].replace("`", "");
+    private MessageEmbed addFields(String selectedCommand, String prefix) {
+        String usage = LangID.getStringByID("help." + selectedCommand + ".usage", lang).replace("`", "").formatted(prefix);
+        String command = usage.split(" ")[0];
 
         EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-
-        if(LangID.hasID("help." + mainCommand + ".url", lang)) {
-            builder.setTitle(command, LangID.getStringByID("help." + mainCommand + ".url", lang));
+        if(LangID.hasID("help." + selectedCommand + ".url", lang)) {
+            builder.setTitle(command, LangID.getStringByID("help." + selectedCommand + ".url", lang));
             builder.setDescription(LangID.getStringByID("help.format.guide", lang));
         } else {
             builder.setTitle(command);
         }
 
+        builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
+
         builder.addField(LangID.getStringByID("help.format.usage", lang), usage, false);
-        builder.addField(LangID.getStringByID("help.format.description", lang), LangID.getStringByID("help."+mainCommand+".description", lang), false);
 
-        if(parameter) {
-            builder.addField(LangID.getStringByID("help.format.parameter", lang), LangID.getStringByID("help."+mainCommand+".parameter", lang), false);
+        if (LangID.hasID("help." + selectedCommand + ".alias", lang)) {
+            builder.addField(LangID.getStringByID("help.format.alias", lang), LangID.getStringByID("help." + selectedCommand + ".alias", lang), false);
         }
 
-        if(example) {
-            builder.addField(LangID.getStringByID("help.format.example", lang), LangID.getStringByID("help."+mainCommand+".example", lang), false);
+        builder.addField(LangID.getStringByID("help.format.description", lang), LangID.getStringByID("help." + selectedCommand + ".description", lang), false);
+
+        if (LangID.hasID("help." + selectedCommand + ".parameter", lang)) {
+            builder.addField(LangID.getStringByID("help.format.parameter", lang), LangID.getStringByID("help." + selectedCommand + ".parameter", lang), false);
         }
 
-        if(tip) {
-            int tipIndex = 1;
+        if (LangID.hasID("help." + selectedCommand + ".example", lang)) {
+            builder.addField(LangID.getStringByID("help.format.example", lang), LangID.getStringByID("help." + selectedCommand + ".example", lang), false);
+        }
 
-            while(true) {
-                String id = "help." + mainCommand + ".tip" + (tipIndex == 1 ? "" : String.valueOf(tipIndex));
-                String tips = LangID.getStringByIDSuppressed(id, lang);
+        int tipIndex = 1;
 
-                if(!tips.equals(id)) {
-                    builder.addField(tipIndex == 1 ? LangID.getStringByID("help.format.tip", lang) : "** **", tips, false);
-                    tipIndex++;
-                } else {
-                    break;
-                }
-            }
+        while (LangID.hasID("help." + selectedCommand + ".tip" + (tipIndex == 1 ? "" : String.valueOf(tipIndex)), lang)) {
+            String id = "help." + selectedCommand + ".tip" + (tipIndex == 1 ? "" : String.valueOf(tipIndex));
+            String tips = LangID.getStringByIDSuppressed(id, lang);
+
+            builder.addField(tipIndex == 1 ? LangID.getStringByID("help.format.tip", lang) : "** **", tips, false);
+
+            tipIndex++;
         }
 
         return builder.build();
