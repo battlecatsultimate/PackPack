@@ -102,13 +102,35 @@ public class LangID {
     }
 
     public static boolean hasID(String id, CommonStatic.Lang.Locale locale) {
-        return switch (locale) {
-            case EN -> EN_OBJ != null && EN_OBJ.has(id);
-            case JP -> JP_OBJ != null && JP_OBJ.has(id);
-            case KR -> KR_OBJ != null && KR_OBJ.has(id);
-            case ZH -> ZH_OBJ != null && ZH_OBJ.has(id);
-            default -> false;
+        JsonObject original = switch (locale) {
+            case JP -> JP_OBJ;
+            case KR -> KR_OBJ;
+            case ZH -> ZH_OBJ;
+            case RU -> RU_OBJ;
+            default -> EN_OBJ;
         };
+
+        JsonObject object = original;
+
+        if (object == null)
+            return false;
+
+        String[] pathData = id.split("\\.");
+
+        for (int i = 0; i < pathData.length; i++) {
+            String path = pathData[i];
+
+            if (i < pathData.length - 1) {
+                if (!object.has(path))
+                    return false;
+
+                object = object.getAsJsonObject(path);
+            } else {
+                return object.has(path);
+            }
+        }
+
+        return original.has(id);
     }
 
     public static void printMissingTags() {

@@ -28,6 +28,7 @@ import mandarin.packpack.supporter.server.data.TreasureHolder;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
@@ -219,7 +220,12 @@ public class Initializer {
                                 int j = 0;
 
                                 while (j < Math.min(str.length - 1, u.forms.length)) {
-                                    MultiLangCont.getStatic().FNAME.put(f, u.forms[j], str[j + 1].trim());
+                                    String name = str[j + 1].trim();
+
+                                    if (!name.isBlank()) {
+                                        MultiLangCont.getStatic().FNAME.put(f, u.forms[j], name);
+                                    }
+
                                     j++;
                                 }
 
@@ -246,7 +252,11 @@ public class Initializer {
 
                                 while (j < Math.min(u.forms.length, str.length - 1)) {
                                     String[] lines = str[j + 1].trim().split("<br>");
-                                    MultiLangCont.getStatic().FEXP.put(f, u.forms[j], lines);
+
+                                    if (Arrays.stream(lines).anyMatch(l -> !l.isBlank())) {
+                                        MultiLangCont.getStatic().FEXP.put(f, u.forms[j], lines);
+                                    }
+
                                     j++;
                                 }
 
@@ -267,12 +277,16 @@ public class Initializer {
 
                                 String lines = str[1].replace("<br>", "\n");
 
-                                MultiLangCont.getStatic().CFEXP.put(f, u.info, lines);
+                                if (!lines.isBlank()) {
+                                    MultiLangCont.getStatic().CFEXP.put(f, u.info, lines);
+                                }
 
                                 if (str.length == 3) {
                                     String ultraLines = str[2].replace("<br>", "\n");
 
-                                    MultiLangCont.getStatic().UFEXP.put(f, u.info, ultraLines);
+                                    if (!ultraLines.isBlank()) {
+                                        MultiLangCont.getStatic().UFEXP.put(f, u.info, ultraLines);
+                                    }
                                 }
                             }
                         }
@@ -295,7 +309,9 @@ public class Initializer {
 
                                 String name = str[1].trim();
 
-                                MultiLangCont.getStatic().COMNAME.put(f, c, name);
+                                if (!name.isBlank()) {
+                                    MultiLangCont.getStatic().COMNAME.put(f, c, name);
+                                }
                             }
                         }
                         case "EnemyName.txt" -> {
@@ -326,7 +342,9 @@ public class Initializer {
                                     name = str[1].trim();
                                 }
 
-                                MultiLangCont.getStatic().ENAME.put(f, e, name);
+                                if (!name.isBlank()) {
+                                    MultiLangCont.getStatic().ENAME.put(f, e, name);
+                                }
                             }
                         }
                         case "EnemyExplanation.txt" -> {
@@ -343,7 +361,9 @@ public class Initializer {
 
                                 String[] lines = str[1].trim().split("<br>");
 
-                                MultiLangCont.getStatic().EEXP.put(f, e, lines);
+                                if (Arrays.stream(lines).anyMatch(l -> !l.isBlank())) {
+                                    MultiLangCont.getStatic().EEXP.put(f, e, lines);
+                                }
                             }
                         }
                         case "StageName.txt" -> {
@@ -373,6 +393,7 @@ public class Initializer {
 
                                 if (ids.length == 1) {
                                     MultiLangCont.getStatic().MCNAME.put(f, mc, name);
+
                                     continue;
                                 }
 
@@ -385,6 +406,7 @@ public class Initializer {
 
                                 if (ids.length == 2) {
                                     MultiLangCont.getStatic().SMNAME.put(f, stm, name);
+
                                     continue;
                                 }
 
@@ -409,6 +431,9 @@ public class Initializer {
                                     continue;
 
                                 String name = str[1].trim();
+
+                                if (name.isBlank())
+                                    continue;
 
                                 String[] ids = str[0].trim().split("\\|");
 
