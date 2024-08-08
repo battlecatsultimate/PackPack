@@ -92,4 +92,18 @@ public class HolderHub {
             modalHolder.end(true);
         }
     }
+
+    public void handleChannelDelete(String channelID) {
+        if (messageHolder != null && messageHolder.channelID.equals(channelID)) {
+            messageHolder.end(true);
+        }
+
+        if (componentHolder != null && componentHolder.channelID.equals(channelID)) {
+            componentHolder.end(true);
+        }
+
+        if (modalHolder != null && modalHolder.channelID.equals(channelID)) {
+            modalHolder.end(true);
+        }
+    }
 }

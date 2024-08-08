@@ -175,6 +175,8 @@ public class AllEventAdapter extends ListenerAdapter {
             }
 
             idh.boosterPinChannel.remove(ch.getId());
+
+            StaticStore.holders.values().forEach(hub -> hub.handleChannelDelete(ch.getId()));
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onChannelDelete - Error happened");
         }
