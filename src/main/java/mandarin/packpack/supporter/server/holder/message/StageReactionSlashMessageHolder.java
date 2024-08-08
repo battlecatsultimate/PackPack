@@ -10,9 +10,12 @@ import common.util.stage.Music;
 import common.util.stage.Stage;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.bc.Castle;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -50,6 +53,26 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
             case "Castle" -> {
                 emojiClicked = true;
 
+                if (!ch.canTalk()) {
+                    if (ch instanceof GuildChannel) {
+                        Guild g = event.getGuild();
+                        User u = getAuthorMessage().getAuthor();
+
+                        String serverName = g.getName();
+                        String channelName = ch.getName();
+
+                        String content;
+
+                        content = LangID.getStringByID("bot.sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+
+                        u.openPrivateChannel()
+                                .flatMap(pc -> pc.sendMessage(content))
+                                .queue();
+                    }
+
+                    return STATUS.WAIT;
+                }
+
                 CastleImg cs = Identifier.get(st.castle);
 
                 if (cs == null) {
@@ -63,6 +86,26 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
             case "Background" -> {
                 emojiClicked = true;
 
+                if (!ch.canTalk()) {
+                    if (ch instanceof GuildChannel) {
+                        Guild g = event.getGuild();
+                        User u = getAuthorMessage().getAuthor();
+
+                        String serverName = g.getName();
+                        String channelName = ch.getName();
+
+                        String content;
+
+                        content = LangID.getStringByID("bot.sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+
+                        u.openPrivateChannel()
+                                .flatMap(pc -> pc.sendMessage(content))
+                                .queue();
+                    }
+
+                    return STATUS.WAIT;
+                }
+
                 Background bg = Identifier.get(st.bg);
 
                 if (bg == null) {
@@ -73,6 +116,26 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
             }
             case "Music" -> {
                 emojiClicked = true;
+
+                if (!ch.canTalk()) {
+                    if (ch instanceof GuildChannel) {
+                        Guild g = event.getGuild();
+                        User u = getAuthorMessage().getAuthor();
+
+                        String serverName = g.getName();
+                        String channelName = ch.getName();
+
+                        String content;
+
+                        content = LangID.getStringByID("bot.sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+
+                        u.openPrivateChannel()
+                                .flatMap(pc -> pc.sendMessage(content))
+                                .queue();
+                    }
+
+                    return STATUS.WAIT;
+                }
 
                 if (st.mus0 == null)
                     break;
@@ -87,6 +150,26 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
             }
             case "MusicBoss" -> {
                 emojiClicked = true;
+
+                if (!ch.canTalk()) {
+                    if (ch instanceof GuildChannel) {
+                        Guild g = event.getGuild();
+                        User u = getAuthorMessage().getAuthor();
+
+                        String serverName = g.getName();
+                        String channelName = ch.getName();
+
+                        String content;
+
+                        content = LangID.getStringByID("bot.sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+
+                        u.openPrivateChannel()
+                                .flatMap(pc -> pc.sendMessage(content))
+                                .queue();
+                    }
+
+                    return STATUS.WAIT;
+                }
 
                 if (st.mus1 == null)
                     break;
