@@ -73,7 +73,7 @@ public class Help extends Command {
 
             replyToMessageSafely(ch, "", loader.getMessage(),
                     a -> a.setEmbeds(builder.build()).setComponents(getComponents()),
-                    msg -> StaticStore.putHolder(loader.getUser().getId(), new HelpCategoryHolder(loader.getMessage(), ch.getId(), msg, CommonStatic.Lang.Locale.EN, color))
+                    msg -> StaticStore.putHolder(loader.getUser().getId(), new HelpCategoryHolder(loader.getMessage(), ch.getId(), msg, lang, color))
             );
         }
     }
@@ -326,7 +326,7 @@ public class Help extends Command {
         List<SelectOption> categoryOptions = new ArrayList<>();
 
         for (HelpCategory category : HelpCategory.values()) {
-            SelectOption option = SelectOption.of(LangID.getStringByID("help.main.category." + category.name().toLowerCase(Locale.ENGLISH), CommonStatic.Lang.Locale.EN), category.name());
+            SelectOption option = SelectOption.of(LangID.getStringByID("help.main.category." + category.name().toLowerCase(Locale.ENGLISH), lang), category.name());
 
             switch (category) {
                 case BC -> option = option.withEmoji(EmojiStore.CAT);
@@ -342,7 +342,7 @@ public class Help extends Command {
         result.add(ActionRow.of(
                 StringSelectMenu.create("category")
                         .addOptions(categoryOptions)
-                        .setPlaceholder(LangID.getStringByID("help.main.selectCategory", CommonStatic.Lang.Locale.EN))
+                        .setPlaceholder(LangID.getStringByID("help.main.selectCategory", lang))
                         .build()
         ));
 
