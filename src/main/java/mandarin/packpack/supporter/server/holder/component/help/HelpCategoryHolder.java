@@ -111,7 +111,7 @@ public class HelpCategoryHolder extends ComponentHolder {
         List<SelectOption> categoryOptions = new ArrayList<>();
 
         for (Help.HelpCategory category : Help.HelpCategory.values()) {
-            SelectOption option = SelectOption.of(LangID.getStringByID("help.main.category." + category.name().toLowerCase(Locale.ENGLISH), CommonStatic.Lang.Locale.EN), category.name());
+            SelectOption option = SelectOption.of(LangID.getStringByID("help.main.category." + category.name().toLowerCase(Locale.ENGLISH), lang), category.name());
 
             switch (category) {
                 case BC -> option = option.withEmoji(EmojiStore.CAT);
@@ -128,7 +128,7 @@ public class HelpCategoryHolder extends ComponentHolder {
         result.add(ActionRow.of(
                 StringSelectMenu.create("category")
                         .addOptions(categoryOptions)
-                        .setPlaceholder(LangID.getStringByID("help.main.selectCategory", CommonStatic.Lang.Locale.EN))
+                        .setPlaceholder(LangID.getStringByID("help.main.selectCategory", lang))
                         .build()
         ));
 
