@@ -9,6 +9,8 @@ import common.pack.UserProfile;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
+import common.util.stage.Limit;
+import common.util.stage.Stage;
 import common.util.stage.StageLimit;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -277,7 +279,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     JsonArray parameter = parameterData.getAsJsonArray("Parameters");
 
                     switch (ruleID) {
-                        case 0:
+                        case 0 -> {
                             if (!parameter.isEmpty()) {
                                 if (parameter.size() != 1)
                                     System.out.printf("W/MapColc::read - Unknown parameter data found for rule type %d : %s%n", ruleID, parameter);
@@ -294,16 +296,19 @@ public class StageStatAnalyzer extends ConstraintCommand {
                                     }
                                 });
 
-                                if (map.stageLimit == null) {
-                                    map.stageLimit = new StageLimit(maxMoney, -1, bannedCombo);
-                                } else {
-                                    map.stageLimit.maxMoney = maxMoney;
-                                    map.stageLimit.bannedCatCombo.addAll(bannedCombo);
+                                for (Stage stage : map.list) {
+                                    if (stage.lim == null)
+                                        stage.lim = new Limit();
+
+                                    if (stage.lim.stageLimit == null)
+                                        stage.lim.stageLimit = new StageLimit();
+
+                                    stage.lim.stageLimit.maxMoney = maxMoney;
+                                    stage.lim.stageLimit.bannedCatCombo.addAll(bannedCombo);
                                 }
                             }
-
-                            break;
-                        case 1:
+                        }
+                        case 1 -> {
                             if (!parameter.isEmpty()) {
                                 if (parameter.size() != 1)
                                     System.out.printf("W/MapColc::read - Unknown parameter data found for rule type %d : %s%n", ruleID, parameter);
@@ -320,13 +325,86 @@ public class StageStatAnalyzer extends ConstraintCommand {
                                     }
                                 });
 
-                                if (map.stageLimit == null) {
-                                    map.stageLimit = new StageLimit(-1, globalCooldown, bannedCombo);
-                                } else {
-                                    map.stageLimit.globalCooldown = globalCooldown;
-                                    map.stageLimit.bannedCatCombo.addAll(bannedCombo);
+                                for (Stage stage : map.list) {
+                                    if (stage.lim == null)
+                                        stage.lim = new Limit();
+
+                                    if (stage.lim.stageLimit == null)
+                                        stage.lim.stageLimit = new StageLimit();
+
+                                    stage.lim.stageLimit.globalCooldown = globalCooldown;
+                                    stage.lim.stageLimit.bannedCatCombo.addAll(bannedCombo);
                                 }
                             }
+                        }
+                        case 5 -> {
+                            if (!parameter.isEmpty()) {
+                                int[] multiplier = new int[parameter.size()];
+
+                                for (int i = 0; i < parameter.size(); i++) {
+                                    multiplier[i] = parameter.get(i).getAsInt();
+                                }
+
+                                // To make program warn only once
+                                boolean warned = false;
+
+                                for (Stage stage : map.list) {
+                                    if (stage.lim == null)
+                                        stage.lim = new Limit();
+
+                                    if (stage.lim.stageLimit == null) {
+                                        stage.lim.stageLimit = new StageLimit();
+                                    }
+
+                                    if (!warned && stage.lim.stageLimit.costMultiplier.length != multiplier.length) {
+                                        System.out.printf(
+                                                "W/MapColc::read - Desynced cost multiplier data -> Original = %d, Obtained = %d, Data = [ %s ]%n",
+                                                stage.lim.stageLimit.costMultiplier.length,
+                                                multiplier.length,
+                                                Arrays.toString(multiplier)
+                                        );
+
+                                        warned = true;
+                                    }
+
+                                    System.arraycopy(multiplier, 0, stage.lim.stageLimit.costMultiplier, 0, Math.min(stage.lim.stageLimit.costMultiplier.length, multiplier.length));
+                                }
+                            }
+                        }
+                        case 6 -> {
+                            if (!parameter.isEmpty()) {
+                                int[] multiplier = new int[parameter.size()];
+
+                                for (int i = 0; i < parameter.size(); i++) {
+                                    multiplier[i] = parameter.get(i).getAsInt();
+                                }
+
+                                // To make program warn only once
+                                boolean warned = false;
+
+                                for (Stage stage : map.list) {
+                                    if (stage.lim == null)
+                                        stage.lim = new Limit();
+
+                                    if (stage.lim.stageLimit == null) {
+                                        stage.lim.stageLimit = new StageLimit();
+                                    }
+
+                                    if (!warned && stage.lim.stageLimit.cooldownMultiplier.length != multiplier.length) {
+                                        System.out.printf(
+                                                "W/MapColc::read - Desynced cooldown multiplier data -> Original = %d, Obtained = %d, Data = [ %s ]%n",
+                                                stage.lim.stageLimit.cooldownMultiplier.length,
+                                                multiplier.length,
+                                                Arrays.toString(multiplier)
+                                        );
+
+                                        warned = true;
+                                    }
+
+                                    System.arraycopy(multiplier, 0, stage.lim.stageLimit.cooldownMultiplier, 0, Math.min(stage.lim.stageLimit.cooldownMultiplier.length, multiplier.length));
+                                }
+                            }
+                        }
                     }
                 }
             }

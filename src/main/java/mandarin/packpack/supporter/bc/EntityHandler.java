@@ -1373,7 +1373,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.stage.guardBarrier", lang), DataToString.getBossGuard(st, lang), true);
         }
 
-        ArrayList<String> limit = DataToString.getLimit(st, st.getLim(sta), isFrame, lang);
+        ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), isFrame, lang);
 
         if(!limit.isEmpty()) {
             StringBuilder sb = new StringBuilder();
@@ -1568,7 +1568,7 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data.stage.length", lang), DataToString.getLength(st), true);
         spec.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), DataToString.getMinSpawn(st, isFrame), true);
 
-        ArrayList<String> limit = DataToString.getLimit(st, st.getLim(sta), isFrame, lang);
+        ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), isFrame, lang);
 
         if(!limit.isEmpty()) {
             StringBuilder sb = new StringBuilder();

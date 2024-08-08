@@ -746,8 +746,26 @@
           "title" : "- **Ограничения Комбо**"
         },
         "cooldown" : {
-          "description" : "Все юниты получают %s перезарядки",
-          "title" : "- **Ограничения Перезарядки**"
+          "global" : {
+            "description" : "Все юниты получают %s перезарядки",
+            "title" : "- **Ограничения Перезарядки**"
+          },
+          "multiplier" : {
+            "description" : {
+              "plural" : "Unit rarities below get cooldown multiplier",
+              "singular" : "Unit rarity below gets cooldown multiplier"
+            },
+            "multiplier" : "%s : %d%%",
+            "title" : "- **Cooldown Multiplier**"
+          }
+        },
+        "cost" : {
+          "description" : {
+            "plural" : "Unit rarities below get cost multiplier",
+            "singular" : "Unit rarity below gets cost multiplier"
+          },
+          "multiplier" : "%s : %d%%",
+          "title" : "- **Cost Multiplier**"
         },
         "lineLimit" : {
           "description" : "Только первый ряд доступен",
@@ -1169,6 +1187,7 @@
       "839" : "Акция Dotty Cat",
       "840" : "Акция Редкий Билет",
       "841" : "Акция Редкий Билет",
+      "842" : "Legendary Trap Pack",
       "900" : "Подарки: Грибовый Сад",
       "901" : "Подарки: Бонус Возвращения",
       "902" : "Подарки: Бонус Возвращения Золотого Билета",
@@ -1266,6 +1285,12 @@
       "35010" : "Подарки: Летний Перерыв",
       "35011" : "Подарки: Радио Зарядка",
       "35012" : "Подарки: Annihilation City Коллаб",
+      "35013" : "Pre-10th Anniversary Stamp",
+      "35014" : "Day of the Cats Stamp",
+      "35015" : "Summer Break Survival Stamp",
+      "35016" : "Bikkuriman Chocolate Stamp",
+      "35017" : "Event Stamp",
+      "35018" : "Event Stamp",
       "rankingDojo" : "Ранговый Додзё _"
     },
     "permanentSchedule" : {
@@ -1348,7 +1373,8 @@
       "33000" : "Этапы Лабиринта",
       "colosseumType" : {
         "0" : "Огранечния Денег",
-        "1" : "Ограничения Перезарядки"
+        "1" : "Ограничения Перезарядки",
+        "4" : "Super Rare Cost/Cooldown Buff"
       }
     },
     "section" : {

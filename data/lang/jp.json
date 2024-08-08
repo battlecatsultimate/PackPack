@@ -746,8 +746,26 @@
           "title" : "- **にゃんコンボ制限**"
         },
         "cooldown" : {
-          "description" : "すべての味方キャラクターの生産スピードが%sになります",
-          "title" : "- **生産スピード統一**"
+          "global" : {
+            "description" : "すべての味方キャラクターの生産スピードが%sになります",
+            "title" : "- **生産スピード統一**"
+          },
+          "multiplier" : {
+            "description" : {
+              "plural" : "Unit rarities below get cooldown multiplier",
+              "singular" : "Unit rarity below gets cooldown multiplier"
+            },
+            "multiplier" : "%s : %d%%",
+            "title" : "- **Cooldown Multiplier**"
+          }
+        },
+        "cost" : {
+          "description" : {
+            "plural" : "Unit rarities below get cost multiplier",
+            "singular" : "Unit rarity below gets cost multiplier"
+          },
+          "multiplier" : "%s : %d%%",
+          "title" : "- **Cost Multiplier**"
         },
         "lineLimit" : {
           "description" : "１ページのみ",
@@ -1167,8 +1185,9 @@
       "837" : "ニャンピュータパック",
       "838" : "ネコ校長セール",
       "839" : "Dotty Cat Sale",
-      "840" : "Rare Ticket Sale",
-      "841" : "Rare Ticket Sale",
+      "840" : "レアチケットセール",
+      "841" : "レアチケットセール",
+      "842" : "伝説の罠パック",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1266,6 +1285,12 @@
       "35010" : "Summer Break Stamp",
       "35011" : "Radio Exercise Stamp",
       "35012" : "Annihilated City Collab Stamp",
+      "35013" : "Pre-10th Anniversary Stamp",
+      "35014" : "Day of the Cats Stamp",
+      "35015" : "Summer Break Survival Stamp",
+      "35016" : "Bikkuriman Chocolate Stamp",
+      "35017" : "Event Stamp",
+      "35018" : "Event Stamp",
       "rankingDojo" : "ランキングの間 _"
     },
     "permanentSchedule" : {
@@ -1348,7 +1373,8 @@
       "33000" : "地底迷宮グランドアビス",
       "colosseumType" : {
         "0" : "おこづかい制",
-        "1" : "生産スピード統一"
+        "1" : "生産スピード統一",
+        "4" : "特売セール:激レア"
       }
     },
     "section" : {

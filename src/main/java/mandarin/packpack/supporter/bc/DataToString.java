@@ -44,6 +44,7 @@ public class DataToString extends Data {
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L", "ND", "SR"};
     private static final int maxDifficulty = 11;
     private static final int[] materialDrops = {85, 86, 87, 88, 89, 90, 91, 140, 187, 188, 189, 190, 191, 192, 193, 194};
+    private static final String[] rarities = {"basic", "ex", "rare", "superRare", "uberRare", "legendRare"};
 
     static {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -1261,7 +1262,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static ArrayList<String> getLimit(Stage st, Limit l, boolean isFrame, CommonStatic.Lang.Locale lang) {
+    public static ArrayList<String> getLimit(Limit l, boolean isFrame, CommonStatic.Lang.Locale lang) {
         ArrayList<String> res = new ArrayList<>();
 
         if(l == null)
@@ -1330,29 +1331,93 @@ public class DataToString extends Data {
             res.add(result);
         }
 
-        StageMap map = st.getCont();
-
-        if (map.stageLimit != null) {
-            if (map.stageLimit.globalCooldown > 0) {
+        if (l.stageLimit != null) {
+            if (l.stageLimit.globalCooldown > 0) {
                 String time;
 
                 if (isFrame) {
-                    time = map.stageLimit.globalCooldown + "f";
+                    time = l.stageLimit.globalCooldown + "f";
                 } else {
-                    time = df.format(map.stageLimit.globalCooldown / 30.0) + "s";
+                    time = df.format(l.stageLimit.globalCooldown / 30.0) + "s";
                 }
 
-                res.add(LangID.getStringByID("data.stage.limit.cooldown.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.description", lang).formatted(time));
+                res.add(LangID.getStringByID("data.stage.limit.cooldown.global.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.global.description", lang).formatted(time));
             }
 
-            if (map.stageLimit.maxMoney > 0) {
-                res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(map.stageLimit.maxMoney));
+            if (l.stageLimit.maxMoney > 0) {
+                res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(l.stageLimit.maxMoney));
             }
 
-            if (!map.stageLimit.bannedCatCombo.isEmpty()) {
-                String comboList = String.join(", ", map.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
+            if (!l.stageLimit.bannedCatCombo.isEmpty()) {
+                String comboList = String.join(", ", l.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
 
                 res.add(LangID.getStringByID("data.stage.limit.combo.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.combo.description", lang).formatted(comboList));
+            }
+
+            if (Arrays.stream(l.stageLimit.cooldownMultiplier).anyMatch(m -> m != 100)) {
+                StringBuilder multiplier = new StringBuilder();
+                int count = 0;
+
+                for (int i = 0; i < Math.min(l.stageLimit.cooldownMultiplier.length, rarities.length); i++) {
+                    if (l.stageLimit.cooldownMultiplier[i] != 100) {
+                        multiplier.append("> ").append(
+                                LangID.getStringByID("data.stage.limit.cooldown.multiplier.multiplier", lang)
+                                        .formatted(
+                                                LangID.getStringByID("data.unit.rarity." + rarities[i], lang),
+                                                l.stageLimit.cooldownMultiplier[i]
+                                        )
+                        ).append("\n");
+
+                        count++;
+                    }
+                }
+
+                if (count > 1) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cooldown.multiplier.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cooldown.multiplier.description.plural", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cooldown.multiplier.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cooldown.multiplier.description.singular", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                }
+            }
+
+            if (Arrays.stream(l.stageLimit.costMultiplier).anyMatch(m -> m != 100)) {
+                StringBuilder multiplier = new StringBuilder();
+                int count = 0;
+
+                for (int i = 0; i < Math.min(l.stageLimit.costMultiplier.length, rarities.length); i++) {
+                    if (l.stageLimit.costMultiplier[i] != 100) {
+                        multiplier.append("> ").append(
+                                LangID.getStringByID("data.stage.limit.cost.multiplier", lang)
+                                        .formatted(
+                                                LangID.getStringByID("data.unit.rarity." + rarities[i], lang),
+                                                l.stageLimit.costMultiplier[i]
+                                        )
+                        ).append("\n");
+
+                        count++;
+                    }
+                }
+
+                if (count > 1) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cost.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cost.description.plural", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cost.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cost.description.singular", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                }
             }
         }
 
@@ -1439,27 +1504,93 @@ public class DataToString extends Data {
             res.add(result);
         }
 
-        if (map.stageLimit != null) {
-            if (map.stageLimit.globalCooldown != -1) {
+        if (l.stageLimit != null) {
+            if (l.stageLimit.globalCooldown != -1) {
                 String time;
 
                 if (isFrame) {
-                    time = map.stageLimit.globalCooldown + "f";
+                    time = l.stageLimit.globalCooldown + "f";
                 } else {
-                    time = df.format(map.stageLimit.globalCooldown / 30.0) + "s";
+                    time = df.format(l.stageLimit.globalCooldown / 30.0) + "s";
                 }
 
-                res.add(LangID.getStringByID("data.stage.limit.cooldown.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.description", lang).formatted(time));
+                res.add(LangID.getStringByID("data.stage.limit.cooldown.global.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.global.description", lang).formatted(time));
             }
 
-            if (map.stageLimit.maxMoney != -1) {
-                res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(map.stageLimit.maxMoney));
+            if (l.stageLimit.maxMoney != -1) {
+                res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(l.stageLimit.maxMoney));
             }
 
-            if (!map.stageLimit.bannedCatCombo.isEmpty()) {
-                String comboList = String.join(", ", map.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
+            if (!l.stageLimit.bannedCatCombo.isEmpty()) {
+                String comboList = String.join(", ", l.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
 
                 res.add(LangID.getStringByID("data.stage.limit.combo.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.combo.description", lang).formatted(comboList));
+            }
+
+            if (Arrays.stream(l.stageLimit.cooldownMultiplier).anyMatch(m -> m != 100)) {
+                StringBuilder multiplier = new StringBuilder();
+                int count = 0;
+
+                for (int i = 0; i < Math.min(l.stageLimit.cooldownMultiplier.length, rarities.length); i++) {
+                    if (l.stageLimit.cooldownMultiplier[i] != 100) {
+                        multiplier.append(
+                                LangID.getStringByID("data.stage.limit.cooldown.multiplier.multiplier", lang)
+                                        .formatted(
+                                                LangID.getStringByID("data.unit.rarity." + rarities[i], lang),
+                                                l.stageLimit.cooldownMultiplier[i]
+                                        )
+                        ).append("\n");
+
+                        count++;
+                    }
+                }
+
+                if (count > 1) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cooldown.multiplier.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cooldown.multiplier.description.plural", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cooldown.multiplier.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cooldown.multiplier.description.singular", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                }
+            }
+
+            if (Arrays.stream(l.stageLimit.costMultiplier).anyMatch(m -> m != 100)) {
+                StringBuilder multiplier = new StringBuilder();
+                int count = 0;
+
+                for (int i = 0; i < Math.min(l.stageLimit.costMultiplier.length, rarities.length); i++) {
+                    if (l.stageLimit.costMultiplier[i] != 100) {
+                        multiplier.append(
+                                LangID.getStringByID("data.stage.limit.cost.multiplier", lang)
+                                        .formatted(
+                                                LangID.getStringByID("data.unit.rarity." + rarities[i], lang),
+                                                l.stageLimit.costMultiplier[i]
+                                        )
+                        ).append("\n");
+
+                        count++;
+                    }
+                }
+
+                if (count > 1) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cost.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cost.description.plural", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.cost.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.cost.description.singular", lang) + "\n\n" +
+                                    multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                }
             }
         }
 

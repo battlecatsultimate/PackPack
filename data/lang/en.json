@@ -746,8 +746,26 @@
           "title" : "- **Cat Combo Limit**"
         },
         "cooldown" : {
-          "description" : "All units get %s cooldown",
-          "title" : "- **Cooldown Limit**"
+          "global" : {
+            "description" : "All units get %s cooldown",
+            "title" : "- **Cooldown Limit**"
+          },
+          "multiplier" : {
+            "description" : {
+              "plural" : "Unit rarities below get cooldown multiplier",
+              "singular" : "Unit rarity below gets cooldown multiplier"
+            },
+            "multiplier" : "%s : %d%%",
+            "title" : "- **Cooldown Multiplier**"
+          }
+        },
+        "cost" : {
+          "description" : {
+            "plural" : "Unit rarities below get cost multiplier",
+            "singular" : "Unit rarity below gets cost multiplier"
+          },
+          "multiplier" : "%s : %d%%",
+          "title" : "- **Cost Multiplier**"
         },
         "lineLimit" : {
           "description" : "Only first row allowed",
@@ -1169,6 +1187,7 @@
       "839" : "Dotty Cat Sale",
       "840" : "Rare Ticket Sale",
       "841" : "Rare Ticket Sale",
+      "842" : "Legendary Trap Pack",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1237,7 +1256,7 @@
       "982" : "Kaworu Stamp",
       "983" : "BitSummit Stamp",
       "984" : "Castle & Dragons Collab Stamp",
-      "985" : "Whit Knight Cat Stamp",
+      "985" : "White Knight Cat Stamp",
       "986" : "11th Anniversary D-7 Stamp",
       "987" : "11th Anniversary D-6 Stamp",
       "988" : "11th Anniversary D-5 Stamp",
@@ -1266,6 +1285,12 @@
       "35010" : "Summer Break Stamp",
       "35011" : "Radio Exercise Stamp",
       "35012" : "Annihilated City Collab Stamp",
+      "35013" : "Pre-10th Anniversary Stamp",
+      "35014" : "Day of the Cats Stamp",
+      "35015" : "Summer Break Survival Stamp",
+      "35016" : "Bikkuriman Chocolate Stamp",
+      "35017" : "Event Stamp",
+      "35018" : "Event Stamp",
       "rankingDojo" : "Ranking Dojo _"
     },
     "permanentSchedule" : {
@@ -1348,7 +1373,8 @@
       "33000" : "Labyrinth Stage",
       "colosseumType" : {
         "0" : "Money Limit",
-        "1" : "Cooldown Limit"
+        "1" : "Cooldown Limit",
+        "4" : "Super Rare Cost/Cooldown Buff"
       }
     },
     "section" : {

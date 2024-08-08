@@ -746,8 +746,26 @@
           "title" : "- **Cat Combo Limit**"
         },
         "cooldown" : {
-          "description" : "All units get %s cooldown",
-          "title" : "- **Cooldown Limit**"
+          "global" : {
+            "description" : "All units get %s cooldown",
+            "title" : "- **Cooldown Limit**"
+          },
+          "multiplier" : {
+            "description" : {
+              "plural" : "Unit rarities below get cooldown multiplier",
+              "singular" : "Unit rarity below gets cooldown multiplier"
+            },
+            "multiplier" : "%s : %d%%",
+            "title" : "- **Cooldown Multiplier**"
+          }
+        },
+        "cost" : {
+          "description" : {
+            "plural" : "Unit rarities below get cost multiplier",
+            "singular" : "Unit rarity below gets cost multiplier"
+          },
+          "multiplier" : "%s : %d%%",
+          "title" : "- **Cost Multiplier**"
         },
         "lineLimit" : {
           "description" : "只允許使用第一頁/第一排",
@@ -1171,6 +1189,7 @@
       "839" : "點點貓販賣",
       "840" : "稀有券禮包",
       "841" : "稀有券禮包",
+      "842" : "Legendary Trap Pack",
       "900" : "Mushroom Garden Stamp",
       "901" : "回鍋登入獎勵章",
       "902" : "回鍋首天登入稀有券獎勵章",
@@ -1268,6 +1287,12 @@
       "35010" : "Summer Break Stamp",
       "35011" : "Radio Exercise Stamp",
       "35012" : "Annihilated City Collab Stamp",
+      "35013" : "Pre-10th Anniversary Stamp",
+      "35014" : "Day of the Cats Stamp",
+      "35015" : "Summer Break Survival Stamp",
+      "35016" : "Bikkuriman Chocolate Stamp",
+      "35017" : "Event Stamp",
+      "35018" : "Event Stamp",
       "rankingDojo" : "排行賽會場：_"
     },
     "permanentSchedule" : {
@@ -1350,7 +1375,8 @@
       "33000" : "地底迷宮",
       "colosseumType" : {
         "0" : "Money Limit",
-        "1" : "Cooldown Limit"
+        "1" : "Cooldown Limit",
+        "4" : "Super Rare Cost/Cooldown Buff"
       }
     },
     "section" : {
