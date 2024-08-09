@@ -36,8 +36,13 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "confirm" -> onConfirm.accept(event);
+            case "confirm" -> {
+                end(false);
+                onConfirm.accept(event);
+            }
             case "cancel" -> {
+                end(false);
+
                 if (onCancel == null) {
                     goBack(event);
                 } else {
@@ -45,8 +50,6 @@ public class ConfirmPopUpHolder extends ComponentHolder {
                 }
             }
         }
-
-        end(false);
     }
 
     @Override
