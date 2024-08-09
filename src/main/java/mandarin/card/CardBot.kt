@@ -651,6 +651,8 @@ object CardBot : ListenerAdapter() {
         TransactionLogger.bidLogChannel = event.jda.getGuildChannelById(CardData.bidLog) as MessageChannel
         TransactionLogger.slotChannel = event.jda.getGuildChannelById(CardData.slotLog) as MessageChannel
 
+        Notification.initialize(event.jda)
+
         StaticStore.loggingChannel = ServerData.get("loggingChannel")
 
         val manager = event.jda.shardManager
