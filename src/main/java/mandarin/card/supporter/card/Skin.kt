@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.log.Notification
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.PackCost
@@ -197,20 +198,9 @@ class Skin {
 
             containers.forEach { container -> creatorInventory.addCards(container.pickedCards) }
 
-            //TODO(Resolve private message sending problem)
-//            if (creator in CardData.purchaseNotifier) {
-//                val purchaseSize = CardData.inventories.values.count { i -> this in i.skins }
-//
-//                val message = "User <@$purchaser> has purchased your skin!\n\n### Skin Name : $name [$skinID]\n### Total Purchase Count : $purchaseSize"
-//
-//                client.retrieveUserById(creator).queue { u ->
-//                    u.openPrivateChannel().queue { ch ->
-//                        ch.sendMessage(message)
-//                            .setAllowedMentions(ArrayList())
-//                            .queue()
-//                    }
-//                }
-//            }
+            if (creator in CardData.purchaseNotifier) {
+                Notification.handleSkinPurchaseNotification(this, purchaser)
+            }
         }
 
         CardBot.saveCardData()

@@ -300,6 +300,8 @@ object CardData {
     val bidLog = ServerData.get("bidLog")
     val slotLog = ServerData.get("slotLog")
 
+    val notification = ServerData.get("notification")
+
     val managerPlace = ServerData.get("managerPlace")
 
     val skinCache = ServerData.get("skinCache")
