@@ -427,7 +427,9 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}checkt4",
             "${globalPrefix}t4" -> Check(CardData.Tier.LEGEND).execute(event)
             "${globalPrefix}approve" -> Approve().execute(event)
-            "${globalPrefix}notice" -> Notice().execute(event)
+            "${globalPrefix}notice",
+            "${globalPrefix}notify",
+            "${globalPrefix}notification" -> Notice().execute(event)
             "${globalPrefix}poolt1",
             "${globalPrefix}p1" -> Pool(CardData.Tier.COMMON).execute(event)
             "${globalPrefix}poolt2",
