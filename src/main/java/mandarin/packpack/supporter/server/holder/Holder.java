@@ -126,6 +126,11 @@ public abstract class Holder {
     public final void end(boolean finishAll) {
         expired = true;
 
+        HolderHub hub = StaticStore.getHolderHub(userID);
+
+        if(hub == null)
+            throw new IllegalStateException("E/Holder::expire - Unregistered holder found : " + getClass().getName());
+
         if (schedule != null) {
             schedule.cancel(true);
         }
@@ -139,6 +144,7 @@ public abstract class Holder {
                 childHolder.schedule.cancel(true);
             }
 
+            StaticStore.removeHolder(userID, childHolder);
             childHolder = childHolder.child;
         }
 
@@ -152,14 +158,10 @@ public abstract class Holder {
                     parentHolder.schedule.cancel(true);
                 }
 
+                StaticStore.removeHolder(userID, childHolder);
                 parentHolder = parentHolder.parent;
             }
         }
-
-        HolderHub hub = StaticStore.getHolderHub(userID);
-
-        if(hub == null)
-            throw new IllegalStateException("E/Holder::expire - Unregistered holder found : " + getClass().getName());
 
         StaticStore.removeHolder(userID, this);
     }
