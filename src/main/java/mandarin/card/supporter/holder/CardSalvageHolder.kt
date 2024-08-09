@@ -288,6 +288,12 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
         applyResult(event)
     }
 
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
+        filterCards()
+
+        applyResult(event)
+    }
+
     private fun filterCards() {
         cards.clear()
 
