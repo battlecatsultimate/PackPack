@@ -45,6 +45,8 @@ public class ConfirmPopUpHolder extends ComponentHolder {
                 }
             }
         }
+
+        end(false);
     }
 
     @Override
