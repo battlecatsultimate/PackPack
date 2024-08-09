@@ -48,7 +48,7 @@ class PackSelectHolder(
     }
 
     override fun onExpire() {
-        message.editMessage("Card pack manager expired")
+        message.editMessage("Card pack select expired")
             .setComponents()
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)

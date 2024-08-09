@@ -68,7 +68,7 @@ class PackPayHolder(
     }
 
     override fun onExpire() {
-        message.editMessage("Card pack manager expired")
+        message.editMessage("Card pack payment expired")
             .setComponents()
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
@@ -146,6 +146,8 @@ class PackPayHolder(
                 CardBot.saveCardData()
 
                 TransactionLogger.logRoll(result, pack, member, false)
+
+                end(true)
             }
             "cost" -> {
                 if (event !is StringSelectInteractionEvent)
