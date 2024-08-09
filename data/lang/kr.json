@@ -1770,7 +1770,7 @@
       "usage" : "`%sformstat [이름]`"
     },
     "format" : {
-      "alias" : "유효 명령어",
+      "alias" : "대체 명령어",
       "description" : "설명",
       "example" : "예시",
       "guide" : "자세한 가이드 및 설명은 위의 링크를 클릭해 주세요",
