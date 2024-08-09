@@ -38,7 +38,7 @@ class Confirm(private val session: TradingSession) : Command(CommonStatic.Lang.L
 
                 a.setActionRow(components)
             }, { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
+                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN, true) {
                     session.agreed[index] = true
 
                     val opposite = (2 - index) / 2

@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server.holder.component;
 
 import common.CommonStatic;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -11,10 +12,26 @@ import org.jetbrains.annotations.NotNull;
 public class ConfirmButtonHolder extends ComponentHolder {
     private final Runnable action;
 
+    /**
+     * Perform {@code action} only when message deletion was confirmed
+     */
+    private final boolean ensureDeletion;
+
     public ConfirmButtonHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang, Runnable action) {
         super(author, channelID, msg, lang);
 
         this.action = action;
+
+        ensureDeletion = false;
+
+        registerAutoExpiration(FIVE_MIN);
+    }
+
+    public ConfirmButtonHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang, boolean ensureDeletion, Runnable action) {
+        super(author, channelID, msg, lang);
+
+        this.action = action;
+        this.ensureDeletion = ensureDeletion;
 
         registerAutoExpiration(FIVE_MIN);
     }
@@ -23,15 +40,23 @@ public class ConfirmButtonHolder extends ComponentHolder {
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "confirm" -> {
-                MessageChannelUnion channel = message.getChannel();
+                if (ensureDeletion) {
+                    message.delete().queue(unused -> action.run(), e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/ConfirmButtonHolder::onEvent - Failed to delete message");
 
-                if (channel instanceof ThreadChannel tc && tc.isArchived()) {
-                    message.editMessageComponents().queue();
+                        action.run();
+                    });
                 } else {
-                    message.delete().queue();
-                }
+                    MessageChannelUnion channel = message.getChannel();
 
-                action.run();
+                    if (channel instanceof ThreadChannel tc && tc.isArchived()) {
+                        message.editMessageComponents().queue();
+                    } else {
+                        message.delete().queue();
+                    }
+
+                    action.run();
+                }
             }
             case "cancel" -> message.delete().queue();
         }
