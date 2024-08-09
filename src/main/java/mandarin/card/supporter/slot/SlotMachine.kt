@@ -779,9 +779,12 @@ class SlotMachine {
                 }
 
                 if (cardsResult.isNotEmpty()) {
+                    var amount = 1
                     val cards = StringBuilder()
 
                     cardsResult.forEach { c ->
+                        var line = ""
+
                         val cardEmoji = if (c.tier == CardData.Tier.ULTRA) {
                             Emoji.fromUnicode("✨").formatted
                         } else if (c.tier == CardData.Tier.LEGEND) {
@@ -790,23 +793,31 @@ class SlotMachine {
                             ""
                         }
 
-                        cards.append("- ").append(cardEmoji)
+                        line += "- $cardEmoji"
 
                         if (c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND) {
-                            cards.append(" ")
+                            line += " "
                         }
 
-                        cards.append(c.simpleCardInfo())
+                        line += c.simpleCardInfo()
 
                         if (!inventory.cards.containsKey(c) && !inventory.favorites.containsKey(c)) {
-                            cards.append(" {**NEW**}")
+                            line += " {**NEW**}"
                         }
 
                         if (c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND) {
-                            cards.append(" ")
+                            line = " "
                         }
 
-                        cards.append(cardEmoji).append("\n")
+                        line += cardEmoji
+
+                        if (cards.length + line.length + 1 >= MessageEmbed.VALUE_MAX_LENGTH) {
+                            builder.addField("Cards" + if (amount == 1) "" else " $amount", cards.toString(), false)
+
+                            cards.clear()
+                        }
+
+                        cards.append(line).append("\n")
                     }
 
                     builder.addField("Cards", cards.toString(), false)
