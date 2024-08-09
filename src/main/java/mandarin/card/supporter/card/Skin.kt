@@ -182,7 +182,7 @@ class Skin {
         return builder.toString().trim()
     }
 
-    fun purchase(client: JDA, purchaser: Long, inventory: Inventory, containers: Array<CardPayContainer>) {
+    fun purchase(purchaser: Long, inventory: Inventory, containers: Array<CardPayContainer>) {
         inventory.catFoods -= cost.catFoods
         inventory.platinumShard -= cost.platinumShards
 
