@@ -24,7 +24,7 @@ public class AnnouncementAdditionalMessageHolder extends ModalHolder {
         String messageContent = getValueFromMap(event.getValues(), "message").strip();
 
         if (messageContent.isBlank()) {
-            holder.announceMessage = null;
+            holder.announceMessage = "";
         } else {
             holder.announceMessage = messageContent;
         }

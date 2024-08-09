@@ -151,7 +151,13 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("announceMessage")) {
-            id.announceMessage = obj.get("announceMessage").getAsString();
+            JsonElement e = obj.get("announceMessage");
+
+            if (e instanceof JsonNull) {
+                id.announceMessage = "";
+            } else {
+                id.announceMessage = e.getAsString();
+            }
         }
 
         if(obj.has("eventMessage")) {
