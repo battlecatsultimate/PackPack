@@ -74,20 +74,38 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         skin.purchase(purchaser, inventory, containers)
 
-                        e.deferReply()
-                            .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
-                            .setEphemeral(true)
-                            .queue()
+                        if (inventory.skins.filter { s -> s.card == skin.card }.size == 1) {
+                            inventory.equippedSkins[skin.card] = skin
+
+                            e.deferReply()
+                                .setContent("Successfully purchased skin ${skin.name}! This is your first skin, so skin has been equipped automatically!")
+                                .setEphemeral(true)
+                                .queue()
+                        } else {
+                            e.deferReply()
+                                .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
+                                .setEphemeral(true)
+                                .queue()
+                        }
 
                         goBack()
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
                     skin.purchase(purchaser, inventory, containers)
 
-                    event.deferReply()
-                        .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
-                        .setEphemeral(true)
-                        .queue()
+                    if (inventory.skins.filter { s -> s.card == skin.card }.size == 1) {
+                        inventory.equippedSkins[skin.card] = skin
+
+                        event.deferReply()
+                            .setContent("Successfully purchased skin ${skin.name}! This is your first skin, so skin has been equipped automatically!")
+                            .setEphemeral(true)
+                            .queue()
+                    } else {
+                        event.deferReply()
+                            .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
+                            .setEphemeral(true)
+                            .queue()
+                    }
 
                     goBack()
                 }
