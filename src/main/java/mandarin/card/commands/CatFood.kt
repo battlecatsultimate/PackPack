@@ -26,7 +26,11 @@ class CatFood : Command(CommonStatic.Lang.Locale.EN, true) {
                 memberGetter.queue({ mem ->
                     val inventory = Inventory.getInventory(mem.idLong)
 
-                    replyToMessageSafely(loader.channel, "User ${mem.asMention} currently has $cf ${inventory.catFoods}", loader.message) { a -> a }
+                    if (CardData.taxedCatFoods.containsKey(mem.idLong)) {
+                        replyToMessageSafely(loader.channel, "User ${mem.asMention} currently has $cf ${inventory.catFoods - (CardData.taxedCatFoods[mem.idLong] ?: 0)}", loader.message) { a -> a }
+                    } else {
+                        replyToMessageSafely(loader.channel, "User ${mem.asMention} currently has $cf ${inventory.catFoods}", loader.message) { a -> a }
+                    }
                 }) { _ ->
                     replyToMessageSafely(loader.channel, "Bot failed to find such user in this server...", loader.message) { a -> a }
                 }
