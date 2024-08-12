@@ -1,6 +1,7 @@
 package mandarin.card.commands
 
 import common.CommonStatic
+import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
@@ -35,13 +36,24 @@ class CatFood : Command(CommonStatic.Lang.Locale.EN, true) {
         } else {
             val inventory = Inventory.getInventory(m.idLong)
 
-            replyToMessageSafely(loader.channel, "${m.asMention}, here's your $cf status\n" +
-                    "\n" +
-                    "In total, you have $cf ${inventory.catFoods}\n" +
-                    "$cf ${inventory.tradePendingCatFoods} are queued in trading sessions\n" +
-                    "$cf ${inventory.auctionPendingCatFoods} are queued in auction sessions\n" +
-                    "\n" +
-                    "You can actually use $cf ${inventory.actualCatFood}", loader.message) { a -> a }
+            if (CardData.taxedCatFoods.containsKey(m.idLong)) {
+                replyToMessageSafely(loader.channel, "${m.asMention}, here's your $cf status\n" +
+                        "\n" +
+                        "In total, you have $cf ${inventory.catFoods}\n" +
+                        "$cf ${inventory.tradePendingCatFoods} are queued in trading sessions\n" +
+                        "$cf ${inventory.auctionPendingCatFoods} are queued in auction sessions\n" +
+                        "$cf ${CardData.taxedCatFoods[m.idLong]} are taxed\n" +
+                        "\n" +
+                        "You can actually use $cf ${inventory.actualFakeCatFood}", loader.message) { a -> a }
+            } else {
+                replyToMessageSafely(loader.channel, "${m.asMention}, here's your $cf status\n" +
+                        "\n" +
+                        "In total, you have $cf ${inventory.catFoods}\n" +
+                        "$cf ${inventory.tradePendingCatFoods} are queued in trading sessions\n" +
+                        "$cf ${inventory.auctionPendingCatFoods} are queued in auction sessions\n" +
+                        "\n" +
+                        "You can actually use $cf ${inventory.actualCatFood}", loader.message) { a -> a }
+            }
         }
     }
 

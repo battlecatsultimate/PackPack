@@ -38,6 +38,10 @@ class Inventory(private val id: Long) {
         get() {
             return CardData.auctionSessions.filter { s -> s.bidData.containsKey(id) }.sumOf { s -> s.bidData[id] ?: 0L }
         }
+    val actualFakeCatFood: Long
+        get() {
+            return catFoods - tradePendingCatFoods - auctionPendingCatFoods - (CardData.taxedCatFoods[id] ?: 0L)
+        }
 
     fun addCards(c: Map<Card, Int>) {
         c.forEach { (card, amount) ->

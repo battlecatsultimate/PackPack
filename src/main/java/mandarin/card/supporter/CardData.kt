@@ -220,6 +220,8 @@ object CardData {
 
     var inventories = HashMap<Long, Inventory>()
 
+    val taxedCatFoods = PositiveMap<Long, Long>()
+
     val activatedBanners = ArrayList<Activator>()
 
     val cooldown = HashMap<Long, HashMap<String, Long>>()
