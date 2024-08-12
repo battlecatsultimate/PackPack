@@ -80,8 +80,10 @@ object Notification {
                 }
 
                 if (messageContent.isNotBlank()) {
-                    notificationChannel.sendMessage("<@$id>\n\n$messageContent").queue(null) { e ->
-                        StaticStore.logger.uploadErrorLog(e, "E/Notification::handlePackSlotNotification - Failed to send notification")
+                    if (this::notificationChannel.isInitialized) {
+                        notificationChannel.sendMessage("<@$id>\n\n$messageContent").queue(null) { e ->
+                            StaticStore.logger.uploadErrorLog(e, "E/Notification::handlePackSlotNotification - Failed to send notification")
+                        }
                     }
                 }
 
@@ -111,10 +113,6 @@ object Notification {
     }
 
     fun handleCollectorRoleNotification(client: ShardManager) {
-        if (!this::notificationChannel.isInitialized) {
-            return
-        }
-
         val g = client.getGuildById(CardData.guild)
         val collectorRole = g?.roles?.find { r -> r.id == CardData.Role.LEGEND.id }
 
@@ -128,13 +126,15 @@ object Notification {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), collectorRole).queue()
                 }
 
-                notificationChannel.sendMessage(
-                    "<@$userID>, your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
-                            "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
-                            "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
-                            "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}"
-                ).queue(null) { e ->
-                    StaticStore.logger.uploadErrorLog(e, "E/Notification::sendCollectorRoleNotification - Failed to send notification")
+                if (this::notificationChannel.isInitialized) {
+                    notificationChannel.sendMessage(
+                        "<@$userID>, your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
+                                "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
+                                "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
+                                "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}"
+                    ).queue(null) { e ->
+                        StaticStore.logger.uploadErrorLog(e, "E/Notification::sendCollectorRoleNotification - Failed to send notification")
+                    }
                 }
             }
         }
@@ -145,6 +145,14 @@ object Notification {
 
         val message = "<@${skin.creator}>, user <@$purchaser> has purchased your skin!\n\n### Skin Name : ${skin.name} [${skin.skinID}]\n### Total Purchase Count : $purchaseSize"
 
-        notificationChannel.sendMessage(message).queue()
+        if (this::notificationChannel.isInitialized) {
+            notificationChannel.sendMessage(message).queue()
+        }
+    }
+
+    fun handleNotificationTest(userID: Long) {
+        if (this::notificationChannel.isInitialized) {
+            notificationChannel.sendMessage("<@$userID> This is test notification. You will receive all the notifications in here").queue()
+        }
     }
 }

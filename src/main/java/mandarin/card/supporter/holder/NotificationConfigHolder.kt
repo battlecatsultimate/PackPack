@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.log.Notification
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
@@ -49,23 +50,11 @@ class NotificationConfigHolder(author: Message, channelID: String, message: Mess
                 applyResult(event)
             }
             "test" -> {
-                authorMessage.author.openPrivateChannel().queue { private ->
-                    private.sendMessage("This is test message to check if bot can send DM or not").queue({ _ ->
-                        event.deferReply()
-                            .setContent("Successfully sent DM!")
-                            .setEphemeral(true)
-                            .queue()
+                Notification.handleNotificationTest(authorMessage.author.idLong)
 
-                        tested = true
+                tested = true
 
-                        applyResult()
-                    }) { _ ->
-                        event.deferReply()
-                            .setContent("Bot failed to reach your DM... Maybe you have blocked the bot or DM in this server?")
-                            .setEphemeral(true)
-                            .queue()
-                    }
-                }
+                applyResult()
             }
             "close" -> {
                 event.deferEdit()
@@ -109,7 +98,7 @@ class NotificationConfigHolder(author: Message, channelID: String, message: Mess
             "## Notification Config\n" +
                     "You can make bot notify you whenever available card pack or slot machine is found\n" +
                     "\n" +
-                    "**Keep in mind that you have to allow DM to make bot send you notification. Disallowing DM from bot will make it automatically turn off notifications**\n\n"
+                    "**Keep in mind that notification will be sent in <#${CardData.notification}>. Your status and actions will get displayed in there to everyone**\n\n"
         )
 
         builder.append("- **Notify Card Pack** : ")
@@ -160,7 +149,7 @@ class NotificationConfigHolder(author: Message, channelID: String, message: Mess
             ))
         }
 
-        result.add(ActionRow.of(Button.secondary("test", "Test Sending DM").withEmoji(Emoji.fromUnicode("📢")).withDisabled(tested)))
+        result.add(ActionRow.of(Button.secondary("test", "Test Sending Notification").withEmoji(Emoji.fromUnicode("📢")).withDisabled(tested)))
 
         result.add(ActionRow.of(Button.danger("close", "Close").withEmoji(EmojiStore.CROSS)))
 

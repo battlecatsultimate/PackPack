@@ -29,7 +29,7 @@ class Notice : Command(CommonStatic.Lang.Locale.EN, true) {
             "## Notification Config\n" +
             "You can make bot notify you whenever available card pack or slot machine is found\n" +
             "\n" +
-            "**Keep in mind that you have to allow DM to make bot send you notification. Disallowing DM from bot will make it automatically turn off notifications**\n\n"
+            "**Keep in mind that notification will be sent in <#${CardData.notification}>. Your status and actions will get displayed in there to everyone**\n\n"
         )
 
         builder.append("- **Notify Card Pack** : ")
@@ -79,7 +79,7 @@ class Notice : Command(CommonStatic.Lang.Locale.EN, true) {
             ))
         }
 
-        result.add(ActionRow.of(Button.secondary("test", "Test Sending DM").withEmoji(Emoji.fromUnicode("📢"))))
+        result.add(ActionRow.of(Button.secondary("test", "Test Sending Notification").withEmoji(Emoji.fromUnicode("📢"))))
 
         result.add(ActionRow.of(Button.danger("close", "Close").withEmoji(EmojiStore.CROSS)))
 
