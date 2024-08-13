@@ -65,7 +65,6 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 if (!ch.canTalk()) {
                     if (ch instanceof GuildChannel) {
                         Guild g = event.getGuild();
-                        User u = getAuthorMessage().getAuthor();
 
                         String serverName = g.getName();
                         String channelName = ch.getName();
@@ -74,9 +73,11 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
 
                         content = LangID.getStringByID("bot.sendFailure.reason.noPermission.withChannel", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
-                        u.openPrivateChannel()
-                                .flatMap(pc -> pc.sendMessage(content))
-                                .queue();
+                        event.retrieveUser().queue(u ->
+                            u.openPrivateChannel()
+                                    .flatMap(pc -> pc.sendMessage(content))
+                                    .queue()
+                        );
                     }
 
                     return STATUS.WAIT;
