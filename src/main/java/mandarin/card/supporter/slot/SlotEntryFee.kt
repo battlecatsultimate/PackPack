@@ -34,7 +34,7 @@ class SlotEntryFee {
 
     val invalid: Boolean
         get() {
-            return minimumFee > maximumFee || maximumFee == 0L
+            return minimumFee > maximumFee
         }
 
     fun asText() : String {
@@ -48,10 +48,16 @@ class SlotEntryFee {
             EntryType.PLATINUM_SHARDS -> "Platinum Shards $emoji"
         }
 
-        return "Entry Type : $priceName\n" +
-                "\n" +
-                "Minimum Fee : $emoji $minimumFee\n" +
-                "Maximum Fee : $emoji $maximumFee"
+        return if (maximumFee == 0L) {
+            "Entry Type : $priceName\n" +
+            "\n" +
+            "Free"
+        } else {
+            "Entry Type : $priceName\n" +
+            "\n" +
+            "Minimum Fee : $emoji $minimumFee\n" +
+            "Maximum Fee : $emoji $maximumFee"
+        }
     }
 
     fun asJson() : JsonObject {

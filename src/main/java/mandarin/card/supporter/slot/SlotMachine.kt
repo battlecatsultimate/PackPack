@@ -106,6 +106,10 @@ class SlotMachine {
                 }
             }
 
+            if (entryFee.maximumFee == 0L && content.filterIsInstance<SlotCurrencyContent>().any { c -> c.mode == SlotCurrencyContent.Mode.PERCENTAGE }) {
+                return false
+            }
+
             return true
         }
 
