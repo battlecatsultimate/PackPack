@@ -361,6 +361,10 @@ public abstract class Holder {
 
                     for (Holder parentHolder : skimmedHolder) {
                         parentHolder.expired = true;
+
+                        if (parentHolder.schedule != null) {
+                            parentHolder.schedule.cancel(true);
+                        }
                     }
 
                     Holder childHolder = child;
@@ -432,6 +436,10 @@ public abstract class Holder {
 
                     for (Holder parentHolder : skimmedHolder) {
                         parentHolder.expired = true;
+
+                        if (parentHolder.schedule != null) {
+                            parentHolder.schedule.cancel(true);
+                        }
                     }
 
                     Holder childHolder = child;
