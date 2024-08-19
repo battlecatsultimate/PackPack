@@ -208,9 +208,30 @@ public class Logger {
 
     private void createMessageWithNoPings(GuildMessageChannel ch, String content) {
         if (content.length() > Message.MAX_CONTENT_LENGTH) {
+            File tempLogFile = StaticStore.generateTempFile(new File("./temp"), "log", "txt", false);
+
+            if (tempLogFile == null || !tempLogFile.exists()) {
+                ch.sendMessage(content.substring(0, Message.MAX_CONTENT_LENGTH - 3) + "...")
+                        .setAllowedMentions(new ArrayList<>())
+                        .queue();
+
+                return;
+            }
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempLogFile))) {
+                writer.write(content);
+            } catch (IOException e) {
+                uploadErrorLog(e, "E/Logger::createMessageWithNoPings - Failed to write too long message as file");
+            }
+
             ch.sendMessage(content.substring(0, Message.MAX_CONTENT_LENGTH - 3) + "...")
                     .setAllowedMentions(new ArrayList<>())
-                    .queue();
+                    .addFiles(FileUpload.fromData(tempLogFile, "log.txt"))
+                    .queue(unused -> StaticStore.deleteFile(tempLogFile, true), e -> {
+                        uploadErrorLog(e, "E/Logger::createMessageWithNoPings - Failed to send log message with file");
+
+                        StaticStore.deleteFile(tempLogFile, true);
+                    });
         } else {
             ch.sendMessage(content)
                     .setAllowedMentions(new ArrayList<>())
