@@ -106,11 +106,7 @@ class SlotMachine {
                 }
             }
 
-            if (entryFee.maximumFee == 0L && content.filterIsInstance<SlotCurrencyContent>().any { c -> c.mode == SlotCurrencyContent.Mode.PERCENTAGE }) {
-                return false
-            }
-
-            return true
+            return !(entryFee.maximumFee == 0L && content.filterIsInstance<SlotCurrencyContent>().any { c -> c.mode == SlotCurrencyContent.Mode.PERCENTAGE })
         }
 
     val uuid: String
@@ -859,7 +855,7 @@ class SlotMachine {
 
                     val embeds = ArrayList<MessageEmbed>()
 
-                    links.forEachIndexed { index, link ->
+                    links.subList(0, min(links.size, 10)).forEachIndexed { index, link ->
                         if (index == 0) {
                             builder.setUrl("https://none.dummy").setImage(link)
 
