@@ -37,6 +37,7 @@ object Notification {
                     val packList = StringBuilder()
 
                     val cooldown = CardData.cooldown[id] ?: return@forEach
+                    val resetQueue = ArrayList<String>()
 
                     cooldown.forEach { (uuid, cd) ->
                         val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
@@ -45,7 +46,13 @@ object Notification {
                             packList.append("- ")
                                 .append(pack.packName)
                                 .append("\n")
+
+                            resetQueue.add(uuid)
                         }
+                    }
+
+                    resetQueue.forEach { uuid ->
+                        cooldown[uuid] = 0
                     }
 
                     if (packList.isNotBlank()) {
@@ -58,6 +65,7 @@ object Notification {
                     val slotList = StringBuilder()
 
                     val cooldown = CardData.slotCooldown[id] ?: return@forEach
+                    val resetQueue = ArrayList<String>()
 
                     cooldown.forEach { (uuid, cd) ->
                         val slot = CardData.slotMachines.filter { slot -> slot.cooldown >= CardData.MINIMUM_NOTIFY_TIME }.find { slot -> slot.uuid == uuid }
@@ -66,7 +74,13 @@ object Notification {
                             slotList.append("- ")
                                 .append(slot.name)
                                 .append("\n")
+
+                            resetQueue.add(uuid)
                         }
+                    }
+
+                    resetQueue.forEach { uuid ->
+                        cooldown[uuid] = 0
                     }
 
                     if (slotList.isNotBlank()) {
@@ -83,26 +97,6 @@ object Notification {
                     if (this::notificationChannel.isInitialized) {
                         notificationChannel.sendMessage("<@$id>\n\n$messageContent").queue(null) { e ->
                             StaticStore.logger.uploadErrorLog(e, "E/Notification::handlePackSlotNotification - Failed to send notification")
-                        }
-                    }
-                }
-
-                CardData.cooldown.forEach { (_, cooldownMap) ->
-                    cooldownMap.forEach { (uuid, cd) ->
-                        val pack = CardData.cardPacks.find { p -> p.uuid == uuid } ?: return@forEach
-
-                        if (cd > 0 && cd - currentTime <= 0 && pack.activated) {
-                            cooldownMap[uuid] = 0
-                        }
-                    }
-                }
-
-                CardData.slotCooldown.forEach { (_, cooldownMap) ->
-                    cooldownMap.forEach { (uuid, cd) ->
-                        val slot = CardData.slotMachines.find { s -> s.uuid == uuid } ?: return@forEach
-
-                        if (cd > 0 && cd - currentTime <= 0 && slot.activate) {
-                            cooldownMap[uuid] = 0
                         }
                     }
                 }
