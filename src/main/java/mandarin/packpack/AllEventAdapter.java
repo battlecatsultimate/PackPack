@@ -97,7 +97,7 @@ public class AllEventAdapter extends ListenerAdapter {
             findInviter(g).queue(m ->
                 m.getUser().openPrivateChannel().queue(ch ->
                         ch.sendMessage(LangID.getStringByID("bot.directMessage.invitation", holder.config.lang).formatted(g.getName())).queue(null, e -> {
-                            if (e instanceof ErrorResponseException err && err.getResponse().code == 50007) {
+                            if (e instanceof ErrorResponseException err && err.getErrorCode() == 50007) {
                                 return;
                             }
 
