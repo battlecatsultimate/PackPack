@@ -189,6 +189,11 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
     }
 
     @Override
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
+        applyResult(event);
+    }
+
+    @Override
     public void clean() {
 
     }
