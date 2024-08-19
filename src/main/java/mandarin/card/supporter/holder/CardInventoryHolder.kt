@@ -27,6 +27,13 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
     private val cards = ArrayList<Card>(inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator()))
 
     private var page = 0
+        set(value) {
+            field = value
+
+            val totalPage = getTotalPage(cards.size)
+
+            field = min(field, totalPage - 1)
+        }
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
 
