@@ -179,6 +179,10 @@ public abstract class Holder {
         return author;
     }
 
+    public final boolean hasAuthorMessage() {
+        return author != null;
+    }
+
     public boolean equals(Holder that) {
         return this.time == that.time;
     }

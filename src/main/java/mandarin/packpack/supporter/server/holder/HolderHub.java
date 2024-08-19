@@ -33,7 +33,7 @@ public class HolderHub {
                             "E/HolderHub::handleEvent - Failed to handle message holder\n" +
                                     "\n" +
                                     "Holder = " + (messageHolder == null ? "None" : messageHolder.getClass().getName()) + "\n" +
-                                    "Command = " + (messageHolder == null ? "None" : messageHolder.getAuthorMessage().getContentRaw())
+                                    "Command = " + (messageHolder == null || !messageHolder.hasAuthorMessage() ? "None" : messageHolder.getAuthorMessage().getContentRaw())
                     );
                 }
             }
