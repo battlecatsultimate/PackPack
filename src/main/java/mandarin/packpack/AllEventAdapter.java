@@ -71,6 +71,8 @@ public class AllEventAdapter extends ListenerAdapter {
 
             StaticStore.idHolder.remove(g.getId());
 
+            StaticStore.holders.values().forEach(hub -> hub.handleGuildDelete(g.getId()));
+
             StaticStore.saveServerInfo();
 
             StaticStore.updateStatus();

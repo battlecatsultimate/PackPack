@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -103,6 +104,20 @@ public class HolderHub {
         }
 
         if (modalHolder != null && modalHolder.channelID.equals(channelID)) {
+            modalHolder.end(true);
+        }
+    }
+
+    public void handleGuildDelete(String guildID) {
+        if (messageHolder != null && messageHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getId().equals(guildID)) {
+            messageHolder.end(true);
+        }
+
+        if (componentHolder != null && componentHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getId().equals(guildID)) {
+            componentHolder.end(true);
+        }
+
+        if (modalHolder != null && modalHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getId().equals(guildID)) {
             modalHolder.end(true);
         }
     }
