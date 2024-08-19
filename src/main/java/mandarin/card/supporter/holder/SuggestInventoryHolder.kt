@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import kotlin.math.max
 import kotlin.math.min
 
 class SuggestInventoryHolder(
@@ -226,15 +227,15 @@ class SuggestInventoryHolder(
                     event.replyModal(modal).queue()
 
                     connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
-                        val filteredAmount = min(CardData.MAX_CARD_TYPE - backup.cards.size, min(amount, realAmount))
+                        val filteredAmount = min(amount, realAmount)
 
                         backup.cards[card] = (backup.cards[card] ?: 0) + filteredAmount
 
                         filterCards()
 
-                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
-                            page--
-                        }
+                        val totalPage = getTotalPage(cards.size)
+
+                        page = min(page, max(0, totalPage - 1))
 
                         suggestionMessage
                             .editMessage(backup.suggestionInfo(member))
@@ -332,17 +333,21 @@ class SuggestInventoryHolder(
     private fun filterCards() {
         cards.clear()
 
-        if (tier != CardData.Tier.NONE) {
-            if (banner[0] == -1) {
-                cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier })
-            } else {
-                cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] })
-            }
+        if (backup.cards.size >= CardData.MAX_CARD_TYPE) {
+            cards.addAll(backup.cards.keys)
         } else {
-            if (banner[0] == -1) {
-                cards.addAll(inventory.cards.keys)
+            if (tier != CardData.Tier.NONE) {
+                if (banner[0] == -1) {
+                    cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier })
+                } else {
+                    cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] })
+                }
             } else {
-                cards.addAll(inventory.cards.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] })
+                if (banner[0] == -1) {
+                    cards.addAll(inventory.cards.keys)
+                } else {
+                    cards.addAll(inventory.cards.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] })
+                }
             }
         }
 
@@ -482,13 +487,13 @@ class SuggestInventoryHolder(
             .addOptions(cardCategoryElements)
             .setPlaceholder(
                 if (backup.cards.size == CardData.MAX_CARD_TYPE)
-                    "You can't suggest more than ${CardData.MAX_CARD_TYPE} cards!"
+                    "You can't suggest more than ${CardData.MAX_CARD_TYPE} type of cards!"
                 else if (cards.isEmpty() || wasEmpty)
                     "No Cards To Select"
                 else
                     "Select Card To Suggest"
             )
-            .setDisabled(backup.cards.size >= CardData.MAX_CARD_TYPE || cards.isEmpty() || wasEmpty)
+            .setDisabled(cards.isEmpty() || wasEmpty)
             .build()
 
         rows.add(ActionRow.of(cardCategory))
