@@ -287,8 +287,7 @@ class CardFavoriteHolder(author: Message, channelID: String, message: Message, p
             val options = ArrayList<SelectOption>()
 
             for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-
-                options.add(SelectOption.of(skins[i].name, i.toString()).withDescription(skins[i].skinID.toString()).withDefault(skins[i] == equippedSkin))
+                options.add(SelectOption.of(skins[i].name, i.toString()).withDescription(skins[i].skinID.toString()).withDefault(skins[i] === equippedSkin))
             }
 
             result.add(ActionRow.of(
