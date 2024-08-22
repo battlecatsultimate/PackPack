@@ -31,7 +31,7 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
 
             val cf = EmojiStore.ABILITY["CF"]?.formatted
 
-            if (catFood > CardData.MAX_CAT_FOOD_SUGGESTION) {
+            if (CardData.MAX_CAT_FOOD_SUGGESTION > 0 && catFood > CardData.MAX_CAT_FOOD_SUGGESTION) {
                 event.reply("You can suggest only up to $cf ${CardData.MAX_CAT_FOOD_SUGGESTION}!")
                     .setEphemeral(true)
                     .queue()
@@ -79,8 +79,8 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
 
                 val catFood = (filtered.toDouble() * multiplier).toInt()
 
-                if (catFood > 500000) {
-                    event.reply("You can't suggest cat foods more than 500k! Please contact moderator for such large transaction").setEphemeral(true).queue()
+                if (CardData.MAX_CAT_FOOD_SUGGESTION > 0 && catFood > CardData.MAX_CAT_FOOD_SUGGESTION) {
+                    event.reply("You can't suggest cat foods more than ${CardData.MAX_CAT_FOOD_SUGGESTION}! Please contact moderator for such large transaction").setEphemeral(true).queue()
 
                     return
                 }
