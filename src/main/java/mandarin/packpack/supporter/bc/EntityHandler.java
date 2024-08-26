@@ -3905,19 +3905,6 @@ public class EntityHandler {
 
         BigDecimal waveTotalMultiplier = waveChance.multiply(waveMultiplier);
 
-        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
-
-        Data.Proc.PM savageBlow = du.getProc().SATK;
-        Data.Proc.PM critical = du.getProc().CRIT;
-
-        if (savageBlow.exists()) {
-            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
-        }
-
-        if (critical.exists()) {
-            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
-        }
-
         for (int i = 0; i < nodes.size(); i++) {
             BigDecimal range = nodes.get(i);
 
@@ -3929,7 +3916,6 @@ public class EntityHandler {
 
             if (surge && inSurgeArea(range, shortSurgeDistance, longSurgeDistance)) {
                 BigDecimal surgeDamage = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
-                        .multiply(damageTotalMultiplier)
                         .multiply(surgeTotalMultiplier);
 
                 if (inSurgeIntersectionArea(range, shortSurgeDistance, longSurgeDistance)) {
@@ -4003,8 +3989,7 @@ public class EntityHandler {
 
                 if (wave) {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
-                            .multiply(waveTotalMultiplier)
-                            .multiply(damageTotalMultiplier);
+                            .multiply(waveTotalMultiplier);
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
@@ -4058,8 +4043,7 @@ public class EntityHandler {
 
                 if (wave) {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
-                            .multiply(waveTotalMultiplier)
-                            .multiply(damageTotalMultiplier);
+                            .multiply(waveTotalMultiplier);
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
@@ -4098,8 +4082,7 @@ public class EntityHandler {
 
                 if (surge && inSurgeArea(range, shortSurgeDistance, longSurgeDistance)) {
                     BigDecimal surgeDamage = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
-                            .multiply(surgeTotalMultiplier)
-                            .multiply(damageTotalMultiplier);
+                            .multiply(surgeTotalMultiplier);
 
                     if (inSurgeIntersectionArea(range, shortSurgeDistance, longSurgeDistance)) {
                         y1 = y1.add(surgeDamage);
@@ -4171,8 +4154,7 @@ public class EntityHandler {
 
                     if (wave) {
                         BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
-                                .multiply(waveTotalMultiplier)
-                                .multiply(damageTotalMultiplier);
+                                .multiply(waveTotalMultiplier);
 
                         List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
@@ -4226,8 +4208,7 @@ public class EntityHandler {
 
                     if (wave) {
                         BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
-                                .multiply(waveTotalMultiplier)
-                                .multiply(damageTotalMultiplier);
+                                .multiply(waveTotalMultiplier);
 
                         List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
@@ -4539,19 +4520,6 @@ public class EntityHandler {
 
         BigDecimal waveTotalMultiplier = waveChance.multiply(waveMultiplier);
 
-        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
-
-        Data.Proc.PM savageBlow = de.getProc().SATK;
-        Data.Proc.PM critical = de.getProc().CRIT;
-
-        if (savageBlow.exists()) {
-            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
-        }
-
-        if (critical.exists()) {
-            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
-        }
-
         for (int i = 0; i < nodes.size(); i++) {
             BigDecimal range = nodes.get(i);
 
@@ -4563,8 +4531,7 @@ public class EntityHandler {
 
             if (surge && inSurgeArea(range, shortSurgeDistance, longSurgeDistance)) {
                 BigDecimal surgeDamage = getTotalSurgeWaveAttack(de, adjustedMagnification)
-                        .multiply(surgeTotalMultiplier)
-                        .multiply(damageTotalMultiplier);
+                        .multiply(surgeTotalMultiplier);
 
                 if (inSurgeIntersectionArea(range, shortSurgeDistance, longSurgeDistance)) {
                     y1 = y1.add(surgeDamage);
@@ -4637,8 +4604,7 @@ public class EntityHandler {
 
                 if (wave) {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(de, adjustedMagnification)
-                            .multiply(waveTotalMultiplier)
-                            .multiply(damageTotalMultiplier);
+                            .multiply(waveTotalMultiplier);
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
@@ -4692,8 +4658,7 @@ public class EntityHandler {
 
                 if (wave) {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(de, adjustedMagnification)
-                            .multiply(waveTotalMultiplier)
-                            .multiply(damageTotalMultiplier);
+                            .multiply(waveTotalMultiplier);
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
