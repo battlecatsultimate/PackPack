@@ -31,9 +31,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.update.GenericChannelUpdateEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
@@ -141,6 +143,15 @@ public class AllEventAdapter extends ListenerAdapter {
             StaticStore.saveServerInfo();
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onRoleDelete - Error happened");
+        }
+    }
+
+    @Override
+    public void onGenericChannelUpdate(@NotNull GenericChannelUpdateEvent<?> event) {
+        ChannelUnion channel = event.getChannel();
+
+        if (channel instanceof MessageChannel mc && !mc.canTalk()) {
+            StaticStore.holders.values().forEach(hub -> hub.handleChannelDelete(mc.getId()));
         }
     }
 
