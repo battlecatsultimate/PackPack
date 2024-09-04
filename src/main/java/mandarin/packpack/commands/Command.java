@@ -439,7 +439,7 @@ public abstract class Command {
                 case "Manage Roles" -> "bot.permission.manageRole";
                 case "Manage Emojis and Stickers" -> "bot.permission.manageEmoji";
                 case "Use External Emojis" -> "bot.permission.useExternalEmoji";
-                case "Embed Links" -> "permission_embed";
+                case "Embed Links" -> "bot.permission.addEmbed";
                 default -> permission.getName();
             };
 

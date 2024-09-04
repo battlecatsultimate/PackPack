@@ -160,7 +160,8 @@
       "manageEmoji" : "이모지 및 스티커 관리 (추가, 제거 등)",
       "manageMessage" : "메세지 관리 (제거 등)",
       "manageRole" : "역할 관리 (추가, 제거 등)",
-      "useExternalEmoji" : "외부 이모지 사용"
+      "useExternalEmoji" : "외부 이모지 사용",
+      "addEmbed" : "임베디드 추가"
     },
     "scamHandler" : {
       "noChannel" : "봇이 유저가 사기 링크를 올리는 것을 감지하였지만 해킹된 유저에 대한 정보를 올릴 채널을 찾지 못하였습니다"

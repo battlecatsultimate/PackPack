@@ -160,7 +160,8 @@
       "manageEmoji" : "絵文字とスタンプの管理(追加、削除など)",
       "manageMessage" : "メッセージの管理(削除など)",
       "manageRole" : "ロールの管理(追加、削除など)",
-      "useExternalEmoji" : "外部の絵文字を使用"
+      "useExternalEmoji" : "外部の絵文字を使用",
+      "addEmbed" : "Adding Embed"
     },
     "scamHandler" : {
       "noChannel" : "Bot detected user sending scam link. However, bot couldn't find a channel to post the information about compromised user"

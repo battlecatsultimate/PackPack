@@ -160,7 +160,8 @@
       "manageEmoji" : "Managing Emojis and Stickers (Adding, Deleting, etc.)",
       "manageMessage" : "Managing Messages (Deletion, etc.)",
       "manageRole" : "Managing Roles (Adding, Deleting, etc.)",
-      "useExternalEmoji" : "Using External Emojis"
+      "useExternalEmoji" : "Using External Emojis",
+      "addEmbed" : "Adding Embed"
     },
     "scamHandler" : {
       "noChannel" : "Bot detected user sending scam link. However, bot couldn't find a channel to post the information about compromised user"
