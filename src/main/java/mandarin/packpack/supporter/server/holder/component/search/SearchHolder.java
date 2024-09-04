@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -35,7 +36,16 @@ public abstract class SearchHolder extends ComponentHolder {
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .setComponents()
-                .queue();
+                .queue(null, e ->
+                    StaticStore.logger.uploadErrorLog(e,
+                            ("""
+                            E/SearchHolder::onExpire - Failed to edit message for expiration
+                            Holder = %s
+                            Channel = <#%d> [%d]
+                            Message ID = %d
+                            Author = <@%s> [%s]""").formatted(this.getClass(), message.getChannel().getIdLong(), message.getChannel().getIdLong(), message.getIdLong(), userID, userID)
+                    )
+                );
     }
 
     @Override
