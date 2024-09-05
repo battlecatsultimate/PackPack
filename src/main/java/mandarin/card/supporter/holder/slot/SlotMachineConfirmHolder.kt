@@ -50,6 +50,21 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
         when(event.componentId) {
             "roll" -> {
                 if (slotMachine.entryFee.minimumFee == slotMachine.entryFee.maximumFee) {
+                    if (slotMachine.entryFee.minimumFee == 0L) {
+                        event.deferEdit()
+                            .setContent("Rolling...! 🎲")
+                            .setComponents()
+                            .setAllowedMentions(ArrayList())
+                            .mentionRepliedUser(false)
+                            .queue {
+                                slotMachine.roll(message, authorMessage.author.idLong, inventory, 0, skip)
+                            }
+
+                        end(true)
+
+                        return
+                    }
+
                     val entryEmoji = when(slotMachine.entryFee.entryType) {
                         SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
                         SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
