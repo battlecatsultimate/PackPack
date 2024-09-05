@@ -806,7 +806,7 @@ class SlotMachine {
                         }
 
                         if (c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND) {
-                            line = " "
+                            line += " "
                         }
 
                         line += cardEmoji
