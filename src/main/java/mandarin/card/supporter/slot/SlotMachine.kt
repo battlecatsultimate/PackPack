@@ -853,9 +853,9 @@ class SlotMachine {
                         }
                     }
 
-                    val embeds = ArrayList<MessageEmbed>()
+                    var embeds: MutableList<MessageEmbed> = ArrayList<MessageEmbed>()
 
-                    links.subList(0, min(links.size, 10)).forEachIndexed { index, link ->
+                    links.subList(0, min(links.size, Message.MAX_EMBED_COUNT)).forEachIndexed { index, link ->
                         if (index == 0) {
                             builder.setUrl("https://none.dummy").setImage(link)
 
@@ -863,6 +863,12 @@ class SlotMachine {
                         } else {
                             embeds.add(EmbedBuilder().setUrl("https://none.dummy").setImage(link).build())
                         }
+                    }
+
+                    if (embeds.size > Message.MAX_EMBED_COUNT) {
+                        StaticStore.logger.uploadLog("W/SlotMachine::displayResult - Invalid embed size ${embeds.size}, force shrinking...")
+
+                        embeds = embeds.subList(0, Message.MAX_EMBED_COUNT).toMutableList()
                     }
 
                     message.editMessage("")
