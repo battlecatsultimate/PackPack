@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.function.Consumer
+import kotlin.math.max
 import kotlin.math.min
 
 class FilterProcessHolder : ComponentHolder {
@@ -359,6 +360,8 @@ class FilterProcessHolder : ComponentHolder {
         cards.removeIf { c -> !filters[currentIndex].filter(c) }
 
         cards.sortWith(CardComparator())
+
+        page = max(0, min(page, getTotalPage(cards.size) - 1))
     }
 
     private fun getComponents() : List<LayoutComponent> {
