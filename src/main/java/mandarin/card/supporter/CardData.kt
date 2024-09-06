@@ -100,7 +100,7 @@ object CardData {
             //Iron Legion
             arrayOf(304, 305, 306, 355, 417, 594, 632, 674, 715),
             //Sengoku Wargods
-            arrayOf(71, 72, 73, 124, 125, 158, 338, 496, 618, 649),
+            arrayOf(71, 72, 73, 124, 125, 158, 338, 496, 618, 649, 754),
             //The Nekoluga Family
             arrayOf(34, 168, 169, 170, 171, 240, 436, 546, 625, 712),
             //Ultra Souls
