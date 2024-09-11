@@ -103,11 +103,6 @@ public class ConfigButtonHolder extends ComponentHolder {
                 
                 performResult(event);
             }
-            case "force" -> {
-                holder.forceCompact = !holder.forceCompact;
-
-                performResult(event);
-            }
             case "trueForm" -> {
                 config.trueForm = !config.trueForm;
                 
