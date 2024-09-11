@@ -494,19 +494,20 @@
         "full_name": "Призыв",
         "tooltip": null,
         "format": [
-            "(prob)% шанс призвать [(!type.fix_buff){(_summonMagnification(mult))}(type.fix_buff){[(_isEnemy){(mult)%}(!_isEnemy){Ур(mult)}]}] (_entity(id)) после (_dispTime(time)), ",
-            "одного призванного на дистанции (dis) от ",
+            "(prob)% шанс призвать [(!type.fix_buff){(_summonMagnification(mult))}(type.fix_buff){[(_isEnemy){(mult)%}(!_isEnemy){Ур(mult)}]}] (_entity(id)) через (_dispTime(time)), ",
+            "один призванный (dis)[(max_dis!=dis){ ~ (max_dis)}] на расстоянии ",
             "[(type.on_kill|type.on_hit){каждой цели}",
             "(!type.on_hit&!type.on_kill){призывателя}] ",
-            "[(type.on_hit){попадании}",
-            "(type.on_kill&!type.on_hit){убийства}",
+            "[(type.on_hit){при попадании}",
+            "(type.on_kill&!type.on_hit){при убийстве}",
             "(!type.on_kill&!type.on_hit){при этой атаке}], ",
-            "[(type.same_health){Призванные существа будут иметь такое же здоровье, как и это существо, }]",
-            "и [(!type.ignore_limit){будут} (type.ignore_limit){не будут}] ограничены лимитом существ на сцене. ",
-            "Призванные существа будут находиться в [(!type.random_layer){том же слое, что и это существо}",
-            "(type.random_layer){случайном слое}]. ",
-            "Призыв [(type.anim_type==0){не будет изображен}(type.anim_type==1){будет ввиде телепортации}(type.anim_type>=2){будет ввиде выкапывания}]",
-            " анимация[(type.anim_type==3){  и отключит проникновение для призванных существ}]."
+            "[(type.same_health){каждое существо будет иметь такое же количество здоровья, как и у призывателя, }]",
+            "[(type.bond_hp){здоровье призывателя будет связано с каждым призванным существом, }]",
+            "и [(type.ignore_limit){не}] ограничено лимитом сущностей на уровне. ",
+            "Призванные существа будут находиться [(min_layer==max_layer){[(min_layer==-1){на том же уровне, что и это существо}(min_layer!=-1){на уровне (min_layer)}]}",
+            "(min_layer!=max_layer){на случайном уровне между (min_layer) и (max_layer)}]. ",
+            "Призыв будет показывать [(type.anim_type==0){никакую}(type.anim_type==1){телепортацию}(type.anim_type>=2){копание}]",
+            " анимацию[(type.anim_type==3){ и отключать копание для призванных существ}]."
         ],
         "class": {
             "prob": {
@@ -1245,7 +1246,7 @@
         "abbr_name": "м. сурдж",
         "full_name": "Мини-Сурдж",
         "tooltip": "Создаёт маленький сурдж, который ведёт себя так же, как обычный сурдж, но наносит меньше урона",
-        "format": "(prob)% шанс создать мини-сурдж (time/20) Ур. (_left)Длится (_dispTime(time)), создается в радиусе (dis_0) ~ (dis_1), наносит целе (multi)% урона от изначального(_right)",
+        "format": "(prob)% шанс создать мини-сурдж (time/20) Ур. (_left) Длится (_dispTime(time)), создается в радиусе (dis_0) ~ (dis_1), наносит цели (mult)% урона от изначального (_right)",
         "class": {
             "prob": {
                 "name": "шанс",
