@@ -105,7 +105,16 @@ public class Config extends ConstraintCommand {
 
             User u = author.getAuthor();
 
-            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), config.lang == null ? holder.config.lang : config.lang));
+            CommonStatic.Lang.Locale l;
+
+            if (config.lang == null) {
+                l = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
+            } else {
+                l = config.lang;
+            }
+
+
+            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), l));
         });
     }
 }
