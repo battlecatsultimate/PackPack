@@ -67,7 +67,7 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
 
                 applyResult()
             }
-            "date.minute.uppercase.singular" -> {
+            "min" -> {
                 val input = TextInput.create("entryFee", "Entry Fee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
 
                 val modal = Modal.create("minMax", "Slot Machine Minimum Entry Fee")

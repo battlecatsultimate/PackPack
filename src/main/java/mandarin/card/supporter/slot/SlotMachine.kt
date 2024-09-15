@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.calculation.Equation
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
@@ -426,6 +427,212 @@ class SlotMachine {
         }
 
         CardBot.saveCardData()
+    }
+
+    fun manualRoll(message: Message, roller: Member, users: List<String>, input: Long) {
+        content.filter { c -> c.emoji == null }.forEach { c -> c.load() }
+
+        if (content.any { c -> c.emoji == null }) {
+            message.editMessage("Failed to roll slot machine due to invalid emoji data...")
+                .setComponents()
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+
+            return
+        }
+
+        val emojis = content.mapNotNull { c -> c.emoji }.toSet()
+
+        if (emojis.isEmpty()) {
+            message.editMessage("Failed to roll slot machine due to empty emoji data...")
+                .setComponents()
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+
+            return
+        }
+
+        if (users.size == 1) {
+            var previousEmoji: CustomEmoji? = null
+
+            val emojiSequence = ArrayList<CustomEmoji>()
+            val sequenceStacks = HashMap<CustomEmoji, Int>()
+            var totalSequenceStacks = 0
+
+            var temporalSequenceStack = 0
+
+            repeat(slotSize) { index ->
+                val emoji = emojis.random()
+
+                sequenceStacks.computeIfAbsent(emoji) { 0 }
+
+                if (index > 0) {
+                    if (previousEmoji === emoji) {
+                        temporalSequenceStack++
+                        totalSequenceStacks++
+                    } else {
+                        val e = previousEmoji
+
+                        if (e != null) {
+                            sequenceStacks[e] = max(sequenceStacks[e] ?: 0, temporalSequenceStack)
+                        }
+
+                        temporalSequenceStack = 0
+                    }
+                }
+
+                previousEmoji = emoji
+
+                emojiSequence.add(emoji)
+            }
+
+            val pickedContents = pickReward(sequenceStacks)
+
+            val cardsResult = ArrayList<Card>()
+
+            // Pre-roll cards in advance to display the result with synchronized inventory status
+            pickedContents.filterIsInstance<SlotCardContent>().forEach { c ->
+                val cards = c.roll()
+
+                cardsResult.addAll(cards)
+            }
+
+            val inventory = Inventory.getInventory(users[0].toLong())
+
+            try {
+                displayResult(message, inventory, input, pickedContents, emojiSequence, totalSequenceStacks, cardsResult)
+            } catch (e: Exception) {
+                StaticStore.logger.uploadErrorLog(e, "E/SlotMachine::roll - Failed to display slot machine roll result")
+            }
+
+            if (pickedContents.isNotEmpty()) {
+                if (!pickedContents.any { c -> c.emoji == null }) {
+                    var currencySum = 0L
+
+                    pickedContents.filterIsInstance<SlotCurrencyContent>().forEach { c ->
+                        val reward = when (c.mode) {
+                            SlotCurrencyContent.Mode.FLAT -> c.amount
+                            SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
+                        }
+
+                        currencySum += reward
+                    }
+
+                    when (entryFee.entryType) {
+                        SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += currencySum
+                        SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += currencySum
+                    }
+
+                    inventory.addCards(cardsResult)
+                }
+            } else {
+                val percentage = if (slotSize == 2)
+                    0.0
+                else
+                    min(1.0, totalSequenceStacks * 1.0 / (slotSize - 2))
+
+                val compensation = round(input * percentage).toLong()
+
+                when (entryFee.entryType) {
+                    SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += compensation
+                    SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += compensation
+                }
+            }
+
+            TransactionLogger.logSlotMachineManualRoll(roller.idLong, this, users.size.toLong())
+        } else {
+            users.forEach { u ->
+                var previousEmoji: CustomEmoji? = null
+
+                val emojiSequence = ArrayList<CustomEmoji>()
+                val sequenceStacks = HashMap<CustomEmoji, Int>()
+                var totalSequenceStacks = 0
+
+                var temporalSequenceStack = 0
+
+                repeat(slotSize) { index ->
+                    val emoji = emojis.random()
+
+                    sequenceStacks.computeIfAbsent(emoji) { 0 }
+
+                    if (index > 0) {
+                        if (previousEmoji === emoji) {
+                            temporalSequenceStack++
+                            totalSequenceStacks++
+                        } else {
+                            val e = previousEmoji
+
+                            if (e != null) {
+                                sequenceStacks[e] = max(sequenceStacks[e] ?: 0, temporalSequenceStack)
+                            }
+
+                            temporalSequenceStack = 0
+                        }
+                    }
+
+                    previousEmoji = emoji
+
+                    emojiSequence.add(emoji)
+                }
+
+                val pickedContents = pickReward(sequenceStacks)
+
+                val cardsResult = ArrayList<Card>()
+
+                // Pre-roll cards in advance to display the result with synchronized inventory status
+                pickedContents.filterIsInstance<SlotCardContent>().forEach { c ->
+                    val cards = c.roll()
+
+                    cardsResult.addAll(cards)
+                }
+
+                val inventory = Inventory.getInventory(u.toLong())
+
+                if (pickedContents.isNotEmpty()) {
+                    if (!pickedContents.any { c -> c.emoji == null }) {
+                        var currencySum = 0L
+
+                        pickedContents.filterIsInstance<SlotCurrencyContent>().forEach { c ->
+                            val reward = when (c.mode) {
+                                SlotCurrencyContent.Mode.FLAT -> c.amount
+                                SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
+                            }
+
+                            currencySum += reward
+                        }
+
+                        when (entryFee.entryType) {
+                            SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += currencySum
+                            SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += currencySum
+                        }
+
+                        inventory.addCards(cardsResult)
+                    }
+                } else {
+                    val percentage = if (slotSize == 2)
+                        0.0
+                    else
+                        min(1.0, totalSequenceStacks * 1.0 / (slotSize - 2))
+
+                    val compensation = round(input * percentage).toLong()
+
+                    when (entryFee.entryType) {
+                        SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += compensation
+                        SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += compensation
+                    }
+                }
+            }
+
+            TransactionLogger.logSlotMachineManualRoll(roller.idLong, this, users.size.toLong())
+
+            message.editMessage("Rolled slot machine for ${users.size} users!")
+                .setComponents()
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+        }
     }
 
     fun getOdd(c: SlotContent) : BigDecimal {

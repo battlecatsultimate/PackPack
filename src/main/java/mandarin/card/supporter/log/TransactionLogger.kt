@@ -1336,6 +1336,22 @@ object TransactionLogger {
         LogSession.session.logSlotMachineWin(user, input, currencySum, cardsSum, slotMachine.entryFee.entryType)
     }
 
+    fun logSlotMachineManualRoll(roller: Long, slotMachine: SlotMachine, userSize: Long) {
+        if (!this::slotChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Slot Machine Rolled")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Card manager <@$roller> manual rolled slot machine for $userSize user(s)")
+
+        builder.addField("Roller", "<@$roller> [$roller]", false)
+        builder.addField("Slot Machine", "${slotMachine.name} (${slotMachine.uuid})", false)
+    }
+
     fun logSkinCreate(manager: Long, skin: Skin) {
         if (!this::modChannel.isInitialized) {
             return
