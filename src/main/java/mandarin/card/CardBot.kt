@@ -59,8 +59,8 @@ object CardBot : ListenerAdapter() {
     var test = false
 
     private var ready = false
-    private var notifier = 2
-    private var collectorMonitor = 30
+    private var notifier = 1
+    private var collectorMonitor = 29
     private var backup = 360
 
     var locked = false
