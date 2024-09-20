@@ -90,7 +90,7 @@ object CardData {
             //Dark Heroes
             arrayOf(194, 195, 196, 212, 226, 261, 431, 533, 634, 698),
             //Dragon Emperors
-            arrayOf(83, 84, 85, 86, 87, 177, 396, 505, 620, 660),
+            arrayOf(83, 84, 85, 86, 87, 177, 396, 505, 620, 660, 760),
             //Dynamites
             arrayOf(42, 43, 44, 57, 59, 143, 427, 519, 617, 668),
             //Elemental Pixies
