@@ -137,6 +137,10 @@ class SkinCostManageHolder(author: Message, channelID: String, message: Message,
         applyResult(event)
     }
 
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
+        applyResult(event)
+    }
+
     override fun onBack(child: Holder) {
         applyResult()
     }
