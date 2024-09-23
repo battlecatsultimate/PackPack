@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -106,6 +107,8 @@ public class LogOut extends ConstraintCommand {
                 StaticStore.saver.cancel();
                 StaticStore.saver.purge();
 
+                StaticStore.executorHandler.release();
+
                 StaticStore.safeClose = true;
 
                 StaticStore.saveServerInfo();
@@ -115,7 +118,7 @@ public class LogOut extends ConstraintCommand {
                 StaticStore.renderManager.setReleaseFlag(true);
                 RenderSessionManager.Companion.terminate();
 
-                System.exit(0);
+                LogManager.shutdown();
             }));
         });
     }

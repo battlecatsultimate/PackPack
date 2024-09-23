@@ -19,4 +19,8 @@ public class FixedScheduleHandler {
     public ScheduledFuture<?> postDelayed(long delay, Runnable executor) {
         return handler.schedule(executor, delay, TimeUnit.MILLISECONDS);
     }
+
+    public void release() {
+        handler.close();
+    }
 }
