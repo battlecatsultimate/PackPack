@@ -44,9 +44,9 @@ public class HelpCommandHolder extends ComponentHolder {
             },
             {
                 "boosterEmoji", "boosterEmojiRemove", "boosterRole", "boosterRoleRemove",
-                "channelPermission", "serverConfig", "serverPrefix", "serverStat", "setup",
-                "subscribeEvent", "subscribeScamLinkDetector", "unsubscribeScamLinkDetector",
-                "watchDM"
+                "channelPermission", "hasRole", "idSet", "serverConfig", "serverPrefix",
+                "serverStat", "setup", "subscribeEvent", "subscribeScamLinkDetector",
+                "unsubscribeScamLinkDetector", "watchDM"
             },
             {
                 "animationAnalyzer", "announcement", "checkEventUpdate", "comboAnalyzer",

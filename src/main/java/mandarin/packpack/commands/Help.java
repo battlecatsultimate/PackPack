@@ -68,7 +68,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help.main.category.normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help.main.category.math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
                     .addField(LangID.getStringByID("help.main.category.bc", lang), "```background, castle, catcombo, enemydps, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formdps, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
-                    .addField(LangID.getStringByID("help.main.category.server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, serverconfig, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help.main.category.server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, hasrole, idset, serverconfig, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help.main.category.data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help.main.category.bot", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, save, serverjson, statistic, suggest, unregisterscamlink```", false);
 
@@ -132,7 +132,7 @@ public class Help extends Command {
             case "enemygif", "egif", "eg" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyGif", prefix)));
             case "idset" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("idset", prefix)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("idSet", prefix)));
             case "aa", "animanalyzer" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("animationAnalyzer", prefix)));
             case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
