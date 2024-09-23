@@ -178,7 +178,7 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
         result.add(ActionRow.of(Button.secondary("type", "Entry Fee Type : $entryType").withEmoji(emoji)))
 
         result.add(ActionRow.of(
-            Button.secondary("date.minute.uppercase.singular", "Minimum Entry Fee").withEmoji(Emoji.fromUnicode("📤")),
+            Button.secondary("min", "Minimum Entry Fee").withEmoji(Emoji.fromUnicode("📤")),
             Button.secondary("max", "Maximum Entry Fee").withEmoji(Emoji.fromUnicode("📥"))
         ))
 
