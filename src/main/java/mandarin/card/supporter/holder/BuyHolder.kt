@@ -13,6 +13,7 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -150,6 +151,15 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                 end(true)
             }
         }
+    }
+
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
+        event.deferEdit()
+            .setContent("Please select a list that you want to get")
+            .setComponents(registerComponents())
+            .mentionRepliedUser(false)
+            .setAllowedMentions(ArrayList())
+            .queue()
     }
 
     override fun onBack(child: Holder) {
