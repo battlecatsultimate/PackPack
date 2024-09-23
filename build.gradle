@@ -33,7 +33,7 @@ switch (org.gradle.internal.os.OperatingSystem.current()) {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:5.1.0'
+    implementation 'net.dv8tion:JDA:5.1.1'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.json:json:20240303'
     implementation 'org.jetbrains:annotations:24.1.0'
@@ -143,7 +143,7 @@ dependencies {
 }
 
 buildscript {
-    ext.kotlin_version = '2.0.0'
+    ext.kotlin_version = '2.0.20'
     repositories {
         mavenCentral()
     }
