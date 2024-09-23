@@ -7,6 +7,8 @@ import java.io.File
 import java.util.*
 
 class Renderer {
+    var releaseFlag = false
+
     lateinit var renderThread: Thread
     lateinit var renderSessionManager: RenderSessionManager
 
@@ -14,7 +16,9 @@ class Renderer {
     private val customQueue = Collections.synchronizedList(ArrayList<Runnable>())
 
     init {
-        Timer().schedule(object : TimerTask() {
+        val timer = Timer()
+
+        timer.schedule(object : TimerTask() {
             override fun run() {
                 if (!this@Renderer::renderSessionManager.isInitialized) {
                     renderSessionManager = RenderSessionManager()
@@ -60,6 +64,12 @@ class Renderer {
                         renderSessionManager.closeRenderSession(it)
 
                     done
+                }
+
+                if (releaseFlag) {
+                    renderSessionManager.closeAll()
+
+                    timer.cancel()
                 }
             }
         }, 0L, 1L)
