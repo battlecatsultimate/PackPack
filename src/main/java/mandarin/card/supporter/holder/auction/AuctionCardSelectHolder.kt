@@ -89,9 +89,9 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
                     val actualAmount = if (inventory == null)
                         amount
                     else
-                        min(amount, (inventory.cards[card] ?: 0) - (inventory.favorites[card] ?: 0))
+                        min(amount, inventory.cards[card] ?: 0)
 
-                    if (actualAmount < 0L) {
+                    if (actualAmount <= 0L) {
                         e.deferReply()
                             .setContent("It seems this user doesn't have such card in their inventory, or they are favorite card. Please select other card")
                             .setEphemeral(true).queue()
