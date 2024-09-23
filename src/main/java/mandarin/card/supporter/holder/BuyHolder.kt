@@ -78,7 +78,7 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                     return
 
                 val product = when(event.values[0]) {
-//                    "emoji" -> Product.customEmoji
+//                  "emoji" -> Product.customEmoji
                     "role" -> Product.customRole
                     else -> throw IllegalStateException("Invalid product name ${event.values[0]}")
                 }
@@ -239,7 +239,7 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                     CardBot.saveCardData()
                 } else {
                     event.deferReply()
-                        .setContent("You haven't collected all cards yet, so you can't get this role")
+                        .setContent("You haven't collected all cards yet, so you can't get this role. Below is the reason why you can't get this role\n\n${inventory.getInvalidReason()}")
                         .setAllowedMentions(ArrayList())
                         .setEphemeral(true)
                         .queue()
