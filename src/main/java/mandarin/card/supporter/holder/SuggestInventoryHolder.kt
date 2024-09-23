@@ -364,6 +364,8 @@ class SuggestInventoryHolder(
         }
 
         cards.sortWith(CardComparator())
+
+        page = min(page, getTotalPage(cards.size) - 1)
     }
 
     private fun applyResult(event: IMessageEditCallback) {
@@ -498,40 +500,21 @@ class SuggestInventoryHolder(
 
         rows.add(ActionRow.of(cardCategory))
 
-        var totPage = dataSize / SearchHolder.PAGE_CHUNK
+        var totalPage = getTotalPage(cards.size)
 
-        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++
-
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (cards.size > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
-            if(totPage > 10) {
-                if(page - 10 < 0) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS))
-                }
+            if(totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
             }
 
-            if(page - 1 < 0) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
-            }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).withDisabled(page - 1 < 0))
 
-            if(page + 1 >= totPage) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
-            }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).withDisabled(page + 1 >= totalPage))
 
-            if(totPage > 10) {
-                if(page + 10 >= totPage) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
-                }
+            if(totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage))
             }
 
             rows.add(ActionRow.of(buttons))
