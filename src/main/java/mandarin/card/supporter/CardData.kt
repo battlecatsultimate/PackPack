@@ -218,6 +218,8 @@ object CardData {
 
     val regularLegend = arrayOf(481, 450, 455, 478, 449, 463, 448, 461, 451, 544, 493)
 
+    val deactivatedCards = HashSet<Card>()
+
     var inventories = HashMap<Long, Inventory>()
 
     val taxedCatFoods = PositiveMap<Long, Long>()
@@ -236,8 +238,6 @@ object CardData {
 
     const val MINIMUM_BID = 1000L
     const val AUTO_CLOSE_TIME = 12L * 60 * 60 * 1000 // 12 hours
-
-    const val EMOJI_SPACE = "   "
 
     /*
     ----------------------------------------------------------------

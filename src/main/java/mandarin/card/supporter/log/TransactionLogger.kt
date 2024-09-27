@@ -209,6 +209,31 @@ object TransactionLogger {
             .queue()
     }
 
+    fun logCardActivate(activator: Member, card: Card) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        val text = if (card in CardData.deactivatedCards) {
+            "Deactivated"
+        } else {
+            "Activated"
+        }
+
+        builder.setTitle("Card $text")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager ${activator.asMention} ${text.lowercase()} the card")
+
+        builder.addField("Card", card.simpleCardInfo(), true)
+
+        modChannel.sendMessageEmbeds(builder.build())
+            .setAllowedMentions(ArrayList())
+            .queue()
+    }
+
     fun logCardsModify(cards: Map<Card, Int>, mod: Member, targetMember: Member, isAdd: Boolean, isMassRemove: Boolean) {
         if (!this::modChannel.isInitialized)
             return

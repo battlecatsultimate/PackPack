@@ -535,6 +535,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}untax" -> Untax().execute(event)
             "${globalPrefix}slotmanual",
             "${globalPrefix}sm" -> SlotMachineManual().execute(event)
+            "${globalPrefix}activatecard",
+            "${globalPrefix}ac" -> ActivateCard().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -1161,6 +1163,14 @@ object CardBot : ListenerAdapter() {
                 CardData.purchaseNotifier.add(e.asLong)
             }
         }
+
+        if (obj.has("deactivatedCards")) {
+            obj.getAsJsonArray("deactivatedCards").forEach { e ->
+                val card = CardData.cards.find { c -> c.unitID == e.asInt } ?: return@forEach
+
+                CardData.deactivatedCards.add(card)
+            }
+        }
     }
 
     @Synchronized
@@ -1422,6 +1432,14 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("purchaseNotifier", purchaseNotifier)
+
+        val deactivatedCards = JsonArray()
+
+        CardData.deactivatedCards.forEach { card ->
+            deactivatedCards.add(card.unitID)
+        }
+
+        obj.add("deactivatedCards", deactivatedCards)
 
         try {
             val folder = File("./data/")
