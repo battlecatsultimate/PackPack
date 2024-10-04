@@ -1279,7 +1279,6 @@
             }
         }
     },
-    ,
     "IMUBLAST" : {
         "abbr_name": "imu. Blast",
         "full_name": "Immune/Resistant to Blast",
