@@ -266,8 +266,8 @@ class Inventory(private val id: Long) {
                 return false
         }
 
-        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][0] }
-        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][1] }
+        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][0] }
+        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][1] }
         val busters = cardsTotal.any { id -> id == 435 || id == 484 || id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][2] }
         val legends = cards.keys.any { card -> card.tier == CardData.Tier.LEGEND } || favorites.keys.any { card -> card.tier == CardData.Tier.LEGEND }
 
@@ -294,8 +294,8 @@ class Inventory(private val id: Long) {
             }
         }
 
-        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][0] }
-        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][1] }
+        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][0] }
+        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][1] }
         val busters = cardsTotal.any { id -> id == 435 || id == 484 || id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][2] }
         val legends = this.cards.keys.any { card -> card.tier == CardData.Tier.LEGEND } || favorites.keys.any { card -> card.tier == CardData.Tier.LEGEND }
 
