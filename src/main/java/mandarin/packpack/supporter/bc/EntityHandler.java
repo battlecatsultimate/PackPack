@@ -4210,6 +4210,12 @@ public class EntityHandler {
             coordinates.get(i)[1] = coordinates.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
         }
 
+        if (treasure) {
+            for (int i = 0; i < withTreasure.size(); i++) {
+                withTreasure.get(i)[1] = withTreasure.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
+            }
+        }
+
         BigDecimal maximumDamage = BigDecimal.ZERO;
         BigDecimal minimumX = new BigDecimal("-320");
         BigDecimal maximumX = new BigDecimal("-320");
