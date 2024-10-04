@@ -27,7 +27,7 @@
         "abbr_name": "para",
         "full_name": "Parálisis",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de paralizar por (_dispFruit(time))",
+        "format": "Probabilidad del (prob)% de paralizar por (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -43,7 +43,7 @@
         "abbr_name": "ralent.",
         "full_name": "Ralentización",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de ralentizar por (_dispFruit(time))",
+        "format": "Probabilidad del (prob)% de ralentizar por (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -95,7 +95,7 @@
         "abbr_name": "desgaste",
         "full_name": "Desgaste",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de [(mult>100){fortalecer}(mult<=100){desgastar}] el ataque del objetivo al [(mult>100){(mult)}(mult<=100){(mult)}]% durante (_dispFruit(time))",
+        "format": "Probabilidad del (prob)% de [(mult>100){fortalecer}(mult<=100){desgastar}] el ataque del objetivo al [(mult>100){(mult)}(mult<=100){(mult)}]% durante (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -147,7 +147,7 @@
         "abbr_name": "maldición",
         "full_name": "Maldición",
         "tooltip": "Elimina habilidades relacionadas con los rasgos",
-        "format": "Probabilidad del (prob)% de maldecir por (_dispFruit(time))",
+        "format": "Probabilidad del (prob)% de maldecir por (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -460,6 +460,10 @@
             "time": {
                 "name": "duración",
                 "tooltip": null
+            },
+            "intensity": {
+                "name": "intensity",
+                "tooltip": "The power of the timestop. If the intensity is lower than the duration, there will be certain intervals where units will be able to move. Set to negative to speed up entities with time stop immunity"
             }
         }
     },
@@ -493,8 +497,8 @@
             "(!type.on_kill&!type.on_hit){en este ataque}], ",
             "[(type.same_health){Las entidades invocadas tendrán la misma salud que esta entidad, }]",
             "y[(type.ignore_limit){ no}] se ven restrictas por el límite de entidades de la fase. ",
-            "Las entidades invocadas estarán en [(!type.random_layer){la misma capa que esta entidad}",
-            "(type.random_layer){una capa aleatoria}]. ",
+            "Las entidades invocadas estarán en [(min_layer==max_layer){la misma capa que esta entidad}",
+            "(min_layer!=max_layer){una capa aleatoria}]. ",
             "La invocación mostrará [(type.anim_type==0){cero animaciones}(type.anim_type==1){la animación de abducción}(type.anim_type>=2){la animación de escarbar}]",
             "[(type.anim_type==3){ y desactivará escarbar para las entidades invocadas}]."
         ],
@@ -511,9 +515,25 @@
                 "name": "distancia",
                 "tooltip": "Distancia desde esta entidad por defecto, la distancia desde el objetivo si Tras golpear o Tras eliminar está activado"
             },
+            "max_dis": {
+                "name": "max distance",
+                "tooltip": "Max distance from this entity by default, or from the target if on hit or on kill is enabled"
+            },
             "mult": {
                 "name": "fuerza",
                 "tooltip": "La fuerza de la entidad invocada, relativa a esta entidad por defecto, la fuerza será fija si activas el parámetro"
+            },
+            "time": {
+                "name": "demora",
+                "tooltip": "La demora de esta invocación"
+            },
+            "min_layer": {
+                "name": "min layer",
+                "tooltip": "lowest layer the summoned entity will be at. Set to -1 to use same layer as this entity"
+            },
+            "max_layer": {
+                "name": "max layer",
+                "tooltip": "highest layer the summoned entity will be at. Set to -1 to use same layer as this entity"
             },
             "type.anim_type": {
                 "name": "anim. invocar",
@@ -538,9 +558,9 @@
                 "name": "misma salud",
                 "tooltip": "Establece que la unidad invocada tenga la misma salud que esta entidad."
             },
-            "type.random_layer": {
-                "name": "capa aleatoria",
-                "tooltip": "Por defecto, la entidad tendrá la misma capa que esta entidad. Activa esto para aleatorizar su capa."
+            "type.bond_hp": {
+                "name": "Bond health",
+                "tooltip": "When activated, the summoner will receive all damage and procs the summoned entity receives"
             },
             "type.on_hit": {
                 "name": "tras golpear",
@@ -557,10 +577,6 @@
                     " Invocación por cada objetivo eliminado, las distancias de origen son relativas a las posiciones de los blancos.",
                     " Las invocaciones múltiples son posibles para ataques de área."
                 ]
-            },
-            "time": {
-                "name": "demora",
-                "tooltip": "La demora de esta invocación"
             },
             "form": {
                 "name": "Forma",
@@ -771,7 +787,7 @@
         "abbr_name": "evasión",
         "full_name": "Evasión",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de esquivar ataques por (_dispFruit(time))",
+        "format": "Probabilidad del (prob)% de esquivar ataques por (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -1008,7 +1024,7 @@
         "abbr_name" : "Escudo M.",
         "full_name" : "Escudo Místico",
         "tooltip" : "Esta habilidad reduce todo el daño que esté por encima de cierta cantidad a dicha cantidad (O lo anula, si 'anular daño' está activado).",
-        "format" : "Probabilidad del (prob)% de [(type.nullify){anular[(type.traitIgnore){ todo}]}(!type.nullify){fijar}] daño mayor que [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}][(!type.nullify){ a (dmg)}(type.procs){ e ignorar los efectos del ataque}]",
+        "format" : "Probabilidad del (prob)% de [(type.nullify){anular[(type.traitIgnore){ todo}]}(!type.nullify){fijar}] daño mayor que [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}][(!type.nullify){ a [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}]}(type.procs){ e ignorar los efectos del ataque}]",
         "class" : {
             "prob" : {
                 "name" : "probabilidad",
@@ -1280,6 +1296,46 @@
             "mult": {
                 "name": "multiplier",
                 "tooltip": null
+            }
+        }
+    },
+    "BLAST" : {
+        "abbr_name": "blast atk",
+        "full_name": "Blast Attack",
+        "tooltip": "Creates blast attack that spreads to each side with weaker damage over each blasts",
+        "format": "(prob)% chance to create a blast attack (_left)Created [(dis_0==dis_1){at (dis_0) range}(dis_0!=dis_1){within (dis_0) ~ (dis_1) range}](_right)",
+        "class": {
+            "prob": {
+                "name": "chance",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "point near",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "point far",
+                "tooltip": null
+            }
+        }
+    },
+    ,
+    "IMUBLAST" : {
+        "abbr_name": "imu. Blast",
+        "full_name": "Immune/Resistant to Blast",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Immune}(mult<100&mult>0){Resistant}(mult<0){Weak}] to Blast",
+            "[(mult<100&mult>0){ (_left)Decreases damage by (mult)%(_right)}(mult<0){ (_left)Increases damage by (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Blast [(block==100){blocker}(block<100&block>0){absorber}(block<0){increaser}]",
+            "[(block<100&block>0){ (_left)Decreases damage by (block)%(_right)}(block<0){ (_left)Increases damage by (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": "Set negative to make this unit weak to the effect"
+            },
+            "block": {
+                "name": "Blocker",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block slow. Set negative to increase the effect."
             }
         }
     }

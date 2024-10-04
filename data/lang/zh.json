@@ -391,6 +391,7 @@
       "barrierBreaker" : "破壞護盾",
       "baseDestroyer" : "善於攻城",
       "behemothSlayer" : "超獸特效",
+      "blastAttack" : "Blast Attack",
       "colossusSlayer" : "超生命體特效",
       "conjure" : "召喚",
       "counterSurge" : "烈波反擊",
@@ -457,6 +458,7 @@
       },
       "immunities" : {
         "bossWave" : "免疫魔王震波",
+        "blastAttack" : "Imu. Blast Attack",
         "curse" : "詛咒無效",
         "freeze" : "動作停止無效",
         "kb" : "打飛無效",
@@ -768,6 +770,10 @@
           "multiplier" : "%s : %d%%",
           "title" : "- **Cost Multiplier**"
         },
+        "globalCost" : {
+          "description" : "All units have %d cost globally",
+          "title" : "- **Global Cost**"
+        },
         "lineLimit" : {
           "description" : "只允許使用第一頁/第一排",
           "title" : "**隊伍限制**"
@@ -783,6 +789,17 @@
         "money" : {
           "description" : "Limited money %d given",
           "title" : "- **Money Limit**"
+        },
+        "rarityDeploy" : {
+          "title" : "- **Rarity Deploy Limit**",
+          "description" : {
+            "plural" : "Rarities below gets deploy limit",
+            "singular" : "Rarity below gets deploy limit"
+          },
+          "format" : {
+            "plural" : "%s : %d Units",
+            "singular" : "%s : %d Unit"
+          }
         }
       },
       "material" : {
@@ -1192,6 +1209,7 @@
       "841" : "稀有券禮包",
       "842" : "稀有券&XP禮包",
       "843" : "Legendary Trap Pack",
+      "844" : "User Rank 300 Achievement Sale",
       "900" : "Mushroom Garden Stamp",
       "901" : "回鍋登入獎勵章",
       "902" : "回鍋首天登入稀有券獎勵章",
@@ -1295,6 +1313,8 @@
       "35016" : "Bikkuriman Chocolate Stamp",
       "35017" : "Event Stamp",
       "35018" : "Event Stamp",
+      "35019" : "Event Stamp",
+      "35020" : "Halloween Event Stamp",
       "rankingDojo" : "排行賽會場：_"
     },
     "permanentSchedule" : {

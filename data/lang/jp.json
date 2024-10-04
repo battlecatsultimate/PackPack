@@ -391,6 +391,7 @@
       "barrierBreaker" : "バリアブレイク",
       "baseDestroyer" : "城破壊が得意",
       "behemothSlayer" : "超獣特効",
+      "blastAttack" : "爆波攻撃",
       "colossusSlayer" : "超生命体特効",
       "conjure" : "召喚",
       "counterSurge" : "烈波カウンター",
@@ -457,6 +458,7 @@
       },
       "immunities" : {
         "bossWave" : "衝撃波無効",
+        "blastAttack" : "爆波ダメージ無効",
         "curse" : "呪い無効",
         "freeze" : "動きを止める無効",
         "kb" : "ふっとばし無効",
@@ -768,6 +770,10 @@
           "multiplier" : "%s : %d%%",
           "title" : "- **Cost Multiplier**"
         },
+        "globalCost" : {
+          "description" : "All units have %d cost globally",
+          "title" : "- **Global Cost**"
+        },
         "lineLimit" : {
           "description" : "１ページのみ",
           "title" : "**スロット編成ページ数制限**"
@@ -783,6 +789,17 @@
         "money" : {
           "description" : "最初に%dもらえますが、時間経過や敵の撃破などで所持金が増えることはありません",
           "title" : "- **おこづかい制**"
+        },
+        "rarityDeploy" : {
+          "title" : "- **Rarity Deploy Limit**",
+          "description" : {
+            "plural" : "Rarities below gets deploy limit",
+            "singular" : "Rarity below gets deploy limit"
+          },
+          "format" : {
+            "plural" : "%s : %d Units",
+            "singular" : "%s : %d Unit"
+          }
         }
       },
       "material" : {
@@ -1190,6 +1207,7 @@
       "841" : "レアチケットセール",
       "842" : "レアチケット&XPセール",
       "843" : "伝説の罠パック",
+      "844" : "ユーザーランク300達成セール",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1293,6 +1311,8 @@
       "35016" : "Bikkuriman Chocolate Stamp",
       "35017" : "Event Stamp",
       "35018" : "Event Stamp",
+      "35019" : "Event Stamp",
+      "35020" : "Halloween Event Stamp",
       "rankingDojo" : "ランキングの間 _"
     },
     "permanentSchedule" : {

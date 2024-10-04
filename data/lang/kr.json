@@ -391,6 +391,7 @@
       "barrierBreaker" : "베리어를 부순다",
       "baseDestroyer" : "성 파괴가 특기",
       "behemothSlayer" : "초수 헌터",
+      "blastAttack" : "폭발 공격",
       "colossusSlayer" : "초생명체 특효",
       "conjure" : "소환",
       "counterSurge" : "열파 반격",
@@ -457,6 +458,7 @@
       },
       "immunities" : {
         "bossWave" : "보스 파동 무효",
+        "blastAttack" : "폭발 공격 무효",
         "curse" : "저주 무효",
         "freeze" : "멈춘다 무효",
         "kb" : "밀치기 무효",
@@ -768,6 +770,10 @@
           "multiplier" : "%s : %d%%",
           "title" : "- **코스트 배율**"
         },
+        "globalCost" : {
+          "description" : "모든 유닛들이 %d 코스트를 갖게 됩니다",
+          "title" : "- **공통 코스트**"
+        },
         "lineLimit" : {
           "description" : "첫번째 페이지만",
           "title" : "**라인 제한**"
@@ -783,6 +789,17 @@
         "money" : {
           "description" : "제한된 돈 %d까지만 사용 가능",
           "title" : "- **돈 제한**"
+        },
+        "rarityDeploy" : {
+          "title" : "- **레어도별 출격 제한**",
+          "description" : {
+            "plural" : "아래의 레어도들은 출격 제한을 가집니다",
+            "singular" : "아래의 레어도는 출격 제한을 가집니다"
+          },
+          "format" : {
+            "plural" : "%s : %d 유닛",
+            "singular" : "%s : %d 유닛"
+          }
         }
       },
       "material" : {
@@ -1190,6 +1207,7 @@
       "841" : "레어 티켓 세일",
       "842" : "레어 티켓 & XP 세일",
       "843" : "전설의 함정 팩",
+      "844" : "유저 랭크 300 달성 세일",
       "900" : "나메코 재배 킷트 스탬프",
       "901" : "컴백 보너스 스탬프",
       "902" : "컴백 보너스 레어 티켓 스탬프",
@@ -1293,6 +1311,8 @@
       "35016" : "비쿠리맨 초콜릿 스탬프",
       "35017" : "이벤트 스탬프",
       "35018" : "이벤트 스탬프",
+      "35019" : "이벤트 스탬프",
+      "35020" : "할로윈 이벤트 스탬프",
       "rankingDojo" : "랭킹 도장 _"
     },
     "permanentSchedule" : {

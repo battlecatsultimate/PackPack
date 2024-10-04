@@ -391,6 +391,7 @@
       "barrierBreaker" : "Ломатель Барьеров",
       "baseDestroyer" : "Уничтожитель Баз",
       "behemothSlayer" : "Убийца Диких",
+      "blastAttack" : "Blast Attack",
       "colossusSlayer" : "Убийца Колоссов",
       "conjure" : "Фокусник",
       "counterSurge" : "Встречный Сурдж",
@@ -457,6 +458,7 @@
       },
       "immunities" : {
         "bossWave" : "Имун. Босс Волны",
+        "blastAttack" : "Imu. Blast Attack",
         "curse" : "Иммун. Проклятие",
         "freeze" : "Иммун. Заморозка",
         "kb" : "Иммун. Отталкивание",
@@ -768,6 +770,10 @@
           "multiplier" : "%s : %d%%",
           "title" : "- **Множитель Стоимости**"
         },
+        "globalCost" : {
+          "description" : "All units have %d cost globally",
+          "title" : "- **Global Cost**"
+        },
         "lineLimit" : {
           "description" : "Только первый ряд доступен",
           "title" : "**Ограничения Отряда**"
@@ -783,6 +789,17 @@
         "money" : {
           "description" : "Лимит денег в %d",
           "title" : "- **Огранечния Денег**"
+        },
+        "rarityDeploy" : {
+          "title" : "- **Rarity Deploy Limit**",
+          "description" : {
+            "plural" : "Rarities below gets deploy limit",
+            "singular" : "Rarity below gets deploy limit"
+          },
+          "format" : {
+            "plural" : "%s : %d Units",
+            "singular" : "%s : %d Unit"
+          }
         }
       },
       "material" : {
@@ -1190,6 +1207,7 @@
       "841" : "Акция Редкий Билет",
       "842" : "Легендарный Набор Ловушек",
       "843" : "Legendary Trap Pack",
+      "844" : "User Rank 300 Achievement Sale",
       "900" : "Подарки: Грибовый Сад",
       "901" : "Подарки: Бонус Возвращения",
       "902" : "Подарки: Бонус Возвращения Золотого Билета",
@@ -1293,6 +1311,8 @@
       "35016" : "Подарки: Bikkuriman Chocolate",
       "35017" : "Подарки События",
       "35018" : "Подарки События",
+      "35019" : "Подарки События",
+      "35020" : "Halloween Event Stamp",
       "rankingDojo" : "Ранговый Додзё _"
     },
     "permanentSchedule" : {

@@ -1344,6 +1344,10 @@ public class DataToString extends Data {
                 res.add(LangID.getStringByID("data.stage.limit.cooldown.global.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.cooldown.global.description", lang).formatted(time));
             }
 
+            if (l.stageLimit.globalCost > 0) {
+                res.add(LangID.getStringByID("data.stage.limit.globalCost.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.globalCost.description", lang).formatted(l.stageLimit.globalCost));
+            }
+
             if (l.stageLimit.maxMoney > 0) {
                 res.add(LangID.getStringByID("data.stage.limit.money.title", lang) + "\n" + LangID.getStringByID("data.stage.limit.money.description", lang).formatted(l.stageLimit.maxMoney));
             }
@@ -1416,6 +1420,51 @@ public class DataToString extends Data {
                             LangID.getStringByID("data.stage.limit.cost.title", lang) + "\n" +
                                     LangID.getStringByID("data.stage.limit.cost.description.singular", lang) + "\n\n" +
                                     multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                }
+            }
+
+            if (Arrays.stream(l.stageLimit.rarityDeployLimit).anyMatch(d -> d != -1)) {
+                StringBuilder deployLimit = new StringBuilder();
+                int count = 0;
+
+                for (int i = 0; i < l.stageLimit.rarityDeployLimit.length; i++) {
+                    if (l.stageLimit.rarityDeployLimit[i] > 0) {
+                        deployLimit.append("> ");
+
+                        String rarity = switch (i) {
+                            case 0 -> LangID.getStringByID("data.unit.rarity.basic", lang);
+                            case 1 -> LangID.getStringByID("data.unit.rarity.ex", lang);
+                            case 2 -> LangID.getStringByID("data.unit.rarity.rare", lang);
+                            case 3 -> LangID.getStringByID("data.unit.rarity.superRare", lang);
+                            case 4 -> LangID.getStringByID("data.unit.rarity.uberRare", lang);
+                            case 5 -> LangID.getStringByID("data.unit.rarity.legendRare", lang);
+                            default -> throw new IllegalStateException("E/DataToString::getLimit - Unknown rarity value %d".formatted(i));
+                        };
+
+                        if (l.stageLimit.rarityDeployLimit[i] == 1) {
+                            deployLimit.append(LangID.getStringByID("data.stage.limit.rarityDeploy.format.singular", lang).formatted(rarity, l.stageLimit.rarityDeployLimit[i]));
+                        } else {
+                            deployLimit.append(LangID.getStringByID("data.stage.limit.rarityDeploy.format.plural", lang).formatted(rarity, l.stageLimit.rarityDeployLimit[i]));
+                        }
+
+                        deployLimit.append("\n");
+
+                        count++;
+                    }
+                }
+
+                if (count == 1) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.rarityDeploy.title", lang) + "\n" +
+                            LangID.getStringByID("data.stage.limit.rarityDeploy.description.singular", lang) + "\n" +
+                            deployLimit.toString().trim()
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.rarityDeploy.title", lang) + "\n" +
+                            LangID.getStringByID("data.stage.limit.rarityDeploy.description.plural", lang) + "\n" +
+                            deployLimit.toString().trim()
                     );
                 }
             }

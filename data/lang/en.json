@@ -391,6 +391,7 @@
       "barrierBreaker" : "Barrier Breaker",
       "baseDestroyer" : "Base Destroyer",
       "behemothSlayer" : "Behemoth Slayer",
+      "blastAttack" : "Blast Attack",
       "colossusSlayer" : "Colossus Slayer",
       "conjure" : "Conjure",
       "counterSurge" : "Counter Surge",
@@ -456,6 +457,7 @@
         }
       },
       "immunities" : {
+        "blastAttack" : "Imu. Blast Attack",
         "bossWave" : "Imu. Boss Wave",
         "curse" : "Imu. Curse",
         "freeze" : "Imu. Freeze",
@@ -768,6 +770,10 @@
           "multiplier" : "%s : %d%%",
           "title" : "- **Cost Multiplier**"
         },
+        "globalCost" : {
+          "description" : "All units have %d cost globally",
+          "title" : "- **Global Cost**"
+        },
         "lineLimit" : {
           "description" : "Only first row allowed",
           "title" : "- **Line Limit**"
@@ -783,6 +789,17 @@
         "money" : {
           "description" : "Limited money %d given",
           "title" : "- **Money Limit**"
+        },
+        "rarityDeploy" : {
+          "title" : "- **Rarity Deploy Limit**",
+          "description" : {
+            "plural" : "Rarities below gets deploy limit",
+            "singular" : "Rarity below gets deploy limit"
+          },
+          "format" : {
+            "plural" : "%s : %d Units",
+            "singular" : "%s : %d Unit"
+          }
         }
       },
       "material" : {
@@ -1190,6 +1207,7 @@
       "841" : "Rare Ticket Sale",
       "842" : "Rare Ticket & XP Sale",
       "843" : "Legendary Trap Pack",
+      "844" : "User Rank 300 Achievement Sale",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1293,6 +1311,8 @@
       "35016" : "Bikkuriman Chocolate Stamp",
       "35017" : "Event Stamp",
       "35018" : "Event Stamp",
+      "35019" : "Event Stamp",
+      "35020" : "Halloween Event Stamp",
       "rankingDojo" : "Ranking Dojo _"
     },
     "permanentSchedule" : {

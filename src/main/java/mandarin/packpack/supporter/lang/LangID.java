@@ -243,6 +243,8 @@ public class LangID {
                 } else {
                     System.out.println("E : " + currentPath + key);
                 }
+
+                continue;
             }
 
             JsonElement te = target.get(key);

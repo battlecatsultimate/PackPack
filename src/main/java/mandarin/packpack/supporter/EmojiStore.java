@@ -309,8 +309,6 @@ public class EmojiStore {
         emotes.addAll(loader.supportServer.getEmojisByName(name, false));
 
         if(emotes.isEmpty()) {
-            StaticStore.logger.uploadLog("Failed to find emoji : " + name + " ID : " + id);
-
             return Emoji.fromCustom(name, id, false);
         }
 

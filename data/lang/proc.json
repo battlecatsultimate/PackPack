@@ -19,7 +19,7 @@
             },
             "dis": {
                 "name": "distance",
-                "tooltip": "enter 0 for default value"
+                "tooltip": "enter 0 for default value. Set negative to pull enemies closer"
             }
         }
     },
@@ -27,7 +27,7 @@
         "abbr_name": "stop",
         "full_name": "Freeze",
         "tooltip": null,
-        "format": "(prob)% chance to freeze for (_dispFruit(time))",
+        "format": "(prob)% chance to freeze for (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -43,7 +43,7 @@
         "abbr_name": "slow",
         "full_name": "Slow",
         "tooltip": null,
-        "format": "(prob)% chance to slow for (_dispFruit(time))",
+        "format": "(prob)% chance to slow for (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -79,7 +79,7 @@
         "abbr_name": "wave",
         "full_name": "Wave",
         "tooltip": null,
-        "format": "(prob)% chance to create a Lv.(lv) (_left)(_waveRange(lv)) Range(_right) wave attack",
+        "format": "(prob)% chance to create a Lv.(lv) [(inverted){inverted }]wave attack",
         "class": {
             "prob": {
                 "name": "chance",
@@ -88,6 +88,10 @@
             "lv": {
                 "name": "level",
                 "tooltip": null
+            },
+            "inverted": {
+                "name": "Inverted Wave",
+                "tooltip": "Inverts the wave, causing it to go backwards from the end point to the start point"
             }
         }
     },
@@ -95,7 +99,7 @@
         "abbr_name": "weak",
         "full_name": "Weaken",
         "tooltip": null,
-        "format": "(prob)% chance to [(mult>100){strengthen}(mult<=100){weaken}] target's attack to [(mult>100){(mult)}(mult<=100){(mult)}]% for (_dispFruit(time))",
+        "format": "(prob)% chance to [(mult>100){strengthen}(mult<=100){weaken}] target's attack to [(mult>100){(mult)}(mult<=100){(mult)}]% for (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -107,7 +111,7 @@
             },
             "mult": {
                 "name": "multiplier",
-                "tooltip": "What percent of original attack the target will be weaken to"
+                "tooltip": "What percent of original attack the target will be weaken to. Set above 100 to strengthen attack."
             }
         }
     },
@@ -157,7 +161,7 @@
         "abbr_name": "curse",
         "full_name": "Curse",
         "tooltip": "Disable trait related abilities",
-        "format": "(prob)% chance to curse for (_dispFruit(time))",
+        "format": "(prob)% chance to curse for (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -181,7 +185,7 @@
             },
             "mult": {
                 "name": "increment",
-                "tooltip": null
+                "tooltip": "Set negative to weaken"
             }
         }
     },
@@ -287,11 +291,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce distance amongst all units. Set to 100 to completely block KB"
+                "tooltip": "Set from 1 to 99 to reduce distance amongst all units. Set to 100 to completely block KB. Set negative to increase the effect."
             }
         }
     },
@@ -306,11 +310,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block freeze"
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block freeze. Set negative to increase the effect."
             }
         }
     },
@@ -325,11 +329,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block slow"
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block slow. Set negative to increase the effect."
             }
         }
     },
@@ -357,11 +361,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block weaken"
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block weaken. Set negative to increase the effect."
             },
             "smartImu": {
                 "name": "Ignore",
@@ -380,11 +384,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block warp"
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block warp. Set negative to increase the effect."
             }
         }
     },
@@ -399,11 +403,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block curse"
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block curse. Set negative to increase the effect."
             }
         }
     },
@@ -418,11 +422,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block seal"
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block seal. Set negative to increase the effect."
             }
         }
     },
@@ -437,11 +441,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": "Only applies to On Hit and On Kill summon."
+                "tooltip": "Only applies to On Hit and On Kill summon. Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce all summoned entities' strength. Set to 100 to completely block summon"
+                "tooltip": "Set from 1 to 99 to reduce all summoned entities' strength. Set to 100 to completely block summon. Set negative to increase the effect."
             }
         }
     },
@@ -461,7 +465,7 @@
         "abbr_name": "time",
         "full_name": "Stop Time",
         "tooltip": "Unlike Stop, this ability freezes everything including waves, money gain, cat and enemy cool down, etc",
-        "format": "(prob)% chance to stop time for (_dispTime(time))",
+        "format": "(prob)% chance to [(intensity>0){stop}(intensity<0){speed up}] time for (_dispTime(time)), with a intensity of (_abs(intensity))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -470,6 +474,10 @@
             "time": {
                 "name": "duration",
                 "tooltip": null
+            },
+            "intensity": {
+                "name": "intensity",
+                "tooltip": "The power of the timestop. If the intensity is lower than the duration, there will be certain intervals where units will be able to move. Set to negative to speed up entities with time stop immunity"
             }
         }
     },
@@ -495,16 +503,17 @@
         "tooltip": null,
         "format": [
             "(prob)% chance to summon a [(!type.fix_buff){(_summonMagnification(mult))}(type.fix_buff){[(_isEnemy){(mult)%}(!_isEnemy){Lv(mult)}]}] (_entity(id)) after (_dispTime(time)), ",
-            "one summoned (dis) range away from ",
+            "one summoned (dis)[(max_dis!=dis){ ~ (max_dis)}] range away from ",
             "[(type.on_kill|type.on_hit){each target}",
             "(!type.on_hit&!type.on_kill){the summoner}] ",
             "[(type.on_hit){hit}",
             "(type.on_kill&!type.on_hit){killed}",
             "(!type.on_kill&!type.on_hit){on this attack}], ",
-            "[(type.same_health){Summoned entities will have the same health as this entity, }]",
+            "[(type.same_health){each entity will have the same hp as the summoner, }]",
+            "[(type.bond_hp){the summoner's hp will be bound with each summoned entity's hp, }]",
             "and is[(type.ignore_limit){n't}] restricted by the stage entity limit. ",
-            "Summoned entities will be in [(!type.random_layer){the same layer as this entity}",
-            "(type.random_layer){a random layer}]. ",
+            "Summoned entities will be in [(min_layer==max_layer){[(min_layer==-1){the same layer as this entity}(min_layer!=-1){layer (min_layer)}]}",
+            "(min_layer!=max_layer){a random layer between (min_layer) and (max_layer)}]. ",
             "Summon will display [(type.anim_type==0){no}(type.anim_type==1){warp}(type.anim_type>=2){burrow}]",
             " animation[(type.anim_type==3){ and disable burrow for summoned entities}]."
         ],
@@ -518,12 +527,28 @@
                 "tooltip": null
             },
             "dis": {
-                "name": "distance",
-                "tooltip": "Distance from this entity by default, distance from the target if on hit or on kill is enabled"
+                "name": "min distance",
+                "tooltip": "Minimum distance from this entity by default, or from the target if on hit or on kill is enabled"
+            },
+            "max_dis": {
+                "name": "max distance",
+                "tooltip": "Max distance from this entity by default, or from the target if on hit or on kill is enabled"
             },
             "mult": {
                 "name": "buff",
                 "tooltip": "Buff of the summoned entity, relative to this entity by default, fixed buff if you enable fix buff"
+            },
+            "time": {
+                "name": "delay",
+                "tooltip": "delay of this summon"
+            },
+            "min_layer": {
+                "name": "min layer",
+                "tooltip": "lowest layer the summoned entity will be at. Set to -1 to use same layer as this entity"
+            },
+            "max_layer": {
+                "name": "max layer",
+                "tooltip": "highest layer the summoned entity will be at. Set to -1 to use same layer as this entity"
             },
             "type.anim_type": {
                 "name": "summon anim",
@@ -548,9 +573,9 @@
                 "name": "same health",
                 "tooltip": "Set the summoned entity to have the same health as this entity."
             },
-            "type.random_layer": {
-                "name": "random layer",
-                "tooltip": "By default, summoned entity will have the same layer as this entity. Enable this to make the layer randomized."
+            "type.bond_hp": {
+                "name": "Bond health",
+                "tooltip": "When activated, the summoner will receive all damage and procs the summoned entity receives"
             },
             "type.on_hit": {
                 "name": "on hit",
@@ -567,10 +592,6 @@
                     " Summon per target killed, distance origins are set to the targets' positions.",
                     " Multiple summon possible for ranged attack."
                 ]
-            },
-            "time": {
-                "name": "delay",
-                "tooltip": "delay of this summon"
             },
             "form": {
                 "name": "Form",
@@ -623,7 +644,7 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             }
         }
     },
@@ -682,7 +703,7 @@
             },
             "damage": {
                 "name": "damage",
-                "tooltip": "whether it is percent or actual value depends on the damage type"
+                "tooltip": "Whether it is percent or actual value depends on the damage type. Set negative to heal"
             },
             "itv": {
                 "name": "interval",
@@ -718,11 +739,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce damage over time. Set to 100 to completely block poison"
+                "tooltip": "Set from 1 to 99 to reduce damage over time. Set to 100 to completely block poison. Set negative to increase the effect."
             },
             "smartImu": {
                 "name": "Ignore",
@@ -753,11 +774,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce critical damage. Set to 100 to completely block crits"
+                "tooltip": "Set from 1 to 99 to reduce critical damage. Set to 100 to completely block crits. Set negative to increase the effect."
             }
         }
     },
@@ -781,7 +802,7 @@
         "abbr_name": "Invi.",
         "full_name": "Invincibility",
         "tooltip": null,
-        "format": "(prob)% chance to gain invincibility for (_dispFruit(time))",
+        "format": "(prob)% chance to gain invincibility for (_dispTime(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -848,7 +869,7 @@
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block toxic"
+                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block toxic. Set negative to increase the effect."
             }
         }
     },
@@ -860,7 +881,7 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect."
             }
         }
     },
@@ -868,7 +889,7 @@
         "abbr_name": "armor break",
         "full_name": "Armor Break",
         "tooltip": null,
-        "format": "(prob)% chance to [(mult<0){enchance}(mult>=0){break}] target's armor for (_dispTime(time)) (_left)Makes target take (_abs(mult))% [(mult<0){less}(mult>=0){more}] damage(_right)",
+        "format": "(prob)% chance to [(mult<0){enchant}(mult>=0){break}] target's armor for (_dispTime(time)) (_left)Makes target take (_abs(mult))% [(mult<0){less}(mult>=0){more}] damage(_right)",
         "class": {
             "prob": {
                 "name": "chance",
@@ -880,7 +901,7 @@
             },
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to enchant armor, making the target take less damage"
             }
         }
     },
@@ -906,7 +927,7 @@
             },
             "speed": {
                 "name": "speed",
-                "tooltip": null
+                "tooltip": "Set negative to reduce. Set positive to increase"
             },
             "type": {
                 "name": "type",
@@ -926,11 +947,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block armor break"
+                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block armor break. Set negative to increase the effect."
             },
             "smartImu": {
                 "name": "Ignore",
@@ -950,11 +971,11 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this unit weak to the effect"
             },
             "block": {
                 "name": "Blocker",
-                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block Haste"
+                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block Haste. Set negative to increase the effect."
             },
             "smartImu": {
                 "name": "Ignore",
@@ -966,7 +987,7 @@
         "abbr_name" : "mini-wave",
         "full_name" : "Mini-Wave",
         "tooltip" : "Creates small wave which moves twice faster than normal wave with dynamic damage multiplication parameter",
-        "format" : "(prob)% chance to create a lv.(lv) (_left)(_waveRange(lv)) Range(_right) mini-wave [(multi!=20){(_left)Gives target (multi)% of activator's damage(_right)}]",
+        "format" : "(prob)% chance to create a lv.(lv) [(inverted){inverted }]mini-wave [(multi!=20){(_left)Gives target (multi)% of activator's damage(_right)}]",
         "class" : {
             "prob" : {
                 "name" : "chance",
@@ -979,6 +1000,10 @@
             "multi" : {
                 "name" : "multi",
                 "tooltip" : "Percentage of activator's damage.<br>If multi is 20, it will have 20% of activator's damage. Negative values are allowed"
+            },
+            "inverted": {
+                "name": "Inverted Wave",
+                "tooltip": "Inverts the wave, causing it to go backwards from the end point to the start point."
             }
         }
     },
@@ -998,7 +1023,7 @@
             },
             "reduction" : {
                 "name" : "reduction %",
-                "tooltip" : "Percentage of the damage to reduce it by."
+                "tooltip" : "Percentage of the damage to reduce it by. Set negative to increase damage."
             },
             "type.traitIgnore" : {
                 "name" : "ignore traits",
@@ -1018,7 +1043,7 @@
         "abbr_name" : "M.Shield",
         "full_name" : "Mystic Shield",
         "tooltip" : "This ability reduces all damage that is above certain amount to said amount (Or nullifies, if 'nullify damage' is checked).",
-        "format" : "(prob)% chance to [(type.nullify){nullify[(type.traitIgnore){ all}]}(!type.nullify){set}] damage higher than [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}][(!type.nullify){ to (dmg)}(type.procs){ and ignore the attack's procs}]",
+        "format" : "(prob)% chance to [(type.nullify){nullify[(type.traitIgnore){ all}]}(!type.nullify){set}] damage higher than [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}][(!type.nullify){ to [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}]}(type.procs){ and ignore the attack's procs}]",
         "class" : {
             "prob" : {
                 "name" : "chance",
@@ -1189,7 +1214,7 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to make this enemy weak to cannon"
             },
             "type": {
                 "name": "type",
@@ -1205,7 +1230,7 @@
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to reduce money gained from enemies"
             }
         }
     },
@@ -1213,11 +1238,11 @@
         "abbr_name": "Vs. Base",
         "full_name": "Base Destroyer",
         "tooltip": null,
-        "format": "[(mult>0){Base Destroyer}(mult<0){Bad at castle destruction}] [(mult==300){(_left)Deals 4x damage to target base(_right)}(mult!=300){(_left)Deals (_abs(mult))% [(mult>0){more}(mult<0){less}] damage to the Enemy Base(_right)}]",
+        "format": "[(mult>0){Base Destroyer}(mult<0){Bad at castle destruction}] (_left)Deals (_abs(mult))% [(mult>0){more}(mult<0){less}] damage to the Enemy Base(_right)",
         "class": {
             "mult": {
                 "name": "percent",
-                "tooltip": null
+                "tooltip": "Set negative to do less damage to the Enemy Base"
             }
         }
     },
@@ -1290,6 +1315,45 @@
             "mult": {
                 "name": "multiplier",
                 "tooltip": null
+            }
+        }
+    },
+    "BLAST" : {
+        "abbr_name": "blast atk",
+        "full_name": "Blast Attack",
+        "tooltip": "Creates blast attack that spreads to each side with weaker damage over each blasts",
+        "format": "(prob)% chance to create a blast attack (_left)Created [(dis_0==dis_1){at (dis_0) range}(dis_0!=dis_1){within (dis_0) ~ (dis_1) range}](_right)",
+        "class": {
+            "prob": {
+                "name": "chance",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "point near",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "point far",
+                "tooltip": null
+            }
+        }
+    },
+    "IMUBLAST" : {
+        "abbr_name": "imu. Blast",
+        "full_name": "Immune/Resistant to Blast",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Immune}(mult<100&mult>0){Resistant}(mult<0){Weak}] to Blast",
+            "[(mult<100&mult>0){ (_left)Decreases damage by (mult)%(_right)}(mult<0){ (_left)Increases damage by (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Blast [(block==100){blocker}(block<100&block>0){absorber}(block<0){increaser}]",
+            "[(block<100&block>0){ (_left)Decreases damage by (block)%(_right)}(block<0){ (_left)Increases damage by (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": "Set negative to make this unit weak to the effect"
+            },
+            "block": {
+                "name": "Blocker",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block slow. Set negative to increase the effect."
             }
         }
     }
