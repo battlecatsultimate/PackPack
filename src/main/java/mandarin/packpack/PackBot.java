@@ -107,9 +107,11 @@ public class PackBot {
                                 .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
                                 .queue()));
 
-                        client.retrieveUserById(195682910269865984L).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
-                                .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
-                                .queue()));
+                        for (int i = 0; i < StaticStore.maintainers.size(); i++) {
+                            client.retrieveUserById(StaticStore.maintainers.get(i)).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
+                                    .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
+                                    .queue()));
+                        }
                     }
 
                     backup = 1;

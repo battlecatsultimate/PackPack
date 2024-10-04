@@ -19,7 +19,7 @@ public class ServerJson extends ConstraintCommand {
 
     @Override
     public void doSomething(@NotNull CommandLoader loader) {
-        if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && !loader.getUser().getId().equals("195682910269865984")) {
+        if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && !StaticStore.maintainers.contains(loader.getUser().getId())) {
             loader.getChannel().sendMessage(LangID.getStringByID("bot.denied.reason.noPermission.developer", lang)).queue();
 
             return;

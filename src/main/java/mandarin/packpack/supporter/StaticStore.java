@@ -102,6 +102,7 @@ public class StaticStore {
     public static Map<String, String> suggestBanned = new HashMap<>();
 
     public static ArrayList<String> contributors = new ArrayList<>();
+    public static ArrayList<String> maintainers = new ArrayList<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
@@ -671,6 +672,7 @@ public class StaticStore {
         obj.add("suggestBanned", mapToJsonString(suggestBanned));
         obj.add("alias", AliasHolder.jsonfy());
         obj.add("contributor", listToJsonString(contributors));
+        obj.add("maintainers", listToJsonString(maintainers));
         obj.add("spam", SpamPrevent.jsonfyMap());
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
@@ -820,6 +822,10 @@ public class StaticStore {
 
             if(obj.has("contributor")) {
                 contributors = jsonToListString(obj.getAsJsonArray("contributor"));
+            }
+
+            if (obj.has("maintainers")) {
+                maintainers = jsonToListString(obj.getAsJsonArray("maintainers"));
             }
 
             if(obj.has("spam")) {

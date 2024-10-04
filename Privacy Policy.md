@@ -1,19 +1,22 @@
 # Privacy Policy
 
-Updated - 2024, July 6th
+Updated - 2024, October 5th
 
 PackPack is a Discord Bot whose interface adapts to Users, Channels, and Servers according to their (voluntarily specified) needs. To provide customised services, it needs to collect some of its Users' data, if they want to use specific features. This is not a legally binding contract, simply a description of PackPack's data collection practices. These policies are subject to change, and will be updated if there is any such change.
 
 ## Terminology
 
 * **Server** - The Discord server that the User and PackPack are in.
-* **Developer** - The developer of Discord bot, PackPack. `MandarinSmell#8906 (460409259021172781)`.
+* **Developer** - The developer of Discord bot, PackPack. `MandarinSmell (460409259021172781)`.
+* **Maintainer** - The group of people who maintain PackPack. Below users are officially maintainers of this bot :
+  * `MandarinSmell (460409259021172781)` : Developer of the Bot
+  * `Gideon (195682910269865984)` : Maintaining Bot's status, Technical support
 * **User** - Anyone in a Server where PackPack is present, who is using the bot in a channel that it has Read Messages permissions in.
 * **Moderator** - A user who has Manage Server permissions in a Server that PackPack is in.
 
 ## Access to Data
 
-Data Access is restricted to the Developer, and will never be used for any purposes besides development, evaluation, or testing. User data will not be sold to any third party. It will not be shared by anyone besides the Developer, unless required by Law or a Terms of Service agreement. Users may request the Developer to show where their data is being stored, and what exactly is being stored. They may also request for their data to be deleted.
+Data Access is restricted to the Developer or the Maintainers, and will never be used for any purposes besides development, evaluation, or testing. User data will not be sold to any third party. It will not be shared by anyone besides the Maintainers, unless required by Law or a Terms of Service agreement. Users may request the Developer to show where their data is being stored, and what exactly is being stored. They may also request for their data to be deleted.
 
 ## Data Collected By Bot
 
