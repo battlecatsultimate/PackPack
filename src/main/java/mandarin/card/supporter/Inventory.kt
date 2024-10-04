@@ -302,20 +302,21 @@ class Inventory(private val id: Long) {
         if (missingCards.isNotEmpty()) {
             val cardBuilder = StringBuilder("- Missing T1/T2 cards -> ")
 
-            missingCards.forEachIndexed { index, card ->
-                if (cardBuilder.length + card.simpleCardInfo().length > 1024) {
-                    cardBuilder.append("... and ${missingCards.size - index - 1} card(s) more")
+            run appender@ {
+                missingCards.forEachIndexed { index, card ->
+                    if (cardBuilder.length + card.simpleCardInfo().length > 1024) {
+                        cardBuilder.append("... and ${missingCards.size - index - 1} card(s) more")
 
-                    return@forEachIndexed
-                }
+                        return@appender
+                    }
 
-                cardBuilder.append(card.simpleCardInfo())
+                    cardBuilder.append(card.simpleCardInfo())
 
-                if (index < missingCards.size - 1) {
-                    cardBuilder.append(", ")
+                    if (index < missingCards.size - 1) {
+                        cardBuilder.append(", ")
+                    }
                 }
             }
-
             builder.append(cardBuilder).append("\n")
         }
 
