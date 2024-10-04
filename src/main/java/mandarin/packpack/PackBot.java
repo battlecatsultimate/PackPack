@@ -51,6 +51,7 @@ public class PackBot {
 
     public static void main(String[] args) {
         CommonStatic.getConfig().deadOpa = 0;
+        CommonStatic.getConfig().fullOpa = 100;
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Logger.writeLog(Logger.BotInstance.PACK_PACK)));
         Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
