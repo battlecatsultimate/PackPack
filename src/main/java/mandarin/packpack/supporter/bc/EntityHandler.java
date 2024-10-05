@@ -3866,15 +3866,15 @@ public class EntityHandler {
                         .multiply(surgeMultiplier);
 
                 if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
-                    dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
-                    dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
+                    treasureNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
+                    treasureNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
                 } else {
                     BigDecimal slope = surgeDamage.divide(minimumPierce.min(maximumInner).subtract(minimumRange), Equation.context);
 
-                    dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
-                    dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
-                    dpsNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
-                    dpsNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
+                    treasureNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
+                    treasureNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
+                    treasureNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
+                    treasureNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
                 }
             }
         }
@@ -4102,8 +4102,8 @@ public class EntityHandler {
         dpsNodes.addLast(new DPSNode(dpsNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
 
         if (treasure) {
-            treasureNodes.addFirst(new DPSNode(dpsNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
-            treasureNodes.addLast(new DPSNode(dpsNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
+            treasureNodes.addFirst(new DPSNode(treasureNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
+            treasureNodes.addLast(new DPSNode(treasureNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
         }
 
         // Ignore value must be false if there's only that node on each X point
