@@ -3899,41 +3899,35 @@ public class EntityHandler {
                     .multiply(waveChance)
                     .multiply(waveMultiplier);
 
-            BigDecimal position = BigDecimal.ZERO;
-
             //Initial Position
             BigDecimal width = BigDecimal.valueOf(Data.W_U_WID);
             BigDecimal offset = BigDecimal.valueOf(Data.W_U_INI);
 
-            position = position.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
+            BigDecimal halfWidth = width.divide(new BigDecimal("2"), Equation.context);
+            BigDecimal position = BigDecimal.ZERO.add(offset).add(halfWidth);
 
-            BigDecimal halfWidth = BigDecimal.valueOf(Data.W_E_WID).divide(new BigDecimal("2"), Equation.context);
+            dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
 
-            for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ZERO) > 0; wv = wv.subtract(BigDecimal.ONE)) {
-                dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
-                dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage));
-
+            for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
                 position = position.add(BigDecimal.valueOf(Data.W_PROG));
             }
+
+            dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
 
             if (treasure) {
                 waveDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
                         .multiply(waveChance)
                         .multiply(waveMultiplier);
 
-                position = BigDecimal.ZERO;
+                position = BigDecimal.ZERO.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
 
-                width = BigDecimal.valueOf(Data.W_U_WID);
-                offset = BigDecimal.valueOf(Data.W_U_INI);
+                treasureNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
 
-                position = position.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
-
-                for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ZERO) > 0; wv = wv.subtract(BigDecimal.ONE)) {
-                    treasureNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
-                    treasureNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage));
-
+                for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
                     position = position.add(BigDecimal.valueOf(Data.W_PROG));
                 }
+
+                treasureNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
             }
         }
 
@@ -4454,22 +4448,20 @@ public class EntityHandler {
                     .multiply(waveChance)
                     .multiply(waveMultiplier);
 
-            BigDecimal position = BigDecimal.ZERO;
-
             //Initial Position
             BigDecimal width = BigDecimal.valueOf(Data.W_E_WID);
             BigDecimal offset = BigDecimal.valueOf(Data.W_E_INI);
 
-            position = position.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
+            BigDecimal halfWidth = width.divide(new BigDecimal("2"), Equation.context);
+            BigDecimal position = BigDecimal.ZERO.add(offset).add(halfWidth);
 
-            BigDecimal halfWidth = BigDecimal.valueOf(Data.W_E_WID).divide(new BigDecimal("2"), Equation.context);
+            dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
 
-            for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ZERO) > 0; wv = wv.subtract(BigDecimal.ONE)) {
-                dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
-                dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage));
-
+            for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
                 position = position.add(BigDecimal.valueOf(Data.W_PROG));
             }
+
+            dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
         }
 
         // Handling blast
