@@ -1397,6 +1397,8 @@
       "colosseumType" : {
         "0" : "Money Limit",
         "1" : "Cooldown Limit",
+        "2" : "Rarity Deploy Limit",
+        "3" : "Cost Limit",
         "4" : "Super Rare Cost/Cooldown Buff"
       }
     },

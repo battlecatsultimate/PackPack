@@ -391,7 +391,7 @@
       "barrierBreaker" : "Ломатель Барьеров",
       "baseDestroyer" : "Уничтожитель Баз",
       "behemothSlayer" : "Убийца Диких",
-      "blastAttack" : "Blast Attack",
+      "blastAttack" : "Взрыв",
       "colossusSlayer" : "Убийца Колоссов",
       "conjure" : "Фокусник",
       "counterSurge" : "Встречный Сурдж",
@@ -457,8 +457,8 @@
         }
       },
       "immunities" : {
-        "bossWave" : "Имун. Босс Волны",
-        "blastAttack" : "Imu. Blast Attack",
+        "bossWave" : "Иммун. Босс Волны",
+        "blastAttack" : "Иммун. Взрыва",
         "curse" : "Иммун. Проклятие",
         "freeze" : "Иммун. Заморозка",
         "kb" : "Иммун. Отталкивание",
@@ -771,11 +771,11 @@
           "title" : "- **Множитель Стоимости**"
         },
         "globalCost" : {
-          "description" : "All units have %d cost globally",
-          "title" : "- **Global Cost**"
+          "description" : "Все юниты имеют стоимость %d",
+          "title" : "- **Общая стоимость**"
         },
         "lineLimit" : {
-          "description" : "Только первый ряд доступен",
+          "description" : "Доступен только первый ряд",
           "title" : "**Ограничения Отряда**"
         },
         "maxCost" : {
@@ -791,14 +791,14 @@
           "title" : "- **Огранечния Денег**"
         },
         "rarityDeploy" : {
-          "title" : "- **Rarity Deploy Limit**",
+          "title" : "- **Ограничение по Редкости**",
           "description" : {
-            "plural" : "Rarities below gets deploy limit",
-            "singular" : "Rarity below gets deploy limit"
+            "plural" : "Редкости ниже не могут быть выпущены",
+            "singular" : "Редкости выше не могуть быть выпущены"
           },
           "format" : {
-            "plural" : "%s : %d Units",
-            "singular" : "%s : %d Unit"
+            "plural" : "%s : %d Юнитов",
+            "singular" : "%s : %d Юнит"
           }
         }
       },
@@ -1205,9 +1205,9 @@
       "839" : "Акция Dotty Cat",
       "840" : "Акция Редкий Билет",
       "841" : "Акция Редкий Билет",
-      "842" : "Легендарный Набор Ловушек",
-      "843" : "Legendary Trap Pack",
-      "844" : "User Rank 300 Achievement Sale",
+      "842" : "Набор Легендарных Ловушек",
+      "843" : "Набор Легендарных Ловушек",
+      "844" : "Акция Достижения 300 Польз. Ранга",
       "900" : "Подарки: Грибовый Сад",
       "901" : "Подарки: Бонус Возвращения",
       "902" : "Подарки: Бонус Возвращения Золотого Билета",
@@ -1312,7 +1312,7 @@
       "35017" : "Подарки События",
       "35018" : "Подарки События",
       "35019" : "Подарки События",
-      "35020" : "Halloween Event Stamp",
+      "35020" : "Подарки: Хэллоуинское Событие",
       "rankingDojo" : "Ранговый Додзё _"
     },
     "permanentSchedule" : {
@@ -1397,6 +1397,8 @@
       "colosseumType" : {
         "0" : "Огранечния Денег",
         "1" : "Ограничения Перезарядки",
+        "2" : "Rarity Deploy Limit",
+        "3" : "Cost Limit",
         "4" : "Стоимость Супер Редких/Бафф к Перезарядке"
       }
     },
