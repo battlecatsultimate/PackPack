@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CountDownLatch;
 
 public class LogOut extends ConstraintCommand {
     public LogOut(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
@@ -80,28 +80,26 @@ public class LogOut extends ConstraintCommand {
 
                             String fullMessage = String.format(LangID.getStringByID("bot.status.offline.format", id.config.lang), self, LangID.getStringByID(code, id.config.lang));
 
-                            AtomicBoolean running = new AtomicBoolean(true);
+                            CountDownLatch countDown = new CountDownLatch(1);
 
                             ((MessageChannel) c).sendMessage(fullMessage)
                                     .setAllowedMentions(new ArrayList<>())
-                                    .queue(res -> running.set(false), e -> running.set(false));
+                                    .queue(res -> countDown.countDown(), e -> countDown.countDown());
 
-                            while (true) {
-                                if (!running.get())
-                                    break;
-                            }
+                            countDown.await();
                         }
                     } catch (Exception ignored) {
                     }
                 }
 
-                AtomicBoolean running = new AtomicBoolean(true);
+                try {
+                    CountDownLatch countDown = new CountDownLatch(1);
 
-                ch.sendMessage("Good bye!").queue(res -> running.set(false), e -> running.set(false));
+                    ch.sendMessage("Good bye!").queue(res -> countDown.countDown(), e -> countDown.countDown());
 
-                while (true) {
-                    if (!running.get())
-                        break;
+                    countDown.await();
+                } catch (Exception ignored) {
+
                 }
 
                 StaticStore.saver.cancel();

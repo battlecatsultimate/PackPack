@@ -21,6 +21,6 @@ public class FixedScheduleHandler {
     }
 
     public void release() {
-        handler.close();
+        handler.shutdownNow();
     }
 }
