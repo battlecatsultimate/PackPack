@@ -42,7 +42,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
         }
 
         if(!checkAttachments(author, false)) {
-            StaticStore.putHolder(author.getAuthor().getId(), this);
+            StaticStore.putHolder(userID, this);
 
             registerAutoExpiration(FIVE_MIN);
         }
@@ -105,7 +105,11 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
         }
     }
 
-    private boolean checkAttachments(Message m, boolean delete) {
+    private boolean checkAttachments(@Nullable Message m, boolean delete) {
+        if (m == null) {
+            return false;
+        }
+
         if(!m.getAttachments().isEmpty()) {
             for(Message.Attachment a : m.getAttachments()) {
                 if(requiredFiles.contains(a.getFileName())) {

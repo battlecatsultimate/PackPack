@@ -58,7 +58,7 @@ public class AnimMessageHolder extends MessageHolder {
 
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
-        if(!author.getAttachments().isEmpty()) {
+        if(author != null && !author.getAttachments().isEmpty()) {
             for(Message.Attachment a : author.getAttachments()) {
                 if(a.getFileName().endsWith(".png") && mixer.png == null) {
                     UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
@@ -241,7 +241,7 @@ public class AnimMessageHolder extends MessageHolder {
                 Guild g;
 
                 if(ch instanceof GuildChannel) {
-                    g = author.getGuild();
+                    g = message.getGuild();
                 } else {
                     g = null;
                 }
@@ -258,7 +258,7 @@ public class AnimMessageHolder extends MessageHolder {
             t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
             t.start();
         } else {
-            StaticStore.putHolder(author.getAuthor().getId(), this);
+            StaticStore.putHolder(userID, this);
 
             registerAutoExpiration(FIVE_MIN);
         }

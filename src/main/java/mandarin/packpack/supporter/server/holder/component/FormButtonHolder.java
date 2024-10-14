@@ -8,7 +8,6 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -39,8 +38,6 @@ public class FormButtonHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getMessageChannel();
-
         if(event.getComponentId().equals("talent")) {
             if(f.du.getPCoin() == null)
                 return;

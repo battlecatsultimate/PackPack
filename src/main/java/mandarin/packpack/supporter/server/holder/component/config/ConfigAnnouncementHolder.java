@@ -150,7 +150,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
 
         String additional;
 
-        if (holder.announceMessage == null) {
+        if (holder.announceMessage.isBlank()) {
             additional = LangID.getStringByID("serverConfig.eventData.info.content.none", lang);
         } else {
             additional = LangID.getStringByID("serverConfig.eventData.info.content.checkBelow", lang);
@@ -160,7 +160,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 .append(LangID.getStringByID("serverConfig.announcement.info.publish", lang).formatted(post)).append("\n")
                 .append(LangID.getStringByID("serverConfig.announcement.info.additionalMessage", lang).formatted(additional));
 
-        if (holder.announceMessage != null) {
+        if (!holder.announceMessage.isBlank()) {
             builder.append("\n\n```\n")
                     .append(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang))
                     .append("\n```\n")

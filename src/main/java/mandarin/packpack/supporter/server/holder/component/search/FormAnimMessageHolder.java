@@ -49,7 +49,7 @@ public class FormAnimMessageHolder extends SearchHolder {
         this.raw = raw;
         this.gifMode = gifMode;
 
-        this.command = author.getContentRaw();
+        this.command = author == null ? "" : author.getContentRaw();
     }
 
     @Override
