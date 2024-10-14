@@ -13,7 +13,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.text.split
 
-class AuctionEndTimeHolder(author: Message, channelID: String, message: Message, private val onSelected: (timeStamp: Long) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionEndTimeHolder(author: Message, userID: String, channelID: String, message: Message, private val onSelected: (timeStamp: Long) -> Unit) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

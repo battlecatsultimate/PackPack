@@ -24,7 +24,7 @@ class RequirementSelectHolder : ComponentHolder {
     private val role: CardData.Role
     private val reward: Consumer<GenericComponentInteractionCreateEvent>
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: String, channelID: String, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.inventory = inventory
         this.role = role
@@ -32,7 +32,7 @@ class RequirementSelectHolder : ComponentHolder {
         reward = Consumer {  }
     }
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: String, channelID: String, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.inventory = inventory
         this.reward = reward
@@ -74,9 +74,9 @@ class RequirementSelectHolder : ComponentHolder {
             }
             "confirm" -> {
                 if (role != CardData.Role.NONE) {
-                    connectTo(event, FilterProcessHolder(authorMessage, channelID, message, product, filters, inventory, role))
+                    connectTo(event, FilterProcessHolder(authorMessage, userID, channelID, message, product, filters, inventory, role))
                 } else {
-                    connectTo(event, FilterProcessHolder(authorMessage, channelID, message, product, filters, inventory, reward))
+                    connectTo(event, FilterProcessHolder(authorMessage, userID, channelID, message, product, filters, inventory, reward))
                 }
             }
             "back" -> {

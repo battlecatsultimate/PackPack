@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,10 +29,10 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
     private final List<String> requiredFiles;
     private final List<Integer> fileDownloaded = new ArrayList<>();
 
-    public FileAnalyzerHolder(@Nonnull Message msg, @Nonnull Message author, @Nonnull String channelID, File container, List<String> requiredFiles, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public FileAnalyzerHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, File container, List<String> requiredFiles, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
-        this.msg = msg;
+        this.msg = message;
         this.container = container;
 
         this.requiredFiles = requiredFiles;

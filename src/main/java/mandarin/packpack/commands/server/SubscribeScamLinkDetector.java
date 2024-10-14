@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         Guild g = loader.getGuild();
@@ -82,7 +82,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
                 ).queue(msg -> {
                     Member m = loader.getMember();
 
-                    StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(loader.getMessage(), msg, ch.getId(), lang, channel, getMute(g, loader.getContent())));
+                    StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(loader.getMessage(), m.getId(), ch.getId(), msg, lang, channel, getMute(g, loader.getContent())));
                 });
     }
 

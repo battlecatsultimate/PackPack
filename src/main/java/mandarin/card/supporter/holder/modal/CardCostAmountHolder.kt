@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CardCostAmountHolder(author: Message, channelID: String, message: Message, private val cost: CardCost) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardCostAmountHolder(author: Message, userID: String, channelID: String, message: Message, private val cost: CardCost) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

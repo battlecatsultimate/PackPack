@@ -29,7 +29,7 @@ class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents(loader.guild)) }) { msg ->
-            StaticStore.putHolder(m.id, ExcludeChannelHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(m.id, ExcludeChannelHolder(loader.message, m.id, loader.channel.id, msg))
         }
     }
 

@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardCraftAmountHolder(author: Message, channelID: String, message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardCraftAmountHolder(author: Message, userID: String, channelID: String, message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var amount = 1
@@ -88,7 +88,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CraftAmountHolder(authorMessage, channelID, message) { a ->
+                StaticStore.putHolder(authorMessage.author.id, CraftAmountHolder(authorMessage, userID, channelID, message) { a ->
                     amount = a
 
                     applyResult()
@@ -113,7 +113,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, message: Message
 
                 registerPopUp(event, "Are you sure you want to spend ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount} on crafting $amount $name card${if (amount >= 2) "s" else ""}?")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     val result = rollCards()
 
                     displayRollResult(e, result)

@@ -20,12 +20,13 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
 class TransferInventoryTargetHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val sourceUser: Long,
     mode: CardData.TransferMode,
     r: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     var transferMode = mode
         private set
     var reset = r
@@ -72,7 +73,7 @@ class TransferInventoryTargetHolder(
                         "\n" +
                         "Mode is $modeName, and $resetText")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message,{ e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message,{ e ->
                     val sourceInventory = Inventory.getInventory(sourceUser)
                     val targetInventory = Inventory.getInventory(id)
 

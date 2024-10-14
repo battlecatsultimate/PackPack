@@ -7,9 +7,9 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import javax.management.MBeanServer;
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -20,7 +20,7 @@ public class DumpHeap extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         replyToMessageSafely(ch,  "Dumping Heap...", loader.getMessage(), a -> a);

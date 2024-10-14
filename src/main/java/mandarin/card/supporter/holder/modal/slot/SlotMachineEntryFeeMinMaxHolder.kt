@@ -14,7 +14,7 @@ import kotlin.text.replace
 import kotlin.text.toDouble
 import kotlin.text.toLong
 
-class SlotMachineEntryFeeMinMaxHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val isMinimum: Boolean) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineEntryFeeMinMaxHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val isMinimum: Boolean) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

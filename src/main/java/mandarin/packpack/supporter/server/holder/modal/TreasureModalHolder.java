@@ -7,9 +7,9 @@ import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class TreasureModalHolder extends ModalHolder {
@@ -26,8 +26,8 @@ public class TreasureModalHolder extends ModalHolder {
 
     private final Runnable editor;
 
-    public TreasureModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull TreasureHolder treasure, CommonStatic.Lang.Locale lang, TREASURE type, Runnable editor) {
-        super(author, channelID, message, lang);
+    public TreasureModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull TreasureHolder treasure, CommonStatic.Lang.Locale lang, TREASURE type, Runnable editor) {
+        super(author, userID, channelID, message, lang);
 
         this.treasure = treasure;
 

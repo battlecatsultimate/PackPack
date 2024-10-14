@@ -61,12 +61,12 @@ public abstract class Holder {
     @Nullable
     private ScheduledFuture<?> schedule = null;
 
-    public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+    public Holder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         this.author = author;
 
         this.channelID = channelID;
         this.message = message;
-        userID = author.getAuthor().getId();
+        this.userID = userID;
 
         this.lang = lang;
     }

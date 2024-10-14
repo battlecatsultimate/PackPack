@@ -23,7 +23,7 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
             return
 
         replyToMessageSafely(ch, getText(), loader.message, { a -> a.setComponents(getComponents()) }, { msg ->
-            StaticStore.putHolder(m.id, ActivatorHolder(loader.message, ch.id, msg))
+            StaticStore.putHolder(m.id, ActivatorHolder(loader.message, m.id, ch.id, msg))
         })
 
 

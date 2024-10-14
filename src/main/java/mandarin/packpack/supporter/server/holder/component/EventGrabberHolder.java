@@ -10,15 +10,16 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class EventGrabberHolder extends ComponentHolder {
-    public EventGrabberHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public EventGrabberHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         registerAutoExpiration(FIVE_MIN);
     }
@@ -38,7 +39,7 @@ public class EventGrabberHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "bcen" -> {
                 EventFileGrabber.newWay.put(CommonStatic.Lang.Locale.EN, !EventFileGrabber.newWay.get(CommonStatic.Lang.Locale.EN));

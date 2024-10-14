@@ -13,6 +13,8 @@ import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
 import net.dv8tion.jda.api.entities.Message;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -33,8 +35,8 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
     private final int lv;
     private final String[] name;
 
-    public StatAnalyzerMessageHolder(Message msg, Message author, int uID, int len, boolean isSecond, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, String channelID, File container, int lv, String[] name, CommonStatic.Lang.Locale lang, List<String> requiredFiles) {
-        super(msg, author, channelID, container, requiredFiles, lang);
+    public StatAnalyzerMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, int uID, int len, boolean isSecond, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, File container, int lv, String[] name, CommonStatic.Lang.Locale lang, List<String> requiredFiles) {
+        super(author, userID, channelID, msg, container, requiredFiles, lang);
 
         this.cellData = cellData;
         this.abilityData = abilityData;

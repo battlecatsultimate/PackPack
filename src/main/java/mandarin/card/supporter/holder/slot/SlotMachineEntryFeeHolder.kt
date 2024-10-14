@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 
-class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineEntryFeeHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -76,7 +76,7 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineEntryFeeMinMaxHolder(authorMessage, channelID, message, slotMachine, true))
+                connectTo(SlotMachineEntryFeeMinMaxHolder(authorMessage, userID, channelID, message, slotMachine, true))
             }
             "max" -> {
                 val input = TextInput.create("entryFee", "Entry Fee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
@@ -87,7 +87,7 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineEntryFeeMinMaxHolder(authorMessage, channelID, message, slotMachine, false))
+                connectTo(SlotMachineEntryFeeMinMaxHolder(authorMessage, userID, channelID, message, slotMachine, false))
             }
             "back" -> {
                 goBack(event)
@@ -95,7 +95,7 @@ class SlotMachineEntryFeeHolder(author: Message, channelID: String, message: Mes
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

@@ -26,7 +26,7 @@ class ManageSlot : Command(CommonStatic.Lang.Locale.EN, true) {
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.addComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(loader.user.id, SlotMachineListHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(loader.user.id, SlotMachineListHolder(loader.message, m.id, loader.channel.id, msg))
         }
     }
 

@@ -44,7 +44,7 @@ class Roll : Command(CommonStatic.Lang.Locale.EN, true) {
 
             val noImage = arrayOf("-s", "-simple", "-n", "-noimage").any { p -> p in content }
 
-            StaticStore.putHolder(m.id, PackSelectHolder(loader.message, ch.id, loader.member, msg, noImage))
+            StaticStore.putHolder(m.id, PackSelectHolder(loader.message, m.id, ch.id, loader.member, msg, noImage))
         })
     }
 

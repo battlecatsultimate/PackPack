@@ -42,7 +42,7 @@ class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.
             replyToMessageSafely(ch, getText(members), loader.message, { a ->
                 a.setComponents(getComponents(members))
             }, { msg ->
-                StaticStore.putHolder(m.id, CardCheckHolder(loader.message, ch.id, msg, members, tier))
+                StaticStore.putHolder(m.id, CardCheckHolder(loader.message, m.id, ch.id, msg, members, tier))
             })
         } else {
             replyToMessageSafely(ch, getText(members), loader.message) { a -> a }

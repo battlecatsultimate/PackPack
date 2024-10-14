@@ -5,7 +5,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.Schedule;
 import mandarin.packpack.supporter.event.StageSchedule;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class NormalGroupHandler implements GroupHandler {
     private final List<List<Integer>> groupData;
     private final ArrayList<EventGroup> groups = new ArrayList<>();
 
-    public NormalGroupHandler(@NotNull List<List<Integer>> groupData, @NotNull String name, boolean raw) {
+    public NormalGroupHandler(@Nonnull List<List<Integer>> groupData, @Nonnull String name, boolean raw) {
         this.groupData = groupData;
         this.name = name;
         this.raw = raw;

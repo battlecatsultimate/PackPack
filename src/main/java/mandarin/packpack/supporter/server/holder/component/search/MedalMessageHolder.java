@@ -8,14 +8,15 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MedalMessageHolder extends SearchHolder {
     private final ArrayList<Integer> id;
     
-    public MedalMessageHolder(ArrayList<Integer> id, Message author, Message msg, CommonStatic.Lang.Locale lang, String channelID) {
-        super(author, msg, channelID, lang);
+    public MedalMessageHolder(ArrayList<Integer> id, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.id = id;
     }

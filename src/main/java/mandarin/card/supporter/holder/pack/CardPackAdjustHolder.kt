@@ -23,11 +23,12 @@ import java.util.concurrent.TimeUnit
 
 class CardPackAdjustHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val pack: CardPack,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -58,13 +59,13 @@ class CardPackAdjustHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardPackNameHolder(authorMessage, channelID, message, false, pack))
+                connectTo(CardPackNameHolder(authorMessage, userID, channelID, message, false, pack))
             }
             "cost" -> {
-                connectTo(event, CardPackCostHolder(authorMessage, channelID, message, pack))
+                connectTo(event, CardPackCostHolder(authorMessage, userID, channelID, message, pack))
             }
             "content" -> {
-                connectTo(event, CardPackContentHolder(authorMessage, channelID, message, pack))
+                connectTo(event, CardPackContentHolder(authorMessage, userID, channelID, message, pack))
             }
             "cooldown" -> {
                 val input = TextInput.create("cooldown", "Cooldown", TextInputStyle.SHORT)
@@ -78,7 +79,7 @@ class CardPackAdjustHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardPackCooldownHolder(authorMessage, channelID, message, pack))
+                connectTo(CardPackCooldownHolder(authorMessage, userID, channelID, message, pack))
             }
             "activate" -> {
                 if (!pack.activated && pack.isInvalid()) {
@@ -115,7 +116,7 @@ class CardPackAdjustHolder(
                         "Are you sure you want to cancel creating card pack? This cannot be undone"
                     )
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()
@@ -134,7 +135,7 @@ class CardPackAdjustHolder(
                     "Are you sure you want to delete card pack? This cannot be undone"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     CardData.cardPacks.remove(pack)
 
                     CardBot.saveCardData()

@@ -31,12 +31,13 @@ import kotlin.math.min
 
 class SpecificCardCostHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val pack: CardPack,
     private val cost: SpecificCardCost,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = ArrayList<Card>(CardData.cards.sortedWith(CardComparator()))
 
     private var page = 0
@@ -152,7 +153,7 @@ class SpecificCardCostHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardCostAmountHolder(authorMessage, channelID, message, cost))
+                connectTo(CardCostAmountHolder(authorMessage, userID, channelID, message, cost))
             }
             "create" -> {
                 pack.cost.cardsCosts.add(cost)
@@ -175,7 +176,7 @@ class SpecificCardCostHolder(
                         "Are you sure you want to cancel creating card cost and go back? This can't be undone"
                     )
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, CardPackCostHolder::class.java)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -194,7 +195,7 @@ class SpecificCardCostHolder(
                     "Are you sure you want to delete card cost? This can't be undone"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     pack.cost.cardsCosts.remove(cost)
 
                     if (pack in CardData.cardPacks) {

@@ -37,7 +37,7 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
                 }
 
                 replyToMessageSafely(ch, "Please select auction place where you want to bid\n\nYou can bid up to ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.actualCatFood}", loader.message, { a -> a.setComponents(getComponents(g)) }) { msg ->
-                    StaticStore.putHolder(u.id, AuctionPlaceSelectHolder(loader.message, ch.id, msg, g))
+                    StaticStore.putHolder(u.id, AuctionPlaceSelectHolder(loader.message, u.id, ch.id, msg, g))
                 }
             } else {
                 val id = getChannelID(segments[1])
@@ -99,7 +99,7 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
                 }
 
                 replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-                    StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
+                    StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, u.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
                         auctionSession.bid(u.idLong, catFoods)
 
                         replyToMessageSafely(ch, "Successfully posted to the bid $catFoods ${EmojiStore.ABILITY["CF"]?.formatted} to auction #${auctionSession.id}!", loader.message) { a -> a }
@@ -173,7 +173,7 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
             }
 
             replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-                StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
+                StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, u.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
                     auctionSession.bid(u.idLong, catFoods)
 
                     replyToMessageSafely(ch, "Successfully posted to the bid $catFoods ${EmojiStore.ABILITY["CF"]?.formatted} to auction #${auctionSession.id}!", loader.message) { a -> a }

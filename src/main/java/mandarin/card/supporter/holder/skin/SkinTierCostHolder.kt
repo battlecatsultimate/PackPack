@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 
-class SkinTierCostHolder(author: Message, channelID: String, message: Message, private val skin: Skin, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinTierCostHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -69,7 +69,7 @@ class SkinTierCostHolder(author: Message, channelID: String, message: Message, p
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardCostAmountHolder(authorMessage, channelID, message, cardCost))
+                connectTo(CardCostAmountHolder(authorMessage, userID, channelID, message, cardCost))
             }
             "create" -> {
                 skin.cost.cardsCosts.add(cardCost)
@@ -94,7 +94,7 @@ class SkinTierCostHolder(author: Message, channelID: String, message: Message, p
 
                     StaticStore.removeHolder(authorMessage.author.id, this)
 
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, SkinCostManageHolder::class.java)
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
@@ -118,7 +118,7 @@ class SkinTierCostHolder(author: Message, channelID: String, message: Message, p
 
                 StaticStore.removeHolder(authorMessage.author.id, this)
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     skin.cost.cardsCosts.remove(cardCost)
 
                     if (skin in CardData.skins) {

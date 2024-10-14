@@ -8,7 +8,7 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public class Prefix extends ConstraintCommand {
     private static final int ERR_CANT_FIND_MEMBER = 0;
@@ -18,7 +18,7 @@ public class Prefix extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         String[] list = loader.getContent().split(" ");

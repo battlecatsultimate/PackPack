@@ -6,7 +6,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class SuggestBan extends ConstraintCommand {
 
@@ -15,7 +16,7 @@ public class SuggestBan extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         String[] contents = loader.getContent().split(" ");

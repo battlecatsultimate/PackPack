@@ -10,10 +10,11 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class ComponentHolder extends Holder {
-    public ComponentHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public ComponentHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
     }
 
     @Override

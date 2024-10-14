@@ -6,8 +6,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,8 @@ public class EventDataArchiveHolder extends SearchHolder {
     private final List<File> files;
     private final String fileName;
 
-    public EventDataArchiveHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<File> files, String fileName, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public EventDataArchiveHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, List<File> files, String fileName, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.files = files;
         this.fileName = fileName;

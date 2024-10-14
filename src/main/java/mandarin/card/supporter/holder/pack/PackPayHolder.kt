@@ -47,12 +47,13 @@ import kotlin.text.toInt
 
 class PackPayHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val member: Member,
     private val pack: CardPack,
     private val noImage: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val containers = Array(pack.cost.cardsCosts.size) {
         CardPayContainer(pack.cost.cardsCosts[it])
     }
@@ -156,7 +157,7 @@ class PackPayHolder(
                 val index = event.values[0].toInt()
                 val container = containers[index]
 
-                connectTo(event, CardCostPayHolder(authorMessage, channelID, message, container, containers))
+                connectTo(event, CardCostPayHolder(authorMessage, userID, channelID, message, container, containers))
             }
             "back" -> {
                 if (containers.any { container -> container.pickedCards.isNotEmpty() }) {
@@ -164,7 +165,7 @@ class PackPayHolder(
 
                     registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBack(e)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {

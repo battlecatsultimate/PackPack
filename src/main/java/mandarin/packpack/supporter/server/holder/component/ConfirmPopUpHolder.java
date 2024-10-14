@@ -5,9 +5,9 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ConfirmPopUpHolder extends ComponentHolder {
@@ -15,8 +15,8 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     @Nullable
     private final Consumer<GenericComponentInteractionCreateEvent>  onCancel;
 
-    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @NotNull Consumer<GenericComponentInteractionCreateEvent> onCancel, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public ConfirmPopUpHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, Message message, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @Nonnull Consumer<GenericComponentInteractionCreateEvent> onCancel, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.onConfirm = onConfirm;
         this.onCancel = onCancel;
@@ -24,8 +24,8 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         registerAutoExpiration(FIVE_MIN);
     }
 
-    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public ConfirmPopUpHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, Message message, Consumer<GenericComponentInteractionCreateEvent> onConfirm, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.onConfirm = onConfirm;
         this.onCancel = null;
@@ -34,7 +34,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "confirm" -> {
                 end(false);

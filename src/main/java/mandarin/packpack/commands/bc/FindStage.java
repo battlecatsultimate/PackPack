@@ -34,8 +34,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -88,7 +88,7 @@ public class FindStage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String[] segments = loader.getContent().split(" ");
@@ -111,22 +111,24 @@ public class FindStage extends TimedConstraintCommand {
         String enemyName = getEnemyName(command);
 
         int param = checkParameters(command);
-        int star = getLevel(command);
         int music = getMusic(command);
         int castle = getCastle(command);
         int background = getBackground(command);
 
-        boolean isFrame;
+        StageInfo.StageInfoConfig configData = new StageInfo.StageInfoConfig();
+
+        configData.star = getLevel(command);
 
         if ((param & PARAM_SECOND) > 0)
-            isFrame = false;
+            configData.isFrame = false;
         else if ((param & PARAM_FRAME) > 0)
-            isFrame = true;
+            configData.isFrame = true;
         else
-            isFrame = config.useFrame;
+            configData.isFrame = config.useFrame;
 
-        boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-        boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        configData.isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+        configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+
         boolean orOperate = (param & PARAM_OR) > 0 && (param & PARAM_AND) == 0;
         boolean hasBoss = (param & PARAM_BOSS) > 0;
         boolean monthly = (param & PARAM_MONTHLY) > 0;
@@ -212,12 +214,12 @@ public class FindStage extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), "", treasure, configData, false, lang, result -> {
                     User u = loader.getUser();
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact, lang));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, u.getId(), ch.getId(), result, configData.isCompact, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("findStage.several", lang)).append("```md\n");
@@ -244,7 +246,7 @@ public class FindStage extends TimedConstraintCommand {
 
                     TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, loader.getMessage(), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
+                    StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, loader.getMessage(), u.getId(), ch.getId(), res, treasure, configData, lang));
                 });
 
                 disableTimer();
@@ -284,7 +286,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, treasure, background, castle, music, lang));
+                StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, u.getId(), ch.getId(), res, orOperate, hasBoss, monthly, treasure, configData, background, castle, music, lang));
             });
         }
     }

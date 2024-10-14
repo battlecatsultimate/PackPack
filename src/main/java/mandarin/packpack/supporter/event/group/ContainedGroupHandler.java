@@ -5,7 +5,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.Schedule;
 import mandarin.packpack.supporter.event.StageSchedule;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +18,7 @@ public class ContainedGroupHandler implements GroupHandler {
     private final List<List<Integer>> containedGroup;
     private final List<EventGroup> groups = new ArrayList<>();
 
-    public ContainedGroupHandler(@NotNull List<List<Integer>> containedGroup, @NotNull String name, boolean raw) {
+    public ContainedGroupHandler(@Nonnull List<List<Integer>> containedGroup, @Nonnull String name, boolean raw) {
         this.containedGroup = containedGroup;
         this.name = name;
         this.raw = raw;

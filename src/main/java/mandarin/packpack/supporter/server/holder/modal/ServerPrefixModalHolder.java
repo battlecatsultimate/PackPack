@@ -5,19 +5,21 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ServerPrefixModalHolder extends ModalHolder {
     private final ConfigHolder config;
 
-    public ServerPrefixModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, ConfigHolder config, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public ServerPrefixModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.config = config;
     }
 
     @Override
-    public void onEvent(@NotNull ModalInteractionEvent event) {
+    public void onEvent(@Nonnull ModalInteractionEvent event) {
         if (!event.getModalId().equals("prefix"))
             return;
 

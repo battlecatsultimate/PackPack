@@ -19,8 +19,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class EnemyImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String[] list = loader.getContent().split(" ");
@@ -135,7 +135,7 @@ public class EnemyImage extends TimedConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, msg, u.getId(), ch.getId(), res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                 });
 
                 disableTimer();

@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinCostManageHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class SkinCostManageHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -63,7 +63,7 @@ class SkinCostManageHolder(author: Message, channelID: String, message: Message,
 
                 event.replyModal(modal).queue()
 
-                connectTo(CatFoodCostHolder(authorMessage, channelID, message, skin.cost))
+                connectTo(CatFoodCostHolder(authorMessage, userID, channelID, message, skin.cost))
             }
             "shard" -> {
                 val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
@@ -78,10 +78,10 @@ class SkinCostManageHolder(author: Message, channelID: String, message: Message,
 
                 event.replyModal(modal).queue()
 
-                connectTo(PlatinumShardCostHolder(authorMessage, channelID, message, skin.cost))
+                connectTo(PlatinumShardCostHolder(authorMessage, userID, channelID, message, skin.cost))
             }
             "add" -> {
-                connectTo(event, SkinCostTypeHolder(authorMessage, channelID, message, skin))
+                connectTo(event, SkinCostTypeHolder(authorMessage, userID, channelID, message, skin))
             }
             "cost" -> {
                 if (event !is StringSelectInteractionEvent) {
@@ -94,9 +94,9 @@ class SkinCostManageHolder(author: Message, channelID: String, message: Message,
                     return
 
                 when(val cost = skin.cost.cardsCosts[index]) {
-                    is BannerCardCost -> connectTo(event, SkinBannerCostHolder(authorMessage, channelID, message, skin, cost, false))
-                    is TierCardCost -> connectTo(event, SkinTierCostHolder(authorMessage, channelID, message, skin, cost, false))
-                    is SpecificCardCost -> connectTo(event, SkinSpecificCardCostHolder(authorMessage, channelID, message, skin, cost, false))
+                    is BannerCardCost -> connectTo(event, SkinBannerCostHolder(authorMessage, userID, channelID, message, skin, cost, false))
+                    is TierCardCost -> connectTo(event, SkinTierCostHolder(authorMessage, userID, channelID, message, skin, cost, false))
+                    is SpecificCardCost -> connectTo(event, SkinSpecificCardCostHolder(authorMessage, userID, channelID, message, skin, cost, false))
                 }
             }
             "role" -> {

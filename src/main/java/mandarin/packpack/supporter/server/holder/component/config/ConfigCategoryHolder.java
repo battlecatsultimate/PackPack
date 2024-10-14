@@ -13,14 +13,15 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigCategoryHolder extends ServerConfigHolder {
-    public ConfigCategoryHolder(Message author, String channelID, Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, holder, lang);
+    public ConfigCategoryHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, holder, lang);
     }
 
     @Override
@@ -29,12 +30,12 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "general" -> connectTo(event, new ConfigGeneralHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "command" -> connectTo(event, new ConfigCommandHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "channel" -> connectTo(event, new ConfigChannelHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "permission" -> connectTo(event, new ConfigPermissionHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "general" -> connectTo(event, new ConfigGeneralHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "command" -> connectTo(event, new ConfigCommandHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "channel" -> connectTo(event, new ConfigChannelHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "permission" -> connectTo(event, new ConfigPermissionHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("serverConfig.applied", lang))
@@ -48,7 +49,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
-                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), userID, channelID, message, e -> {
                     e.deferEdit()
                             .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
@@ -65,7 +66,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
         event.deferEdit()
                 .setContent(LangID.getStringByID("serverConfig.category.title", lang))
                 .setComponents(getComponents())

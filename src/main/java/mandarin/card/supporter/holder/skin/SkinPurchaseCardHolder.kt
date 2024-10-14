@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinPurchaseCardHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinPurchaseCardHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private val cards = CardData.skins
@@ -110,7 +110,7 @@ class SkinPurchaseCardHolder(author: Message, channelID: String, message: Messag
 
                 val card = cards[index]
 
-                connectTo(event, SkinPurchaseSelectHolder(authorMessage, channelID, message, card))
+                connectTo(event, SkinPurchaseSelectHolder(authorMessage, userID, channelID, message, card))
             }
             "prev" -> {
                 page--

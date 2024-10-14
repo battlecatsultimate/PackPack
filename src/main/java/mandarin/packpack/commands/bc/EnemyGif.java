@@ -165,7 +165,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                         ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
                     }
 
-                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
+                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
                 });
 
                 disableTimer();

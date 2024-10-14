@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +38,7 @@ public class CatCombo extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String name = getUnitName(loader.getContent());
@@ -80,7 +80,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
+                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), res, null, lang));
                     }
                 });
             }
@@ -127,7 +127,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                             Message msg = loader.getMessage();
 
-                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
+                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), res, null, lang));
                         }
                     });
                 }
@@ -157,7 +157,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, res, ch.getId(), lang, cName, name));
+                        StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, u.getId(), ch.getId(), res, lang, cName, name));
                     }
                 });
             }

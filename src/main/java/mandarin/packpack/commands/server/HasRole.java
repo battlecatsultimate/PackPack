@@ -17,9 +17,9 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class HasRole extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         String[] contents = loader.getContent().split(" ");
 
         if (contents.length < 2) {
@@ -66,7 +66,7 @@ public class HasRole extends ConstraintCommand {
                 a.addEmbeds(getEmbed(members, role));
 
                 return a;
-            }, msg -> StaticStore.putHolder(loader.getMember().getId(), new HasRolePageHolder(loader.getMessage(), loader.getChannel().getId(), msg, members, role, lang)));
+            }, msg -> StaticStore.putHolder(loader.getMember().getId(), new HasRolePageHolder(loader.getMessage(), loader.getMember().getId(), loader.getChannel().getId(), msg, members, role, lang)));
         });
     }
 

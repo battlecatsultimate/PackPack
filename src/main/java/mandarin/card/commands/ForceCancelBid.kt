@@ -70,7 +70,7 @@ class ForceCancelBid : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(ch, "Are you sure you want to cancel the bid of this user? User will get notification as well", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
                 val previousBid = auctionSession.bidData[user] ?: 0
 
                 auctionSession.forceCancelBid(m.idLong, user)

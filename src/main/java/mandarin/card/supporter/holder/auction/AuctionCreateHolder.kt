@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class AuctionCreateHolder(author: Message, channelID: String, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionCreateHolder(author: Message, userID: String, channelID: String, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var selectedCard: Card? = null
     private var amount = -1
     private var endTime = -1L
@@ -45,7 +45,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "card" -> {
-                connectTo(event, AuctionCardSelectHolder(authorMessage, channelID, message, if (authorID == -1L) null else Inventory.getInventory(authorID)) { card, count ->
+                connectTo(event, AuctionCardSelectHolder(authorMessage, userID, channelID, message, if (authorID == -1L) null else Inventory.getInventory(authorID)) { card, count ->
                     selectedCard = card
                     amount = count
                 })
@@ -62,7 +62,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
 
                 event.replyModal(modal).queue()
 
-                connectTo(AuctionEndTimeHolder(authorMessage, channelID, message) { time ->
+                connectTo(AuctionEndTimeHolder(authorMessage, userID, channelID, message) { time ->
                     endTime = time
 
                     message.editMessage(getContent())
@@ -83,7 +83,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
 
                 event.replyModal(modal).queue()
 
-                connectTo(AuctionInitialPriceHolder(authorMessage, channelID, message) { price ->
+                connectTo(AuctionInitialPriceHolder(authorMessage, userID, channelID, message) { price ->
                     initialPrice = price
 
                     message.editMessage(getContent())
@@ -104,7 +104,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
 
                 event.replyModal(modal).queue()
 
-                connectTo(AuctionMinimumBidHolder(authorMessage, channelID, message) { bid ->
+                connectTo(AuctionMinimumBidHolder(authorMessage, userID, channelID, message) { bid ->
                     minimumBid = bid
 
                     message.editMessage(getContent())
@@ -146,7 +146,7 @@ class AuctionCreateHolder(author: Message, channelID: String, message: Message, 
 
                 event.replyModal(modal).queue()
 
-                connectTo(AuctionAutoCloseHolder(authorMessage, channelID, message) { time ->
+                connectTo(AuctionAutoCloseHolder(authorMessage, userID, channelID, message) { time ->
                     autoCloseTime = time
                 })
             }

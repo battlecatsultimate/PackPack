@@ -3,7 +3,7 @@ package mandarin.packpack.supporter;
 import common.io.Backup;
 import common.io.PackLoader;
 import common.pack.Context;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,7 +59,7 @@ public class PackContext implements Context {
         return null;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public File getBCUFolder() {
         return new File("./");

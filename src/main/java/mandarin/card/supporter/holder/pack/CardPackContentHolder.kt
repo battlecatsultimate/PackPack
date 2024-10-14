@@ -20,10 +20,11 @@ import java.util.concurrent.TimeUnit
 
 class CardPackContentHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val pack: CardPack
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -50,12 +51,12 @@ class CardPackContentHolder(
 
                 val cardChancePairList = pack.cardChancePairLists[index]
 
-                connectTo(event, PackContentAdjustHolder(authorMessage, channelID, message, pack, cardChancePairList, false))
+                connectTo(event, PackContentAdjustHolder(authorMessage, userID, channelID, message, pack, cardChancePairList, false))
             }
             "add" -> {
                 val cardChancePairList = CardChancePairList(0)
 
-                connectTo(event, PackContentAdjustHolder(authorMessage, channelID, message, pack, cardChancePairList, true))
+                connectTo(event, PackContentAdjustHolder(authorMessage, userID, channelID, message, pack, cardChancePairList, true))
             }
             "back" -> {
                 event.deferEdit().queue()

@@ -14,8 +14,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +31,7 @@ public class AssetBrowser extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         VFile vf = VFile.get("./org");
@@ -67,7 +67,7 @@ public class AssetBrowser extends ConstraintCommand {
         registerSearchComponents(ch.sendMessage(builder.toString()).setAllowedMentions(new ArrayList<>()), data.size(), accumulateData(vf, true), lang).queue(res -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(loader.getMessage(), res, ch.getId(), vf, lang));
+            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(loader.getMessage(), u.getId(), ch.getId(), res, vf, lang));
         });
     }
 

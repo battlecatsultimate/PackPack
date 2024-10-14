@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +20,8 @@ public class FormSpriteMessageHolder extends SearchHolder {
 
     private final int mode;
 
-    public FormSpriteMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public FormSpriteMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, int mode, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.form = form;
         this.mode = mode;

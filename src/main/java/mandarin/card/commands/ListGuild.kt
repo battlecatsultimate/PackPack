@@ -25,7 +25,7 @@ class ListGuild : Command(CommonStatic.Lang.Locale.EN, true) {
         val jda = loader.client
 
         replyToMessageSafely(loader.channel, getContents(jda), loader.message, { a -> a.setComponents(getComponents(jda)) }) { msg ->
-            StaticStore.putHolder(m.id, GuildListHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(m.id, GuildListHolder(loader.message, m.id, loader.channel.id, msg))
         }
     }
 

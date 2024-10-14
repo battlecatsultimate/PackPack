@@ -30,12 +30,13 @@ import kotlin.math.min
 
 class SlotMachinePlaceHolderRewardHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotPlaceHolderContent,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var emojiName = ""
     private var page = 0
 
@@ -98,7 +99,7 @@ class SlotMachinePlaceHolderRewardHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineEmojiSearchModalHolder(authorMessage, channelID, message) {
+                connectTo(SlotMachineEmojiSearchModalHolder(authorMessage, userID, channelID, message) {
                     emojiName = it.lowercase()
 
                     updateEmojiStatus()
@@ -122,7 +123,7 @@ class SlotMachinePlaceHolderRewardHolder(
             "delete" -> {
                 registerPopUp(event, "Are you sure you want to delete this reward? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     slotMachine.content.remove(content)
 
                     e.deferReply().setContent("Successfully removed reward!").setEphemeral(true).queue()
@@ -133,7 +134,7 @@ class SlotMachinePlaceHolderRewardHolder(
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

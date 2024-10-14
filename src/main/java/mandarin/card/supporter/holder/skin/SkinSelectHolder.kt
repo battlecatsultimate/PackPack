@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinSelectHolder(author: Message, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class SkinSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     private val skins = CardData.skins.filter { s -> s.card == card }.toMutableList()
 
     private var page = 0
@@ -70,10 +70,10 @@ class SkinSelectHolder(author: Message, channelID: String, message: Message, pri
 
                 val index = event.values[0].toInt()
 
-                connectTo(event, SkinModifyHolder(authorMessage, channelID, message, skins[index], false))
+                connectTo(event, SkinModifyHolder(authorMessage, userID, channelID, message, skins[index], false))
             }
             "add" -> {
-                connectTo(event, SkinFileHolder(authorMessage, channelID, message, card))
+                connectTo(event, SkinFileHolder(authorMessage, userID, channelID, message, card))
             }
             "back" -> {
                 goBack(event)

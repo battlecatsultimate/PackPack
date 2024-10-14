@@ -47,7 +47,7 @@ class ModifyInventory : Command(CommonStatic.Lang.Locale.EN, true) {
                 replyToMessageSafely(ch, "Please select which thing you want to modify for inventory of ${targetMember.asMention}", loader.message, { a ->
                     a.setComponents(registerComponents())
                 }, { msg ->
-                    StaticStore.putHolder(m.id, ModifyCategoryHolder(loader.message, ch.id, msg, inventory, targetMember))
+                    StaticStore.putHolder(m.id, ModifyCategoryHolder(loader.message, m.id, ch.id, msg, inventory, targetMember))
                 })
             }
         } catch (_: Exception) {

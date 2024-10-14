@@ -34,11 +34,12 @@ import kotlin.math.min
 
 class CardCostPayHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val cards = ArrayList<Card>(inventory.cards.keys)
 
@@ -113,7 +114,7 @@ class CardCostPayHolder(
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
+                    connectTo(CardAmountSelectHolder(authorMessage, userID, channelID, message) { amount ->
                         val filteredAmount = min(min(amount, realAmount - 1).toLong(), container.cost.amount - container.pickedCards.size)
 
                         repeat(filteredAmount.toInt()) {

@@ -1,7 +1,7 @@
 package mandarin.packpack.supporter.server.data;
 
 import com.google.gson.JsonObject;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public class BoosterData {
     public enum INITIAL {
@@ -45,7 +45,7 @@ public class BoosterData {
     private String role;
     private String emoji;
 
-    public BoosterData(@NotNull String id, INITIAL type) throws IllegalStateException {
+    public BoosterData(@Nonnull String id, INITIAL type) throws IllegalStateException {
         switch (type) {
             case ROLE:
                 this.role = id;

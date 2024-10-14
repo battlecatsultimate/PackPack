@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class FormDPS extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String[] list = loader.getContent().split(" ",2);
@@ -86,7 +86,7 @@ public class FormDPS extends TimedConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showFormDPS(ch, loader.getMessage(), f, treasure, lv, config, talent, isTreasure, lang);
+                EntityHandler.showFormDPS(ch, loader.getMessage(), f, treasure, lv, config, talent, isTreasure, false, lang);
             } else if (forms.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
             } else {
@@ -118,7 +118,7 @@ public class FormDPS extends TimedConstraintCommand {
 
                     TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, msg, config, res, ch.getId(), param, lv, treasure, lang));
+                    StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, msg, u.getId(), ch.getId(), res, config, param, lv, treasure, lang));
                 });
             }
         }

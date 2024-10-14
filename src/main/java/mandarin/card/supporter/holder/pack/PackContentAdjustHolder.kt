@@ -26,12 +26,15 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 
-class PackContentAdjustHolder(author: Message, channelID: String,
+class PackContentAdjustHolder(
+    author: Message,
+    userID: String,
+    channelID: String,
     message: Message,
     private val pack: CardPack,
     private val cardChancePairList: CardChancePairList,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -62,7 +65,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardChancePairAmountHolder(authorMessage, channelID, message, cardChancePairList))
+                connectTo(CardChancePairAmountHolder(authorMessage, userID, channelID, message, cardChancePairList))
             }
             "pair" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -72,12 +75,12 @@ class PackContentAdjustHolder(author: Message, channelID: String,
 
                 val pairList = cardChancePairList.pairs[index]
 
-                connectTo(event, CardChancePairHolder(authorMessage, channelID, message, pack, cardChancePairList, pairList, false))
+                connectTo(event, CardChancePairHolder(authorMessage, userID, channelID, message, pack, cardChancePairList, pairList, false))
             }
             "add" -> {
                 val pairList = CardChancePair(0.0, CardGroupData(ArrayList(), ArrayList()))
 
-                connectTo(event, CardChancePairHolder(authorMessage, channelID, message, pack, cardChancePairList, pairList, true))
+                connectTo(event, CardChancePairHolder(authorMessage, userID, channelID, message, pack, cardChancePairList, pairList, true))
             }
             "create" -> {
                 cardChancePairList.validateChance()
@@ -99,7 +102,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
                 if (new) {
                     registerPopUp(event, "Are you sure you want to cancel creating card/chance pair list? This cannot be undone")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()
@@ -122,7 +125,7 @@ class PackContentAdjustHolder(author: Message, channelID: String,
                     "Are you sure you want to delete card/chance pair list? This cannot be undone"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     pack.cardChancePairLists.remove(cardChancePairList)
 
                     if (pack in CardData.cardPacks) {

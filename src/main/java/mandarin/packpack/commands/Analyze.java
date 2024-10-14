@@ -12,8 +12,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class Analyze extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         try {
             Message msg = loader.getMessage();
             MessageChannel ch = loader.getChannel();

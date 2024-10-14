@@ -30,7 +30,7 @@ class CatFoodRate : Command(CommonStatic.Lang.Locale.EN, true) {
                 "Maximum Cat Food : ${EmojiStore.ABILITY["CF"]?.formatted} ${CardData.maximumCatFoods}\n" +
                 "\n" +
                 "Cooldown : $timeText", loader.message, { a -> a.setComponents(getComponents()) }) { m ->
-            StaticStore.putHolder(loader.member.id, CatFoodRateConfigHolder(loader.message, loader.channel.id, m))
+            StaticStore.putHolder(loader.member.id, CatFoodRateConfigHolder(loader.message, member.id, loader.channel.id, m))
         }
     }
 

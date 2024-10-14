@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class CardPackManageHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardPackManageHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -66,7 +66,7 @@ class CardPackManageHolder(author: Message, channelID: String, message: Message)
 
                 val pack = CardData.cardPacks[index]
 
-                connectTo(event, CardPackAdjustHolder(authorMessage, channelID, message, pack, false))
+                connectTo(event, CardPackAdjustHolder(authorMessage, userID, channelID, message, pack, false))
             }
             "add" -> {
                 val input = TextInput.create("name", "Name", TextInputStyle.SHORT)
@@ -80,7 +80,7 @@ class CardPackManageHolder(author: Message, channelID: String, message: Message)
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardPackNameHolder(authorMessage, channelID, message, true, null))
+                connectTo(CardPackNameHolder(authorMessage, userID, channelID, message, true, null))
             }
             "prev" -> {
                 page--

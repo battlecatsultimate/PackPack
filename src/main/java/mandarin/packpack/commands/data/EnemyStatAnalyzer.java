@@ -18,8 +18,8 @@ import mandarin.packpack.supporter.server.holder.message.EnemyStatAnalyzerHolder
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -46,7 +46,7 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -190,7 +190,7 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
                 if(msg == null)
                     return;
 
-                new EnemyStatAnalyzerHolder(msg, loader.getMessage(), ch.getId(), container, requiredFiles, cellData, procData, abilData, traitData, eid, isSecond, magnification, finalName, lang);
+                new EnemyStatAnalyzerHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, container, requiredFiles, cellData, procData, abilData, traitData, eid, isSecond, magnification, finalName, lang);
             });
         }
     }

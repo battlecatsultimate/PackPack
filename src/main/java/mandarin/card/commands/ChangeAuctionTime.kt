@@ -66,7 +66,7 @@ class ChangeAuctionTime : Command(CommonStatic.Lang.Locale.EN, true) {
                 "From : <t:${auctionSession.endDate}:f> <t:${auctionSession.endDate}:R>\n" +
                 "To : <t:${dateTime}:f> <t:${dateTime}:R>\n" +
                 "Time ${if (dateTime - auctionSession.endDate < 0) "Decreased" else "Increased"} By : ${CardData.convertMillisecondsToText(abs((dateTime - auctionSession.endDate) * 1000L))}", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
                 auctionSession.changeEndTime(m.idLong, dateTime)
 
                 replyToMessageSafely(ch, "Successfully changed end time!", loader.message) { a -> a }

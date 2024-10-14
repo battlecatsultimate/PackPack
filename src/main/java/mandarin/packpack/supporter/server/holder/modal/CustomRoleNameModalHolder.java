@@ -5,8 +5,9 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class CustomRoleNameModalHolder extends ModalHolder {
@@ -14,8 +15,8 @@ public class CustomRoleNameModalHolder extends ModalHolder {
 
     private final Consumer<String> onSelected;
 
-    public CustomRoleNameModalHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang, Consumer<String> onSelected) {
-        super(author, channelID, message, lang);
+    public CustomRoleNameModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang, Consumer<String> onSelected) {
+        super(author, userID, channelID, message, lang);
 
         this.holder = holder;
 
@@ -23,7 +24,7 @@ public class CustomRoleNameModalHolder extends ModalHolder {
     }
 
     @Override
-    public void onEvent(@NotNull ModalInteractionEvent event) {
+    public void onEvent(@Nonnull ModalInteractionEvent event) {
         if (!event.getModalId().equals("register"))
             return;
 

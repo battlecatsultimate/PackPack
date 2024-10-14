@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,15 +50,17 @@ public class FindReward extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
+        StageInfo.StageInfoConfig configData = new StageInfo.StageInfoConfig();
         String rewardName = getRewardName(loader.getContent());
 
         int param = checkParameters(loader.getContent());
 
-        boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-        boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        configData.isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+        configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        configData.isFrame = holder == null || holder.config.useFrame;
 
         double chance = getChance(loader.getContent());
         int amount = getAmount(loader.getContent());
@@ -97,12 +99,12 @@ public class FindReward extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), holder == null || holder.config.useFrame, isExtra, isCompact, 0, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), "", treasure, configData, false, lang, result -> {
                     User u = loader.getUser();
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact, lang));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, u.getId(), ch.getId(), result, configData.isCompact, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("findReward.several.stage", lang).replace("_", validateName(rewardName)))
@@ -133,7 +135,7 @@ public class FindReward extends TimedConstraintCommand {
 
                     TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, treasure, config.useFrame, isExtra, isCompact, lang));
+                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, u.getId(), ch.getId(), res,  "", treasure, configData, lang));
                 });
 
 
@@ -167,7 +169,7 @@ public class FindReward extends TimedConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(res, msg, ch.getId(), rewards, rewardName, chance, amount, isExtra, isCompact, config.useFrame, treasure, lang));
+                StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(msg, u.getId(), ch.getId(), res, rewards, rewardName, chance, amount, configData, treasure, lang));
             });
 
             disableTimer();

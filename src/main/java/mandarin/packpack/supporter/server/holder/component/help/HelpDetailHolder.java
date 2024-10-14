@@ -16,8 +16,9 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class HelpDetailHolder extends ComponentHolder {
 
     private final int color;
 
-    public HelpDetailHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull CommonStatic.Lang.Locale lang, @NotNull String selectedCommand, int color) {
-        super(author, channelID, message, lang);
+    public HelpDetailHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, @Nonnull String selectedCommand, int color) {
+        super(author, userID, channelID, message, lang);
 
         this.selectedCommand = selectedCommand;
 
@@ -35,7 +36,7 @@ public class HelpDetailHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         if (!event.getComponentId().equals("back"))
             return;
 
@@ -56,7 +57,7 @@ public class HelpDetailHolder extends ComponentHolder {
     }
 
     @Override
-    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
+    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
         applyResult(event);
     }
 

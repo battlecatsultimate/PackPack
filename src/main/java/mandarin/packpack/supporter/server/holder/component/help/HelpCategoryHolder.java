@@ -17,8 +17,9 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,8 +27,8 @@ import java.util.Locale;
 public class HelpCategoryHolder extends ComponentHolder {
     private final int color;
 
-    public HelpCategoryHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull CommonStatic.Lang.Locale lang, int color) {
-        super(author, channelID, message, lang);
+    public HelpCategoryHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, int color) {
+        super(author, userID, channelID, message, lang);
 
         this.color = color;
 
@@ -35,7 +36,7 @@ public class HelpCategoryHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         if (!event.getComponentId().equals("category"))
             return;
 
@@ -46,7 +47,7 @@ public class HelpCategoryHolder extends ComponentHolder {
 
         Help.HelpCategory category = Help.HelpCategory.valueOf(name);
 
-        connectTo(event, new HelpCommandHolder(getAuthorMessage(), channelID, message, lang, category, color));
+        connectTo(event, new HelpCommandHolder(getAuthorMessage(), userID, channelID, message, lang, category, color));
     }
 
     @Override
@@ -63,12 +64,12 @@ public class HelpCategoryHolder extends ComponentHolder {
     }
 
     @Override
-    public void onBack(@NotNull Holder child) {
+    public void onBack(@Nonnull Holder child) {
         applyResult();
     }
 
     @Override
-    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
         applyResult(event);
     }
 

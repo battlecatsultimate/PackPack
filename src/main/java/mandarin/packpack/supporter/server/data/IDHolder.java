@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -292,7 +292,7 @@ public class IDHolder implements Cloneable {
     /**
      * Additional message that will be sent together whenever bot posts announcements
      */
-    @NotNull
+    @Nonnull
     public String announceMessage = "";
 
     /**

@@ -29,7 +29,7 @@ class ManageCardSkin : Command(CommonStatic.Lang.Locale.EN, true) {
         val cards = CardData.cards.sortedWith(CardComparator())
 
         replyToMessageSafely(loader.channel, getContents(cards), loader.message, { a -> a.setComponents(getComponents(cards)) }) { msg ->
-            StaticStore.putHolder(m.id, SkinCardSelectHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(m.id, SkinCardSelectHolder(loader.message, m.id, loader.channel.id, msg))
         }
     }
 

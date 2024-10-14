@@ -32,13 +32,14 @@ import kotlin.math.min
 
 class SlotMachineCardChancePairHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val slotMachine: SlotMachine,
     private val cardChancePairList: CardChancePairList,
     private val pair: CardChancePair,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -71,7 +72,7 @@ class SlotMachineCardChancePairHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineCardChanceHolder(authorMessage, channelID, message, slotMachine, pair))
+                connectTo(SlotMachineCardChanceHolder(authorMessage, userID, channelID, message, slotMachine, pair))
             }
             "tier" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -131,7 +132,7 @@ class SlotMachineCardChancePairHolder(
                 if (new) {
                     registerPopUp(event, "Are you sure you want to cancel creating card/chance pair? This cannot be undone")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBack(e)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -147,7 +148,7 @@ class SlotMachineCardChancePairHolder(
             "delete" -> {
                 registerPopUp(event, "Are you sure you want to delete this card/chance pair? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     cardChancePairList.pairs.remove(pair)
 
                     if (slotMachine in CardData.slotMachines) {
@@ -165,7 +166,7 @@ class SlotMachineCardChancePairHolder(
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

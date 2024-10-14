@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.reflect.KMutableProperty0
 
-class SlotManualRollInputHolder(author: Message, channelID: String, message: Message, private val input: KMutableProperty0<Long>, private val slotMachine: SlotMachine) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotManualRollInputHolder(author: Message, userID: String, channelID: String, message: Message, private val input: KMutableProperty0<Long>, private val slotMachine: SlotMachine) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "roll")
             return

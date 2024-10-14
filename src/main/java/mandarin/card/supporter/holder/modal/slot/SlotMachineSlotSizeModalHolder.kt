@@ -12,7 +12,7 @@ import kotlin.collections.forEach
 import kotlin.math.min
 import kotlin.text.toDouble
 
-class SlotMachineSlotSizeModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineSlotSizeModalHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -32,7 +32,7 @@ class Buy : Command(CommonStatic.Lang.Locale.EN, true) {
         replyToMessageSafely(ch, "Please select a list that you want to get", author, {
             a -> a.setComponents(registerComponents(possibleRoles, inventory))
         }, { msg ->
-            StaticStore.putHolder(m.id, BuyHolder(author, ch.id, msg))
+            StaticStore.putHolder(m.id, BuyHolder(author, m.id, ch.id, msg))
         })
     }
 

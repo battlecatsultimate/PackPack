@@ -20,18 +20,19 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigAnnouncementHolder extends ServerConfigHolder {
-    public ConfigAnnouncementHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, holder, backup, lang);
+    public ConfigAnnouncementHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, holder, backup, lang);
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "channel" -> {
                 if (!(event instanceof EntitySelectInteractionEvent e)) {
@@ -68,7 +69,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new AnnouncementAdditionalMessageHolder(getAuthorMessage(), channelID, message, holder, lang));
+                connectTo(new AnnouncementAdditionalMessageHolder(getAuthorMessage(), userID, channelID, message, holder, lang));
             }
             case "back" -> goBack(event);
             case "confirm" -> {
@@ -84,7 +85,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
-                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), userID, channelID, message, e -> {
                     e.deferEdit()
                             .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
@@ -106,12 +107,12 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
+    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
         applyResult(event);
     }
 
     @Override
-    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
         applyResult(event);
     }
 

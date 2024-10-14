@@ -7,6 +7,7 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.commands.bc.FindStage;
+import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -14,7 +15,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -23,9 +23,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class FindStageMessageHolder extends SearchHolder {
@@ -33,26 +33,19 @@ public class FindStageMessageHolder extends SearchHolder {
     private final List<Stage> actualStage = new ArrayList<>();
     private final List<FindStage.MONTHLY> monthly;
 
-    private final boolean isFrame;
-    private final boolean isExtra;
-    private final boolean isCompact;
-    private final int star;
     private final TreasureHolder treasure;
+    private final StageInfo.StageInfoConfig configData;
 
     private FindStage.MONTHLY selected = FindStage.MONTHLY.ALL;
 
-    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nonnull Message author, @Nonnull Message msg, String channelID, int star, TreasureHolder treasure, boolean isFrame, boolean isExtra, boolean isCompact, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.stage = stage;
         this.monthly = monthly;
 
-        this.star = star;
         this.treasure = treasure;
-
-        this.isFrame = isFrame;
-        this.isExtra = isExtra;
-        this.isCompact = isCompact;
+        this.configData = configData;
 
         actualStage.addAll(stage);
     }
@@ -116,11 +109,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getChannel();
-
         int id = parseDataToInt(event);
-
-        message.delete().queue();
 
         String mid = getAuthorMessage().getId();
 
@@ -135,8 +124,8 @@ public class FindStageMessageHolder extends SearchHolder {
         }
 
         try {
-            EntityHandler.showStageEmb(actualStage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, msg ->
-                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID, isCompact, lang))
+            EntityHandler.showStageEmb(actualStage.get(id), event, getAuthorMessage(), "", treasure, configData, true, lang, msg ->
+                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), userID, channelID, msg, configData.isCompact, lang))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FindStageMessageHolder::onSelected - Failed to upload stage embed");
@@ -149,7 +138,7 @@ public class FindStageMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         if(event.getComponentId().equals("category")) {
             String name = ((StringSelectInteractionEvent) event).getValues().getFirst();
 

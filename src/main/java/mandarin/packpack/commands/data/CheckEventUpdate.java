@@ -11,7 +11,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class CheckEventUpdate extends ConstraintCommand {
     public CheckEventUpdate(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
@@ -19,7 +20,7 @@ public class CheckEventUpdate extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         ch.sendMessage(LangID.getStringByID("checkEvent.checking", lang)).queue( msg -> {

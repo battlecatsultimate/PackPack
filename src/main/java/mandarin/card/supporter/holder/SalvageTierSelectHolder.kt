@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class SalvageTierSelectHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SalvageTierSelectHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     init {
@@ -50,7 +50,7 @@ class SalvageTierSelectHolder(author: Message, channelID: String, message: Messa
                 else -> CardData.SalvageMode.T4
             }
 
-            connectTo(event, CardSalvageHolder(authorMessage, channelID, message, mode))
+            connectTo(event, CardSalvageHolder(authorMessage, userID, channelID, message, mode))
         } else if (event.componentId == "cancel") {
             event.deferEdit()
                 .setContent("Canceled salvage")

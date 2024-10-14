@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.function.Consumer
 
-class BuyHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class BuyHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
@@ -65,9 +65,9 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                 val product = selectedRole.getProduct()
 
                 if (product.requiredFilter != product.possibleFilters.size) {
-                    connectTo(event, RequirementSelectHolder(authorMessage, channelID, message, product, inventory, selectedRole))
+                    connectTo(event, RequirementSelectHolder(authorMessage, userID, channelID, message, product, inventory, selectedRole))
                 } else {
-                    connectTo(event, FilterProcessHolder(authorMessage, channelID, message, product, product.possibleFilters.toList(), inventory, selectedRole))
+                    connectTo(event, FilterProcessHolder(authorMessage, userID, channelID, message, product, product.possibleFilters.toList(), inventory, selectedRole))
                 }
             }
             "rest" -> {
@@ -135,9 +135,9 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                 }
 
                 if (product.requiredFilter != product.possibleFilters.size) {
-                    connectTo(event, RequirementSelectHolder(authorMessage, channelID, message, product, inventory, reward))
+                    connectTo(event, RequirementSelectHolder(authorMessage, userID, channelID, message, product, inventory, reward))
                 } else {
-                    connectTo(event, FilterProcessHolder(authorMessage, channelID, message, product, product.possibleFilters.toList(), inventory, reward))
+                    connectTo(event, FilterProcessHolder(authorMessage, userID, channelID, message, product, product.possibleFilters.toList(), inventory, reward))
                 }
             }
             "cancel" -> {
@@ -270,7 +270,7 @@ class BuyHolder(author: Message, channelID: String, message: Message) : Componen
                 } else {
                     registerPopUp(event, "Are you sure you want to purchase this role? It costs $cost ${EmojiStore.ABILITY["CF"]?.formatted}")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         inventory.vanityRoles.add(role)
 
                         inventory.catFoods -= cost

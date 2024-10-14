@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -27,8 +27,8 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     private final List<VFile> files = new ArrayList<>();
 
-    public AssetBrowserHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @Nonnull VFile vf, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public AssetBrowserHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull VFile vf, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.vf = vf;
 

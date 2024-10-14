@@ -4,36 +4,32 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
+import mandarin.packpack.commands.bc.EnemyStat;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
+import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyStatMessageHolder extends SearchHolder {
     private final ArrayList<Enemy> enemy;
 
-    private final boolean isFrame;
-    private final boolean isExtra;
-    private final boolean isCompact;
-    private final int[] magnification;
     private final TreasureHolder treasure;
+    private final EnemyStat.EnemyStatConfig configData;
 
-    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nonnull Message author, @Nonnull Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nullable Message author, String userID, String channelID, @Nonnull Message message, TreasureHolder treasure, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.enemy = enemy;
 
-        this.magnification = magnification;
-        this.isFrame = isFrame;
-        this.isExtra = isExtra;
-        this.isCompact = isCompact;
         this.treasure = treasure;
+        this.configData = configData;
     }
 
     @Override
@@ -59,14 +55,14 @@ public class EnemyStatMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getChannel();
-
         int id = parseDataToInt(event);
 
-        message.delete().queue();
-
         try {
-            EntityHandler.showEnemyEmb(enemy.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, magnification, treasure, lang);
+            EntityHandler.showEnemyEmb(enemy.get(id), event, hasAuthorMessage() ? getAuthorMessage() : null, treasure, configData, true, lang, msg -> {
+                end(true);
+
+                StaticStore.putHolder(userID, new EnemyButtonHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, enemy.get(id), treasure, configData, lang));
+            });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/EnemyStatMessageHolder::onSelected - Failed to upload enemy embed");
         }

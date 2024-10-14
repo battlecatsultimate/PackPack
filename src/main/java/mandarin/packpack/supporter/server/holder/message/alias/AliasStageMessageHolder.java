@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +33,8 @@ public class AliasStageMessageHolder extends MessageHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public AliasStageMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nullable String aliasName) {
-        super(author, channelID, msg, lang);
+    public AliasStageMessageHolder(ArrayList<Stage> stage, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nullable String aliasName) {
+        super(author, userID, channelID, msg, lang);
 
         this.stage = stage;
         this.channelID = channelID;

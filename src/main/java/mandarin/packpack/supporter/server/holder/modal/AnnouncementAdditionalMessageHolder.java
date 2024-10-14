@@ -4,19 +4,21 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class AnnouncementAdditionalMessageHolder extends ModalHolder {
     private final IDHolder holder;
 
-    public AnnouncementAdditionalMessageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public AnnouncementAdditionalMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.holder = holder;
     }
 
     @Override
-    public void onEvent(@NotNull ModalInteractionEvent event) {
+    public void onEvent(@Nonnull ModalInteractionEvent event) {
         if (!event.getModalId().equals("additional")) {
             return;
         }

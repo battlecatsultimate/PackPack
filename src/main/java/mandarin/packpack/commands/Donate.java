@@ -8,8 +8,9 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
 
 public class Donate extends ConstraintCommand {
     public Donate(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
@@ -17,7 +18,7 @@ public class Donate extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader)  {
+    public void doSomething(@Nonnull CommandLoader loader)  {
         MessageChannel ch = loader.getChannel();
 
         EmbedBuilder builder = new EmbedBuilder();

@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class AuctionCardSelectHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory?, private val onSelected: (Card, Int) -> Unit) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionCardSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory?, private val onSelected: (Card, Int) -> Unit) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     private val cards = ArrayList<Card>()
@@ -85,7 +85,7 @@ class AuctionCardSelectHolder(author: Message, channelID: String, message: Messa
 
                 event.replyModal(modal).queue()
 
-                connectTo(AuctionCardAmountHolder(authorMessage, channelID, message) { e, amount ->
+                connectTo(AuctionCardAmountHolder(authorMessage, userID, channelID, message) { e, amount ->
                     val actualAmount = if (inventory == null)
                         amount
                     else

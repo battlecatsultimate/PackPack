@@ -10,9 +10,9 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +25,8 @@ public class FormDPSHolder extends SearchHolder {
     private final boolean treasure;
     private final TreasureHolder t;
 
-    public FormDPSHolder(ArrayList<Form> form, Message author, ConfigHolder config, Message msg, String channelID, int param, Level lv, TreasureHolder t, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public FormDPSHolder(ArrayList<Form> form, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, int param, Level lv, TreasureHolder t, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.form = form;
         this.config = config;
@@ -60,16 +60,12 @@ public class FormDPSHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getChannel();
-
         int id = parseDataToInt(event);
-
-        message.delete().queue();
 
         try {
             Form f = form.get(id);
 
-            EntityHandler.showFormDPS(ch, getAuthorMessage(), f, t, lv, config, talent, treasure, lang);
+            EntityHandler.showFormDPS(event, getAuthorMessage(), f, t, lv, config, talent, treasure, true, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormDPSHolder::onSelected - Failed to perform showing unit embed");
         }

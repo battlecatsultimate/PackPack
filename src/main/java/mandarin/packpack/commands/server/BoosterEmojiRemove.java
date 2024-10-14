@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public class BoosterEmojiRemove extends ConstraintCommand {
     public BoosterEmojiRemove(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
@@ -20,7 +20,7 @@ public class BoosterEmojiRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         Guild g = loader.getGuild();
         MessageChannel ch = loader.getChannel();
 

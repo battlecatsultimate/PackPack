@@ -19,8 +19,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
     private int page = 0;
 
-    public ConfigCommandHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, holder, backup, lang);
+    public ConfigCommandHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, holder, backup, lang);
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "level" -> {
                 TextInput input = TextInput.create("level", LangID.getStringByID("config.defaultLevel.set.inputTagName", holder.config.lang), TextInputStyle.SHORT)
@@ -50,7 +51,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), message, channelID, holder.config, this::applyResult, lang));
+                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), userID, channelID, message, holder.config, this::applyResult, lang));
             }
             case "unit" -> {
                 holder.config.useFrame = !holder.config.useFrame;
@@ -111,7 +112,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
-                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), userID, channelID, message, e -> {
                     e.deferEdit()
                             .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
@@ -133,7 +134,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
+    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
         applyResult(event);
     }
 

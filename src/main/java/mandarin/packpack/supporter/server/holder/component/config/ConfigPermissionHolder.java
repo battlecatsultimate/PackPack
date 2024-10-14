@@ -13,22 +13,23 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigPermissionHolder extends ServerConfigHolder {
-    public ConfigPermissionHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, holder, backup, lang);
+    public ConfigPermissionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, holder, backup, lang);
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "channel" -> connectTo(event, new ConfigChannelRoleSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "scamDetector.action.ban" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "manage" -> connectTo(event, new ConfigPermissionUserSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "channel" -> connectTo(event, new ConfigChannelRoleSelectHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "scamDetector.action.ban" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "manage" -> connectTo(event, new ConfigPermissionUserSelectHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
@@ -43,7 +44,7 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
-                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), userID, channelID, message, e -> {
                     e.deferEdit()
                             .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
@@ -65,12 +66,12 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
+    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
         applyResult(event);
     }
 
     @Override
-    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
         applyResult(event);
     }
 

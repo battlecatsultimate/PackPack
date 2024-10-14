@@ -26,7 +26,7 @@ class ResetCooldown : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, "Select pack to reset cooldown of it", loader.message, { a -> a.addComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.id, ResetCooldownHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(m.id, ResetCooldownHolder(loader.message, m.id, loader.channel.id, msg))
         }
     }
 

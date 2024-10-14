@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.math.min
 
-class CardFavoriteAmountHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val card: Card, private val favorite: Boolean) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardFavoriteAmountHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val card: Card, private val favorite: Boolean) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class GuildListHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class GuildListHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     private val jda = author.jda

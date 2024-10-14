@@ -26,7 +26,7 @@ class ManagePack : Command(CommonStatic.Lang.Locale.EN, true) {
             return
 
         replyToMessageSafely(loader.channel, getContent(), loader.message, { a -> a.addComponents(getComponents())}) { msg ->
-            StaticStore.putHolder(m.id, CardPackManageHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(m.id, CardPackManageHolder(loader.message, m.id, loader.channel.id, msg))
         }
     }
 

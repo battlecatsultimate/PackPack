@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
-class InventoryWipeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class InventoryWipeHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(FIVE_MIN)
     }
@@ -31,7 +31,7 @@ class InventoryWipeHolder(author: Message, channelID: String, message: Message) 
 
                 registerPopUp(event, "Are you sure you want to wipe user <@$user>'s inventory? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     CardData.inventories.remove(user)
 
                     CardBot.saveCardData()

@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +23,12 @@ public class ServerConfig extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         if (holder == null)
             return;
 
         replyToMessageSafely(loader.getChannel(), LangID.getStringByID("serverConfig.category.title", lang), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
-                StaticStore.putHolder(loader.getMember().getId(), new ConfigCategoryHolder(loader.getMessage(), loader.getChannel().getId(), msg, holder, lang))
+                StaticStore.putHolder(loader.getMember().getId(), new ConfigCategoryHolder(loader.getMessage(), loader.getMember().getId(), loader.getChannel().getId(), msg, holder, lang))
         );
     }
 

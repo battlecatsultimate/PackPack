@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -48,7 +48,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -223,7 +223,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 if(msg == null)
                     return;
 
-                new StatAnalyzerMessageHolder(msg, author, uid, -1, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, finalName, lang, requiredFiles);
+                new StatAnalyzerMessageHolder(author, loader.getUser().getId(), ch.getId(), msg, uid, -1, isSecond, cellData, procData, abilData, traitData, container, level, finalName, lang, requiredFiles);
             });
         }
     }

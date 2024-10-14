@@ -63,7 +63,7 @@ class CreateAuction : Command(CommonStatic.Lang.Locale.EN, true) {
                 "End Time : __Need to be decided__\n" +
                 "Initial Price : __Need to be decided__",
             loader.message, { a -> a.setComponents(getComponents(anonymous)) }) { msg ->
-            StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, ch.id, msg, targetMember?.idLong ?: -1L, placeChannel, anonymous))
+            StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, m.id, ch.id, msg, targetMember?.idLong ?: -1L, placeChannel, anonymous))
         }
     }
 

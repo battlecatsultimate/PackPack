@@ -16,9 +16,9 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -29,13 +29,13 @@ public class SwitchEventGrabber extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         replyToMessageSafely(ch, parseMessage(), loader.getMessage(), this::registerComponent, m -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), ch.getId(), m, lang));
+            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), u.getId(), ch.getId(), m, lang));
         });
 
     }

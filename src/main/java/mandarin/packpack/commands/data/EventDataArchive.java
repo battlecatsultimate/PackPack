@@ -12,8 +12,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.*;
 
@@ -28,7 +28,7 @@ public class EventDataArchive extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         CommonStatic.Lang.Locale locale = getLocale(loader.getContent());
@@ -95,7 +95,7 @@ public class EventDataArchive extends ConstraintCommand {
 
             Message msg = loader.getMessage();
 
-            StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(res, msg, ch.getId(), files, fileName, lang));
+            StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(msg, u.getId(), ch.getId(), res, files, fileName, lang));
         });
     }
 

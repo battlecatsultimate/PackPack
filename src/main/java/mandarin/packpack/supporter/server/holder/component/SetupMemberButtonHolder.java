@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,8 @@ public class SetupMemberButtonHolder extends ComponentHolder {
 
     private String roleID;
 
-    public SetupMemberButtonHolder(Message msg, Message author, String channelID, IDHolder holder, String modID, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public SetupMemberButtonHolder(Message author, String userID, String channelID, Message message, IDHolder holder, String modID, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.holder = holder;
         this.modID = modID;
@@ -34,7 +34,7 @@ public class SetupMemberButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = message.getChannel();
         
         Guild g = message.getGuild();

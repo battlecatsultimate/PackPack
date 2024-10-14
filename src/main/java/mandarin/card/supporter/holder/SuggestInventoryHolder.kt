@@ -32,13 +32,14 @@ import kotlin.math.min
 
 class SuggestInventoryHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val targetMember: Member,
     private val suggestionMessage: Message,
     private val session: TradingSession,
     private val inventory: Inventory
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val index = session.member.indexOf(author.author.idLong)
     private val suggestion = session.suggestion[index]
     private val backup = suggestion.copy()
@@ -226,7 +227,7 @@ class SuggestInventoryHolder(
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
+                    connectTo(CardAmountSelectHolder(authorMessage, userID, channelID, message) { amount ->
                         val filteredAmount = min(amount, realAmount)
 
                         backup.cards[card] = (backup.cards[card] ?: 0) + filteredAmount
@@ -277,7 +278,7 @@ class SuggestInventoryHolder(
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CatFoodHolder(authorMessage, channelID, message, suggestionMessage, backup))
+                StaticStore.putHolder(authorMessage.author.id, CatFoodHolder(authorMessage, userID, channelID, message, suggestionMessage, backup))
             }
             "dupe" -> {
                 cards.filter { c -> (inventory.cards[c] ?: 0) - (backup.cards[c] ?: 0) > 1 }.forEach { c ->

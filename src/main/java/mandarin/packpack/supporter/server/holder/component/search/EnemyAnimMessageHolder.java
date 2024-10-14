@@ -36,8 +36,8 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
     private final String command;
 
-    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
-        super(author, msg, channelID, lang);
+    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, String userID, String channelID, Message message, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
+        super(author, userID, channelID, message, lang);
 
         this.enemy = enemy;
 

@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 
-class SkinPurchasePayHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     private val containers = Array(skin.cost.cardsCosts.size) {
@@ -71,7 +71,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
 
                     registerPopUp(event, content)
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         skin.purchase(purchaser, inventory, containers)
 
                         if (inventory.skins.filter { s -> s.card == skin.card }.size == 1) {
@@ -117,7 +117,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
                 val index = event.values[0].toInt()
                 val container = containers[index]
 
-                connectTo(event, CardCostPayHolder(authorMessage, channelID, message, container, containers))
+                connectTo(event, CardCostPayHolder(authorMessage, userID, channelID, message, container, containers))
             }
             "back" -> {
                 if (containers.any { container -> container.pickedCards.isNotEmpty() }) {
@@ -125,7 +125,7 @@ class SkinPurchasePayHolder(author: Message, channelID: String, message: Message
 
                     registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()

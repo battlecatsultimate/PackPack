@@ -22,8 +22,8 @@ import mandarin.packpack.supporter.server.holder.message.alias.AliasStageMessage
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -34,7 +34,7 @@ public class AliasAdd extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
@@ -134,7 +134,7 @@ public class AliasAdd extends ConstraintCommand {
                     createMessageWithNoPings(ch, sb.toString(), res -> {
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.ADD, lang, getAliasName(loader.getContent())));
+                        StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, msg, u.getId(), ch.getId(), res, AliasHolder.MODE.ADD, lang, getAliasName(loader.getContent())));
                     });
                 }
             }
@@ -224,7 +224,7 @@ public class AliasAdd extends ConstraintCommand {
                     createMessageWithNoPings(ch, sb.toString(), res -> {
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.ADD, lang, getAliasName(loader.getContent())));
+                        StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, msg, u.getId(), ch.getId(), res, AliasHolder.MODE.ADD, lang, getAliasName(loader.getContent())));
                     });
                 }
             }
@@ -375,7 +375,7 @@ public class AliasAdd extends ConstraintCommand {
                     createMessageWithNoPings(ch, sb.toString(), res -> {
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(finalStages, msg, res, ch.getId(), AliasHolder.MODE.ADD, lang, getAliasName(loader.getContent())));
+                        StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(finalStages, msg, u.getId(), ch.getId(), res, AliasHolder.MODE.ADD, lang, getAliasName(loader.getContent())));
                     });
                 }
             }

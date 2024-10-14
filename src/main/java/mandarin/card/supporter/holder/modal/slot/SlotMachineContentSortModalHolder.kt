@@ -6,7 +6,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class SlotMachineContentSortModalHolder(author: Message, channelID: String, message: Message, private val onSelect: (Int, ModalInteractionEvent) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineContentSortModalHolder(author: Message, userID: String, channelID: String, message: Message, private val onSelect: (Int, ModalInteractionEvent) -> Unit) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "sort")
             return

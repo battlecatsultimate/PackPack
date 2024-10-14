@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class CardSalvageHolder(author: Message, channelID: String, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardSalvageHolder(author: Message, userID: String, channelID: String, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val tier = when(salvageMode) {
         CardData.SalvageMode.T1 -> CardData.Tier.COMMON
@@ -115,7 +115,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
                             "\n" +
                             "**Salvaging means you will lose selected cards from your inventory and gain platinum shards as return. You can't undo the process once you confirm it**")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         salvage.invoke(e)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -181,7 +181,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message) { amount ->
+                    connectTo(CardAmountSelectHolder(authorMessage, userID, channelID, message) { amount ->
                         val filteredAmount = min(amount, realAmount - 1)
 
                         repeat(filteredAmount) {
@@ -234,7 +234,7 @@ class CardSalvageHolder(author: Message, channelID: String, message: Message, pr
 
                 registerPopUp(event, "Are you sure you want to add all cards?")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     adder.invoke(e)
                 }, CommonStatic.Lang.Locale.EN))
             }

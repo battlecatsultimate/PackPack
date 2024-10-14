@@ -48,7 +48,7 @@ class RollManual : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(ch, "Please select the pack that you want to roll", loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.id, ManualRollSelectHolder(loader.message, ch.id, msg, m, users))
+            StaticStore.putHolder(m.id, ManualRollSelectHolder(loader.message, m.id, ch.id, msg, m, users))
         }
     }
 

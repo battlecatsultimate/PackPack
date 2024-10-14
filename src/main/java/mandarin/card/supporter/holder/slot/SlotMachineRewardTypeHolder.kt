@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.util.concurrent.TimeUnit
 
-class SlotMachineRewardTypeHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineRewardTypeHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -38,13 +38,13 @@ class SlotMachineRewardTypeHolder(author: Message, channelID: String, message: M
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "card" -> {
-                connectTo(event, SlotMachineCardRewardHolder(authorMessage, channelID, message, slotMachine, SlotCardContent("", 0L), true))
+                connectTo(event, SlotMachineCardRewardHolder(authorMessage, userID, channelID, message, slotMachine, SlotCardContent("", 0L), true))
             }
             "currency" -> {
-                connectTo(event, SlotMachineCurrencyRewardHolder(authorMessage, channelID, message, slotMachine, SlotCurrencyContent("", 0L), true))
+                connectTo(event, SlotMachineCurrencyRewardHolder(authorMessage, userID, channelID, message, slotMachine, SlotCurrencyContent("", 0L), true))
             }
             "placeHolder" -> {
-                connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, channelID, message, slotMachine, SlotPlaceHolderContent("", 0L), true))
+                connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, userID, channelID, message, slotMachine, SlotPlaceHolderContent("", 0L), true))
             }
             "back" -> {
                 goBack(event)
@@ -52,7 +52,7 @@ class SlotMachineRewardTypeHolder(author: Message, channelID: String, message: M
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

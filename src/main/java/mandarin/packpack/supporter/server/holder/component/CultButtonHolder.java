@@ -5,17 +5,18 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class CultButtonHolder extends ComponentHolder {
-    public CultButtonHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public CultButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         registerAutoExpiration(10000);
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "yes" -> {
                 StaticStore.cultist.add(userID);

@@ -32,7 +32,7 @@ class Craft : Command(CommonStatic.Lang.Locale.EN, true) {
                 "You currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}", loader.message, { a ->
             a.setComponents(assignComponents())
         }) { message ->
-            StaticStore.putHolder(m.id, CardCraftModeHolder(loader.message, ch.id, message))
+            StaticStore.putHolder(m.id, CardCraftModeHolder(loader.message, m.id, ch.id, message))
         }
     }
 

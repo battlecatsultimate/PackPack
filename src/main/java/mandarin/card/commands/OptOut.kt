@@ -27,9 +27,9 @@ class OptOut : Command(CommonStatic.Lang.Locale.EN, false) {
             loader.message,
             { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }
         ) { msg ->
-            StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, loader.user.id, loader.channel.id, msg, CommonStatic.Lang.Locale.EN) {
                 replyToMessageSafely(loader.channel, "This is secondary confirmation message\n# Are you sure you want to opt out?", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { message ->
-                    StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, message, loader.channel.id, CommonStatic.Lang.Locale.EN) {
+                    StaticStore.putHolder(loader.user.id, ConfirmButtonHolder(loader.message, loader.user.id, loader.channel.id, message, CommonStatic.Lang.Locale.EN) {
                         val id = loader.user.idLong
 
                         CardData.inventories.remove(id)

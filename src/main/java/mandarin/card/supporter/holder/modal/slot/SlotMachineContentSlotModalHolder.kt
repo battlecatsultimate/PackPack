@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.text.toDouble
 
-class SlotMachineContentSlotModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val slotContent: SlotContent) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineContentSlotModalHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val slotContent: SlotContent) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -30,13 +30,15 @@ import kotlin.math.ceil
 import kotlin.math.min
 
 class CardChancePairHolder(
-    author: Message, channelID: String,
+    author: Message,
+    userID: String,
+    channelID: String,
     message: Message,
     private val pack: CardPack,
     private val cardChancePairList: CardChancePairList,
     private val pair: CardChancePair,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -69,7 +71,7 @@ class CardChancePairHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardChanceHolder(authorMessage, channelID, message, pack, pair))
+                connectTo(CardChanceHolder(authorMessage, userID, channelID, message, pack, pair))
             }
             "tier" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -132,7 +134,7 @@ class CardChancePairHolder(
                         "Are you sure you want to cancel creating card/chance pair? This cannot be undone"
                     )
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()
@@ -153,7 +155,7 @@ class CardChancePairHolder(
                     "Are you sure you want to delete this card/chance pair? This cannot be undone"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     cardChancePairList.pairs.remove(pair)
 
                     if (pack in CardData.cardPacks) {

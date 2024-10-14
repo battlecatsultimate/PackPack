@@ -8,10 +8,10 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +20,8 @@ public class TalentMessageHolder extends SearchHolder {
 
     private final boolean isFrame;
 
-    public TalentMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Form> form, boolean isFrame, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public TalentMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, List<Form> form, boolean isFrame, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.form = form;
         this.isFrame = isFrame;
@@ -50,17 +50,20 @@ public class TalentMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getChannel();
-
         int id = parseDataToInt(event);
-
-        message.delete().queue();
 
         try {
             Form f = form.get(id);
 
             if(f.unit.forms.length < 3) {
-                createMessageWithNoPings(ch, LangID.getStringByID("talentInfo.failed.noTrueForm", lang));
+                event.deferEdit()
+                        .setContent(LangID.getStringByID("talentInfo.failed.noTrueForm", lang))
+                        .setComponents()
+                        .setEmbeds()
+                        .setFiles()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
 
                 return;
             }
@@ -68,12 +71,19 @@ public class TalentMessageHolder extends SearchHolder {
             Form trueForm = f.unit.forms[2];
 
             if(trueForm.du == null || trueForm.du.getPCoin() == null) {
-                createMessageWithNoPings(ch, LangID.getStringByID("talentInfo.failed.noTalent", lang));
+                event.deferEdit()
+                        .setContent(LangID.getStringByID("talentInfo.failed.noTalent", lang))
+                        .setComponents()
+                        .setEmbeds()
+                        .setFiles()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
 
                 return;
             }
 
-            EntityHandler.showTalentEmbed(ch, getAuthorMessage(), trueForm, isFrame, lang);
+            EntityHandler.showTalentEmbed(event, getAuthorMessage(), trueForm, isFrame, true, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/TalentMessageHolder::onSelected - Failed to perform showing talent embed");
         }

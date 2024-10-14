@@ -33,12 +33,14 @@ import kotlin.math.ceil
 import kotlin.math.min
 
 class SlotMachineCurrencyRewardHolder(
-    author: Message, channelID: String,
+    author: Message,
+    userID: String,
+    channelID: String,
     message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCurrencyContent,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     private var emojiName = ""
@@ -101,7 +103,7 @@ class SlotMachineCurrencyRewardHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineEmojiSearchModalHolder(authorMessage, channelID, message) {
+                connectTo(SlotMachineEmojiSearchModalHolder(authorMessage, userID, channelID, message) {
                     emojiName = it.lowercase()
 
                     updateEmojiStatus()
@@ -114,7 +116,7 @@ class SlotMachineCurrencyRewardHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineContentSlotModalHolder(authorMessage, channelID, message, slotMachine, content))
+                connectTo(SlotMachineContentSlotModalHolder(authorMessage, userID, channelID, message, slotMachine, content))
             }
             "mode" -> {
                 content.mode = SlotCurrencyContent.Mode.entries[(content.mode.ordinal + 1) % SlotCurrencyContent.Mode.entries.size]
@@ -140,7 +142,7 @@ class SlotMachineCurrencyRewardHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineAmountHolder(authorMessage, channelID, message) { v ->
+                connectTo(SlotMachineAmountHolder(authorMessage, userID, channelID, message) { v ->
                     content.amount = v
 
                     applyResult()
@@ -160,7 +162,7 @@ class SlotMachineCurrencyRewardHolder(
                 if (new) {
                     registerPopUp(event, "Are you sure you want to cancel creation of this reward? This cannot be undone")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, SlotMachineContentHolder::class.java)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -172,7 +174,7 @@ class SlotMachineCurrencyRewardHolder(
             "delete" -> {
                 registerPopUp(event, "Are you sure you want to delete this reward? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     slotMachine.content.remove(content)
 
                     e.deferReply().setContent("Successfully removed reward!").setEphemeral(true).queue()
@@ -183,7 +185,7 @@ class SlotMachineCurrencyRewardHolder(
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

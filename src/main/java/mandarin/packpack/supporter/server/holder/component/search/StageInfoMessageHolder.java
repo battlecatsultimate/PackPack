@@ -6,14 +6,16 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,22 +24,20 @@ import java.util.Map;
 public class StageInfoMessageHolder extends SearchHolder {
     private final List<Stage> stage;
 
-    private final boolean isFrame;
-    private final boolean isExtra;
-    private final boolean isCompact;
-    private final int star;
-    private final TreasureHolder treasure;
+    private final String additionalContent;
 
-    public StageInfoMessageHolder(List<Stage> stage, Message author, Message msg, String channelID, int star, TreasureHolder treasure, boolean isFrame, boolean isExtra, boolean isCompact, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    private final TreasureHolder treasure;
+    private final StageInfo.StageInfoConfig configData;
+
+    public StageInfoMessageHolder(List<Stage> stage, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String additionalContent, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.stage = stage;
 
-        this.star = star;
+        this.additionalContent = additionalContent;
+
         this.treasure = treasure;
-        this.isFrame = isFrame;
-        this.isExtra = isExtra;
-        this.isCompact = isCompact;
+        this.configData = configData;
     }
 
     @Override
@@ -99,11 +99,7 @@ public class StageInfoMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getChannel();
-
         int id = parseDataToInt(event);
-
-        message.delete().queue();
 
         if(StaticStore.timeLimit.containsKey(userID)) {
             StaticStore.timeLimit.get(userID).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
@@ -116,8 +112,8 @@ public class StageInfoMessageHolder extends SearchHolder {
         }
 
         try {
-            EntityHandler.showStageEmb(stage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, msg ->
-                StaticStore.putHolder(userID, new StageInfoButtonHolder(stage.get(id), getAuthorMessage(), msg, channelID, isCompact, lang))
+            EntityHandler.showStageEmb(stage.get(id), event, hasAuthorMessage() ? getAuthorMessage() : null, additionalContent, treasure, configData, true, lang, msg ->
+                StaticStore.putHolder(userID, new StageInfoButtonHolder(stage.get(id), hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, msg, configData.isCompact, lang))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/StageInfoMessageHolder::onSelected - Failed to upload stage embed");
@@ -127,5 +123,10 @@ public class StageInfoMessageHolder extends SearchHolder {
     @Override
     public int getDataSize() {
         return stage.size();
+    }
+
+    @Override
+    protected String getPage() {
+        return additionalContent + super.getPage();
     }
 }

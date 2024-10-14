@@ -17,9 +17,9 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class Solve extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
@@ -202,7 +202,7 @@ public class Solve extends TimedConstraintCommand {
 
         replyToMessageSafely(ch, summary + sb, loader.getMessage(), a -> a.setComponents(getComponents(solutions)), msg -> {
             if(solutions.size() > 5) {
-                StaticStore.putHolder(u.getId(), new SolutionHolder(msg, loader.getMessage(), ch.getId(), summary, targetRanges, solutions, lang));
+                StaticStore.putHolder(u.getId(), new SolutionHolder(loader.getMessage(), u.getId(), ch.getId(), msg, summary, targetRanges, solutions, lang));
             }
         });
     }

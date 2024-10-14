@@ -7,14 +7,14 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class ModalHolder extends Holder {
-    public ModalHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public ModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
     }
 
     @Override
@@ -67,7 +67,7 @@ public abstract class ModalHolder extends Holder {
     }
 
     @Override
-    public final void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
+    public final void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
 
     }
 

@@ -17,8 +17,8 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +33,7 @@ public class Config extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         CommonStatic.Lang.Locale language = config.lang;
@@ -114,7 +114,7 @@ public class Config extends ConstraintCommand {
             }
 
 
-            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), l));
+            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, u.getId(), ch.getId(), msg, config, holder, l));
         });
     }
 }

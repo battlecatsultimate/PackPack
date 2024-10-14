@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +24,14 @@ public class SubscribeEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         if(holder == null)
             return;
 
         MessageChannel ch = loader.getChannel();
 
         replyToMessageSafely(ch, getContents(), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
-                StaticStore.putHolder(loader.getUser().getId(), new ConfigEventVersionSelectHolder(loader.getMessage(), ch.getId(), msg, holder, lang))
+                StaticStore.putHolder(loader.getUser().getId(), new ConfigEventVersionSelectHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, holder, lang))
         );
     }
 

@@ -38,11 +38,12 @@ import kotlin.math.min
 
 class SlotMachineCardRewardHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCardContent,
-    private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var emojiName = ""
 
     private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.filter { c -> c !== content && c is SlotPlaceHolderContent }.any { c -> c.emoji?.name == e.name && c.emoji?.id == e.id } }.toMutableList()
@@ -106,7 +107,7 @@ class SlotMachineCardRewardHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineEmojiSearchModalHolder(authorMessage, channelID, message) {
+                connectTo(SlotMachineEmojiSearchModalHolder(authorMessage, userID, channelID, message) {
                     emojiName = it.lowercase()
 
                     updateEmojiStatus()
@@ -118,7 +119,7 @@ class SlotMachineCardRewardHolder(
 
                 val cardChancePairList = content.cardChancePairLists[event.values[0].toInt()]
 
-                connectTo(event, SlotMachineCardChancePairListHolder(authorMessage, channelID, message, slotMachine, content, cardChancePairList, false))
+                connectTo(event, SlotMachineCardChancePairListHolder(authorMessage, userID, channelID, message, slotMachine, content, cardChancePairList, false))
             }
             "slot" -> {
                 val input = TextInput.create("size", "Size", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Put Slot Size Here").build()
@@ -127,13 +128,13 @@ class SlotMachineCardRewardHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineContentSlotModalHolder(authorMessage, channelID, message, slotMachine, content))
+                connectTo(SlotMachineContentSlotModalHolder(authorMessage, userID, channelID, message, slotMachine, content))
             }
             "add" -> {
-                connectTo(event, SlotMachineCardChancePairListHolder(authorMessage, channelID, message, slotMachine, content, CardChancePairList(0), true))
+                connectTo(event, SlotMachineCardChancePairListHolder(authorMessage, userID, channelID, message, slotMachine, content, CardChancePairList(0), true))
             }
             "pack" -> {
-                connectTo(event, SlotMachinePackImportHolder(authorMessage, channelID, message, slotMachine, content))
+                connectTo(event, SlotMachinePackImportHolder(authorMessage, userID, channelID, message, slotMachine, content))
             }
             "name" -> {
                 val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide Name Here").setRequiredRange(1, 50).build()
@@ -142,7 +143,7 @@ class SlotMachineCardRewardHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineCardRewardNameModalHolder(authorMessage, channelID, message, content))
+                connectTo(SlotMachineCardRewardNameModalHolder(authorMessage, userID, channelID, message, content))
             }
             "create" -> {
                 slotMachine.content.add(content)
@@ -159,7 +160,7 @@ class SlotMachineCardRewardHolder(
                 if (new) {
                     registerPopUp(event, "Are you sure you want to cancel creation of this reward? This cannot be undone")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, SlotMachineContentHolder::class.java)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -171,7 +172,7 @@ class SlotMachineCardRewardHolder(
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

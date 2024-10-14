@@ -24,7 +24,7 @@ class Salvage : Command(CommonStatic.Lang.Locale.EN, true) {
         replyToMessageSafely(ch, "Select tier of the cards that will be salvaged", loader.message, { a ->
             a.setComponents(assignComponents())
         }, { message ->
-            StaticStore.putHolder(m.id, SalvageTierSelectHolder(loader.message, ch.id, message))
+            StaticStore.putHolder(m.id, SalvageTierSelectHolder(loader.message, m.id, ch.id, message))
         })
     }
 

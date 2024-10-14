@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class BannerCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class BannerCostHolder(author: Message, userID: String, channelID: String, message: Message, private val pack: CardPack, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
 
     private var page = 0
 
@@ -76,7 +76,7 @@ class BannerCostHolder(author: Message, channelID: String, message: Message, pri
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardCostAmountHolder(authorMessage, channelID, message, cardCost))
+                connectTo(CardCostAmountHolder(authorMessage, userID, channelID, message, cardCost))
             }
             "create" -> {
                 pack.cost.cardsCosts.add(cardCost)
@@ -99,7 +99,7 @@ class BannerCostHolder(author: Message, channelID: String, message: Message, pri
                         "Are you sure you want to cancel creating card cost and go back? This can't be undone"
                     )
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, CardPackCostHolder::class.java)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -118,7 +118,7 @@ class BannerCostHolder(author: Message, channelID: String, message: Message, pri
                     "Are you sure you want to delete card cost? This can't be undone"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     pack.cost.cardsCosts.remove(cardCost)
 
                     if (pack in CardData.cardPacks) {

@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ public class LocaleSettingHolder extends ComponentHolder {
     @Nullable
     private final IDHolder holder;
 
-    public LocaleSettingHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull ConfigHolder config, @Nullable IDHolder holder, boolean forServer, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public LocaleSettingHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull ConfigHolder config, @Nullable IDHolder holder, boolean forServer, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.config = config;
         this.forServer = forServer;
@@ -39,7 +39,7 @@ public class LocaleSettingHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "locale" -> {
                 if (!(event instanceof StringSelectInteractionEvent e))

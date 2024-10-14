@@ -43,7 +43,7 @@ class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
         }
 
         replyToMessageSafely(loader.channel, getContents(cards), loader.message, { a -> a.setComponents(getComponents(cards)) }) { msg ->
-            StaticStore.putHolder(loader.user.id, SkinPurchaseCardHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(loader.user.id, SkinPurchaseCardHolder(loader.message, loader.user.id, loader.channel.id, msg))
         }
     }
 

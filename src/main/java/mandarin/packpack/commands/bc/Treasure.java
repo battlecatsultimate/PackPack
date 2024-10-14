@@ -14,8 +14,9 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
 
 public class Treasure extends ConstraintCommand {
     public Treasure(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
@@ -23,14 +24,14 @@ public class Treasure extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
         TreasureHolder treasure = StaticStore.treasure.getOrDefault(u.getId(), new TreasureHolder());
 
         replyToMessageSafely(ch, generateText(treasure), loader.getMessage(), this::attachUIComponents, result ->
-                StaticStore.putHolder(u.getId(), new TreasureButtonHolder(loader.getMessage(), result, ch.getId(), treasure, lang))
+                StaticStore.putHolder(u.getId(), new TreasureButtonHolder(loader.getMessage(), u.getId(), ch.getId(), result, treasure, lang))
         );
     }
 

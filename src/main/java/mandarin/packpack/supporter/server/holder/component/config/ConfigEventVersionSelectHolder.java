@@ -13,28 +13,29 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
-    public ConfigEventVersionSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, holder, backup, lang);
+    public ConfigEventVersionSelectHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, holder, backup, lang);
     }
 
-    public ConfigEventVersionSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, holder, lang);
+    public ConfigEventVersionSelectHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, holder, lang);
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "en" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.EN));
-            case "jp" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.JP));
-            case "tw" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.ZH));
-            case "kr" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.KR));
+            case "en" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.EN));
+            case "jp" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.JP));
+            case "tw" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.ZH));
+            case "kr" -> connectTo(event, new ConfigEventManagerHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang, CommonStatic.Lang.Locale.KR));
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
@@ -49,7 +50,7 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("serverConfig.cancelConfirm", lang));
 
-                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), userID, channelID, message, e -> {
                     e.deferEdit()
                             .setContent(LangID.getStringByID("serverConfig.canceled", lang))
                             .setComponents()
@@ -71,12 +72,12 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) {
+    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
         applyResult(event);
     }
 
     @Override
-    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
         applyResult(event);
     }
 

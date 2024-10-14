@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ResetCooldownHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ResetCooldownHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -53,7 +53,7 @@ class ResetCooldownHolder(author: Message, channelID: String, message: Message) 
 
                 registerPopUp(event, "Are you sure you want to reset cooldown of this pack [`${pack.packName}`] **for all users?\n\n__This cannot be undone__**")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     for (cooldown in CardData.cooldown.values) {
                         cooldown[pack.uuid] = 0
                     }

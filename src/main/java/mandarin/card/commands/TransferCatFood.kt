@@ -71,7 +71,7 @@ class TransferCatFood : Command(CommonStatic.Lang.Locale.EN, true) {
 
                         a.setActionRow(components)
                     }) { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, lang) {
+                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, loader.channel.id, msg, lang) {
                     val thatInventory = Inventory.getInventory(mem.idLong)
 
                     thatInventory.catFoods += amount

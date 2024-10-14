@@ -80,7 +80,7 @@ class CancelBid : Command(CommonStatic.Lang.Locale.EN, false) {
         }
 
         replyToMessageSafely(ch, "Are you sure you want to cancel the bid?", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, u.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
                 auctionSession.cancelBid(u.idLong)
 
                 replyToMessageSafely(ch, "Successfully canceled the bid!", loader.message) { a -> a }

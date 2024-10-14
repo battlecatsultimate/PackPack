@@ -168,7 +168,7 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
 
                     return@Suggest a.setComponents(rows)
                 }, { msg ->
-                    StaticStore.putHolder(m.id, SuggestInventoryHolder(author, ch.id, msg, targetMember, suggestionMessage, session, inventory))
+                    StaticStore.putHolder(m.id, SuggestInventoryHolder(author, m.id, ch.id, msg, targetMember, suggestionMessage, session, inventory))
                 })
             })
         }

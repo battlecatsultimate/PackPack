@@ -102,7 +102,7 @@ class InjectInventory : Command(CommonStatic.Lang.Locale.EN, false) {
         }
 
         replyToMessageSafely(ch, "Are you sure you want to inject this inventory to <@$id> ($id)?", msg, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { message ->
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(msg, message, ch.id, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(u.id, ConfirmButtonHolder(msg, u.id, ch.id, message, CommonStatic.Lang.Locale.EN) {
                 val inventory = Inventory.readInventory(id, jsonData.asJsonObject)
 
                 CardData.inventories[id] = inventory

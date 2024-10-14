@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineListHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineListHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -57,7 +57,7 @@ class SlotMachineListHolder(author: Message, channelID: String, message: Message
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineNameModalHolder(authorMessage, channelID, message))
+                connectTo(SlotMachineNameModalHolder(authorMessage, userID, channelID, message))
             }
             "slot" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -65,7 +65,7 @@ class SlotMachineListHolder(author: Message, channelID: String, message: Message
 
                 val slotMachine = CardData.slotMachines[event.values[0].toInt()]
 
-                connectTo(event, SlotMachineManageHolder(authorMessage, channelID, message, slotMachine, false))
+                connectTo(event, SlotMachineManageHolder(authorMessage, userID, channelID, message, slotMachine, false))
             }
             "prev" -> {
                 page--

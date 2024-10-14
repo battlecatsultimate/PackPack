@@ -152,7 +152,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, true) {
 
             return@replyToMessageSafely a.setComponents(rows)
         }, { msg ->
-            StaticStore.putHolder(m.id, CardInventoryHolder(author, ch.id, msg, inventory, member))
+            StaticStore.putHolder(m.id, CardInventoryHolder(author, m.id, ch.id, msg, inventory, member))
         })
     }
 

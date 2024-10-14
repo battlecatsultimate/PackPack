@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardFavoriteHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class CardFavoriteHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     private val skins = inventory.skins.filter { s -> s.card == card }
 
     private var page = 0
@@ -123,7 +123,7 @@ class CardFavoriteHolder(author: Message, channelID: String, message: Message, p
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardFavoriteAmountHolder(authorMessage, channelID, message, inventory, card, true))
+                    connectTo(CardFavoriteAmountHolder(authorMessage, userID, channelID, message, inventory, card, true))
                 } else {
                     inventory.favoriteCards(card, 1)
 
@@ -152,7 +152,7 @@ class CardFavoriteHolder(author: Message, channelID: String, message: Message, p
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardFavoriteAmountHolder(authorMessage, channelID, message, inventory, card, false))
+                    connectTo(CardFavoriteAmountHolder(authorMessage, userID, channelID, message, inventory, card, false))
                 } else {
                     inventory.unfavoriteCards(card, 1)
 

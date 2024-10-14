@@ -176,7 +176,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
+                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, u.getId(), ch.getId(), res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
                 });
 
                 disableTimer();

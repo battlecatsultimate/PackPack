@@ -53,7 +53,7 @@ class SlotMachineManual : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(possibleSlotMachines)) }) { msg ->
-            StaticStore.putHolder(loader.user.id, ManualSlotSelectHolder(loader.message, loader.channel.id, msg, loader.member, users))
+            StaticStore.putHolder(loader.user.id, ManualSlotSelectHolder(loader.message, loader.user.id, loader.channel.id, msg, loader.member, users))
         }
     }
 

@@ -22,8 +22,8 @@ public class ComboMessageHolder extends SearchHolder {
     private final ArrayList<Combo> combo;
     private final Message fMsg;
 
-    public ComboMessageHolder(ArrayList<Combo> combo, Message author, Message msg, Message fMsg, String channelID, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public ComboMessageHolder(ArrayList<Combo> combo, Message author, String userID, String channelID, Message message, Message fMsg, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.combo = combo;
         this.fMsg = fMsg;

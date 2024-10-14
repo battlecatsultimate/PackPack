@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SkinBannerCostHolder(author: Message, channelID: String, message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinBannerCostHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
 
     private var page = 0
 
@@ -77,7 +77,7 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardCostAmountHolder(authorMessage, channelID, message, cardCost))
+                connectTo(CardCostAmountHolder(authorMessage, userID, channelID, message, cardCost))
             }
             "create" -> {
                 skin.cost.cardsCosts.add(cardCost)
@@ -100,7 +100,7 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
                         "Are you sure you want to cancel creating card cost and go back? This can't be undone"
                     )
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, CardPackCostHolder::class.java)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -119,7 +119,7 @@ class SkinBannerCostHolder(author: Message, channelID: String, message: Message,
                     "Are you sure you want to delete card cost? This can't be undone"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     skin.cost.cardsCosts.remove(cardCost)
 
                     if (skin in CardData.skins) {

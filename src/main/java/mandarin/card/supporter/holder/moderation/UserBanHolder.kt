@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class UserBanHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class UserBanHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {

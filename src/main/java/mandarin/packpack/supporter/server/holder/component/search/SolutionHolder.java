@@ -10,8 +10,9 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,8 @@ public class SolutionHolder extends SearchHolder {
     private final List<BigDecimal[]> targetRanges;
     private final List<NumericalResult> solutions;
 
-    public SolutionHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, String summary, List<BigDecimal[]> targetRanges, List<NumericalResult> solutions, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public SolutionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, String summary, List<BigDecimal[]> targetRanges, List<NumericalResult> solutions, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, msg, lang);
 
         this.summary = summary;
         this.targetRanges = targetRanges;

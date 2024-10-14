@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineContentHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineContentHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -45,16 +45,16 @@ class SlotMachineContentHolder(author: Message, channelID: String, message: Mess
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "create" -> {
-                connectTo(event, SlotMachineRewardTypeHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(event, SlotMachineRewardTypeHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "reward" -> {
                 if (event !is StringSelectInteractionEvent)
                     return
 
                 when(val content = slotMachine.content[event.values[0].toInt()]) {
-                    is SlotCurrencyContent -> connectTo(event, SlotMachineCurrencyRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
-                    is SlotCardContent -> connectTo(event, SlotMachineCardRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
-                    is SlotPlaceHolderContent -> connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
+                    is SlotCurrencyContent -> connectTo(event, SlotMachineCurrencyRewardHolder(authorMessage, userID, channelID, message, slotMachine, content, false))
+                    is SlotCardContent -> connectTo(event, SlotMachineCardRewardHolder(authorMessage, userID, channelID, message, slotMachine, content, false))
+                    is SlotPlaceHolderContent -> connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, userID, channelID, message, slotMachine, content, false))
                 }
             }
             "prev" -> {
@@ -68,7 +68,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, message: Mess
                 applyResult(event)
             }
             "sort" -> {
-                connectTo(event, SlotMachineContentSortHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(event, SlotMachineContentSortHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "back" -> {
                 goBack(event)
@@ -76,7 +76,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, message: Mess
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

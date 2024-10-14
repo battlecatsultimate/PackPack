@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -172,7 +172,7 @@ public class LangID {
         }
     }
 
-    @NotNull
+    @Nonnull
     private static String getStringFromPath(JsonObject obj, String path, CommonStatic.Lang.Locale locale, boolean suppress) {
         JsonObject currentPath = obj;
 

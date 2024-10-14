@@ -3,7 +3,10 @@ package mandarin.packpack.supporter.bc;
 import com.google.gson.JsonObject;
 import common.CommonStatic;
 import common.battle.BasisSet;
-import common.battle.data.*;
+import common.battle.data.MaskAtk;
+import common.battle.data.MaskEnemy;
+import common.battle.data.MaskUnit;
+import common.battle.data.PCoin;
 import common.pack.PackData;
 import common.pack.UserProfile;
 import common.system.fake.FakeImage;
@@ -22,6 +25,9 @@ import common.util.stage.StageMap;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
 import mandarin.packpack.commands.Command;
+import mandarin.packpack.commands.bc.EnemyStat;
+import mandarin.packpack.commands.bc.FormStat;
+import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.cell.*;
@@ -31,16 +37,14 @@ import mandarin.packpack.supporter.lwjgl.GLGraphics;
 import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
-import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -97,11 +101,9 @@ public class EntityHandler {
         }
     }
 
-    public static void performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder holder, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
-        ReplyCallbackAction action = event.deferReply();
-
-        int level = lv.getLv();
-        int levelp = lv.getPlusLv();
+    public static void showUnitEmb(Form f, Object sender, @Nullable Message reference, ConfigHolder config, boolean trueFormPossible, TreasureHolder holder, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang, boolean addEmoji, boolean editMode, Consumer<Message> onSuccess) throws Exception {
+        int level = configData.lv.getLv();
+        int levelp = configData.lv.getPlusLv();
 
         if(level <= 0) {
             if(f.unit.rarity == 0)
@@ -125,259 +127,8 @@ public class EntityHandler {
                 levelp = 0;
         }
 
-        lv.setLevel(level);
-        lv.setPlusLevel(levelp);
-
-        String l;
-
-        if(levelp == 0)
-            l = String.valueOf(level);
-        else
-            l = level + " + " + levelp;
-
-        File img = generateIcon(f);
-        File cf;
-
-        if(extra)
-            cf = generateCatfruit(f, lang);
-        else
-            cf = null;
-
-        EmbedBuilder spec = new EmbedBuilder();
-
-        int c;
-
-        if(f.fid == 0)
-            c = StaticStore.rainbow[4];
-        else if(f.fid == 1)
-            c = StaticStore.rainbow[3];
-        else
-            c = StaticStore.rainbow[2];
-
-        int[] t;
-
-        if(talent && f.du.getPCoin() != null) {
-            t = f.du.getPCoin().max.clone();
-        } else
-            t = null;
-
-        if(t != null) {
-            t = handleTalent(f, lv, t);
-
-            lv.setTalents(t);
-        }
-
-        spec.setTitle(DataToString.getTitle(f, lang));
-
-        String desc = "";
-
-        if(talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
-            desc += LangID.getStringByID("data.unit.talent.info", lang) + "\n";
-        }
-
-        if(holder.differentFromGlobal()) {
-            desc += LangID.getStringByID("data.unit.treasure", lang);
-        }
-
-        if(!desc.isBlank()) {
-            spec.setDescription(desc);
-        }
-
-        spec.setColor(c);
-        spec.setThumbnail("attachment://icon.png");
-        spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(f.uid.id, f.fid), true);
-        spec.addField(LangID.getStringByID("data.unit.level", lang), l, true);
-
-        String hpNormal = DataToString.getHP(f.du, f.unit.lv, talent, lv, false, holder);
-        String hpWithTreasure;
-
-        if(treasure) {
-            hpWithTreasure = DataToString.getHP(f.du, f.unit.lv, talent, lv, true, holder);
-        } else {
-            hpWithTreasure = "";
-        }
-
-        if(hpWithTreasure.isBlank() || hpNormal.equals(hpWithTreasure)) {
-            spec.addField(LangID.getStringByID("data.hp", lang), hpNormal, true);
-        } else {
-            spec.addField(LangID.getStringByID("data.hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
-        }
-
-        spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(f.du, talent, lv), true);
-        spec.addField(LangID.getStringByID("data.unit.cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
-        spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
-        spec.addField(LangID.getStringByID("data.unit.cost", lang), DataToString.getCost(f.du, talent, lv), true);
-        spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-        spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
-        spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(f.du, isFrame), true);
-        spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(f.du, isFrame), true);
-        spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
-        spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(f.du, lang), true);
-
-        String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, talent, lv, false, holder);
-        String dpsWithTreasure;
-
-        if(treasure) {
-            dpsWithTreasure = DataToString.getDPS(f.du, f.unit.lv, talent, lv, true, holder);
-        } else {
-            dpsWithTreasure = "";
-        }
-
-        if(dpsWithTreasure.isBlank() || dpsNormal.equals(dpsWithTreasure)) {
-            spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal, true);
-        } else {
-            spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
-        }
-
-        spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(f.du, lang), true);
-        spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
-        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
-
-        MaskUnit du;
-
-        if(f.du.getPCoin() != null)
-            if(talent && t != null)
-                du = f.du.getPCoin().improve(t);
-            else
-                du = f.du;
-        else
-            du = f.du;
-
-        List<String> abis = Interpret.getAbi(du, true, lang, treasure ? du.getTraits() : null, holder);
-        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
-
-        StringBuilder sb = new StringBuilder();
-
-        for(int i = 0; i < abis.size(); i++) {
-            if(i == abis.size() - 1)
-                sb.append("- ").append(abis.get(i));
-            else
-                sb.append("- ").append(abis.get(i)).append("\n");
-        }
-
-        String res = sb.toString();
-
-        if(res.isBlank())
-            res = LangID.getStringByID("data.none", lang);
-        else if(res.length() > 1024) {
-            abis = Interpret.getAbi(du, false, lang, treasure ? du.getTraits() : null, holder);
-            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
-
-            sb = new StringBuilder();
-
-            for(int i = 0; i < abis.size(); i++) {
-                if(i == abis.size() - 1)
-                    sb.append("- ").append(abis.get(i));
-                else
-                    sb.append("- ").append(abis.get(i)).append("\n");
-            }
-
-            res = sb.toString();
-        }
-
-        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
-
-        if(extra) {
-            String explanation = DataToString.getDescription(f, lang);
-
-            if(explanation != null)
-                spec.addField(LangID.getStringByID("data.unit.description", lang), explanation, false);
-
-            String catfruit = DataToString.getCatFruitEvolve(f, lang);
-
-            if(catfruit != null)
-                spec.addField(LangID.getStringByID("data.unit.evolve", lang), catfruit, false);
-
-            spec.setImage("attachment://cf.png");
-        }
-
-        if(t != null && talentExists(t))
-            spec.setFooter(DataToString.getTalent(f.du, lv, lang), null);
-
-        action = action.addEmbeds(spec.build());
-
-        if(img != null)
-            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
-
-        if(cf != null)
-            action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
-
-        action.queue(hook -> {
-            if (hook == null)
-                return;
-
-            hook.retrieveOriginal().queue(msg -> {
-                MessageChannel ch = msg.getChannel();
-
-                Guild g;
-
-                if(ch instanceof GuildChannel) {
-                    g = msg.getGuild();
-                } else {
-                    g = null;
-                }
-
-                if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
-                    if(canFirstForm(f)) {
-                        msg.addReaction(EmojiStore.TWO_PREVIOUS).queue();
-                    }
-
-                    if(canPreviousForm(f)) {
-                        msg.addReaction(EmojiStore.PREVIOUS).queue();
-                    }
-
-                    if(canNextForm(f)) {
-                        msg.addReaction(EmojiStore.NEXT).queue();
-                    }
-
-                    if(canFinalForm(f)) {
-                        msg.addReaction(EmojiStore.TWO_NEXT).queue();
-                    }
-                }
-
-                StaticStore.executorHandler.postDelayed(5000, () -> {
-                    if(img != null && img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                    }
-
-                    if(cf != null && cf.exists() && !cf.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
-                    }
-                });
-
-                onSuccess.accept(msg);
-            });
-        });
-    }
-
-    public static void showUnitEmb(Form f, MessageChannel ch, @Nullable Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, CommonStatic.Lang.Locale lang, boolean addEmoji, boolean compact, Consumer<Message> onSuccess) throws Exception {
-        int level = lv.getLv();
-        int levelp = lv.getPlusLv();
-
-        if(level <= 0) {
-            if(f.unit.rarity == 0)
-                level = 110;
-            else {
-                if(config == null)
-                    level = 30;
-                else
-                    level = config.defLevel;
-            }
-        }
-
-        if(level > f.unit.max) {
-            levelp = level - f.unit.max;
-            level = f.unit.max;
-
-            if(levelp > f.unit.maxp)
-                levelp = f.unit.maxp;
-
-            if(levelp < 0)
-                levelp = 0;
-        }
-
-        lv.setLevel(level);
-        lv.setPlusLevel(levelp);
+        configData.lv.setLevel(level);
+        configData.lv.setPlusLevel(levelp);
 
         String l;
 
@@ -390,7 +141,7 @@ public class EntityHandler {
 
         File cf;
 
-        if(extra)
+        if(configData.extra)
             cf = generateCatfruit(f, lang);
         else
             cf = null;
@@ -410,24 +161,24 @@ public class EntityHandler {
 
         int[] t;
 
-        if(talent && f.du.getPCoin() != null) {
+        if(configData.talent && f.du.getPCoin() != null) {
             t = f.du.getPCoin().max.clone();
         } else
             t = null;
 
         if(t != null) {
-            t = handleTalent(f, lv, t);
+            t = handleTalent(f, configData.lv, t);
 
-            lv.setTalents(t);
+            configData.lv.setTalents(t);
         }
 
-        if(talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
+        if(configData.talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
             desc += LangID.getStringByID("data.unit.talent.info", lang) + "\n";
-        } else if(talent && f.du.getPCoin() == null) {
+        } else if(configData.talent && f.du.getPCoin() == null) {
             desc += LangID.getStringByID("data.unit.talent.noTalent", lang) + "\n";
         }
 
-        if(isTrueForm && !trueFormPossible) {
+        if(configData.isTrueForm && !trueFormPossible) {
             desc += LangID.getStringByID("data.unit.noTrueForm", lang) + "\n";
         }
 
@@ -442,26 +193,26 @@ public class EntityHandler {
         spec.setColor(c);
         spec.setThumbnail("attachment://icon.png");
 
-        if(compact) {
+        if(configData.compact) {
             spec.setTitle(DataToString.getCompactTitle(f, lang));
 
             spec.addField(LangID.getStringByID("data.unit.level", lang), l, false);
-            spec.addField(LangID.getStringByID("data.compact.healthKb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, lv, treasure, holder), false);
-            spec.addField(LangID.getStringByID("data.compact.costCooldownSpeed", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, lv, holder), true);
+            spec.addField(LangID.getStringByID("data.compact.healthKb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, configData.talent, configData.lv, configData.treasure, holder), false);
+            spec.addField(LangID.getStringByID("data.compact.costCooldownSpeed", lang), DataToString.getCostCooldownSpeed(f.du, configData.isFrame, configData.talent, configData.lv, holder), true);
             spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(f.du, talent, lv, isFrame), false);
-            spec.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, lv, treasure, holder), false);
+            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(f.du, configData.talent, configData.lv, configData.isFrame), false);
+            spec.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, configData.talent, f.unit.lv, configData.lv, configData.treasure, holder), false);
         } else {
             spec.setTitle(DataToString.getTitle(f, lang));
 
             spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(f.uid.id, f.fid), true);
             spec.addField(LangID.getStringByID("data.unit.level", lang), l, true);
 
-            String hpNormal = DataToString.getHP(f.du, f.unit.lv, talent, lv, false, holder);
+            String hpNormal = DataToString.getHP(f.du, f.unit.lv, configData.talent, configData.lv, false, holder);
             String hpWithTreasure;
 
-            if(treasure) {
-                hpWithTreasure = DataToString.getHP(f.du, f.unit.lv, talent, lv, true, holder);
+            if(configData.treasure) {
+                hpWithTreasure = DataToString.getHP(f.du, f.unit.lv, configData.talent, configData.lv, true, holder);
             } else {
                 hpWithTreasure = "";
             }
@@ -472,22 +223,22 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data.hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
             }
 
-            spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(f.du, talent, lv), true);
-            spec.addField(LangID.getStringByID("data.unit.cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
-            spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
-            spec.addField(LangID.getStringByID("data.unit.cost", lang), DataToString.getCost(f.du, talent, lv), true);
+            spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(f.du, configData.talent, configData.lv), true);
+            spec.addField(LangID.getStringByID("data.unit.cooldown", lang), DataToString.getCD(f.du,configData.isFrame, configData.talent, configData.lv, holder), true);
+            spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(f.du, configData.talent, configData.lv), true);
+            spec.addField(LangID.getStringByID("data.unit.cost", lang), DataToString.getCost(f.du, configData.talent, configData.lv), true);
             spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
-            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(f.du, isFrame), true);
-            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(f.du, isFrame), true);
-            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
+            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(f.du, configData.talent, configData.isFrame, configData.lv), true);
+            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(f.du, configData.isFrame), true);
+            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(f.du, configData.isFrame), true);
+            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(f.du, configData.talent, configData.lv, configData.isFrame), true);
             spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(f.du, lang), true);
 
-            String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, talent, lv, false, holder);
+            String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, configData.talent, configData.lv, false, holder);
             String dpsWithTreasure;
 
-            if(treasure) {
-                dpsWithTreasure = DataToString.getDPS(f.du, f.unit.lv, talent, lv, true, holder);
+            if(configData.treasure) {
+                dpsWithTreasure = DataToString.getDPS(f.du, f.unit.lv, configData.talent, configData.lv, true, holder);
             } else {
                 dpsWithTreasure = "";
             }
@@ -499,25 +250,25 @@ public class EntityHandler {
             }
 
             spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
+            spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(f.du, f.unit.lv, configData.talent, configData.lv, configData.treasure, holder), true);
         }
 
-        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
+        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(f.du, configData.talent, configData.lv, true, lang), true);
 
         MaskUnit du;
 
         if(f.du.getPCoin() != null)
-            if(talent && t != null)
+            if(configData.talent && t != null)
                 du = f.du.getPCoin().improve(t);
             else
                 du = f.du;
         else
             du = f.du;
 
-        List<String> abis = Interpret.getAbi(du, true, lang, treasure ? du.getTraits() : null, holder);
-        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
+        List<String> abis = Interpret.getAbi(du, true, lang, configData.treasure ? du.getTraits() : null, holder);
+        abis.addAll(Interpret.getProc(du, !configData.isFrame, true, lang, 1.0, 1.0, configData.treasure, du.getTraits(), holder::getAbilityMultiplier));
 
-        if(compact) {
+        if(configData.compact) {
             abis = mergeImmune(abis, lang);
         }
 
@@ -535,10 +286,10 @@ public class EntityHandler {
         if(res.isBlank())
             res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
-            abis = Interpret.getAbi(du, false, lang, treasure ? du.getTraits() : null, holder);
-            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
+            abis = Interpret.getAbi(du, false, lang, configData.treasure ? du.getTraits() : null, holder);
+            abis.addAll(Interpret.getProc(du, !configData.isFrame, false, lang, 1.0, 1.0, configData.treasure, du.getTraits(), holder::getAbilityMultiplier));
 
-            if(compact) {
+            if(configData.compact) {
                 abis = mergeImmune(abis, lang);
             }
 
@@ -556,7 +307,7 @@ public class EntityHandler {
 
         spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
-        if(extra) {
+        if(configData.extra) {
             String explanation = DataToString.getDescription(f, lang);
 
             if(explanation != null)
@@ -571,89 +322,132 @@ public class EntityHandler {
         }
 
         if(t != null && talentExists(t))
-            spec.setFooter(DataToString.getTalent(f.du, lv, lang));
+            spec.setFooter(DataToString.getTalent(f.du, configData.lv, lang));
 
-        Command.replyToMessageSafely(ch, "", reference, a -> {
-            MessageCreateAction action = a.setEmbeds(spec.build());
+        List<FileUpload> files = new ArrayList<>();
 
-            if(img != null)
-                action = action.addFiles(FileUpload.fromData(img, "icon.png"));
+        if(img != null)
+            files.add(FileUpload.fromData(img, "icon.png"));
 
-            if(cf != null)
-                action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
+        if(cf != null)
+            files.add(FileUpload.fromData(cf, "cf.png"));
 
-            ArrayList<ActionComponent> forms = new ArrayList<>();
-            ArrayList<ActionComponent> misc = new ArrayList<>();
+        ArrayList<ActionComponent> forms = new ArrayList<>();
+        ArrayList<ActionComponent> misc = new ArrayList<>();
 
-            if(addEmoji) {
-                if (f.fid - 3 >= 0) {
-                    forms.add(Button.secondary("first", LangID.getStringByID("formStat.button.firstForm", lang)).withEmoji(EmojiStore.THREE_PREVIOUS));
-                }
-
-                if (f.fid - 2 >= 0) {
-                    forms.add(Button.secondary("twoPre", LangID.getStringByID("formStat.button.twoPreviousForm", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
-                }
-
-                if (f.fid - 1 >= 0) {
-                    forms.add(Button.secondary("pre", LangID.getStringByID("formStat.button.previousForm", lang)).withEmoji(EmojiStore.PREVIOUS));
-                }
-
-                if (f.fid + 1 < f.unit.forms.length) {
-                    forms.add(Button.secondary("next", LangID.getStringByID("formStat.button.nextForm", lang)).withEmoji(EmojiStore.NEXT));
-                }
-
-                if (f.fid + 2 < f.unit.forms.length) {
-                    forms.add(Button.secondary("twoNext", LangID.getStringByID("formStat.button.twoNextForm", lang)).withEmoji(EmojiStore.TWO_NEXT));
-                }
-
-                if (f.fid + 3 < f.unit.forms.length) {
-                    forms.add(Button.secondary("final", LangID.getStringByID("formStat.button.finalForm", lang)).withEmoji(EmojiStore.THREE_NEXT));
-                }
-
-                if(talent && f.du.getPCoin() != null) {
-                    misc.add(Button.secondary("talent", LangID.getStringByID("formStat.button.talentInfo", lang)).withEmoji(EmojiStore.NP));
-                }
-
-                misc.add(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
+        if(addEmoji) {
+            if (f.fid - 3 >= 0) {
+                forms.add(Button.secondary("first", LangID.getStringByID("formStat.button.firstForm", lang)).withEmoji(EmojiStore.THREE_PREVIOUS));
             }
 
-            if(StaticStore.availableUDP.contains(f.unit.id.id)) {
-                misc.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(EmojiStore.UDP));
+            if (f.fid - 2 >= 0) {
+                forms.add(Button.secondary("twoPre", LangID.getStringByID("formStat.button.twoPreviousForm", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
             }
 
-            ArrayList<LayoutComponent> components = new ArrayList<>();
-
-            if (!forms.isEmpty()) {
-                components.add(ActionRow.of(forms));
+            if (f.fid - 1 >= 0) {
+                forms.add(Button.secondary("pre", LangID.getStringByID("formStat.button.previousForm", lang)).withEmoji(EmojiStore.PREVIOUS));
             }
 
-            if (!misc.isEmpty()) {
-                components.add(ActionRow.of(misc));
+            if (f.fid + 1 < f.unit.forms.length) {
+                forms.add(Button.secondary("next", LangID.getStringByID("formStat.button.nextForm", lang)).withEmoji(EmojiStore.NEXT));
             }
 
-            if (!components.isEmpty()) {
-                action.addComponents(components);
+            if (f.fid + 2 < f.unit.forms.length) {
+                forms.add(Button.secondary("twoNext", LangID.getStringByID("formStat.button.twoNextForm", lang)).withEmoji(EmojiStore.TWO_NEXT));
             }
 
-            return action;
-        }, msg -> {
-            StaticStore.executorHandler.postDelayed(5000, () -> {
-                if(img != null && img.exists() && !img.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                }
+            if (f.fid + 3 < f.unit.forms.length) {
+                forms.add(Button.secondary("final", LangID.getStringByID("formStat.button.finalForm", lang)).withEmoji(EmojiStore.THREE_NEXT));
+            }
 
-                if(cf != null && cf.exists() && !cf.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
-                }
-            });
+            if(configData.talent && f.du.getPCoin() != null) {
+                misc.add(Button.secondary("talent", LangID.getStringByID("formStat.button.talentInfo", lang)).withEmoji(EmojiStore.NP));
+            }
+
+            misc.add(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
+        }
+
+        if(StaticStore.availableUDP.contains(f.unit.id.id)) {
+            misc.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(EmojiStore.UDP));
+        }
+
+        ArrayList<LayoutComponent> components = new ArrayList<>();
+
+        if (!forms.isEmpty()) {
+            components.add(ActionRow.of(forms));
+        }
+
+        if (!misc.isEmpty()) {
+            components.add(ActionRow.of(misc));
+        }
+
+        Consumer<Message> finisher = msg -> {
+            if(img != null && img.exists() && !img.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+            }
+
+            if(cf != null && cf.exists() && !cf.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
+            }
 
             f.anim.unload();
 
             onSuccess.accept(msg);
-        });
+        };
+
+        if (editMode) {
+            if (sender instanceof Message msg) {
+                msg.editMessage("")
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .setFiles(files)
+                        .queue(finisher);
+            } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                event.deferEdit()
+                        .setContent("")
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .setFiles(files)
+                        .queue(hook -> hook.retrieveOriginal().queue(finisher));
+            }
+        } else {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, "", reference, a -> {
+                    MessageCreateAction action = a.setEmbeds(spec.build());
+
+                    if (!files.isEmpty()) {
+                        action.setFiles(files);
+                    }
+
+                    if (!components.isEmpty()) {
+                        action.addComponents(components);
+                    }
+
+                    return action;
+                }, finisher);
+            } else if (sender instanceof GenericCommandInteractionEvent event) {
+                Command.replyToMessageSafely(event, "", a -> {
+                    ReplyCallbackAction action = a.setEmbeds(spec.build());
+
+                    if (!files.isEmpty()) {
+                        action.setFiles(files);
+                    }
+
+                    if (!components.isEmpty()) {
+                        action.addComponents(components);
+                    }
+
+                    return action;
+                }, finisher);
+            }
+        }
     }
 
-    public static void showTalentEmbed(MessageChannel ch, Message reference, Form unit, boolean isFrame, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showTalentEmbed(Object sender, Message reference, Form unit, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
         if(unit.du == null || unit.du.getPCoin() == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
@@ -703,14 +497,45 @@ public class EntityHandler {
 
         spec.setFooter(DataToString.accumulateNpCost(unit.du.getPCoin(), lang));
 
-        Command.replyToMessageSafely(ch, "", reference, a -> {
-            MessageCreateAction action = a.setEmbeds(spec.build());
+        List<FileUpload> files = new ArrayList<>();
 
-            if(img != null)
-                action = action.addFiles(FileUpload.fromData(img, "icon.png"));
+        if(img != null)
+            files.add(FileUpload.fromData(img, "icon.png"));
 
-            return action;
-        });
+        Consumer<Message> finisher = msg -> {
+            if (img != null && img.exists() && !img.delete()) {
+                StaticStore.logger.uploadLog("W/EntityHandler::showTalentEmbed - Failed to deleted file : %s".formatted(img.getAbsolutePath()));
+            }
+        };
+
+        if (editMode) {
+            if (sender instanceof Message msg) {
+                msg.editMessage("")
+                        .setEmbeds(spec.build())
+                        .setComponents()
+                        .setFiles(files)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue(finisher);
+            } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                event.deferEdit()
+                        .setContent("")
+                        .setEmbeds(spec.build())
+                        .setComponents()
+                        .setFiles(files)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue(hook -> hook.retrieveOriginal().queue(finisher));
+            }
+        } else {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, "", reference, a -> a.setFiles(files), finisher);
+            } else if (sender instanceof GenericCommandInteractionEvent event) {
+                Command.replyToMessageSafely(event, "", a -> a.setFiles(files), finisher);
+            }
+        }
+
+
     }
 
     private static int[] handleTalent(Form f, Level lv, int[] t) {
@@ -746,7 +571,7 @@ public class EntityHandler {
         return false;
     }
 
-    public static void showEnemyEmb(Enemy e, MessageChannel ch, Message reference, boolean isFrame, boolean extra, boolean compact, int[] magnification, TreasureHolder holder, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showEnemyEmb(Enemy e, Object sender, @Nullable Message reference, TreasureHolder holder, EnemyStat.EnemyStatConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
         File img = generateIcon(e);
 
         EmbedBuilder spec = new EmbedBuilder();
@@ -755,15 +580,15 @@ public class EntityHandler {
 
         int[] mag;
 
-        if(magnification.length == 1) {
+        if(configData.magnification.length == 1) {
             mag = new int[2];
-            if(magnification[0] <= 0) {
+            if(configData.magnification[0] <= 0) {
                 mag[0] = mag[1] = 100;
             } else {
-                mag[0] = mag[1] = magnification[0];
+                mag[0] = mag[1] = configData.magnification[0];
             }
-        } else if(magnification.length == 2) {
-            mag = magnification;
+        } else if(configData.magnification.length == 2) {
+            mag = configData.magnification;
 
             if(mag[0] <= 0)
                 mag[0] = 100;
@@ -786,14 +611,14 @@ public class EntityHandler {
             spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
         }
 
-        if(compact) {
+        if(configData.isCompact) {
             spec.setTitle(DataToString.getCompactTitle(e, lang));
 
             spec.addField(LangID.getStringByID("data.enemy.magnification", lang), DataToString.getMagnification(mag, 100), false);
             spec.addField(LangID.getStringByID("data.compact.healthKb", lang), DataToString.getHealthHitback(e.de, mag[0]), false);
             spec.addField(LangID.getStringByID("data.compact.dropBarrierSpeed", lang), DataToString.getDropBarrierSpeed(e.de, holder, lang), true);
             spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
-            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(e.de, isFrame), false);
+            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(e.de, configData.isFrame), false);
             spec.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", DataToString.getSiMu(e.de, lang)), DataToString.getCompactAtk(e.de, mag[1]), false);
             spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), false);
         } else {
@@ -805,10 +630,10 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(e.de), true);
             spec.addField(LangID.getStringByID("data.enemy.barrier", lang), DataToString.getBarrier(e.de, lang), true);
             spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(e.de), true);
-            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(e.de, configData.isFrame), true);
+            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(e.de, configData.isFrame), true);
+            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(e.de, configData.isFrame), true);
+            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(e.de, configData.isFrame), true);
             spec.addField(LangID.getStringByID("data.enemy.drop", lang), DataToString.getDrop(e.de, holder), true);
             spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
             spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(e.de, lang), true);
@@ -819,9 +644,9 @@ public class EntityHandler {
         }
 
         List<String> abis = Interpret.getAbi(e.de, true, lang, null, null);
-        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
+        abis.addAll(Interpret.getProc(e.de, !configData.isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
-        if(compact) {
+        if(configData.isCompact) {
             abis = mergeImmune(abis, lang);
         }
 
@@ -840,9 +665,9 @@ public class EntityHandler {
             res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
             abis = Interpret.getAbi(e.de, false, lang, null, null);
-            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
+            abis.addAll(Interpret.getProc(e.de, !configData.isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
-            if(compact) {
+            if(configData.isCompact) {
                 abis = mergeImmune(abis, lang);
             }
 
@@ -860,7 +685,7 @@ public class EntityHandler {
 
         spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
-        if(extra) {
+        if(configData.isExtra) {
             String explanation = DataToString.getDescription(e, lang);
 
             if(explanation != null) {
@@ -870,142 +695,52 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("enemyStat.source", lang));
 
-        Command.replyToMessageSafely(ch, "", reference, a -> {
-            a = a.setEmbeds(spec.build());
-
-            if (img != null) {
-                a = a.addFiles(FileUpload.fromData(img, "icon.png"));
-            }
-
-            return a.addComponents(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
-        }, msg -> {
+        Consumer<Message> finisher = msg -> {
             if (img != null && img.exists() && !img.delete()) {
                 StaticStore.logger.uploadLog("Failed to delete file : " + img.getAbsolutePath());
             }
 
-            StaticStore.putHolder(reference.getAuthor().getId(), new EnemyButtonHolder(e, reference, msg, holder, mag, compact, lang, ch.getId()));
-
             e.anim.unload();
-        });
-    }
 
-    public static void performEnemyEmb(Enemy e, GenericCommandInteractionEvent event, boolean isFrame, boolean extra, int[] magnification, TreasureHolder holder, CommonStatic.Lang.Locale lang) throws Exception {
-        File img = generateIcon(e);
+            onSuccess.accept(msg);
+        };
 
-        EmbedBuilder spec = new EmbedBuilder();
+        List<LayoutComponent> components = new ArrayList<>();
 
-        int c = StaticStore.rainbow[0];
+        components.add(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
 
-        int[] mag = new int[2];
+        List<FileUpload> files = new ArrayList<>();
 
-        if(magnification.length == 1) {
-            if(magnification[0] <= 0) {
-                mag[0] = mag[1] = 100;
-            } else {
-                mag[0] = mag[1] = magnification[0];
+        if (img != null) {
+            files.add(FileUpload.fromData(img, "icon.png"));
+        }
+
+        if (editMode) {
+            if (sender instanceof Message msg) {
+                msg.editMessage("")
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
+                        .setFiles(files)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue(finisher);
+            } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                event.deferEdit()
+                        .setContent("")
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
+                        .setFiles(files)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue(hook -> hook.retrieveOriginal().queue(finisher));
             }
-        } else if(magnification.length == 2) {
-            mag = magnification;
-
-            if(mag[0] <= 0)
-                mag[0] = 100;
-
-            if(mag[1] < 0)
-                mag[1] = 0;
-        }
-
-        if (e.de.getTraits().contains(TreasureHolder.fullTraits.get(Data.TRAIT_ALIEN))) {
-            for(int i = 0; i < mag.length; i++)
-                mag[i] = (int) Math.round(mag[i] * (e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier()));
-        }
-
-        if(holder.differentFromGlobal()) {
-            spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
-        }
-
-        spec.setTitle(DataToString.getTitle(e, lang));
-        spec.setColor(c);
-        spec.setThumbnail("attachment://icon.png");
-        spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(e.id.id), true);
-        spec.addField(LangID.getStringByID("data.enemy.magnification", lang), DataToString.getMagnification(mag, 100), true);
-        spec.addField(LangID.getStringByID("data.hp", lang), DataToString.getHP(e.de, mag[0]), true);
-        spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(e.de), true);
-        spec.addField(LangID.getStringByID("data.enemy.barrier", lang), DataToString.getBarrier(e.de, lang), true);
-        spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(e.de), true);
-        spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data.enemy.drop", lang), DataToString.getDrop(e.de, holder), true);
-        spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
-        spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(e.de, lang), true);
-        spec.addField(LangID.getStringByID("data.dps", lang), DataToString.getDPS(e.de, mag[1]), true);
-        spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(e.de, lang), true);
-        spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(e.de, mag[1]), true);
-        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), true);
-
-        List<String> abis = Interpret.getAbi(e.de, true, lang, null, null);
-        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
-
-        StringBuilder sb = new StringBuilder();
-
-        for(int i = 0; i < abis.size(); i++) {
-            if(i == abis.size() - 1)
-                sb.append(abis.get(i));
-            else
-                sb.append(abis.get(i)).append("\n");
-        }
-
-        String res = sb.toString();
-
-        if(res.isBlank())
-            res = LangID.getStringByID("data.none", lang);
-        else if(res.length() > 1024) {
-            abis = Interpret.getAbi(e.de, false, lang, null, null);
-            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
-
-            sb = new StringBuilder();
-
-            for(int i = 0; i < abis.size(); i++) {
-                if(i == abis.size() - 1)
-                    sb.append(abis.get(i));
-                else
-                    sb.append(abis.get(i)).append("\n");
-            }
-
-            res = sb.toString();
-        }
-
-        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
-
-        if(extra) {
-            String explanation = DataToString.getDescription(e, lang);
-
-            if(explanation != null) {
-                spec.addField(LangID.getStringByID("data.enemy.description", lang), explanation, false);
+        } else {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
+            } else if (sender instanceof GenericCommandInteractionEvent event) {
+                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
             }
         }
-
-        spec.setFooter(LangID.getStringByID("enemyStat.source", lang), null);
-
-        ReplyCallbackAction action = event.deferReply().addEmbeds(spec.build());
-
-        if(img != null)
-            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
-
-        action.queue(h -> {
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("Failed to remove file : "+img.getAbsolutePath());
-            }
-        }, err -> {
-            StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::performEnemyEmb - Error happened while trying to dispaly enemy embed");
-
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("Failed to remove file : "+img.getAbsolutePath());
-            }
-        });
-
-        e.anim.unload();
     }
 
     private static File generateIcon(Enemy e) throws Exception {
@@ -1251,7 +986,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static void showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, TreasureHolder holder, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
+    public static void showStageEmb(Stage st, Object sender, @Nullable Message reference, String additionalContent, TreasureHolder holder, StageInfo.StageInfoConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1269,16 +1004,16 @@ public class EntityHandler {
                 } else if(st.id.id == 50) {
                     sta = 2;
                 } else {
-                    sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
+                    sta = Math.min(Math.max(configData.star - 1, 0), st.getCont().stars.length-1);
                 }
             } else {
-                sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
+                sta = Math.min(Math.max(configData.star - 1, 0), st.getCont().stars.length-1);
             }
 
             stmMagnification = stm.stars[sta];
         }
 
-        File img = generateScheme(st, isFrame, lang, stmMagnification, holder);
+        File img = generateScheme(st, configData.isFrame, lang, stmMagnification, holder);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -1290,8 +1025,6 @@ public class EntityHandler {
         String name = "";
 
         if(stm == null) {
-            ch.sendMessageEmbeds(spec.build()).queue();
-
             return;
         }
 
@@ -1330,7 +1063,7 @@ public class EntityHandler {
             spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
         }
 
-        if(isCompact) {
+        if(configData.isCompact) {
             spec.addField(LangID.getStringByID("data.compact.idDifficultyLevel", lang), DataToString.getIdDifficultyLevel(st, sta, lang), false);
 
             String secondField = DataToString.getEnergyBaseXP(st, holder, lang);
@@ -1346,7 +1079,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.compact.limitContinuableLength", lang), DataToString.getEnemyContinuableLength(st, lang), false);
             spec.addField(LangID.getStringByID("data.compact.musicBackgroundCastle", lang).replace("_BBB_", String.valueOf(st.mush)), DataToString.getMusciBackgroundCastle(st, lang), false);
             spec.addField(LangID.getStringByID("data.stage.guardBarrier", lang), DataToString.getBossGuard(st, lang), false);
-            spec.setFooter(LangID.getStringByID("data.compact.minimumRespawn", lang).replace("_RRR_", DataToString.getMinSpawn(st, isFrame)));
+            spec.setFooter(LangID.getStringByID("data.compact.minimumRespawn", lang).replace("_RRR_", DataToString.getMinSpawn(st, configData.isFrame)));
         } else {
             spec.addField(LangID.getStringByID("data.id", lang), DataToString.getStageCode(st), true);
             spec.addField(LangID.getStringByID("data.unit.level", lang), DataToString.getStar(st, sta), true);
@@ -1369,11 +1102,11 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.stage.background", lang), DataToString.getBackground(st, lang),true);
             spec.addField(LangID.getStringByID("data.stage.castle", lang), DataToString.getCastle(st, lang), true);
             spec.addField(LangID.getStringByID("data.stage.length", lang), DataToString.getLength(st), true);
-            spec.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), DataToString.getMinSpawn(st, isFrame), true);
+            spec.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), DataToString.getMinSpawn(st, configData.isFrame), true);
             spec.addField(LangID.getStringByID("data.stage.guardBarrier", lang), DataToString.getBossGuard(st, lang), true);
         }
 
-        ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), isFrame, lang);
+        ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), configData.isFrame, lang);
 
         if(!limit.isEmpty()) {
             StringBuilder sb = new StringBuilder();
@@ -1388,21 +1121,21 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.stage.limit.title", lang), sb.toString(), false);
         }
 
-        if(isExtra) {
+        if(configData.isExtra) {
             List<String> misc = DataToString.getMiscellaneous(st, lang);
 
             if(!misc.isEmpty()) {
-                StringBuilder sbuilder = new StringBuilder();
+                StringBuilder stringBuilder = new StringBuilder();
 
                 for(int i = 0; i < misc.size(); i++) {
-                    sbuilder.append("- ").append(misc.get(i));
+                    stringBuilder.append("- ").append(misc.get(i));
 
                     if(i < misc.size() - 1) {
-                        sbuilder.append("\n");
+                        stringBuilder.append("\n");
                     }
                 }
 
-                spec.addField(LangID.getStringByID("data.stage.misc.title", lang), sbuilder.toString(), false);
+                spec.addField(LangID.getStringByID("data.stage.misc.title", lang), stringBuilder.toString(), false);
             }
 
             String exData = DataToString.getEXStage(st, lang);
@@ -1441,237 +1174,63 @@ public class EntityHandler {
             spec.setImage("attachment://scheme.png");
         }
 
-        Command.replyToMessageSafely(ch, "", reference, a -> {
-            MessageCreateAction action = a.setEmbeds(spec.build());
+        List<LayoutComponent> components = new ArrayList<>();
 
-            if(img != null)
-                action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
+        ArrayList<Button> buttons = new ArrayList<>();
 
-            ArrayList<Button> buttons = new ArrayList<>();
+        buttons.add(Button.secondary("castle", LangID.getStringByID("stageInfo.button.castle", lang)).withEmoji(EmojiStore.CASTLE));
+        buttons.add(Button.secondary("bg", LangID.getStringByID("stageInfo.button.background", lang)).withEmoji(EmojiStore.BACKGROUND));
 
-            buttons.add(Button.secondary("castle", LangID.getStringByID("stageInfo.button.castle", lang)).withEmoji(EmojiStore.CASTLE));
-            buttons.add(Button.secondary("bg", LangID.getStringByID("stageInfo.button.background", lang)).withEmoji(EmojiStore.BACKGROUND));
+        if(st.mus0 != null) {
+            buttons.add(Button.secondary("music", LangID.getStringByID("stageInfo.button.music", lang)).withEmoji(EmojiStore.MUSIC));
+        }
 
-            if(st.mus0 != null) {
-                buttons.add(Button.secondary("music", LangID.getStringByID("stageInfo.button.music", lang)).withEmoji(EmojiStore.MUSIC));
+        if(hasTwoMusic(st)) {
+            buttons.add(Button.secondary("music2", LangID.getStringByID("stageInfo.button.secondMusic", lang)).withEmoji(EmojiStore.MUSIC_BOSS));
+        }
+
+        components.add(ActionRow.of(buttons));
+
+        List<FileUpload> files = new ArrayList<>();
+
+        if (img != null) {
+            files.add(FileUpload.fromData(img, "scheme.png"));
+        }
+
+        Consumer<Message> finisher = msg -> {
+            if(img != null && img.exists() && !img.delete()) {
+                StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
             }
-
-            if(hasTwoMusic(st)) {
-                buttons.add(Button.secondary("music2", LangID.getStringByID("stageInfo.button.secondMusic", lang)).withEmoji(EmojiStore.MUSIC_BOSS));
-            }
-
-            action = action.setComponents(ActionRow.of(buttons));
-
-            return action;
-        }, msg -> {
-            StaticStore.executorHandler.postDelayed(5000, () -> {
-                if(img != null && img.exists() && !img.delete()) {
-                    StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
-                }
-            });
 
             onSuccess.accept(msg);
-        });
-    }
+        };
 
-    public static void performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, CommonStatic.Lang.Locale lang, TreasureHolder holder, Consumer<Message> onSuccess) throws Exception {
-        StageMap stm = st.getCont();
-
-        int sta;
-        int stmMagnification;
-
-        if(stm == null) {
-            sta = 0;
-            stmMagnification = 100;
+        if (editMode) {
+            if (sender instanceof Message msg) {
+                msg.editMessage(additionalContent)
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
+                        .setFiles(files)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue(finisher);
+            } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                event.deferEdit()
+                        .setContent(additionalContent)
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
+                        .setFiles(files)
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue(hook -> hook.retrieveOriginal().queue(finisher));
+            }
         } else {
-            MapColc mc = stm.getCont();
-
-            if(mc != null && mc.getSID().equals("000003") && stm.id.id == 9) {
-                if(st.id.id == 49) {
-                    sta = 1;
-                } else if(st.id.id == 50) {
-                    sta = 2;
-                } else {
-                    sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
-                }
-            } else {
-                sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
-            }
-
-            stmMagnification = stm.stars[sta];
-        }
-
-        File img = generateScheme(st, isFrame, lang, stmMagnification, holder);
-
-        EmbedBuilder spec = new EmbedBuilder();
-
-        if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).diff == -1)
-            spec.setColor(new Color(217, 217, 217).getRGB());
-        else
-            spec.setColor(DataToString.getDifficultyColor(((DefStageInfo) st.info).diff));
-
-        String name = "";
-
-        if(stm == null)
-            return;
-
-        MapColc mc = stm.getCont();
-
-        String mcName = MultiLangCont.get(mc, lang);
-
-        if(mcName == null || mcName.isBlank())
-            mcName = mc.getSID();
-
-        name += mcName+" - ";
-
-        String stmName = MultiLangCont.get(stm, lang);
-
-        if(stmName == null || stmName.isBlank())
-            if(stm.id != null)
-                stmName = Data.trio(stm.id.id);
-            else
-                stmName = "Unknown";
-
-        name += stmName + " - ";
-
-        String stName = MultiLangCont.get(st, lang);
-
-        if(stName == null || stName.isBlank())
-            if(st.id != null)
-                stName = Data.trio(st.id.id);
-            else
-                stName = "Unknown";
-
-        name += stName;
-
-        spec.setTitle(name);
-        spec.addField(LangID.getStringByID("data.id", lang), DataToString.getStageCode(st), true);
-        spec.addField(LangID.getStringByID("data.unit.level", lang), DataToString.getStar(st, sta), true);
-
-        String energy = DataToString.getEnergy(st, lang);
-
-        if(energy.endsWith("!!drink!!")) {
-            spec.addField(LangID.getStringByID("data.stage.catamin.title", lang), energy.replace("!!drink!!", ""), true);
-        } else {
-            spec.addField(LangID.getStringByID("data.stage.energy", lang), energy, true);
-        }
-
-        spec.addField(LangID.getStringByID("data.stage.baseHealth", lang), DataToString.getBaseHealth(st), true);
-        spec.addField(LangID.getStringByID("data.stage.xp", lang), DataToString.getXP(st, holder), true);
-        spec.addField(LangID.getStringByID("data.stage.difficulty", lang), DataToString.getDifficulty(st, lang), true);
-        spec.addField(LangID.getStringByID("data.stage.continuable", lang), DataToString.getContinuable(st, lang), true);
-        spec.addField(LangID.getStringByID("data.stage.music", lang), DataToString.getMusic(st, lang), true);
-        spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
-        spec.addField(LangID.getStringByID("data.stage.enemyLimit", lang), DataToString.getMaxEnemy(st), true);
-        spec.addField(LangID.getStringByID("data.stage.background", lang), DataToString.getBackground(st, lang),true);
-        spec.addField(LangID.getStringByID("data.stage.castle", lang), DataToString.getCastle(st, lang), true);
-        spec.addField(LangID.getStringByID("data.stage.length", lang), DataToString.getLength(st), true);
-        spec.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), DataToString.getMinSpawn(st, isFrame), true);
-
-        ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), isFrame, lang);
-
-        if(!limit.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-
-            for(int i = 0; i < limit.size(); i ++) {
-                sb.append(limit.get(i));
-
-                if(i < limit.size()-1)
-                    sb.append("\n");
-            }
-
-            spec.addField(LangID.getStringByID("data.stage.limit.title", lang), sb.toString(), false);
-        }
-
-        if(isExtra) {
-            List<String> misc = DataToString.getMiscellaneous(st, lang);
-
-            if(!misc.isEmpty()) {
-                StringBuilder sbuilder = new StringBuilder();
-
-                for(int i = 0; i < misc.size(); i++) {
-                    sbuilder.append("- ").append(misc.get(i));
-
-                    if(i < misc.size() - 1) {
-                        sbuilder.append("\n");
-                    }
-                }
-
-                spec.addField(LangID.getStringByID("data.stage.misc.title", lang), sbuilder.toString(), false);
-            }
-
-            String exData = DataToString.getEXStage(st, lang);
-
-            if(exData != null) {
-                spec.addField(LangID.getStringByID("data.stage.misc.exStage", lang), exData, false);
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, additionalContent, reference, a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
+            } else if (sender instanceof GenericCommandInteractionEvent event) {
+                Command.replyToMessageSafely(event, additionalContent, a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
             }
         }
-
-        String drops = DataToString.getRewards(st, lang);
-
-        if(drops != null) {
-            if(drops.endsWith("!!number!!")) {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
-            } else if(drops.endsWith("!!nofail!!")) {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!nofail!!", ""), false);
-            } else {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
-            }
-        }
-
-        String score = DataToString.getScoreDrops(st, lang);
-
-        if(score != null) {
-            spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
-        }
-
-        if(img != null) {
-            spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
-            spec.setImage("attachment://scheme.png");
-        }
-
-        ReplyCallbackAction action = event.deferReply().addEmbeds(spec.build());
-
-        if(img != null)
-            action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
-
-        action.queue(hook ->
-            hook.retrieveOriginal().queue(msg -> {
-                if (msg == null)
-                    return;
-
-                MessageChannel ch = msg.getChannel();
-
-                Guild g;
-
-                if(ch instanceof GuildChannel) {
-                    g = msg.getGuild();
-                } else {
-                    g = null;
-                }
-
-                if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
-                    msg.addReaction(EmojiStore.CASTLE).queue();
-                    msg.addReaction(EmojiStore.BACKGROUND).queue();
-
-                    if(st.mus0 != null) {
-                        msg.addReaction(EmojiStore.MUSIC).queue();
-                    }
-
-                    if(hasTwoMusic(st)) {
-                        msg.addReaction(EmojiStore.MUSIC_BOSS).queue();
-                    }
-                }
-
-                StaticStore.executorHandler.postDelayed(5000, () -> {
-                    if(img != null && img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
-                    }
-                });
-
-                onSuccess.accept(msg);
-            })
-        );
     }
 
     private static File generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int star, TreasureHolder holder) throws Exception {
@@ -3706,7 +3265,7 @@ public class EntityHandler {
             Command.sendMessageWithFile(ch, "", e.build(), icon, "combo.png", reference);
     }
 
-    public static void showFormDPS(MessageChannel ch, Message authorMessage, Form f, TreasureHolder treasureSetting, Level lv, ConfigHolder config, boolean talent, boolean treasure, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showFormDPS(Object sender, Message authorMessage, Form f, TreasureHolder treasureSetting, Level lv, ConfigHolder config, boolean talent, boolean treasure, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
         int level = lv.getLv();
         int levelp = lv.getPlusLv();
 
@@ -4245,7 +3804,32 @@ public class EntityHandler {
         }
 
         if (result == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("formDPS.failed.unknown", lang), authorMessage, a -> a);
+            if (editMode) {
+                if (sender instanceof Message msg) {
+                    msg.editMessage(LangID.getStringByID("formDPS.failed.unknown", lang))
+                            .setComponents()
+                            .setEmbeds()
+                            .setFiles()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                    event.deferEdit()
+                            .setContent(LangID.getStringByID("formDPS.failed.unknown", lang))
+                            .setComponents()
+                            .setEmbeds()
+                            .setFiles()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                }
+            } else {
+                if (sender instanceof MessageChannel ch) {
+                    Command.replyToMessageSafely(ch, LangID.getStringByID("formDPS.failed.unknown", lang), authorMessage, a -> a);
+                } else if (sender instanceof GenericCommandInteractionEvent event) {
+                    Command.replyToMessageSafely(event, LangID.getStringByID("formDPS.failed.unknown", lang), a -> a);
+                }
+            }
         } else {
             EmbedBuilder spec = new EmbedBuilder();
 
@@ -4304,15 +3888,7 @@ public class EntityHandler {
 
             File icon = generateIcon(f);
 
-            Command.replyToMessageSafely(ch, "", authorMessage, a -> {
-                a = a.setEmbeds(spec.build())
-                        .addFiles(FileUpload.fromData(result, "graph.png"));
-
-                if (icon != null)
-                    a = a.addFiles(FileUpload.fromData(icon, "icon.png"));
-
-                return a;
-            }, m -> {
+            Consumer<Message> finisher = msg -> {
                 if(result.exists() && !result.delete()) {
                     StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
                 }
@@ -4320,11 +3896,47 @@ public class EntityHandler {
                 if (icon != null && icon.exists() && !icon.delete()) {
                     StaticStore.logger.uploadLog("Failed to delete file : " + icon.getAbsolutePath());
                 }
-            });
+            };
+
+            List<FileUpload> files = new ArrayList<>();
+
+            files.add(FileUpload.fromData(result, "graph.png"));
+
+            if (icon != null)
+                files.add(FileUpload.fromData(icon, "icon.png"));
+
+            if (editMode) {
+                if (sender instanceof Message msg) {
+                    msg.editMessage("")
+                            .setEmbeds(spec.build())
+                            .setComponents()
+                            .setFiles(files)
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue(finisher);
+                } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                    event.deferEdit()
+                            .setContent("")
+                            .setEmbeds(spec.build())
+                            .setComponents()
+                            .setFiles(files)
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue(hook -> hook.retrieveOriginal().queue(finisher));
+                }
+            } else {
+                if (sender instanceof MessageChannel ch) {
+                    Command.replyToMessageSafely(ch, "", authorMessage, a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                } else if (sender instanceof GenericCommandInteractionEvent event) {
+                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                }
+            }
+
+
         }
     }
 
-    public static void showEnemyDPS(MessageChannel ch, Message authorMessage, Enemy e, TreasureHolder treasureSetting, int magnification, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showEnemyDPS(Object sender, @Nullable Message reference, Enemy e, TreasureHolder treasureSetting, int magnification, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
         int adjustedMagnification;
 
         if (magnification <= 0) {
@@ -4652,7 +4264,26 @@ public class EntityHandler {
         File result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
 
         if (result == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("formDPS.failed.unknown", lang), authorMessage, a -> a);
+            if (editMode) {
+                if (sender instanceof Message msg) {
+                    msg.editMessage(LangID.getStringByID("formDPS.failed.unknown", lang))
+                            .setEmbeds()
+                            .setComponents()
+                            .setFiles()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                    event.deferEdit()
+                            .setContent(LangID.getStringByID("formDPS.failed.unknown", lang))
+                            .setEmbeds()
+                            .setComponents()
+                            .setFiles()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                }
+            }
         } else {
             EmbedBuilder spec = new EmbedBuilder();
 
@@ -4680,16 +4311,15 @@ public class EntityHandler {
 
             File icon = generateIcon(e);
 
-            Command.replyToMessageSafely(ch, "", authorMessage, a -> {
-                a = a.setEmbeds(spec.build())
-                        .addFiles(FileUpload.fromData(result, "graph.png"));
+            List<FileUpload> files = new ArrayList<>();
 
-                if (icon != null) {
-                    a = a.addFiles(FileUpload.fromData(icon, "icon.png"));
-                }
+            files.add(FileUpload.fromData(result, "graph.png"));
 
-                return a;
-            }, m -> {
+            if (icon != null) {
+                files.add(FileUpload.fromData(icon, "icon.png"));
+            }
+
+            Consumer<Message> finisher = msg -> {
                 if(result.exists() && !result.delete()) {
                     StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
                 }
@@ -4697,7 +4327,34 @@ public class EntityHandler {
                 if (icon != null && icon.exists() && !icon.delete()) {
                     StaticStore.logger.uploadLog("Failed to delete file : " + icon.getAbsolutePath());
                 }
-            });
+            };
+
+            if (editMode) {
+                if (sender instanceof Message msg) {
+                    msg.editMessage("")
+                            .setEmbeds(spec.build())
+                            .setComponents()
+                            .setFiles(files)
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue(finisher);
+                } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
+                    event.deferEdit()
+                            .setContent("")
+                            .setEmbeds(spec.build())
+                            .setComponents()
+                            .setFiles(files)
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue(hook -> hook.retrieveOriginal().queue(finisher));
+                }
+            } else {
+                if (sender instanceof MessageChannel ch) {
+                    Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                } else if (sender instanceof GenericCommandInteractionEvent event) {
+                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                }
+            }
         }
     }
 
@@ -5465,22 +5122,6 @@ public class EntityHandler {
 
     private static boolean hasTwoMusic(Stage st) {
         return st.mush != 0 && st.mush != 100 && st.mus1 != null && st.mus0 != null && st.mus1.id != st.mus0.id;
-    }
-
-    private static boolean canFirstForm(Form f) {
-        return f.unit != null && f.fid - 2 >= 0;
-    }
-
-    private static boolean canPreviousForm(Form f) {
-        return f.unit != null && f.fid - 1 >= 0;
-    }
-
-    private static boolean canNextForm(Form f) {
-        return f.unit != null && f.fid + 1 < f.unit.forms.length;
-    }
-
-    private static boolean canFinalForm(Form f) {
-        return f.unit != null && f.fid + 2 < f.unit.forms.length;
     }
 
     private static int getBoosterFileLimit(int level) {

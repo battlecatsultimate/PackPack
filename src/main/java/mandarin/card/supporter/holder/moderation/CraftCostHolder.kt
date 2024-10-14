@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class CraftCostHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CraftCostHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val size = 2
 
     private var page = 0
@@ -74,7 +74,7 @@ class CraftCostHolder(author: Message, channelID: String, message: Message) : Co
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CraftCostModifyHolder(authorMessage, channelID, message, craftMode) {
+                StaticStore.putHolder(authorMessage.author.id, CraftCostModifyHolder(authorMessage, userID, channelID, message, craftMode) {
                     applyResult()
                 })
             }

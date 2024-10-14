@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ public class SetupModButtonHolder extends ComponentHolder {
 
     private String roleID;
 
-    public SetupModButtonHolder(Message author, Message msg, String channelID, IDHolder holder, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public SetupModButtonHolder(Message author, String userID, String channelID, Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
         
         this.channelID = channelID;
         this.memberID = author.getAuthor().getId();
@@ -36,7 +36,7 @@ public class SetupModButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = message.getChannel();
 
         switch (event.getComponentId()) {
@@ -60,7 +60,7 @@ public class SetupModButtonHolder extends ComponentHolder {
             ), m -> {
                 StaticStore.removeHolder(memberID, this);
 
-                StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, getAuthorMessage(), channelID, holder, roleID, lang));
+                StaticStore.putHolder(memberID, new SetupMemberButtonHolder(getAuthorMessage(), memberID, channelID, m, holder, roleID, lang));
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup.selected.moderator", lang).replace("_RRR_", roleID))

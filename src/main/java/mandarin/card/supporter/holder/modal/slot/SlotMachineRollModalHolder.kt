@@ -14,7 +14,7 @@ import kotlin.text.isEmpty
 import kotlin.text.replace
 import kotlin.text.toDouble
 
-class SlotMachineRollModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val inventory: Inventory, private val onSelected: (ModalInteractionEvent, Long) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineRollModalHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val inventory: Inventory, private val onSelected: (ModalInteractionEvent, Long) -> Unit) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

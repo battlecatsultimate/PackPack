@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public class SayHi extends Command {
     public SayHi(CommonStatic.Lang.Locale lang) {
@@ -17,7 +17,7 @@ public class SayHi extends Command {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
@@ -30,7 +30,7 @@ public class SayHi extends Command {
                 replyToMessageSafely(ch, LangID.getStringByID("hi.special.invitation", lang), loader.getMessage(), a -> a.setActionRow(
                         Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("ui.button.yes", lang)),
                         Button.of(ButtonStyle.DANGER, "no", LangID.getStringByID("ui.button.no", lang))
-                ), msg -> StaticStore.putHolder(u.getId(), new CultButtonHolder(loader.getMessage(), msg, ch.getId(), lang)));
+                ), msg -> StaticStore.putHolder(u.getId(), new CultButtonHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang)));
             }
         } else if(chance <= 0.05) {
             replyToMessageSafely(ch, LangID.getStringByID("hi.dog", lang), loader.getMessage(), a -> a);

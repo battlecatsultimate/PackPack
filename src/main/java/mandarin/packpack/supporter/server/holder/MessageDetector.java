@@ -1,8 +1,8 @@
 package mandarin.packpack.supporter.server.holder;
 
 import net.dv8tion.jda.api.entities.Message;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public interface MessageDetector {
-    void onMessageDetected(@NotNull Message message);
+    void onMessageDetected(@Nonnull Message message);
 }

@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class ModifyCategoryHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ModifyCategoryHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(FIVE_MIN)
     }
@@ -56,7 +56,7 @@ class ModifyCategoryHolder(author: Message, channelID: String, message: Message,
                             else -> CardData.ModifyCategory.SHARD
                         }
 
-                        connectTo(event, ModifyModeSelectHolder(authorMessage, channelID, message, category, inventory, targetMember))
+                        connectTo(event, ModifyModeSelectHolder(authorMessage, userID, channelID, message, category, inventory, targetMember))
                     }
                 }
             }

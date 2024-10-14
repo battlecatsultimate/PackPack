@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachinePackImportHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val content: SlotCardContent) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachinePackImportHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val content: SlotCardContent) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -53,7 +53,7 @@ class SlotMachinePackImportHolder(author: Message, channelID: String, message: M
                 if (content.cardChancePairLists.isNotEmpty()) {
                     registerPopUp(event, "Are you sure you want to import this card pack? Slot machine contents will be overwritten and this cannot be undone")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         content.injectCardPack(pack)
 
                         e.deferReply().setContent("Successfully imported card pack : ${pack.packName}!").setEphemeral(true).queue()
@@ -94,7 +94,7 @@ class SlotMachinePackImportHolder(author: Message, channelID: String, message: M
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

@@ -7,6 +7,7 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.commands.Command;
+import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -16,8 +17,9 @@ import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,13 +32,11 @@ public class FindRewardMessageHolder extends SearchHolder {
     private final double chance;
     private final int amount;
 
-    private final boolean isExtra;
-    private final boolean isCompact;
-    private final boolean isFrame;
     private final TreasureHolder treasure;
+    private final StageInfo.StageInfoConfig configData;
 
-    public FindRewardMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Integer> rewards, String keyword, double chance, int amount, boolean isExtra, boolean isCompact, boolean isFrame, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public FindRewardMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, List<Integer> rewards, String keyword, double chance, int amount, StageInfo.StageInfoConfig configData, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, msg, lang);
 
         this.rewards = rewards;
         this.keyword = keyword;
@@ -44,11 +44,8 @@ public class FindRewardMessageHolder extends SearchHolder {
         this.chance = chance;
         this.amount = amount;
 
-        this.isExtra = isExtra;
-        this.isCompact = isCompact;
-        this.isFrame = isFrame;
-
         this.treasure = treasure;
+        this.configData = configData;
     }
 
     @Override
@@ -88,7 +85,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             if(stages.isEmpty()) {
                 ch.sendMessage(LangID.getStringByID("findReward.failed.noStage", lang).replace("_", validateName(keyword))).queue();
             } else if(stages.size() == 1) {
-                EntityHandler.showStageEmb(stages.getFirst(), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, getAuthorMessage(), "", treasure, configData, true, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
@@ -99,7 +96,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, configData.isCompact, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("findReward.several.reward", lang).replace("_", validateName(keyword))).append("```md\n");
@@ -123,7 +120,7 @@ public class FindRewardMessageHolder extends SearchHolder {
 
                 Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).queue(res -> {
                     if(res != null) {
-                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), 0, treasure, isFrame, isExtra, isCompact, lang));
+                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, userID, ch.getId(), res, "", treasure, configData, lang));
                     }
                 });
 

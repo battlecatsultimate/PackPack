@@ -24,7 +24,7 @@ class BanUser : Command(CommonStatic.Lang.Locale.EN, true) {
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }, { msg ->
-            StaticStore.putHolder(m.id, UserBanHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(m.id, UserBanHolder(loader.message, m.id, loader.channel.id, msg))
         })
     }
 

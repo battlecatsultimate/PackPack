@@ -27,12 +27,12 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
 
     private var downloading = false
 
-    constructor(author: Message, channelID: String, message: Message, card: Card) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: String, channelID: String, message: Message, card: Card) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.skin = null
         this.card = card
     }
 
-    constructor(author: Message, channelID: String, message: Message, card: Card, skin: Skin) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: String, channelID: String, message: Message, card: Card, skin: Skin) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.skin = skin
         this.card = card
     }
@@ -63,14 +63,14 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
                         "Are you sure you want to cancel replacing skin file?"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     goBack(e)
                 }, CommonStatic.Lang.Locale.EN))
             }
             "close" -> {
                 registerPopUp(event, "Are you sure you want to stop creating new skin?")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferEdit()
                         .setContent("Management closed")
                         .setComponents()
@@ -173,7 +173,7 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
         if (skin == null) {
             val skin = Skin(card, downloader.target)
 
-            connectTo(SkinModifyHolder(authorMessage, channelID, message, skin, true))
+            connectTo(SkinModifyHolder(authorMessage, userID, channelID, message, skin, true))
         } else {
             skin.updateFile(downloader.target, authorMessage.jda, skin in CardData.skins)
 

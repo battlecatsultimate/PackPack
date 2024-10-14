@@ -2,7 +2,7 @@ package mandarin.packpack.supporter.bc.cell;
 
 import mandarin.packpack.supporter.lwjgl.GLGraphics;
 import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public class AbilityCellDrawer implements CellDrawer {
     private static final int abilityMargin = 27;
@@ -19,7 +19,7 @@ public class AbilityCellDrawer implements CellDrawer {
 
     public float spaceDotMargin = 0;
 
-    public AbilityCellDrawer(@NotNull String name, @NotNull String[] contents) {
+    public AbilityCellDrawer(@Nonnull String name, @Nonnull String[] contents) {
         this.name = name;
         this.contents = contents;
     }

@@ -7,7 +7,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ConfirmButtonHolder extends ComponentHolder {
     private final Runnable action;
@@ -17,8 +18,8 @@ public class ConfirmButtonHolder extends ComponentHolder {
      */
     private final boolean ensureDeletion;
 
-    public ConfirmButtonHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang, Runnable action) {
-        super(author, channelID, msg, lang);
+    public ConfirmButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, Runnable action) {
+        super(author, userID, channelID, message, lang);
 
         this.action = action;
 
@@ -27,8 +28,8 @@ public class ConfirmButtonHolder extends ComponentHolder {
         registerAutoExpiration(FIVE_MIN);
     }
 
-    public ConfirmButtonHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang, boolean ensureDeletion, Runnable action) {
-        super(author, channelID, msg, lang);
+    public ConfirmButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, boolean ensureDeletion, Runnable action) {
+        super(author, userID, channelID, message, lang);
 
         this.action = action;
         this.ensureDeletion = ensureDeletion;
@@ -37,7 +38,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "confirm" -> {
                 if (ensureDeletion) {

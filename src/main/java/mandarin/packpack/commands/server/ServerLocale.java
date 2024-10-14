@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ServerLocale extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         if(holder == null)
             return;
 
@@ -43,7 +43,7 @@ public class ServerLocale extends ConstraintCommand {
         }
 
         replyToMessageSafely(ch, LangID.getStringByID("locale.select", holder.config.lang).formatted(emoji, localeName), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new LocaleSettingHolder(loader.getMessage(), ch.getId(), msg, holder.config, holder, true, lang))
+            StaticStore.putHolder(loader.getUser().getId(), new LocaleSettingHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, holder.config, holder, true, lang))
         );
     }
 

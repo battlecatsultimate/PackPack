@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.max
 import kotlin.math.min
 
-class CardInventoryHolder(author: Message, channelID: String, message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardInventoryHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = ArrayList<Card>(inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator()))
 
     private var page = 0
@@ -153,7 +153,7 @@ class CardInventoryHolder(author: Message, channelID: String, message: Message, 
 
                 val card = cards[index]
 
-                connectTo(event, CardFavoriteHolder(authorMessage, channelID, message, inventory, card))
+                connectTo(event, CardFavoriteHolder(authorMessage, userID, channelID, message, inventory, card))
             }
         }
     }

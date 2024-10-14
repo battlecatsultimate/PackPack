@@ -30,13 +30,14 @@ import java.util.concurrent.TimeUnit
 
 class SlotMachineCardChancePairListHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCardContent,
     private val cardChancePairList: CardChancePairList,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -67,7 +68,7 @@ class SlotMachineCardChancePairListHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardChancePairAmountHolder(authorMessage, channelID, message, cardChancePairList))
+                connectTo(CardChancePairAmountHolder(authorMessage, userID, channelID, message, cardChancePairList))
             }
             "pair" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -77,12 +78,12 @@ class SlotMachineCardChancePairListHolder(
 
                 val pairList = cardChancePairList.pairs[index]
 
-                connectTo(event, SlotMachineCardChancePairHolder(authorMessage, channelID, message, slotMachine, cardChancePairList, pairList, false))
+                connectTo(event, SlotMachineCardChancePairHolder(authorMessage, userID, channelID, message, slotMachine, cardChancePairList, pairList, false))
             }
             "add" -> {
                 val pairList = CardChancePair(0.0, CardGroupData(ArrayList(), ArrayList()))
 
-                connectTo(event, SlotMachineCardChancePairHolder(authorMessage, channelID, message, slotMachine, cardChancePairList, pairList, true))
+                connectTo(event, SlotMachineCardChancePairHolder(authorMessage, userID, channelID, message, slotMachine, cardChancePairList, pairList, true))
             }
             "create" -> {
                 cardChancePairList.validateChance()
@@ -104,7 +105,7 @@ class SlotMachineCardChancePairListHolder(
                 if (new) {
                     registerPopUp(event, "Are you sure you want to cancel creating card/chance pair list? This cannot be undone")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBack(e)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -120,7 +121,7 @@ class SlotMachineCardChancePairListHolder(
             "delete" -> {
                 registerPopUp(event, "Are you sure you want to delete card/chance pair list? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     content.cardChancePairLists.remove(cardChancePairList)
 
                     if (slotMachine in CardData.slotMachines) {
@@ -138,7 +139,7 @@ class SlotMachineCardChancePairListHolder(
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)

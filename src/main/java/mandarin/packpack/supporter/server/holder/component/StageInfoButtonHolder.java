@@ -15,7 +15,8 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
@@ -23,8 +24,8 @@ public class StageInfoButtonHolder extends ComponentHolder {
     private final Stage st;
     private final boolean compact;
 
-    public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID, boolean compact, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public StageInfoButtonHolder(Stage st, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, boolean compact, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.st = st;
         this.compact = compact;
@@ -33,7 +34,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent ev) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent ev) {
         disableButtons();
 
         if(!(ev instanceof ButtonInteractionEvent event)) {

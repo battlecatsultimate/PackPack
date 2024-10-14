@@ -31,12 +31,13 @@ import kotlin.math.min
 
 class SkinSpecificCardCostHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val skin: Skin,
     private val cost: SpecificCardCost,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = ArrayList<Card>(CardData.cards.sortedWith(CardComparator()))
 
     private var page = 0
@@ -152,7 +153,7 @@ class SkinSpecificCardCostHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardCostAmountHolder(authorMessage, channelID, message, cost))
+                connectTo(CardCostAmountHolder(authorMessage, userID, channelID, message, cost))
             }
             "create" -> {
                 skin.cost.cardsCosts.add(cost)
@@ -175,7 +176,7 @@ class SkinSpecificCardCostHolder(
                         "Are you sure you want to cancel creating card cost and go back? This can't be undone"
                     )
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, SkinCostManageHolder::class.java)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
@@ -194,7 +195,7 @@ class SkinSpecificCardCostHolder(
                     "Are you sure you want to delete card cost? This can't be undone"
                 )
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     skin.cost.cardsCosts.remove(cost)
 
                     if (skin in CardData.skins) {

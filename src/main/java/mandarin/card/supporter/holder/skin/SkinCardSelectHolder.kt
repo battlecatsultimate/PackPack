@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinCardSelectHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinCardSelectHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = CardData.cards.sortedWith(CardComparator()).toMutableList()
 
     private var page = 0
@@ -119,7 +119,7 @@ class SkinCardSelectHolder(author: Message, channelID: String, message: Message)
                 val index = event.values.first().toInt()
                 val card = cards[index]
 
-                connectTo(event, SkinSelectHolder(authorMessage, channelID, message, card))
+                connectTo(event, SkinSelectHolder(authorMessage, userID, channelID, message, card))
             }
             "close" -> {
                 event.deferEdit()

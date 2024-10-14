@@ -16,8 +16,8 @@ import mandarin.packpack.supporter.server.holder.component.search.TalentMessageH
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class TalentInfo extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String[] list = loader.getContent().split(" ",2);
@@ -69,7 +69,7 @@ public class TalentInfo extends ConstraintCommand {
                     return;
                 }
 
-                EntityHandler.showTalentEmbed(ch, loader.getMessage(), trueForm, isFrame, lang);
+                EntityHandler.showTalentEmbed(ch, loader.getMessage(), trueForm, isFrame, false, lang);
             } else if (forms.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
             } else {
@@ -99,7 +99,7 @@ public class TalentInfo extends ConstraintCommand {
                 replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
                     User u = loader.getUser();
 
-                    StaticStore.putHolder(u.getId(), new TalentMessageHolder(res, loader.getMessage(), ch.getId(), forms, isFrame, lang));
+                    StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), res, forms, isFrame, lang));
                 });
             }
         }

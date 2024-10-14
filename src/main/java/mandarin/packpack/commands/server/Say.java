@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.regex.Pattern;
 
 public class Say extends ConstraintCommand {
@@ -21,7 +21,7 @@ public class Say extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         Guild g = loader.getGuild();
 
@@ -64,7 +64,7 @@ public class Say extends ConstraintCommand {
                 Message m = loader.getMessage();
 
                 registerConfirmButtons(ch.sendMessage("This message may mention role or a lot of users, are you sure you want to send this message?"), lang).queue(target ->
-                        StaticStore.putHolder(m.getAuthor().getId(), new ConfirmButtonHolder(m, target, ch.getId(), lang, () -> ((MessageChannel) gc).sendMessage(contents[2]).queue()))
+                        StaticStore.putHolder(m.getAuthor().getId(), new ConfirmButtonHolder(m, m.getAuthor().getId(), ch.getId(), target, lang, () -> ((MessageChannel) gc).sendMessage(contents[2]).queue()))
                 );
 
             } else {

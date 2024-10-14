@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.max
 
-class ManualSlotConfirmHolder(author: Message, channelID: String, message: Message, private val member: Member, private val users: List<String>, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ManualSlotConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val member: Member, private val users: List<String>, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     private var input = -1L
@@ -57,7 +57,7 @@ class ManualSlotConfirmHolder(author: Message, channelID: String, message: Messa
                     input
                 }
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferEdit()
                         .setContent("Rolling...! \uD83C\uDFB2")
                         .setComponents()
@@ -83,7 +83,7 @@ class ManualSlotConfirmHolder(author: Message, channelID: String, message: Messa
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotManualRollInputHolder(authorMessage, channelID, message, ::input, slotMachine))
+                connectTo(SlotManualRollInputHolder(authorMessage, userID, channelID, message, ::input, slotMachine))
             }
             "prev" -> {
                 page--

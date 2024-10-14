@@ -2,7 +2,7 @@ package mandarin.packpack.supporter.server.holder.component;
 
 import common.CommonStatic;
 import common.util.unit.Form;
-import common.util.unit.Level;
+import mandarin.packpack.commands.bc.FormStat;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
@@ -13,44 +13,32 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class FormButtonHolder extends ComponentHolder {
     private final ConfigHolder config;
     private final Form f;
 
-    private final boolean isFrame;
-    private final boolean talent;
-    private final boolean extra;
-    private final boolean compact;
-    private final Level lv;
-    private final boolean treasure;
+    private final FormStat.FormStatConfig configData;
     private final TreasureHolder t;
 
-    public FormButtonHolder(Form f, @Nonnull Message author, @Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, boolean treasure, TreasureHolder t, Level lv, CommonStatic.Lang.Locale lang, @Nonnull String channelID) {
-        super(author, channelID, msg, lang);
+    public FormButtonHolder(Form f, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, TreasureHolder t, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.config = config;
         this.f = f;
 
-        this.isFrame = isFrame;
-        this.talent = talent;
-        this.extra = extra;
-        this.compact = compact;
-        this.treasure = treasure;
+        this.configData = configData;
         this.t = t;
-        this.lv = lv;
 
         registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        message.delete().queue();
-
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = event.getMessageChannel();
 
         if(event.getComponentId().equals("talent")) {
@@ -58,13 +46,13 @@ public class FormButtonHolder extends ComponentHolder {
                 return;
 
             try {
-                EntityHandler.showTalentEmbed(ch, getAuthorMessage(), f, isFrame, lang);
+                EntityHandler.showTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, f, configData.isFrame, true, lang);
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show talent embed on button click");
             }
         } else if (event.getComponentId().equals("dps")) {
             try {
-                EntityHandler.showFormDPS(ch, getAuthorMessage(), f, t, lv, config, talent, treasure, lang);
+                EntityHandler.showFormDPS(event, hasAuthorMessage() ? getAuthorMessage() : null, f, t, configData.lv, config, configData.talent, configData.treasure, true, lang);
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show DPS graph on buttone click");
             }
@@ -92,7 +80,7 @@ public class FormButtonHolder extends ComponentHolder {
             Form newForm = f.unit.forms[f.fid + diff];
 
             try {
-                EntityHandler.showUnitEmb(newForm, ch, getAuthorMessage(), config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, compact, msg -> { });
+                EntityHandler.showUnitEmb(newForm, event, hasAuthorMessage() ? getAuthorMessage() : null, config, false, t, configData, lang, false, true, msg -> { });
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
             }
@@ -113,7 +101,7 @@ public class FormButtonHolder extends ComponentHolder {
         for(Button button : message.getButtons()) {
             if(button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
                 buttons.add(button);
-            } else if(!compact) {
+            } else if(!configData.compact) {
                 buttons.add(button.asDisabled());
             }
         }

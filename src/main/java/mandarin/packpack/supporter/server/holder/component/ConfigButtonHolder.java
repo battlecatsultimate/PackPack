@@ -19,7 +19,8 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,8 @@ public class ConfigButtonHolder extends ComponentHolder {
 
     private int page = 0;
 
-    public ConfigButtonHolder(Message author, Message msg, ConfigHolder config, IDHolder holder, String channelID, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public ConfigButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
         
         this.config = config;
         this.backup = config.clone();
@@ -44,7 +45,7 @@ public class ConfigButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "language" -> {
                 StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
@@ -76,7 +77,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), message, channelID, config, e -> e.deferEdit()
+                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), userID, channelID, message, config, e -> e.deferEdit()
                         .setContent(parseMessage())
                         .setComponents(parseComponents())
                         .mentionRepliedUser(false)

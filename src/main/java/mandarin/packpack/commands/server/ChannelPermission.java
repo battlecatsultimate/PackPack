@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class ChannelPermission extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         if(holder == null)
             return;
 
@@ -47,7 +47,7 @@ public class ChannelPermission extends ConstraintCommand {
         roles.addAll(holder.ID.values());
 
         replyToMessageSafely(ch, getContents(roles), loader.getMessage(), a -> a.setComponents(getComponents(roles)), msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new ConfigChannelRoleSelectHolder(loader.getMessage(), ch.getId(), msg, holder, lang))
+            StaticStore.putHolder(loader.getUser().getId(), new ConfigChannelRoleSelectHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, holder, lang))
         );
     }
 

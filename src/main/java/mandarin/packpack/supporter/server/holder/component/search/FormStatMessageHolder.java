@@ -4,16 +4,14 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
-import common.util.unit.Level;
+import mandarin.packpack.commands.bc.FormStat;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
-import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.FormButtonHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import java.util.ArrayList;
@@ -23,35 +21,16 @@ public class FormStatMessageHolder extends SearchHolder {
     private final ArrayList<Form> form;
     private final ConfigHolder config;
 
-    private final boolean talent;
-    private final boolean isFrame;
-    private final boolean extra;
-    private final boolean compact;
-    private final boolean isTrueForm;
-    private final Level lv;
-    private final boolean treasure;
+    private final FormStat.FormStatConfig configData;
     private final TreasureHolder t;
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, Level lv, TreasureHolder t, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, String userID, String channelID, Message message, ConfigHolder config, TreasureHolder t, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.form = form;
         this.config = config;
 
-        this.talent = (param & 2) > 0 || lv.getTalents().length > 0;
-
-        if ((param & 4) > 0)
-            this.isFrame = false;
-        else if ((param & 128) > 0)
-            this.isFrame = true;
-        else
-            this.isFrame = config.useFrame;
-
-        this.extra = (param & 8) > 0 || config.extra;
-        this.compact = (param & 16) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-        this.isTrueForm = (param & 32) > 0;
-        this.treasure = (param & 64) > 0 || config.treasure;
-        this.lv = lv;
+        this.configData = configData;
         this.t = t;
     }
 
@@ -78,21 +57,17 @@ public class FormStatMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getChannel();
-
         int id = parseDataToInt(event);
-
-        message.delete().queue();
 
         try {
             Form f = form.get(id);
 
-            EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, f.fid >= 2, lv, treasure, t, lang, true, compact, result -> {
+            EntityHandler.showUnitEmb(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.fid >= 2, t, configData, lang, true, true, result -> {
                 User u = event.getUser();
 
                 StaticStore.removeHolder(u.getId(), FormStatMessageHolder.this);
 
-                StaticStore.putHolder(u.getId(), new FormButtonHolder(form.get(id), getAuthorMessage(), result, config, isFrame, talent, extra, compact, treasure, t, lv, lang, channelID));
+                StaticStore.putHolder(u.getId(), new FormButtonHolder(form.get(id), hasAuthorMessage() ? getAuthorMessage() : null, u.getId(), channelID, result, config, t, configData, lang));
             });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormStatMessageHolder::onSelected - Failed to perform showing unit embed");

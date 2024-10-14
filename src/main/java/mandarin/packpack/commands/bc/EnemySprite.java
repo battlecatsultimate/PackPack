@@ -17,8 +17,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class EnemySprite extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String[] contents = loader.getContent().split(" ");
@@ -93,7 +93,7 @@ public class EnemySprite extends TimedConstraintCommand {
 
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new EnemySpriteMessageHolder(enemies, msg, res, ch.getId(), mode, lang));
+                        StaticStore.putHolder(u.getId(), new EnemySpriteMessageHolder(enemies, msg, u.getId(), ch.getId(), res, mode, lang));
                     }
                 });
 

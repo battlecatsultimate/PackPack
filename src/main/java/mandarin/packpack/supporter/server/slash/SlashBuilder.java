@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class SlashBuilder {
         );
     }
 
-    private static void getCommandCreation(JDA client, @NotNull String name, @NotNull String description, @Nullable List<SlashOption> options) {
+    private static void getCommandCreation(JDA client, @Nonnull String name, @Nonnull String description, @Nullable List<SlashOption> options) {
         CommandCreateAction action = client.upsertCommand(name, description);
 
         if(options != null) {

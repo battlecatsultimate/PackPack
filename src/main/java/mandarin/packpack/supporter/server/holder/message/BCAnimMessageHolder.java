@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -56,8 +57,8 @@ public class BCAnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, boolean performance, CommonStatic.Lang.Locale lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
-        super(author, channelID, target, lang);
+    public BCAnimMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, boolean performance, CommonStatic.Lang.Locale lang, File container, MessageChannel ch, boolean zombie) throws Exception {
+        super(author, userID, channelID, message, lang);
         
         this.performance = performance;
         this.container = container;

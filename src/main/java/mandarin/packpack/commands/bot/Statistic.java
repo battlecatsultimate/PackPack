@@ -6,7 +6,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class Statistic extends Command {
     public Statistic(CommonStatic.Lang.Locale lang) {
@@ -14,7 +15,7 @@ public class Statistic extends Command {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         createMessageWithNoPings(ch, LangID.getStringByID("stat.info", lang)

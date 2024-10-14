@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -35,8 +36,8 @@ public class FormAnimMessageHolder extends SearchHolder {
 
     private final String command;
 
-    public FormAnimMessageHolder(ArrayList<Form> form, @Nonnull Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
-        super(author, msg, channelID, lang);
+    public FormAnimMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
+        super(author, userID, channelID, message, lang);
 
         this.form = form;
 

@@ -31,11 +31,12 @@ import java.util.concurrent.TimeUnit
 
 class SkinModifyHolder(
     author: Message,
+    userID: String,
     channelID: String,
     message: Message,
     private val skin: Skin,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -55,7 +56,7 @@ class SkinModifyHolder(
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "file" -> {
-                connectTo(event, SkinFileHolder(authorMessage, channelID, message, skin.card, skin))
+                connectTo(event, SkinFileHolder(authorMessage, userID, channelID, message, skin.card, skin))
             }
             "creator" -> {
                 if (event !is EntitySelectInteractionEvent)
@@ -96,7 +97,7 @@ class SkinModifyHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(SkinNameHolder(authorMessage, channelID, message, skin))
+                connectTo(SkinNameHolder(authorMessage, userID, channelID, message, skin))
             }
             "public" -> {
                 skin.public = !skin.public
@@ -104,7 +105,7 @@ class SkinModifyHolder(
                 applyResult(event)
             }
             "cost" -> {
-                connectTo(event, SkinCostManageHolder(authorMessage, channelID, message, skin))
+                connectTo(event, SkinCostManageHolder(authorMessage, userID, channelID, message, skin))
             }
             "create" -> {
                 CardData.skins.add(skin)
@@ -139,7 +140,7 @@ class SkinModifyHolder(
 
                     registerPopUp(event, "Are you sure you want to cancel creation of the skin? This cannot be undone")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         if (!Files.deleteIfExists(skin.file.toPath())) {
                             StaticStore.logger.uploadLog("W/SkinModifyHolder::onEvent - Failed to delete new skin file : ${skin.file.absolutePath}")
                         }
@@ -153,7 +154,7 @@ class SkinModifyHolder(
             "delete" -> {
                 registerPopUp(event, "Are you sure you want to delete this skin? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     if (skin.file.exists() && !Files.deleteIfExists(skin.file.toPath())) {
                         StaticStore.logger.uploadLog("W/SkinModifyHolder::onEvent - Failed to delete existing skin file : ${skin.file.absolutePath}")
                     }

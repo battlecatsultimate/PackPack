@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class CardPackCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardPackCostHolder(author: Message, userID: String, channelID: String, message: Message, private val pack: CardPack) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -62,7 +62,7 @@ class CardPackCostHolder(author: Message, channelID: String, message: Message, p
 
                 event.replyModal(modal).queue()
 
-                connectTo(CatFoodCostHolder(authorMessage, channelID, message, pack.cost))
+                connectTo(CatFoodCostHolder(authorMessage, userID, channelID, message, pack.cost))
             }
             "shard" -> {
                 val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
@@ -77,10 +77,10 @@ class CardPackCostHolder(author: Message, channelID: String, message: Message, p
 
                 event.replyModal(modal).queue()
 
-                connectTo(PlatinumShardCostHolder(authorMessage, channelID, message, pack.cost))
+                connectTo(PlatinumShardCostHolder(authorMessage, userID, channelID, message, pack.cost))
             }
             "add" -> {
-                connectTo(event, CardCostTypeHolder(authorMessage, channelID, message, pack))
+                connectTo(event, CardCostTypeHolder(authorMessage, userID, channelID, message, pack))
             }
             "cost" -> {
                 if (event !is StringSelectInteractionEvent) {
@@ -93,9 +93,9 @@ class CardPackCostHolder(author: Message, channelID: String, message: Message, p
                     return
 
                 when(val cost = pack.cost.cardsCosts[index]) {
-                    is BannerCardCost -> connectTo(event, BannerCostHolder(authorMessage, channelID, message, pack, cost, false))
-                    is TierCardCost -> connectTo(event, TierCostHolder(authorMessage, channelID, message, pack, cost, false))
-                    is SpecificCardCost -> connectTo(event, SpecificCardCostHolder(authorMessage, channelID, message, pack, cost, false))
+                    is BannerCardCost -> connectTo(event, BannerCostHolder(authorMessage, userID, channelID, message, pack, cost, false))
+                    is TierCardCost -> connectTo(event, TierCostHolder(authorMessage, userID, channelID, message, pack, cost, false))
+                    is SpecificCardCost -> connectTo(event, SpecificCardCostHolder(authorMessage, userID, channelID, message, pack, cost, false))
                 }
             }
             "role" -> {

@@ -45,7 +45,7 @@ class FilterProcessHolder : ComponentHolder {
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, role: CardData.Role) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: String, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, role: CardData.Role) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.filters = filters
         this.inventory = inventory
@@ -60,7 +60,7 @@ class FilterProcessHolder : ComponentHolder {
         filterCards()
     }
 
-    constructor(author: Message, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: String, channelID: String, message: Message, product: Product, filters: List<Filter>, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.filters = filters
         this.inventory = inventory

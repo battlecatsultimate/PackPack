@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineContentSortHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineContentSortHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -78,7 +78,7 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, message: 
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)
@@ -129,7 +129,7 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, message: 
 
                         event.replyModal(modal).queue()
 
-                        connectTo(SlotMachineContentSortModalHolder(authorMessage, channelID, message) { i, e ->
+                        connectTo(SlotMachineContentSortModalHolder(authorMessage, userID, channelID, message) { i, e ->
                             val targetIndex = i - 1
 
                             if (targetIndex < 0 || targetIndex >= slotMachine.content.size) {

@@ -11,7 +11,7 @@ import kotlin.text.replace
 import kotlin.text.toDouble
 import kotlin.text.toLong
 
-class AuctionInitialPriceHolder(author: Message, channelID: String, message: Message, private val onSelected: (Long) -> Unit) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionInitialPriceHolder(author: Message, userID: String, channelID: String, message: Message, private val onSelected: (Long) -> Unit) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -25,7 +25,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class SlotMachineConfirmHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var page = 0
@@ -74,7 +74,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
 
                     registerPopUp(event, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?")
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { ev ->
                         ev.deferEdit()
                             .setContent("Rolling...! 🎲")
                             .setComponents()
@@ -103,6 +103,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                     connectTo(
                         SlotMachineRollModalHolder(
                             authorMessage,
+                            userID,
                             channelID,
                             message,
                             slotMachine,
@@ -118,7 +119,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, message: Mess
                                 "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?"
                             )
 
-                            connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
+                            connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { ev ->
                                 ev.deferEdit()
                                     .setContent("Rolling...! 🎲")
                                     .setComponents()

@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
-class SlotMachineManageHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineManageHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -58,7 +58,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineSlotSizeModalHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(SlotMachineSlotSizeModalHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "roles" -> {
                 if (event !is EntitySelectInteractionEvent)
@@ -83,13 +83,13 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineNameModalHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(SlotMachineNameModalHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "entryFee" -> {
-                connectTo(event, SlotMachineEntryFeeHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(event, SlotMachineEntryFeeHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "content" -> {
-                connectTo(event, SlotMachineContentHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(event, SlotMachineContentHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "cooldown" -> {
                 val input = TextInput.create("cooldown", "Cooldown", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 3d4h30m -> 3 Days 4 Hours 30 Minutes").build()
@@ -100,7 +100,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
 
                 event.replyModal(modal).queue()
 
-                connectTo(SlotMachineCooldownModalHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(SlotMachineCooldownModalHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "create" -> {
                 CardData.slotMachines.add(slotMachine)
@@ -119,7 +119,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     e.deferReply()
                         .setContent("Canceled creation of slot machine")
                         .setEphemeral(true)
@@ -153,7 +153,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, message: Messa
             "delete" -> {
                 registerPopUp(event, "Are you sure you want to delete this slot machine? This cannot be undone")
 
-                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     CardData.slotMachines.remove(slotMachine)
 
                     CardBot.saveCardData()

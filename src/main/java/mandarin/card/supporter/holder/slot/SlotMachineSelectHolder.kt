@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineSelectHolder(author: Message, channelID: String, message: Message, private val skip: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val skip: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val roles = author.member?.roles?.map { r -> r.idLong } ?: ArrayList()
     private val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate && (s.roles.isEmpty() || s.roles.any { r -> r in roles }) }
 
@@ -50,7 +50,7 @@ class SlotMachineSelectHolder(author: Message, channelID: String, message: Messa
 
                 val slotMachine = possibleSlotMachines[event.values[0].toInt()]
 
-                connectTo(event, SlotMachineConfirmHolder(authorMessage, channelID, message, slotMachine, skip))
+                connectTo(event, SlotMachineConfirmHolder(authorMessage, userID, channelID, message, slotMachine, skip))
             }
             "prev" -> {
                 page--

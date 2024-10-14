@@ -14,8 +14,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.logging.log4j.LogManager;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -25,7 +25,7 @@ public class LogOut extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && !StaticStore.maintainers.contains(loader.getUser().getId())) {
             loader.getChannel().sendMessage(LangID.getStringByID("bot.denied.reason.noPermission.developer", lang)).queue();
 
@@ -49,7 +49,7 @@ public class LogOut extends ConstraintCommand {
         registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), CommonStatic.Lang.Locale.EN).queue(msg -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), lang, () -> {
+            StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang, () -> {
                 String self = ch.getJDA().getSelfUser().getAsMention();
 
                 String code = switch (contents[1]) {

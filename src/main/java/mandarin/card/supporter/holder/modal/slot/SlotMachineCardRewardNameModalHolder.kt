@@ -6,7 +6,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class SlotMachineCardRewardNameModalHolder(author: Message, channelID: String, message: Message, private val content: SlotCardContent) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineCardRewardNameModalHolder(author: Message, userID: String, channelID: String, message: Message, private val content: SlotCardContent) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }

@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 
-class TierCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class TierCostHolder(author: Message, userID: String, channelID: String, message: Message, private val pack: CardPack, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -68,7 +68,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardCostAmountHolder(authorMessage, channelID, message, cardCost))
+                connectTo(CardCostAmountHolder(authorMessage, userID, channelID, message, cardCost))
             }
             "create" -> {
                 pack.cost.cardsCosts.add(cardCost)
@@ -93,7 +93,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
 
                     StaticStore.removeHolder(authorMessage.author.id, this)
 
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, CardPackCostHolder::class.java)
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
@@ -118,7 +118,7 @@ class TierCostHolder(author: Message, channelID: String, message: Message, priva
 
                 StaticStore.removeHolder(authorMessage.author.id, this)
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     pack.cost.cardsCosts.remove(cardCost)
 
                     if (pack in CardData.cardPacks) {

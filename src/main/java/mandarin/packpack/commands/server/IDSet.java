@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class IDSet extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
         Guild g = loader.getGuild();
@@ -38,7 +38,7 @@ public class IDSet extends ConstraintCommand {
             return;
 
         replyToMessageSafely(ch, getContents(), loader.getMessage(), a -> a.setComponents(getComponents(g)), msg ->
-            StaticStore.putHolder(u.getId(), new ConfigRoleRegistrationHolder(loader.getMessage(), ch.getId(), msg, holder, lang))
+            StaticStore.putHolder(u.getId(), new ConfigRoleRegistrationHolder(loader.getMessage(), u.getId(), ch.getId(), msg, holder, lang))
         );
     }
 

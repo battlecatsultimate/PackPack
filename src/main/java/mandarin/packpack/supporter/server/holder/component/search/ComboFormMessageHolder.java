@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,8 @@ public class ComboFormMessageHolder extends SearchHolder {
     private final String cName;
     private final String fName;
 
-    public ComboFormMessageHolder(ArrayList<Form> form, @Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, CommonStatic.Lang.Locale lang, String cName, String fName) {
-        super(author, msg, channelID, lang);
+    public ComboFormMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, String cName, String fName) {
+        super(author, userID, channelID, message, lang);
 
         this.form = form;
 
@@ -127,7 +128,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                     if(res != null) {
                         User u = event.getUser();
 
-                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, message, ch.getId(), lang));
+                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), userID, ch.getId(), res, message, lang));
                     }
                 });
             }

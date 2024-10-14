@@ -17,8 +17,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         int param = checkParam(loader.getContent());
@@ -177,9 +177,9 @@ public class AnimAnalyzer extends ConstraintCommand {
 
                 try {
                     if(bc) {
-                        new BCAnimMessageHolder(msg, m, performance, lang, ch.getId(), container, ch, zombie);
+                        new BCAnimMessageHolder(msg, loader.getUser().getId(), ch.getId(), m, performance, lang, container, ch, zombie);
                     } else {
-                        new AnimMessageHolder(msg, m, lang, ch.getId(), container, performance, debug, ch, raw, finalAnim);
+                        new AnimMessageHolder(msg, loader.getUser().getId(), ch.getId(), m, lang, container, performance, debug, ch, raw, finalAnim);
                     }
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/AnimAnalyzer::doSomething - Failed to initialize holder");

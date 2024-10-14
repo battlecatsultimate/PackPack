@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class CardCraftModeHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardCraftModeHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     init {
@@ -59,7 +59,7 @@ class CardCraftModeHolder(author: Message, channelID: String, message: Message) 
                     else -> CardData.CraftMode.T4
                 }
 
-                connectTo(event, CardCraftAmountHolder(authorMessage, channelID, message, selectedMode))
+                connectTo(event, CardCraftAmountHolder(authorMessage, userID, channelID, message, selectedMode))
             }
         }
     }

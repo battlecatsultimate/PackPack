@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class Setup extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         Guild g = loader.getGuild();
         MessageChannel ch = loader.getChannel();
 
@@ -48,7 +48,7 @@ public class Setup extends ConstraintCommand {
                         Message author = loader.getMessage();
                         Member member = loader.getMember();
 
-                        StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, m, ch.getId(), lang, () -> initializeSetup(ch, author)));
+                        StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, member.getId(), ch.getId(), m, lang, () -> initializeSetup(ch, author)));
                     });
         } else {
             Message author = loader.getMessage();
@@ -69,7 +69,7 @@ public class Setup extends ConstraintCommand {
             if(m == null)
                 return;
 
-            StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(author, m, ch.getId(), holder, lang));
+            StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(author, author.getAuthor().getId(), ch.getId(), m, holder, lang));
         });
     }
 

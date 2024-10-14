@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
-class CardPackNameHolder(author: Message, channelID: String, message: Message, private val new: Boolean, private val pack: CardPack?) : ModalHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardPackNameHolder(author: Message, userID: String, channelID: String, message: Message, private val new: Boolean, private val pack: CardPack?) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
 
     }
@@ -34,7 +34,7 @@ class CardPackNameHolder(author: Message, channelID: String, message: Message, p
                 .mentionRepliedUser(false)
                 .queue()
 
-            parent?.connectTo(CardPackAdjustHolder(authorMessage, channelID, message, pack, new))
+            parent?.connectTo(CardPackAdjustHolder(authorMessage, userID, channelID, message, pack, new))
         } else if (pack != null) {
             pack.packName = name
 

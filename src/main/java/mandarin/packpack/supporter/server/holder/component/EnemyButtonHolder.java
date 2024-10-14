@@ -2,49 +2,43 @@ package mandarin.packpack.supporter.server.holder.component;
 
 import common.CommonStatic;
 import common.util.unit.Enemy;
+import mandarin.packpack.commands.bc.EnemyStat;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class EnemyButtonHolder extends ComponentHolder {
     private final Enemy e;
 
-    private final int[] magnification;
-    private final boolean compact;
     private final TreasureHolder t;
+    private final EnemyStat.EnemyStatConfig configData;
 
-    public EnemyButtonHolder(Enemy e, @Nonnull Message author, @Nonnull Message msg, TreasureHolder t, int[] magnification, boolean compact, CommonStatic.Lang.Locale lang, @Nonnull String channelID) {
-        super(author, channelID, msg, lang);
+    public EnemyButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Enemy e, TreasureHolder t, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
         this.e = e;
 
-        this.magnification = magnification;
         this.t = t;
-        this.compact = compact;
+        this.configData = configData;
 
         registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        message.delete().queue();
-
-        MessageChannel ch = event.getMessageChannel();
-
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         if (event.getComponentId().equals("dps")) {
             try {
-                EntityHandler.showEnemyDPS(ch, getAuthorMessage(), e, t, magnification[1], lang);
+                EntityHandler.showEnemyDPS(event, hasAuthorMessage() ? getAuthorMessage() : null, e, t, configData.magnification[1], true, lang);
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show DPS graph on buttone click");
+                StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show DPS graph on button click");
             }
         }
 
@@ -63,7 +57,7 @@ public class EnemyButtonHolder extends ComponentHolder {
         for(Button button : message.getButtons()) {
             if(button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
                 buttons.add(button);
-            } else if(!compact) {
+            } else if(!configData.isCompact) {
                 buttons.add(button.asDisabled());
             }
         }

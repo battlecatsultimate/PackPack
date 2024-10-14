@@ -21,7 +21,7 @@ class CraftCost : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(ch, getContent(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.id, CraftCostHolder(loader.message, ch.id, msg))
+            StaticStore.putHolder(m.id, CraftCostHolder(loader.message, m.id, ch.id, msg))
         }
     }
 

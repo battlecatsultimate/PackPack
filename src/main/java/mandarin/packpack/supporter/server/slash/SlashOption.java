@@ -4,7 +4,7 @@ import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 
@@ -14,8 +14,10 @@ public class SlashOption {
         INT(OptionType.INTEGER),
         BOOLEAN(OptionType.BOOLEAN),
         STRING(OptionType.STRING),
+        USER(OptionType.USER),
         ROLE(OptionType.ROLE),
         CHANNEL(OptionType.CHANNEL),
+        ATTACHMENT(OptionType.ATTACHMENT),
         SUB_COMMAND(OptionType.SUB_COMMAND),
         GROUP(OptionType.SUB_COMMAND_GROUP);
 
@@ -26,7 +28,7 @@ public class SlashOption {
         }
     }
 
-    public static OptionMapping getOption(List<OptionMapping> options, @NotNull String name) {
+    public static OptionMapping getOption(List<OptionMapping> options, @Nonnull String name) {
         for(OptionMapping option : options) {
             if(option.getName().equals(name)) {
                 return option;
@@ -36,8 +38,8 @@ public class SlashOption {
         return null;
     }
 
-    @NotNull
-    public static String getStringOption(List<OptionMapping> options, String name, @NotNull String def) {
+    @Nonnull
+    public static String getStringOption(List<OptionMapping> options, String name, @Nonnull String def) {
         OptionMapping data = getOption(options, name);
 
         if(data == null)
@@ -74,15 +76,15 @@ public class SlashOption {
         return def;
     }
 
-    @NotNull
+    @Nonnull
     private final String name;
     private final boolean required;
-    @NotNull
+    @Nonnull
     private final String description;
-    @NotNull
+    @Nonnull
     private final TYPE type;
 
-    public SlashOption(@NotNull String name, @NotNull String description, boolean required, @NotNull TYPE type) {
+    public SlashOption(@Nonnull String name, @Nonnull String description, boolean required, @Nonnull TYPE type) {
         this.name = name;
         this.required = required;
         this.description = description;

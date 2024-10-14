@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     init {
@@ -55,13 +55,13 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, message: Mess
 
                 event.replyModal(modal).queue()
 
-                connectTo(AuctionBidHolder(authorMessage, channelID, message, auctionSession) { bid ->
+                connectTo(AuctionBidHolder(authorMessage, userID, channelID, message, auctionSession) { bid ->
                     registerPopUp(
                         message,
                         "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $bid to Auction #${auctionSession.id} <#${auctionSession.channel}>? You won't be able to use bid cat foods in other place until you cancel the bid",
                     )
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         auctionSession.bid(authorMessage.author.idLong, bid)
 
                         e.deferEdit()

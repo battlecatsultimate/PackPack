@@ -13,9 +13,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nonnull;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +24,8 @@ public abstract class SearchHolder extends ComponentHolder {
 
     protected int page = 0;
 
-    public SearchHolder(@Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public SearchHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         registerAutoExpiration(FIVE_MIN);
     }
@@ -49,7 +49,7 @@ public abstract class SearchHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "prev10" -> page -= 10;
             case "prev" -> page--;

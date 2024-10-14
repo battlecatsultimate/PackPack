@@ -30,7 +30,7 @@ class Cancel(private val session: TradingSession) : Command(CommonStatic.Lang.Lo
 
             a.setActionRow(components)
         }, { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, CommonStatic.Lang.Locale.EN, true) {
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, ch.id, msg, CommonStatic.Lang.Locale.EN, true) {
                 CardData.sessions.remove(session)
                 CardBot.saveCardData()
 

@@ -8,14 +8,15 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class LevelModalHolder extends ModalHolder {
     private final ConfigHolder config;
     private final Consumer<ModalInteractionEvent> editor;
 
-    public LevelModalHolder(Message author, Message msg, String channelID, ConfigHolder config, Consumer<ModalInteractionEvent> editor, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, msg, lang);
+    public LevelModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, Consumer<ModalInteractionEvent> editor, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.config = config;
         this.editor = editor;

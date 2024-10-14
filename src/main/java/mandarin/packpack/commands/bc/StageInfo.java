@@ -19,22 +19,23 @@ import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageInfoMessageHolder;
-import mandarin.packpack.supporter.server.holder.message.StageReactionSlashMessageHolder;
-import mandarin.packpack.supporter.server.slash.SlashOption;
+import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StageInfo extends TimedConstraintCommand {
+    public static class StageInfoConfig {
+        public int star;
+
+        public boolean isFrame;
+        public boolean isExtra;
+        public boolean isCompact;
+    }
+
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
     private static final int PARAM_COMPACT = 8;
@@ -43,95 +44,6 @@ public class StageInfo extends TimedConstraintCommand {
     private static final int STAGE = 0;
     private static final int MAP = 1;
     private static final int COLLECTION = 2;
-
-    public static void performInteraction(GenericCommandInteractionEvent event) {
-        Interaction interaction = event.getInteraction();
-
-        if(event.getOptions().isEmpty()) {
-            StaticStore.logger.uploadLog("E/StageInfo::performInteraction - Options are absent in StageInfo!");
-
-            return;
-        }
-
-        List<OptionMapping> options = event.getOptions();
-
-        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
-
-        IDHolder holder;
-
-        if(interaction.getGuild() != null) {
-            String gID = interaction.getGuild().getId();
-
-            holder = StaticStore.idHolder.get(gID);
-
-            if(holder == null) {
-                event.deferReply().setContent("Bot couldn't get guild data").queue();
-
-                return;
-            }
-        } else {
-            holder = null;
-        }
-
-        User u = interaction.getUser();
-
-        if(StaticStore.config.containsKey(u.getId())) {
-            lang = StaticStore.config.get(u.getId()).lang;
-
-            if(lang == null) {
-                if(interaction.getGuild() == null) {
-                    lang = CommonStatic.Lang.Locale.EN;
-                } else {
-                    IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
-
-                    if(idh == null) {
-                        lang = CommonStatic.Lang.Locale.EN;
-                    } else {
-                        lang = idh.config.lang;
-                    }
-                }
-            }
-        }
-
-        String[] name = {
-                SlashOption.getStringOption(options, "map_collection", ""),
-                SlashOption.getStringOption(options, "stage_map", ""),
-                SlashOption.getStringOption(options, "name", "")
-        };
-
-        Stage st;
-
-        if(name[2].isBlank()) {
-            st = null;
-        } else {
-            st = EntityFilter.pickOneStage(name, lang);
-        }
-
-        boolean frame = SlashOption.getBooleanOption(options, "frame", true);
-        boolean extra = SlashOption.getBooleanOption(options, "extra", false);
-        int star = SlashOption.getIntOption(options, "level", 0);
-
-        if(name[2].isBlank() || st == null) {
-            event.deferReply().setContent(LangID.getStringByID("ui.search.moreSpecific", lang)).queue();
-        } else {
-            try {
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                CommonStatic.Lang.Locale finalLang = lang;
-
-                EntityHandler.performStageEmb(st, event, frame, extra, star, lang, treasure, m -> {
-                    if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
-                        StaticStore.putHolder(
-                                u.getId(),
-                                new StageReactionSlashMessageHolder(event, m, st, holder, finalLang)
-                        );
-                    }
-                });
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/StageInfo::performInteraction - Failed to show stage embed");
-            }
-        }
-    }
 
     private final ConfigHolder config;
 
@@ -150,92 +62,113 @@ public class StageInfo extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        String[] segments = loader.getContent().split(" ");
+        String[] names;
+        StageInfoConfig configData = new StageInfoConfig();
 
-        StringBuilder removeMistake = new StringBuilder();
+        if (loader.fromMessage) {
+            String[] segments = loader.getContent().split(" ");
 
-        for(int i = 0; i < segments.length; i++) {
-            if(segments[i].matches("-lv(l)?(\\d+(,)?)+")) {
-                removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
-            } else {
-                removeMistake.append(segments[i]);
+            StringBuilder removeMistake = new StringBuilder();
+
+            for(int i = 0; i < segments.length; i++) {
+                if(segments[i].matches("-lv(l)?(\\d+(,)?)+")) {
+                    removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
+                } else {
+                    removeMistake.append(segments[i]);
+                }
+
+                if(i < segments.length - 1)
+                    removeMistake.append(" ");
             }
 
-            if(i < segments.length - 1)
-                removeMistake.append(" ");
+            String command = removeMistake.toString();
+
+            names = filterStageNames(command);
+
+            int param = checkParameters(command);
+
+            configData.star = getLevel(command);
+
+            if ((param & PARAM_SECOND) > 0)
+                configData.isFrame = false;
+            else if ((param & PARAM_FRAME) > 0)
+                configData.isFrame = true;
+            else
+                configData.isFrame = config.useFrame;
+
+            configData.isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+            configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        } else {
+            SlashOptionMap optionMap = loader.getOptions();
+
+            configData.star = optionMap.getOption("level", 0);
+
+            names = new String[] {
+                    optionMap.getOption("map_collection", ""),
+                    optionMap.getOption("stage_map", ""),
+                    optionMap.getOption("name", "")
+            };
+
+            configData.isFrame = optionMap.getOption("frame", config.useFrame);
+            configData.isExtra = optionMap.getOption("extra", config.extra);
+            configData.isCompact = optionMap.getOption("compact", ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact));
         }
 
-        String command = removeMistake.toString();
-        String[] list = command.split(" ", 2);
-
-        String[] names = filterStageNames(command);
-
-        if(list.length == 1 || allNull(names)) {
-            replyToMessageSafely(ch, LangID.getStringByID("stageInfo.fail.noParameter", lang), loader.getMessage(), a -> a);
+        if(allNull(names)) {
+            if (loader.fromMessage) {
+                replyToMessageSafely(ch, LangID.getStringByID("stageInfo.fail.noParameter", lang), loader.getMessage(), a -> a);
+            } else {
+                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("stageInfo.fail.noParameter", lang), a -> a);
+            }
 
             disableTimer();
         } else {
             ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
+            String additionalContent;
+
             if(stages.isEmpty() && names[0] == null && names[1] == null) {
                 stages = EntityFilter.findStageWithMapName(names[2]);
 
                 if(!stages.isEmpty()) {
-                    ch.sendMessage(LangID.getStringByID("stageInfo.smartSearch", lang)).queue();
+                    additionalContent = LangID.getStringByID("stageInfo.smartSearch", lang) + "\n\n";
+                } else {
+                    additionalContent = "";
                 }
+            } else {
+                additionalContent = "";
             }
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("stageInfo.fail.noResult", lang).replace("_", generateSearchName(names)), loader.getMessage(), a -> a);
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, additionalContent + LangID.getStringByID("stageInfo.fail.noResult", lang).replace("_", generateSearchName(names)), loader.getMessage(), a -> a);
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), additionalContent + "\n" + LangID.getStringByID("stageInfo.fail.noResult", lang).replace("_", generateSearchName(names)), a -> a);
+                }
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                int param = checkParameters(command);
-                int star = getLevel(command);
-
-                boolean isFrame;
-
-                if ((param & PARAM_SECOND) > 0)
-                    isFrame = false;
-                else if ((param & PARAM_FRAME) > 0)
-                    isFrame = true;
-                else
-                    isFrame = config.useFrame;
-
-                boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
                 ArrayList<Stage> finalStages = stages;
 
-                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
-                    User u = loader.getUser();
+                Object sender;
 
-                    Message author = loader.getMessage();
+                if (loader.fromMessage) {
+                    sender = ch;
+                } else {
+                    sender = loader.getInteractionEvent();
+                }
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(finalStages.getFirst(), author, result, ch.getId(), isCompact, lang));
-                });
+                EntityHandler.showStageEmb(stages.getFirst(), sender, loader.getNullableMessage(), additionalContent, treasure, configData, false, lang, result ->
+                    StaticStore.putHolder(loader.getUser().getId(), new StageInfoButtonHolder(finalStages.getFirst(), loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), result, configData.isCompact, lang))
+                );
             } else {
-                int param = checkParameters(command);
-                int star = getLevel(command);
-
-                boolean isFrame;
-
-                if ((param & PARAM_SECOND) > 0)
-                    isFrame = false;
-                else if ((param & PARAM_FRAME) > 0)
-                    isFrame = true;
-                else
-                    isFrame = config.useFrame;
-
-                boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("stageInfo.several", lang).replace("_", generateSearchName(names)))
+                StringBuilder sb = new StringBuilder(additionalContent)
+                        .append((LangID.getStringByID("stageInfo.several", lang).replace("_", generateSearchName(names))))
                         .append("```md\n")
                         .append(LangID.getStringByID("ui.search.selectData", lang));
 
@@ -258,15 +191,19 @@ public class StageInfo extends TimedConstraintCommand {
 
                 ArrayList<Stage> finalStages = stages;
 
-                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
-                    User u = loader.getUser();
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                    Message msg = loader.getMessage();
+                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, additionalContent, treasure, configData, lang));
+                    });
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(finalStages, msg, res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
-                });
+                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, additionalContent, treasure, configData, lang));
+                    });
+                }
 
                 disableTimer();
             }

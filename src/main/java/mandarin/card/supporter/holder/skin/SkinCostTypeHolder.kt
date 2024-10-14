@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 
-class SkinCostTypeHolder(author: Message, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinCostTypeHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -48,13 +48,13 @@ class SkinCostTypeHolder(author: Message, channelID: String, message: Message, p
 
             when(type) {
                 CardCost.CostType.BANNER -> {
-                    connectTo(event, SkinBannerCostHolder(authorMessage, channelID, message, skin, BannerCardCost(BannerFilter.Banner.DarkHeroes, 0), true))
+                    connectTo(event, SkinBannerCostHolder(authorMessage, userID, channelID, message, skin, BannerCardCost(BannerFilter.Banner.DarkHeroes, 0), true))
                 }
                 CardCost.CostType.TIER -> {
-                    connectTo(event, SkinTierCostHolder(authorMessage, channelID, message, skin, TierCardCost(CardPack.CardType.T1, 0), true))
+                    connectTo(event, SkinTierCostHolder(authorMessage, userID, channelID, message, skin, TierCardCost(CardPack.CardType.T1, 0), true))
                 }
                 CardCost.CostType.CARD -> {
-                    connectTo(event, SkinSpecificCardCostHolder(authorMessage, channelID, message, skin, SpecificCardCost(HashSet(), 1), true))
+                    connectTo(event, SkinSpecificCardCostHolder(authorMessage, userID, channelID, message, skin, SpecificCardCost(HashSet(), 1), true))
                 }
             }
         } else if (event.componentId == "back") {

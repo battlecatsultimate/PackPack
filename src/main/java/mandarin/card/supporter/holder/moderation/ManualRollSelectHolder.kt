@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ManualRollSelectHolder(author: Message, channelID: String, message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ManualRollSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {
@@ -58,7 +58,7 @@ class ManualRollSelectHolder(author: Message, channelID: String, message: Messag
                     return
                 }
 
-                connectTo(event, ManualRollConfirmHolder(authorMessage, channelID, message, member, pack, users))
+                connectTo(event, ManualRollConfirmHolder(authorMessage, userID, channelID, message, member, pack, users))
             }
             "close" -> {
                 event.deferEdit()

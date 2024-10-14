@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -40,8 +41,8 @@ public class AnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, CommonStatic.Lang.Locale lang, @Nonnull String channelID, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
-        super(author, channelID, target, lang);
+    public AnimMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
+        super(author, userID, channelID, message, lang);
 
         this.container = container;
 

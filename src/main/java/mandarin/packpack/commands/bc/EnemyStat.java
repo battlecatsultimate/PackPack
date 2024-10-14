@@ -12,74 +12,26 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
+import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
-import mandarin.packpack.supporter.server.slash.SlashOption;
+import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyStat extends ConstraintCommand {
-    public static void performInteraction(GenericCommandInteractionEvent interaction) {
-        if(interaction.getOptions().isEmpty()) {
-            StaticStore.logger.uploadLog("W/EnemyStat::performInteraction - Options are absent!");
-            return;
-        }
+    public static class EnemyStatConfig {
+        public boolean isFrame;
+        public boolean isExtra;
+        public boolean isCompact;
 
-        CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
-
-        User u = interaction.getUser();
-
-        if(StaticStore.config.containsKey(u.getId())) {
-            lang =  StaticStore.config.get(u.getId()).lang;
-
-            if(lang == null) {
-                if(interaction.getGuild() == null) {
-                    lang = CommonStatic.Lang.Locale.EN;
-                } else {
-                    IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
-
-                    if(idh == null) {
-                        lang = CommonStatic.Lang.Locale.EN;
-                    } else {
-                        lang = idh.config.lang;
-                    }
-                }
-            }
-        }
-
-        List<OptionMapping> options = interaction.getOptions();
-
-        String name = SlashOption.getStringOption(options, "name", "");
-
-        Enemy e = name.isBlank() ? null : EntityFilter.pickOneEnemy(name, lang);
-
-        boolean frame = SlashOption.getBooleanOption(options, "frame", true);
-        boolean extra = SlashOption.getBooleanOption(options, "extra", false);
-
-        int[] magnification = {
-                SlashOption.getIntOption(options, "magnification", 100),
-                SlashOption.getIntOption(options, "atk_magnification", 100)
-        };
-
-        final CommonStatic.Lang.Locale finalLang = lang;
-
-        if(e == null) {
-            interaction.deferReply().setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("ui.search.moreSpecific", finalLang)).queue();
-        } else {
-            try {
-                EntityHandler.performEnemyEmb(e, interaction, frame, extra, magnification, StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global), finalLang);
-            } catch (Exception exception) {
-                StaticStore.logger.uploadErrorLog(exception, "E/EnemyStat::performInteraction - Failed to show enemy embed");
-            }
-        }
+        public int[] magnification;
     }
 
     private static final int PARAM_SECOND = 2;
@@ -104,58 +56,91 @@ public class EnemyStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        String[] list = loader.getContent().split(" ", 2);
-        String[] segments = loader.getContent().split(" ");
+        EnemyStatConfig configData = new EnemyStatConfig();
+        String name;
 
-        StringBuilder removeMistake = new StringBuilder();
+        if (loader.fromMessage) {
+            String[] segments = loader.getContent().split(" ");
 
-        for(int i = 0; i < segments.length; i++) {
-            if(segments[i].matches("-m(\\d+(,|%,|%$)?)+")) {
-                removeMistake.append("-m ").append(segments[i].replace("-m", ""));
-            } else {
-                removeMistake.append(segments[i]);
+            StringBuilder removeMistake = new StringBuilder();
+
+            for(int i = 0; i < segments.length; i++) {
+                if(segments[i].matches("-m(\\d+(,|%,|%$)?)+")) {
+                    removeMistake.append("-m ").append(segments[i].replace("-m", ""));
+                } else {
+                    removeMistake.append(segments[i]);
+                }
+
+                if(i < segments.length - 1)
+                    removeMistake.append(" ");
             }
 
-            if(i < segments.length - 1)
-                removeMistake.append(" ");
+            String command = removeMistake.toString();
+
+            name = filterCommand(command);
+
+            int param = checkParameters(command);
+
+            configData.magnification = handleMagnification(command);
+
+            if ((param & PARAM_SECOND) > 0)
+                configData.isFrame = false;
+            else if ((param & PARAM_FRAME) > 0)
+                configData.isFrame = true;
+            else
+                configData.isFrame = config.useFrame;
+
+            configData.isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+            configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        } else {
+            SlashOptionMap optionMap = loader.getOptions();
+
+            name = optionMap.getOption("name", "");
+
+            configData.magnification = new int[] {
+                    optionMap.getOption("magnification", 100),
+                    optionMap.getOption("atk_magnification", 100)
+            };
+
+            configData.isFrame = optionMap.getOption("frame", config.useFrame);
+            configData.isExtra = optionMap.getOption("extra", config.extra);
+            configData.isCompact = optionMap.getOption("compact", ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact));
         }
 
-        String command = removeMistake.toString();
-
-        if(list.length == 1 || filterCommand(command).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+        if (name.isBlank()) {
+            if (loader.fromMessage) {
+                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+            } else {
+                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noName", lang), a -> a);
+            }
         } else {
-            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(command), lang);
+            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(name, lang);
 
             if(enemies.size() == 1) {
-                int param = checkParameters(command);
+                Object sender;
 
-                int[] magnification = handleMagnification(command);
+                if (loader.fromMessage) {
+                    sender = ch;
+                } else {
+                    sender = loader.getInteractionEvent();
+                }
 
-                boolean isFrame;
+                Message m = loader.getNullableMessage();
 
-                if ((param & PARAM_SECOND) > 0)
-                    isFrame = false;
-                else if ((param & PARAM_FRAME) > 0)
-                    isFrame = true;
-                else
-                    isFrame = config.useFrame;
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-
-                Message m = loader.getMessage();
-
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(m.getAuthor().getId(), TreasureHolder.global);
-
-                EntityHandler.showEnemyEmb(enemies.getFirst(), ch, m, isFrame, isExtra, isCompact, magnification, treasure, lang);
+                EntityHandler.showEnemyEmb(enemies.getFirst(), sender, m, treasure, configData, false, lang, msg -> StaticStore.putHolder(loader.getUser().getId(), new EnemyButtonHolder(m, loader.getUser().getId(), ch.getId(), msg, enemies.getFirst(), treasure, configData, lang)));
             } else if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(command)), loader.getMessage(), a -> a);
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(name)), loader.getMessage(), a -> a);
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(name)), a -> a);
+                }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(command)));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(name)));
 
                 sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
@@ -176,33 +161,27 @@ public class EnemyStat extends ConstraintCommand {
 
                 sb.append("```");
 
-                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
-                    int[] magnification = handleMagnification(command);
-
-                    int param = checkParameters(command);
-
-                    boolean isFrame;
-
-                    if ((param & PARAM_SECOND) > 0)
-                        isFrame = false;
-                    else if ((param & PARAM_FRAME) > 0)
-                        isFrame = true;
-                    else
-                        isFrame = config.useFrame;
-
-                    boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                    boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-
-                    if(res != null) {
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
                         User u = loader.getUser();
 
                         Message msg = loader.getMessage();
 
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, isCompact, treasure, lang));
-                    }
-                });
+                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, configData, lang));
+                    });
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                        User u = loader.getUser();
+
+                        Message msg = loader.getNullableMessage();
+
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
+                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, configData, lang));
+                    });
+                }
             }
         }
     }
@@ -472,8 +451,8 @@ public class EnemyStat extends ConstraintCommand {
         return data;
     }
 
-    private String getSearchKeyword(String command) {
-        String result = filterCommand(command);
+    private String getSearchKeyword(String name) {
+        String result = name;
 
         if(result.length() > 1500)
             result = result.substring(0, 1500) + "...";

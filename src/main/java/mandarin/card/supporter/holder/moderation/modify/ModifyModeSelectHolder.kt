@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class ModifyModeSelectHolder(author: Message, channelID: String, message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ModifyModeSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(FIVE_MIN)
     }
@@ -63,13 +63,13 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
 
                 when (category) {
                     CardData.ModifyCategory.CARD -> {
-                        connectTo(event, CardModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
+                        connectTo(event, CardModifyHolder(authorMessage, userID, channelID, message, isAdd, inventory, targetMember))
                     }
                     CardData.ModifyCategory.ROLE -> {
-                        connectTo(event, RoleModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
+                        connectTo(event, RoleModifyHolder(authorMessage, userID, channelID, message, isAdd, inventory, targetMember))
                     }
                     CardData.ModifyCategory.SKIN -> {
-                        connectTo(event, SkinModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
+                        connectTo(event, SkinModifyHolder(authorMessage, userID, channelID, message, isAdd, inventory, targetMember))
                     }
                     CardData.ModifyCategory.CF -> {
                         val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
@@ -82,7 +82,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
 
                         event.replyModal(modal).queue()
 
-                        connectTo(CatFoodModifyHolder(authorMessage, channelID, message, inventory, isAdd, targetMember.id))
+                        connectTo(CatFoodModifyHolder(authorMessage, userID, channelID, message, inventory, isAdd, targetMember.id))
                     }
                     CardData.ModifyCategory.SHARD -> {
                         val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
@@ -95,7 +95,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, message: Messag
 
                         event.replyModal(modal).queue()
 
-                        connectTo(PlatinumShardModifyHolder(authorMessage, channelID, message, inventory, isAdd, targetMember.id))
+                        connectTo(PlatinumShardModifyHolder(authorMessage, userID, channelID, message, inventory, isAdd, targetMember.id))
                     }
                 }
             }

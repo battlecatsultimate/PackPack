@@ -18,8 +18,8 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class Help extends Command {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         String[] messages = loader.getContent().split(" ");
@@ -74,7 +74,7 @@ public class Help extends Command {
 
             replyToMessageSafely(ch, "", loader.getMessage(),
                     a -> a.setEmbeds(builder.build()).setComponents(getComponents()),
-                    msg -> StaticStore.putHolder(loader.getUser().getId(), new HelpCategoryHolder(loader.getMessage(), ch.getId(), msg, lang, color))
+                    msg -> StaticStore.putHolder(loader.getUser().getId(), new HelpCategoryHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, lang, color))
             );
         }
     }

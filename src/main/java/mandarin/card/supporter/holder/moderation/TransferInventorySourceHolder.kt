@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
-class TransferInventorySourceHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class TransferInventorySourceHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var transferMode = CardData.TransferMode.INJECT
     private var reset = false
 
@@ -48,7 +48,7 @@ class TransferInventorySourceHolder(author: Message, channelID: String, message:
                     return
                 }
 
-                connectTo(event, TransferInventoryTargetHolder(authorMessage, channelID, message, id, transferMode, reset))
+                connectTo(event, TransferInventoryTargetHolder(authorMessage, userID, channelID, message, id, transferMode, reset))
             }
             "mode" -> {
                 transferMode = CardData.TransferMode.entries[(transferMode.ordinal + 1) % CardData.TransferMode.entries.size]

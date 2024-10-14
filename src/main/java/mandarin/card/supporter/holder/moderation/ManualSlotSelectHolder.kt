@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class ManualSlotSelectHolder(author: Message, channelID: String, message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ManualSlotSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val slotMachines = CardData.slotMachines.filter { s -> s.valid }
 
     private var page = 0
@@ -36,7 +36,7 @@ class ManualSlotSelectHolder(author: Message, channelID: String, message: Messag
 
                 val slot = slotMachines[event.values[0].toInt()]
 
-                connectTo(event, ManualSlotConfirmHolder(authorMessage, channelID, message, member, users, slot))
+                connectTo(event, ManualSlotConfirmHolder(authorMessage, userID, channelID, message, member, users, slot))
             }
             "close" -> {
                 event.deferEdit()

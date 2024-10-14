@@ -6,7 +6,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 public class ServerPrefix extends ConstraintCommand {
     public ServerPrefix(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
@@ -14,7 +14,7 @@ public class ServerPrefix extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) {
         if(holder == null)
             return;
 

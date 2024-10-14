@@ -15,7 +15,8 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,8 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
     private ScamLinkHandler.ACTION action = ScamLinkHandler.ACTION.MUTE;
     private boolean noticeAll = false;
 
-    public ScamLinkSubscriptionHolder(Message author, Message msg, String channelID, CommonStatic.Lang.Locale lang, String targetChannel, String mute) {
-        super(author, channelID, msg, lang);
+    public ScamLinkSubscriptionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, String targetChannel, String mute) {
+        super(author, userID, channelID, message, lang);
 
         this.targetChannel = targetChannel;
         this.mute = mute;
@@ -37,7 +38,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = message.getChannel();
         Guild g = message.getGuild();
 

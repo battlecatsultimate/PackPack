@@ -20,8 +20,8 @@ public class EnemyDPSHolder extends SearchHolder {
 
     private final TreasureHolder t;
 
-    public EnemyDPSHolder(ArrayList<Enemy> form, Message author, Message msg, String channelID, TreasureHolder t, int magnification, CommonStatic.Lang.Locale lang) {
-        super(author, msg, channelID, lang);
+    public EnemyDPSHolder(ArrayList<Enemy> form, Message author, String userID, String channelID, Message message, TreasureHolder t, int magnification, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.form = form;
         this.magnification = magnification;
@@ -60,7 +60,7 @@ public class EnemyDPSHolder extends SearchHolder {
         try {
             Enemy f = form.get(id);
 
-            EntityHandler.showEnemyDPS(ch, getAuthorMessage(), f, t, magnification, lang);
+            EntityHandler.showEnemyDPS(ch, getAuthorMessage(), f, t, magnification, false, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/EnemyDPSHolder::onSelected - Failed to perform showing enemy embed");
         }

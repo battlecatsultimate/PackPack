@@ -8,8 +8,9 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import net.dv8tion.jda.api.entities.Message;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public abstract class ServerConfigHolder extends ComponentHolder implements Conflictable {
@@ -18,8 +19,8 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
     protected final IDHolder holder;
     protected final IDHolder backup;
 
-    public ServerConfigHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public ServerConfigHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.message = message;
 
@@ -29,8 +30,8 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
         registerAutoExpiration(FIVE_MIN);
     }
 
-    public ServerConfigHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, CommonStatic.Lang.Locale lang) {
-        super(author, channelID, message, lang);
+    public ServerConfigHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, lang);
 
         this.message = message;
 
