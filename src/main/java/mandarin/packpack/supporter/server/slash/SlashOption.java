@@ -1,12 +1,9 @@
 package mandarin.packpack.supporter.server.slash;
 
-import mandarin.packpack.supporter.StaticStore;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
-import javax.annotation.Nonnull;
 
-import java.util.List;
+import javax.annotation.Nonnull;
 
 public class SlashOption {
     @SuppressWarnings("unused")
@@ -26,54 +23,6 @@ public class SlashOption {
         TYPE(OptionType type) {
             this.type = type;
         }
-    }
-
-    public static OptionMapping getOption(List<OptionMapping> options, @Nonnull String name) {
-        for(OptionMapping option : options) {
-            if(option.getName().equals(name)) {
-                return option;
-            }
-        }
-
-        return null;
-    }
-
-    @Nonnull
-    public static String getStringOption(List<OptionMapping> options, String name, @Nonnull String def) {
-        OptionMapping data = getOption(options, name);
-
-        if(data == null)
-            return def;
-
-        if(data.getType() == TYPE.STRING.type)
-            return data.getAsString();
-
-        return def;
-    }
-
-    public static boolean getBooleanOption(List<OptionMapping> options, String name, boolean def) {
-        OptionMapping data = getOption(options, name);
-
-        if(data == null)
-            return def;
-
-        if(data.getType() == TYPE.BOOLEAN.type) {
-            return data.getAsBoolean();
-        }
-
-        return def;
-    }
-
-    public static int getIntOption(List<OptionMapping> options, String name, int def) {
-        OptionMapping data = getOption(options, name);
-
-        if(data == null)
-            return def;
-
-        if(data.getType() == TYPE.INT.type)
-            return StaticStore.safeParseInt(data.getAsString());
-
-        return def;
     }
 
     @Nonnull
