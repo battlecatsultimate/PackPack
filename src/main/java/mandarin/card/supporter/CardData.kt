@@ -193,7 +193,7 @@ object CardData {
             //Uberfest Exclusives
             arrayOf(269, 318, 380, 529, 585, 641, 690),
             //Other Exclusives
-            arrayOf(283, 286, 397, 559, 612, 686),
+            arrayOf(283, 286, 397, 559, 612, 686, 758),
             //LilValk
             arrayOf(435),
             //Dark Lil valk
