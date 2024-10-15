@@ -50,8 +50,8 @@ public class SlashBuilder {
             getCommandCreation(client,"si", "Show stat of stage",
                     List.of(
                             new SlashOption("name", "Name of stage", true, SlashOption.TYPE.STRING, true),
-                            new SlashOption("stage_map", "Name of stage map", false, SlashOption.TYPE.STRING),
-                            new SlashOption("map_collection", "Name of map collection", false, SlashOption.TYPE.STRING),
+                            new SlashOption("stage_map", "Name of stage map", false, SlashOption.TYPE.STRING, true),
+                            new SlashOption("map_collection", "Name of map collection", false, SlashOption.TYPE.STRING, true),
                             new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("extra", "Show extra information", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("compact", "Show information with compact mode", false, SlashOption.TYPE.BOOLEAN),

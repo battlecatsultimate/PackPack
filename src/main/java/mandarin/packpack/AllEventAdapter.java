@@ -2,7 +2,9 @@ package mandarin.packpack;
 
 import common.CommonStatic;
 import common.util.Data;
+import common.util.stage.MapColc;
 import common.util.stage.Stage;
+import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import mandarin.packpack.commands.*;
@@ -992,64 +994,146 @@ public class AllEventAdapter extends ListenerAdapter {
                 }
             }
             case "si" -> {
-                String[] names = new String[3];
+                switch(event.getInteraction().getFocusedOption().getName()) {
+                    case "name" -> {
+                        String[] names = new String[3];
 
-                names[0] = event.getOptions().stream().filter(o -> o.getName().equals("map_collection") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
-                names[1] = event.getOptions().stream().filter(o -> o.getName().equals("stage_map") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
-                names[2] = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+                        names[0] = event.getOptions().stream().filter(o -> o.getName().equals("map_collection") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+                        names[1] = event.getOptions().stream().filter(o -> o.getName().equals("stage_map") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+                        names[2] = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
 
-                List<Stage> stages = EntityFilter.findStageWithName(names, locale);
+                        List<Stage> stages = EntityFilter.findStageWithName(names, locale);
 
-                if (stages.isEmpty()) {
-                    event.replyChoices().queue();
-                } else {
-                    List<Command.Choice> choices = new ArrayList<>();
+                        if (stages.isEmpty()) {
+                            event.replyChoices().queue();
+                        } else {
+                            List<Command.Choice> choices = new ArrayList<>();
 
-                    for (int i = 0; i < Math.min(stages.size(), OptionData.MAX_CHOICES); i++) {
-                        Stage s = stages.get(i);
+                            for (int i = 0; i < Math.min(stages.size(), OptionData.MAX_CHOICES); i++) {
+                                Stage s = stages.get(i);
 
-                        String stageName = StaticStore.safeMultiLangGet(s, locale);
-                        String stageMapName = StaticStore.safeMultiLangGet(s.getCont(), locale);
-                        String mapCollectionName = StaticStore.safeMultiLangGet(s.getCont().getCont(), locale);
+                                String stageName = StaticStore.safeMultiLangGet(s, locale);
+                                String stageMapName = StaticStore.safeMultiLangGet(s.getCont(), locale);
+                                String mapCollectionName = StaticStore.safeMultiLangGet(s.getCont().getCont(), locale);
 
-                        if (stageName == null || stageName.isBlank()) {
-                            stageName = s.names.toString();
+                                if (stageName == null || stageName.isBlank()) {
+                                    stageName = s.names.toString();
+                                }
+
+                                if (stageMapName == null || stageMapName.isBlank()) {
+                                    stageMapName = s.getCont().names.toString();
+                                }
+
+                                if (mapCollectionName == null || mapCollectionName.isBlank()) {
+                                    mapCollectionName = s.getCont().getCont().getSID();
+                                }
+
+                                if (stageName.isBlank() && s.id != null) {
+                                    stageName = Data.trio(s.id.id);
+                                }
+
+                                if (stageMapName.isBlank() && s.getCont().id != null) {
+                                    stageMapName = Data.trio(s.getCont().id.id);
+                                }
+
+                                String name = mapCollectionName + " - " + stageMapName + " - " + stageName;
+
+                                if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                                    name = stageMapName + " - " + stageName;
+                                }
+
+                                if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                                    name = stageName;
+                                }
+
+                                if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                                    name = stageName.substring(0, OptionData.MAX_CHOICE_NAME_LENGTH - 3) + "...";
+                                }
+
+                                choices.add(new Command.Choice(name, DataToString.getStageCode(stages.get(i))));
+                            }
+
+                            event.replyChoices(choices).queue();
                         }
-
-                        if (stageMapName == null || stageMapName.isBlank()) {
-                            stageMapName = s.getCont().names.toString();
-                        }
-
-                        if (mapCollectionName == null || mapCollectionName.isBlank()) {
-                            mapCollectionName = s.getCont().getCont().getSID();
-                        }
-
-                        if (stageName.isBlank() && s.id != null) {
-                            stageName = Data.trio(s.id.id);
-                        }
-
-                        if (stageMapName.isBlank() && s.getCont().id != null) {
-                            stageMapName = Data.trio(s.getCont().id.id);
-                        }
-
-                        String name = mapCollectionName + " - " + stageMapName + " - " + stageName;
-
-                        if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
-                            name = stageMapName + " - " + stageName;
-                        }
-
-                        if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
-                            name = stageName;
-                        }
-
-                        if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
-                            name = stageName.substring(0, OptionData.MAX_CHOICE_NAME_LENGTH - 3) + "...";
-                        }
-
-                        choices.add(new Command.Choice(name, DataToString.getStageCode(stages.get(i))));
                     }
+                    case "stage_map" -> {
+                        String[] names = new String[2];
 
-                    event.replyChoices(choices).queue();
+                        names[0] = event.getOptions().stream().filter(o -> o.getName().equals("map_collection") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+                        names[1] = event.getOptions().stream().filter(o -> o.getName().equals("stage_map") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+
+                        List<StageMap> maps = EntityFilter.findStageMapWithName(names, locale);
+
+                        if (maps.isEmpty()) {
+                            event.replyChoices().queue();
+                        } else {
+                            List<Command.Choice> choices = new ArrayList<>();
+
+                            for (int i = 0; i < Math.min(maps.size(), OptionData.MAX_CHOICES); i++) {
+                                StageMap s = maps.get(i);
+
+                                String stageMapName = StaticStore.safeMultiLangGet(s, locale);
+                                String mapCollectionName = StaticStore.safeMultiLangGet(s.getCont(), locale);
+
+                                if (stageMapName == null || stageMapName.isBlank()) {
+                                    stageMapName = s.names.toString();
+                                }
+
+                                if (mapCollectionName == null || mapCollectionName.isBlank()) {
+                                    mapCollectionName = s.getCont().getSID();
+                                }
+
+                                if (stageMapName.isBlank() && s.id != null) {
+                                    stageMapName = Data.trio(s.id.id);
+                                }
+
+                                String name = mapCollectionName + " - " + stageMapName;
+
+                                if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                                    name = stageMapName;
+                                }
+
+                                if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                                    name = stageMapName.substring(0, OptionData.MAX_CHOICE_NAME_LENGTH - 3) + "...";
+                                }
+
+                                choices.add(new Command.Choice(name, stageMapName.substring(0, Math.min(stageMapName.length(), OptionData.MAX_CHOICE_VALUE_LENGTH))));
+                            }
+
+                            event.replyChoices(choices).queue();
+                        }
+                    }
+                    case "map_collection" -> {
+                        String name = event.getOptions().stream().filter(o -> o.getName().equals("map_collection") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+
+                        List<MapColc> mapCollections = EntityFilter.findMapCollectionWithName(name, locale);
+
+                        if (mapCollections.isEmpty()) {
+                            event.replyChoices().queue();
+                        } else {
+                            List<Command.Choice> choices = new ArrayList<>();
+
+                            for (int i = 0; i < Math.min(mapCollections.size(), OptionData.MAX_CHOICES); i++) {
+                                MapColc mc = mapCollections.get(i);
+
+                                String mapCollectionName = StaticStore.safeMultiLangGet(mc, locale);
+
+                                if (mapCollectionName == null || mapCollectionName.isBlank()) {
+                                    mapCollectionName = mc.getSID();
+                                }
+
+                                String finalName = mapCollectionName;
+
+                                if (finalName.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                                    finalName = mapCollectionName.substring(0, OptionData.MAX_CHOICE_NAME_LENGTH - 3) + "...";
+                                }
+
+                                choices.add(new Command.Choice(finalName, mapCollectionName.substring(0, Math.min(mapCollectionName.length(), OptionData.MAX_CHOICE_VALUE_LENGTH))));
+                            }
+
+                            event.replyChoices(choices).queue();
+                        }
+                    }
                 }
             }
         }
