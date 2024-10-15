@@ -1,6 +1,10 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
+import common.util.Data;
+import common.util.stage.Stage;
+import common.util.unit.Enemy;
+import common.util.unit.Form;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
@@ -12,6 +16,8 @@ import mandarin.packpack.commands.math.*;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
+import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
 import mandarin.packpack.supporter.server.SpamPrevent;
@@ -41,6 +47,7 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
@@ -50,7 +57,13 @@ import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -888,6 +901,157 @@ public class AllEventAdapter extends ListenerAdapter {
             }
 
             StaticStore.logger.uploadErrorLog(e, message);
+        }
+    }
+
+    @Override
+    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
+        super.onCommandAutoCompleteInteraction(event);
+
+        String[] allowedCommands = {
+                "fs", "es", "si"
+        };
+
+        if (!ArrayUtils.contains(allowedCommands, event.getInteraction().getName())) {
+            return;
+        }
+
+        Guild g = event.getGuild();
+
+        IDHolder holder;
+
+        if (g == null) {
+            holder = null;
+        } else {
+            holder = StaticStore.idHolder.get(g.getId());
+        }
+
+        ConfigHolder config = StaticStore.config.get(event.getUser().getId());
+
+        CommonStatic.Lang.Locale locale;
+
+        if (config != null && config.lang != null) {
+            locale = config.lang;
+        } else {
+            locale = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
+        }
+
+        switch (event.getInteraction().getName()) {
+            case "fs" -> {
+                String name = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+
+                List<Form> forms = EntityFilter.findUnitWithName(name, config != null && config.trueForm, locale);
+
+                if (forms.isEmpty()) {
+                    event.replyChoices().queue();
+                } else {
+                    List<Command.Choice> choices = new ArrayList<>();
+
+                    for (int i = 0; i < Math.min(forms.size(), OptionData.MAX_CHOICES); i++) {
+                        String formName = StaticStore.safeMultiLangGet(forms.get(i), locale);
+
+                        if (formName == null || formName.isBlank()) {
+                            formName = forms.get(i).names.toString();
+                        }
+
+                        if (formName.isBlank()) {
+                            formName = Data.trio(forms.get(i).unit.id.id) + "-" + Data.trio(forms.get(i).fid);
+                        }
+
+                        choices.add(new Command.Choice(formName, Data.trio(forms.get(i).unit.id.id) + "-" + Data.trio(forms.get(i).fid)));
+                    }
+
+                    event.replyChoices(choices).queue();
+                }
+            }
+            case "es" -> {
+                String name = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+
+                List<Enemy> enemies = EntityFilter.findEnemyWithName(name, locale);
+
+                if (enemies.isEmpty()) {
+                    event.replyChoices().queue();
+                } else {
+                    List<Command.Choice> choices = new ArrayList<>();
+
+                    for (int i = 0; i < Math.min(enemies.size(), OptionData.MAX_CHOICES); i++) {
+                        String enemyName = StaticStore.safeMultiLangGet(enemies.get(i), locale);
+
+                        if (enemyName == null || enemyName.isBlank()) {
+                            enemyName = enemies.get(i).names.toString();
+                        }
+
+                        if (enemyName.isBlank()) {
+                            enemyName = Data.trio(enemies.get(i).id.id) ;
+                        }
+
+                        choices.add(new Command.Choice(enemyName, Data.trio(enemies.get(i).id.id)));
+                    }
+
+                    event.replyChoices(choices).queue();
+                }
+            }
+            case "si" -> {
+                String[] names = new String[3];
+
+                names[0] = event.getOptions().stream().filter(o -> o.getName().equals("map_collection") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+                names[1] = event.getOptions().stream().filter(o -> o.getName().equals("stage_map") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+                names[2] = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
+
+                List<Stage> stages = EntityFilter.findStageWithName(names, locale);
+
+                if (stages.isEmpty()) {
+                    event.replyChoices().queue();
+                } else {
+                    List<Command.Choice> choices = new ArrayList<>();
+
+                    for (int i = 0; i < Math.min(stages.size(), OptionData.MAX_CHOICES); i++) {
+                        Stage s = stages.get(i);
+
+                        String stageName = StaticStore.safeMultiLangGet(s, locale);
+                        String stageMapName = StaticStore.safeMultiLangGet(s.getCont(), locale);
+                        String mapCollectionName = StaticStore.safeMultiLangGet(s.getCont().getCont(), locale);
+
+                        if (stageName == null || stageName.isBlank()) {
+                            stageName = s.names.toString();
+                        }
+
+                        if (stageMapName == null || stageMapName.isBlank()) {
+                            stageMapName = s.getCont().names.toString();
+                        }
+
+                        if (mapCollectionName == null || mapCollectionName.isBlank()) {
+                            mapCollectionName = s.getCont().getCont().getSID();
+                        }
+
+                        if (stageName.isBlank() && s.id != null) {
+                            stageName = Data.trio(s.id.id);
+                        }
+
+                        if (stageMapName.isBlank() && s.getCont().id != null) {
+                            stageMapName = Data.trio(s.getCont().id.id);
+                        }
+
+                        String name = mapCollectionName + " - " + stageMapName + " - " + stageName;
+
+                        if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                            name = stageMapName + " - " + stageName;
+                        }
+
+                        if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                            name = stageName;
+                        }
+
+                        if (name.length() > OptionData.MAX_CHOICE_NAME_LENGTH) {
+                            name = stageName.substring(0, OptionData.MAX_CHOICE_NAME_LENGTH - 3) + "...";
+                        }
+
+                        choices.add(new Command.Choice(name, DataToString.getStageCode(stages.get(i))));
+                    }
+
+                    event.replyChoices(choices).queue();
+                }
+            }
         }
     }
 

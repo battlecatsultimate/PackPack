@@ -28,6 +28,7 @@ public class SlashOption {
     @Nonnull
     private final String name;
     private final boolean required;
+    private final boolean autoComplete;
     @Nonnull
     private final String description;
     @Nonnull
@@ -36,11 +37,20 @@ public class SlashOption {
     public SlashOption(@Nonnull String name, @Nonnull String description, boolean required, @Nonnull TYPE type) {
         this.name = name;
         this.required = required;
+        this.autoComplete = false;
+        this.description = description;
+        this.type = type;
+    }
+
+    public SlashOption(@Nonnull String name, @Nonnull String description, boolean required, @Nonnull TYPE type, boolean autoComplete) {
+        this.name = name;
+        this.required = required;
+        this.autoComplete = autoComplete;
         this.description = description;
         this.type = type;
     }
 
     public CommandCreateAction apply(CommandCreateAction action) {
-        return action.addOption(type.type, name, description, required);
+        return action.addOption(type.type, name, description, required, autoComplete);
     }
 }

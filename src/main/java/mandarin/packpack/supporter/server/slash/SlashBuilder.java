@@ -5,9 +5,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
-import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +21,11 @@ public class SlashBuilder {
 
             getCommandCreation(client,"fs", "Show stat of unit",
                     List.of(
-                            new SlashOption("name", "Name of unit", true, SlashOption.TYPE.STRING),
+                            new SlashOption("name", "Name of unit", true, SlashOption.TYPE.STRING, true),
                             new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("talent", "Apply talent to this unit if bot can", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("extra", "Show extra information", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("compact", "Show information with compact mode", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("treasure", "Show values with treasure applied", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("level", "Level of this unit", false, SlashOption.TYPE.INT),
                             new SlashOption("talent_lv_1", "First talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
@@ -37,9 +38,10 @@ public class SlashBuilder {
 
             getCommandCreation(client,"es", "Show stat of enemy",
                     List.of(
-                            new SlashOption("name", "Name of enemy", true, SlashOption.TYPE.STRING),
+                            new SlashOption("name", "Name of enemy", true, SlashOption.TYPE.STRING, true),
                             new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("extra", "Show extra information", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("compact", "Show information with compact mode", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("magnification", "Set magnification of this enemy", false, SlashOption.TYPE.INT),
                             new SlashOption("atk_magnification", "Set magnification of attack of this enemy", false, SlashOption.TYPE.INT)
                     )
@@ -47,11 +49,12 @@ public class SlashBuilder {
 
             getCommandCreation(client,"si", "Show stat of stage",
                     List.of(
-                            new SlashOption("name", "Name of stage", true, SlashOption.TYPE.STRING),
+                            new SlashOption("name", "Name of stage", true, SlashOption.TYPE.STRING, true),
                             new SlashOption("stage_map", "Name of stage map", false, SlashOption.TYPE.STRING),
                             new SlashOption("map_collection", "Name of map collection", false, SlashOption.TYPE.STRING),
                             new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("extra", "Show extra information", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("compact", "Show information with compact mode", false, SlashOption.TYPE.BOOLEAN),
                             new SlashOption("level", "Set level (New name of star) to this stage", false, SlashOption.TYPE.INT)
                     )
             );
