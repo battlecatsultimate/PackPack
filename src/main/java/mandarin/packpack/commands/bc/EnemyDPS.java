@@ -41,41 +41,59 @@ public class EnemyDPS extends TimedConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        String[] list = loader.getContent().split(" ", 2);
-        String[] segments = loader.getContent().split(" ");
+        String name;
+        int magnification;
 
-        StringBuilder removeMistake = new StringBuilder();
+        if (loader.fromMessage) {
+            String[] segments = loader.getContent().split(" ");
 
-        for(int i = 0; i < segments.length; i++) {
-            if(segments[i].matches("-m(\\d+(,|%,|%$)?)+")) {
-                removeMistake.append("-m ").append(segments[i].replace("-m", ""));
-            } else {
-                removeMistake.append(segments[i]);
+            StringBuilder removeMistake = new StringBuilder();
+
+            for(int i = 0; i < segments.length; i++) {
+                if(segments[i].matches("-m(\\d+(,|%,|%$)?)+")) {
+                    removeMistake.append("-m ").append(segments[i].replace("-m", ""));
+                } else {
+                    removeMistake.append(segments[i]);
+                }
+
+                if(i < segments.length - 1)
+                    removeMistake.append(" ");
             }
 
-            if(i < segments.length - 1)
-                removeMistake.append(" ");
+            String command = removeMistake.toString();
+
+            name = filterCommand(command);
+            magnification = handleMagnification(command);
+        } else {
+            name = loader.getOptions().getOption("name", "");
+            magnification = loader.getOptions().getOption("magnification", 100);
         }
 
-        String command = removeMistake.toString();
-
-        if(list.length == 1 || filterCommand(command).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+        if(name.isBlank()) {
+            if (loader.fromMessage) {
+                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+            } else {
+                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noName", lang), a -> a);
+            }
         } else {
-            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(command), lang);
+            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(name, lang);
 
             if(enemies.size() == 1) {
-                int magnification = handleMagnification(command);
+                Message m = loader.getNullableMessage();
 
-                Message m = loader.getMessage();
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(m.getAuthor().getId(), TreasureHolder.global);
+                Object sender = loader.fromMessage ? ch : loader.getInteractionEvent();
 
-                EntityHandler.showEnemyDPS(ch, loader.getMessage(), enemies.getFirst(), treasure, magnification, false, lang);
+                EntityHandler.showEnemyDPS(sender, m, enemies.getFirst(), treasure, magnification, false, lang);
             } else if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(command)), loader.getMessage(), a -> a);
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(name)), loader.getMessage(), a -> a);
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(name)), a -> a);
+                }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(command)));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(name)));
 
                 sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
@@ -96,19 +114,31 @@ public class EnemyDPS extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
-                    int magnification = handleMagnification(command);
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                        if(res != null) {
+                            User u = loader.getUser();
 
-                    if(res != null) {
-                        User u = loader.getUser();
+                            Message msg = loader.getMessage();
 
-                        Message msg = loader.getMessage();
+                            TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                            StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, magnification, lang));
+                        }
+                    });
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                        if(res != null) {
+                            User u = loader.getUser();
 
-                        StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, magnification, lang));
-                    }
-                });
+                            Message msg = loader.getNullableMessage();
+
+                            TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
+                            StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, magnification, lang));
+                        }
+                    });
+                }
             }
         }
     }
@@ -297,8 +327,8 @@ public class EnemyDPS extends TimedConstraintCommand {
         return data;
     }
 
-    private String getSearchKeyword(String command) {
-        String result = filterCommand(command);
+    private String getSearchKeyword(String name) {
+        String result = name;
 
         if(result.length() > 1500)
             result = result.substring(0, 1500) + "...";

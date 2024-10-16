@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormDPSHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -52,45 +53,68 @@ public class FormDPS extends TimedConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        String[] list = loader.getContent().split(" ",2);
-        String[] segments = loader.getContent().split(" ");
+        String name;
+        Level lv;
+        boolean talent;
+        boolean isTreasure;
 
-        StringBuilder removeMistake = new StringBuilder();
+        if (loader.fromMessage) {
+            String[] segments = loader.getContent().split(" ");
 
-        for(int i = 0; i < segments.length; i++) {
-            if(segments[i].matches("-lv(l)?(\\d+(,)?)+")) {
-                removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
-            } else {
-                removeMistake.append(segments[i]);
+            StringBuilder removeMistake = new StringBuilder();
+
+            for(int i = 0; i < segments.length; i++) {
+                if(segments[i].matches("-lv(l)?(\\d+(,)?)+")) {
+                    removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
+                } else {
+                    removeMistake.append(segments[i]);
+                }
+
+                if(i < segments.length - 1)
+                    removeMistake.append(" ");
             }
 
-            if(i < segments.length - 1)
-                removeMistake.append(" ");
+            String command = removeMistake.toString();
+            int param = checkParameters(command);
+
+            name = filterCommand(command);
+            lv = handleLevel(command);
+
+            talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 0;
+            isTreasure = (param & PARAM_TREASURE) > 0 || config.treasure;
+        } else {
+            SlashOptionMap options = loader.getOptions();
+
+            name = options.getOption("name", "");
+            lv = handleLevel(options);
+
+            talent = options.getOption("talent", lv.getTalents().length > 0);
+            isTreasure = options.getOption("treasure", config.treasure);
         }
 
-        String command = removeMistake.toString();
-        int param = checkParameters(command);
-
-        Level lv = handleLevel(command);
-
-        boolean talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 0;
-        boolean isTreasure = (param & PARAM_TREASURE) > 0 || config.treasure;
-
-        if(list.length == 1 || filterCommand(command).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+        if(name.isBlank()) {
+            if (loader.fromMessage) {
+                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+            } else {
+                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noName", lang), a -> a);
+            }
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), false, lang);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(name, false, lang);
 
             if (forms.size() == 1) {
                 Form f = forms.getFirst();
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                EntityHandler.showFormDPS(ch, loader.getMessage(), f, treasure, lv, config, talent, isTreasure, false, lang);
+                EntityHandler.showFormDPS(loader.fromMessage ? ch : loader.getInteractionEvent(), loader.getNullableMessage(), f, treasure, lv, config, talent, isTreasure, false, lang);
             } else if (forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), a -> a);
+                }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(command)));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(name)));
 
                 sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
@@ -111,15 +135,27 @@ public class FormDPS extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
-                    User u = loader.getUser();
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                        User u = loader.getUser();
 
-                    Message msg = loader.getMessage();
+                        Message msg = loader.getNullableMessage();
 
-                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, msg, u.getId(), ch.getId(), res, config, param, lv, treasure, lang));
-                });
+                        StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, msg, u.getId(), ch.getId(), res, config, lv, talent, isTreasure, treasure, lang));
+                    });
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                        User u = loader.getUser();
+
+                        Message msg = loader.getNullableMessage();
+
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
+                        StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, msg, u.getId(), ch.getId(), res, config, lv, talent, isTreasure, treasure, lang));
+                    });
+                }
             }
         }
     }
@@ -284,6 +320,47 @@ public class FormDPS extends TimedConstraintCommand {
         return res;
     }
 
+    private Level handleLevel(SlashOptionMap options) {
+        ArrayList<Integer> levels = new ArrayList<>();
+
+        for(int i = 0; i < 7; i++) {
+            if(i == 0)
+                levels.add(options.getOption("level", -1));
+            else
+                levels.add(options.getOption("talent_level_" + i, -1));
+        }
+
+        Level lv = new Level(0);
+
+        if(!levels.isEmpty())
+            lv.setLevel(levels.getFirst());
+        else
+            lv.setLevel(-1);
+
+        if(levels.size() > 1) {
+            boolean allEmpty = true;
+
+            for(int i = 1; i < levels.size(); i++) {
+                if (levels.get(i) > 0) {
+                    allEmpty = false;
+                    break;
+                }
+            }
+
+            if(!allEmpty) {
+                int[] t = new int[levels.size() - 1];
+
+                for(int i = 1; i < levels.size(); i++) {
+                    t[i - 1] = Math.max(0, levels.get(i));
+                }
+
+                lv.setTalents(t);
+            }
+        }
+
+        return lv;
+    }
+
     private String getLevelText(String[] trial, int index) {
         StringBuilder sb = new StringBuilder();
 
@@ -363,8 +440,8 @@ public class FormDPS extends TimedConstraintCommand {
         return data;
     }
 
-    private String getSearchKeyword(String command) {
-        String result = filterCommand(command);
+    private String getSearchKeyword(String name) {
+        String result = name;
 
         if(result.length() > 1500)
             result = result.substring(0, 1500) + "...";

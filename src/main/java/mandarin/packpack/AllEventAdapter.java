@@ -911,7 +911,7 @@ public class AllEventAdapter extends ListenerAdapter {
         super.onCommandAutoCompleteInteraction(event);
 
         String[] allowedCommands = {
-                "es", "fs", "si", "ti"
+                "edps", "es", "fdps", "fs", "si", "ti"
         };
 
         if (!ArrayUtils.contains(allowedCommands, event.getInteraction().getName())) {
@@ -938,7 +938,7 @@ public class AllEventAdapter extends ListenerAdapter {
             locale = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
         }
         switch (event.getInteraction().getName()) {
-            case "fs", "ti" -> {
+            case "fdps", "fs", "ti" -> {
                 String name = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
 
                 List<Form> forms = EntityFilter.findUnitWithName(name, event.getInteraction().getName().equals("ti" ) || (config != null && config.trueForm), locale);
@@ -965,7 +965,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     event.replyChoices(choices).queue();
                 }
             }
-            case "es" -> {
+            case "edps", "es" -> {
                 String name = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
 
                 List<Enemy> enemies = EntityFilter.findEnemyWithName(name, locale);

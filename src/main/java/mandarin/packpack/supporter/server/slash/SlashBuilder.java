@@ -19,6 +19,38 @@ public class SlashBuilder {
             if(info == null)
                 return;
 
+            getCommandCreation(client, "edps", "Show DPS graph of enemy",
+                    List.of(
+                            new SlashOption("name", "Name of enemy", true, SlashOption.TYPE.STRING, true),
+                            new SlashOption("magfniciation", "Set magnification of this enemy", false, SlashOption.TYPE.INT)
+                    )
+            );
+
+            getCommandCreation(client,"es", "Show stat of enemy",
+                    List.of(
+                            new SlashOption("name", "Name of enemy", true, SlashOption.TYPE.STRING, true),
+                            new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("extra", "Show extra information", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("compact", "Show information with compact mode", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("magnification", "Set magnification of this enemy", false, SlashOption.TYPE.INT),
+                            new SlashOption("atk_magnification", "Set magnification of attack of this enemy", false, SlashOption.TYPE.INT)
+                    )
+            );
+
+            getCommandCreation(client, "fdps", "Show DPS graph of unit",
+                    List.of(
+                            new SlashOption("name", "Name of unit", true, SlashOption.TYPE.STRING, true),
+                            new SlashOption("talent", "Apply talent to this unit if bot can", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("treasure", "Show values with treasure applied", false, SlashOption.TYPE.BOOLEAN),
+                            new SlashOption("level", "Level of this unit", false, SlashOption.TYPE.INT),
+                            new SlashOption("talent_lv_1", "First talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
+                            new SlashOption("talent_lv_2", "Second talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
+                            new SlashOption("talent_lv_3", "Third talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
+                            new SlashOption("talent_lv_4", "Fourth talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
+                            new SlashOption("talent_lv_5", "Fifth talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT)
+                    )
+            );
+
             getCommandCreation(client,"fs", "Show stat of unit",
                     List.of(
                             new SlashOption("name", "Name of unit", true, SlashOption.TYPE.STRING, true),
@@ -33,17 +65,6 @@ public class SlashBuilder {
                             new SlashOption("talent_lv_3", "Third talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
                             new SlashOption("talent_lv_4", "Fourth talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
                             new SlashOption("talent_lv_5", "Fifth talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT)
-                    )
-            );
-
-            getCommandCreation(client,"es", "Show stat of enemy",
-                    List.of(
-                            new SlashOption("name", "Name of enemy", true, SlashOption.TYPE.STRING, true),
-                            new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
-                            new SlashOption("extra", "Show extra information", false, SlashOption.TYPE.BOOLEAN),
-                            new SlashOption("compact", "Show information with compact mode", false, SlashOption.TYPE.BOOLEAN),
-                            new SlashOption("magnification", "Set magnification of this enemy", false, SlashOption.TYPE.INT),
-                            new SlashOption("atk_magnification", "Set magnification of attack of this enemy", false, SlashOption.TYPE.INT)
                     )
             );
 

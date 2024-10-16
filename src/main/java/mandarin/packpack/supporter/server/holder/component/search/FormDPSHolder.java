@@ -20,19 +20,21 @@ public class FormDPSHolder extends SearchHolder {
     private final ArrayList<Form> form;
     private final ConfigHolder config;
 
-    private final boolean talent;
     private final Level lv;
+
+    private final boolean talent;
     private final boolean treasure;
+
     private final TreasureHolder t;
 
-    public FormDPSHolder(ArrayList<Form> form, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, int param, Level lv, TreasureHolder t, CommonStatic.Lang.Locale lang) {
+    public FormDPSHolder(ArrayList<Form> form, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, Level lv, boolean talent, boolean isTreasure, TreasureHolder t, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.form = form;
         this.config = config;
 
-        this.talent = (param & 2) > 0 || lv.getTalents().length > 0;
-        this.treasure = (param & 4) > 0 || config.treasure;
+        this.talent = talent;
+        this.treasure = isTreasure;
         this.lv = lv;
         this.t = t;
     }
@@ -65,7 +67,7 @@ public class FormDPSHolder extends SearchHolder {
         try {
             Form f = form.get(id);
 
-            EntityHandler.showFormDPS(event, getAuthorMessage(), f, t, lv, config, talent, treasure, true, lang);
+            EntityHandler.showFormDPS(event, hasAuthorMessage() ? getAuthorMessage() : null, f, t, lv, config, talent, treasure, true, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormDPSHolder::onSelected - Failed to perform showing unit embed");
         }
