@@ -59,6 +59,13 @@ public class SlashBuilder {
                     )
             );
 
+            getCommandCreation(client, "ti", "Show talent information of the unit",
+                    List.of(
+                            new SlashOption("name", "Name of unit", true, SlashOption.TYPE.STRING, true),
+                            new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN)
+                    )
+            );
+
             applyCreatedSlashCommands();
 
             printAllCommandData(client);

@@ -911,7 +911,7 @@ public class AllEventAdapter extends ListenerAdapter {
         super.onCommandAutoCompleteInteraction(event);
 
         String[] allowedCommands = {
-                "fs", "es", "si"
+                "es", "fs", "si", "ti"
         };
 
         if (!ArrayUtils.contains(allowedCommands, event.getInteraction().getName())) {
@@ -937,12 +937,11 @@ public class AllEventAdapter extends ListenerAdapter {
         } else {
             locale = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
         }
-
         switch (event.getInteraction().getName()) {
-            case "fs" -> {
+            case "fs", "ti" -> {
                 String name = event.getOptions().stream().filter(o -> o.getName().equals("name") && o.getType() == OptionType.STRING).map(OptionMapping::getAsString).findAny().orElse("");
 
-                List<Form> forms = EntityFilter.findUnitWithName(name, config != null && config.trueForm, locale);
+                List<Form> forms = EntityFilter.findUnitWithName(name, event.getInteraction().getName().equals("ti" ) || (config != null && config.trueForm), locale);
 
                 if (forms.isEmpty()) {
                     event.replyChoices().queue();

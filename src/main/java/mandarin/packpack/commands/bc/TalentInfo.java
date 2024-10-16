@@ -43,16 +43,27 @@ public class TalentInfo extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        String[] list = loader.getContent().split(" ",2);
+        boolean isFrame;
+        String name;
 
-        if(list.length == 1 || filterCommand(loader.getContent()).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+        if (loader.fromMessage) {
+            name = filterCommand(loader.getContent());
+            isFrame = isFrame(loader.getContent());
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(loader.getContent()), false, lang);
+            name = loader.getOptions().getOption("name", "");
+            isFrame = loader.getOptions().getOption("frame", config.useFrame);
+        }
+
+        if(name.isBlank()) {
+            if (loader.fromMessage) {
+                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+            } else {
+                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noName", lang), a -> a);
+            }
+        } else {
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(name, true, lang);
 
             if (forms.size() == 1) {
-                boolean isFrame = isFrame(loader.getContent()) && config.useFrame;
-
                 Form f = forms.getFirst();
 
                 if(f.unit.forms.length < 3) {
@@ -64,18 +75,32 @@ public class TalentInfo extends ConstraintCommand {
                 Form trueForm = f.unit.forms[2];
 
                 if(trueForm.du == null || trueForm.du.getPCoin() == null) {
-                    replyToMessageSafely(ch, LangID.getStringByID("talentInfo.failed.noTalent", lang), loader.getMessage(), a -> a);
+                    if (loader.fromMessage) {
+                        replyToMessageSafely(ch, LangID.getStringByID("talentInfo.failed.noTalent", lang), loader.getMessage(), a -> a);
+                    } else {
+                        replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("talentInfo.failed.noTalent", lang), a -> a);
+                    }
 
                     return;
                 }
 
-                EntityHandler.showTalentEmbed(ch, loader.getMessage(), trueForm, isFrame, false, lang);
-            } else if (forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
-            } else {
-                boolean isFrame = isFrame(loader.getContent()) && config.useFrame;
+                Object sender;
 
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
+                if (loader.fromMessage) {
+                    sender = ch;
+                } else {
+                    sender = loader.getInteractionEvent();
+                }
+
+                EntityHandler.showTalentEmbed(sender, loader.getNullableMessage(), trueForm, isFrame, false, lang);
+            } else if (forms.isEmpty()) {
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(name)), loader.getMessage(), a -> a);
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(name)), a -> a);
+                }
+            } else {
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(name)));
 
                 sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
 
@@ -96,11 +121,19 @@ public class TalentInfo extends ConstraintCommand {
 
                 sb.append("```");
 
-                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
-                    User u = loader.getUser();
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                        User u = loader.getUser();
 
-                    StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), res, forms, isFrame, lang));
-                });
+                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), res, forms, isFrame, lang));
+                    });
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                        User u = loader.getUser();
+
+                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getNullableMessage(), u.getId(), ch.getId(), res, forms, isFrame, lang));
+                    });
+                }
             }
         }
     }
@@ -186,8 +219,8 @@ public class TalentInfo extends ConstraintCommand {
         return data;
     }
 
-    private String getSearchKeyword(String command) {
-        String result = filterCommand(command);
+    private String getSearchKeyword(String name) {
+        String result = name;
 
         if(result.length() > 1500)
             result = result.substring(0, 1500) + "...";
