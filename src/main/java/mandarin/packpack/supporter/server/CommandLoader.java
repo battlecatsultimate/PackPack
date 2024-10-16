@@ -180,6 +180,9 @@ public class CommandLoader {
 
     @Nonnull
     public String getContent() {
+        if (content == null) {
+            throw new NullPointerException("Content is null while loader doesn't support it");
+        }
 
         return content;
     }
