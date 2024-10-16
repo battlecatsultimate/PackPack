@@ -240,7 +240,7 @@ public abstract class TimedConstraintCommand extends Command {
         try {
             RecordableThread t = new RecordableThread(() -> {
                 if (StaticStore.logCommand) {
-                    Logger.addLog(this.getClass() + " called : " + loader.getContent());
+                    Logger.addLog(this.getClass() + " called : " + (loader.fromMessage ? loader.getContent() : loader.getInteractionEvent().getFullCommandName()));
                 }
 
                 doSomething(loader);
@@ -257,9 +257,17 @@ public abstract class TimedConstraintCommand extends Command {
                     }
                 }
             }, e -> {
-                String data = "Command : " + loader.getContent() + "\n\n" +
-                        "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+                String data;
+
+                if (loader.fromMessage) {
+                    data = "Command : " + loader.getContent() + "\n\n" +
+                            "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                } else {
+                    data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
+                            "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                }
 
                 if (ch instanceof GuildChannel) {
                     Guild g = loader.getGuild();
@@ -276,12 +284,20 @@ public abstract class TimedConstraintCommand extends Command {
                 }
             }, loader);
 
-            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
+            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + (loader.fromMessage ? loader.getContent() : loader.getInteractionEvent().getFullCommandName()));
             t.start();
         } catch (Exception e) {
-            String data = "Command : " + loader.getContent() + "\n\n" +
-                    "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
-                    "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+            String data;
+
+            if (loader.fromMessage) {
+                data = "Command : " + loader.getContent() + "\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+            } else {
+                data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
+                        "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+            }
 
             if (ch instanceof GuildChannel) {
                 Guild g = loader.getGuild();
@@ -301,9 +317,17 @@ public abstract class TimedConstraintCommand extends Command {
         try {
             onSuccess(loader);
         } catch (Exception e) {
-            String data = "Command : " + loader.getContent() + "\n\n" +
-                    "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
-                    "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+            String data;
+
+            if (loader.fromMessage) {
+                data = "Command : " + loader.getContent() + "\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+            } else {
+                data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
+                        "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+            }
 
             if (ch instanceof GuildChannel) {
                 Guild g = loader.getGuild();

@@ -509,12 +509,20 @@ public abstract class Command {
                 doSomething(loader);
 
                 if (StaticStore.logCommand) {
-                    Logger.addLog(this.getClass() + " called : " + loader.getContent());
+                    Logger.addLog(this.getClass() + " called : " + (loader.fromMessage ? loader.getContent() : loader.getInteractionEvent().getFullCommandName()));
                 }
             }, e -> {
-                String data = "Command : " + loader.getContent() + "\n\n" +
-                        "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+                String data;
+
+                if (loader.fromMessage) {
+                    data = "Command : " + loader.getContent() + "\n\n" +
+                            "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                } else {
+                    data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
+                            "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                }
 
                 if (ch instanceof GuildChannel) {
                     Guild g = loader.getGuild();
@@ -531,12 +539,20 @@ public abstract class Command {
                 }
             }, loader);
 
-            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
+            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + (loader.fromMessage ? loader.getContent() : loader.getInteractionEvent().getFullCommandName()));
             t.start();
         } catch (Exception e) {
-            String data = "Command : " + loader.getContent() + "\n\n" +
-                    "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                    "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+            String data;
+
+            if (loader.fromMessage) {
+                data = "Command : " + loader.getContent() + "\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+            } else {
+                data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
+                        "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+            }
 
             if (ch instanceof GuildChannel) {
                 Guild g = loader.getGuild();
