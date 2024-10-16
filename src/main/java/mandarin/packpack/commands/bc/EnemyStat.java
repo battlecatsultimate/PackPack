@@ -329,11 +329,11 @@ public class EnemyStat extends ConstraintCommand {
                     }
 
                     if(length == 0)
-                        return new int[] {100};
+                        return new int[] { 100, 100 };
                     else {
-                        int[] lv = new int[length];
+                        int[] lv = new int[2];
 
-                        for (int j = 0; j < length; j++) {
+                        for (int j = 0; j < Math.min(2, length); j++) {
                             if(trial[j].isBlank() || !StaticStore.isNumeric(trial[j].replace("%", ""))) {
                                 lv[j] = 100;
                             } else {
@@ -346,7 +346,7 @@ public class EnemyStat extends ConstraintCommand {
                 }
             }
         } else {
-            return new int[] {100};
+            return new int[] { 100, 100 };
         }
 
         return new int[] {100};
