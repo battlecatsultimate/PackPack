@@ -9,12 +9,14 @@ import mandarin.packpack.supporter.event.GachaSet;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.LwjglContext;
 import mandarin.packpack.supporter.server.SpamPrevent;
+import mandarin.packpack.supporter.server.data.BannerHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -44,15 +46,13 @@ public class PackBot {
     public static int log = 0;
     public static int backup = 0;
     public static int updateStatus = 0;
+    public static int banner = 0;
 
     public static final String normal = "p!help for command info!";
 
     public static RestAction<Message> statusMessage = null;
 
     public static void main(String[] args) {
-        CommonStatic.getConfig().deadOpa = 0;
-        CommonStatic.getConfig().fullOpa = 100;
-
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Logger.writeLog(Logger.BotInstance.PACK_PACK)));
         Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
                 StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Uncaught exception found : " + t.getName())
@@ -138,6 +138,17 @@ public class PackBot {
 
                 StaticStore.updateStatus();
 
+                AccountManager manager;
+                boolean managerChanged = false;
+
+                JDA house = client.getShardCache().getElementById(0);
+
+                if (house != null) {
+                    manager = house.getSelfUser().getManager();
+                } else {
+                    manager = null;
+                }
+
                 if(pfp % 60 == 0) {
                     try {
                         String fileName;
@@ -163,12 +174,9 @@ public class PackBot {
 
                         File f = new File("./data/bot/", fileName);
 
-                        if(f.exists()) {
-                            JDA house = client.getShardCache().getElementById(0);
-
-                            if (house != null) {
-                                house.getSelfUser().getManager().setAvatar(Icon.from(f)).queue();
-                            }
+                        if(f.exists() && manager != null) {
+                            manager = manager.setAvatar(Icon.from(f));
+                            managerChanged = true;
                         }
                     } catch (IOException exception) {
                         StaticStore.logger.uploadErrorLog(exception, "E/PackBot::main - Failed to change profile image");
@@ -177,6 +185,29 @@ public class PackBot {
                     pfp = 1;
                 } else {
                     pfp++;
+                }
+
+                if ((banner % 1440 == 0 || banner >= 1440) && System.currentTimeMillis() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
+                    BannerHolder.BannerData pickedBanner = StaticStore.bannerHolder.pickBanner();
+
+                    System.out.println(pickedBanner);
+
+                    if (pickedBanner != null && manager != null) {
+                        try {
+                            manager = manager.setBanner(Icon.from(pickedBanner.bannerFile()));
+                            managerChanged = true;
+                        } catch (IOException e) {
+                            StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to change profile image");
+                        }
+                    }
+
+                    banner = 1;
+                } else {
+                    banner++;
+                }
+
+                if (managerChanged) {
+                    manager.queue();
                 }
 
                 if(event % 30 == 0) {
@@ -258,7 +289,13 @@ public class PackBot {
     public static void initialize(String... arg) {
         if(!StaticStore.initialized) {
             CommonStatic.ctx = new LwjglContext();
+
             CommonStatic.getConfig().ref = false;
+
+            CommonStatic.getConfig().deadOpa = 0;
+            CommonStatic.getConfig().fullOpa = 100;
+
+            BannerHolder.initializeBannerData("banner", "bannerData");
 
             StaticStore.readServerInfo();
 

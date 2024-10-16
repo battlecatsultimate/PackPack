@@ -215,6 +215,8 @@ public class StaticStore {
 
     public static final Map<String, String> conflictedAnimation = new HashMap<>();
 
+    public static BannerHolder bannerHolder = new BannerHolder();
+
     static {
         if (CommonStatic.Lang.Locale.values().length != langUnicode.length) {
             throw new IllegalStateException("E/StaticStore - Number of supported language and unicode size are desycned!");
@@ -686,6 +688,7 @@ public class StaticStore {
         obj.add("cultist", listToJsonString(cultist));
         obj.add("eventNewWay", mapToJsonLocaleBoolean(EventFileGrabber.newWay));
         obj.add("backgroundStageLength", mapToJsonBackgroundInteger(backgroundStageLength));
+        obj.add("bannerHolder", bannerHolder.toJson());
 
         if (EventFileGrabber.accountCode != null && EventFileGrabber.password != null && EventFileGrabber.passwordRefreshToken != null) {
             obj.addProperty("accountCode", EventFileGrabber.accountCode);
@@ -910,6 +913,10 @@ public class StaticStore {
 
             if(obj.has("tokenCreatedAt")) {
                 EventFileGrabber.tokenCreatedAt = obj.get("tokenCreatedAt").getAsLong();
+            }
+
+            if (obj.has("bannerHolder")) {
+                BannerHolder.fromJson(bannerHolder, obj.getAsJsonObject("bannerHolder"));
             }
 
             // If any of these are null, bot can't check event data properly, resetting
