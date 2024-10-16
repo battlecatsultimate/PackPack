@@ -529,9 +529,9 @@ public class EntityHandler {
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, "", reference, a -> a.setFiles(files), finisher);
+                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, "", a -> a.setFiles(files), finisher);
+                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
             }
         }
 
