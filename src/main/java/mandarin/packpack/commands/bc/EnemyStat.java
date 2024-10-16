@@ -341,6 +341,10 @@ public class EnemyStat extends ConstraintCommand {
                             }
                         }
 
+                        if (length == 1) {
+                            lv[1] = lv[0];
+                        }
+
                         return lv;
                     }
                 }
