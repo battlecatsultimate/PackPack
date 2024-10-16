@@ -151,9 +151,9 @@ public class FormStat extends ConstraintCommand {
                 });
             } else if (forms.isEmpty()) {
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(name)), loader.getMessage(), a -> a);
                 } else {
-                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), a -> a);
+                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(name)), a -> a);
                 }
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(name)));
