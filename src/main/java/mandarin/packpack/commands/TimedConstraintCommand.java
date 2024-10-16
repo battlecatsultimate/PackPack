@@ -227,7 +227,11 @@ public abstract class TimedConstraintCommand extends Command {
 
         if(!hasRole && !isMandarin) {
             if (denialMessage != null) {
-                replyToMessageSafely(ch, denialMessage, loader.getMessage(), a -> a);
+                if (loader.fromMessage) {
+                    replyToMessageSafely(ch, denialMessage, loader.getMessage(), a -> a);
+                } else {
+                    replyToMessageSafely(loader.getInteractionEvent(), denialMessage, a -> a);
+                }
             }
 
             return;
