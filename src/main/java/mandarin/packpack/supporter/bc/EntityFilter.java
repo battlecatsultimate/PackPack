@@ -262,12 +262,20 @@ public class EntityFilter {
             if(e == null)
                 continue;
 
+            if (name.toLowerCase(Locale.ENGLISH).equals(Data.trio(e.id.id).toLowerCase(Locale.ENGLISH))) {
+                res.clear();
+
+                res.add(e);
+
+                return res;
+            }
+
             boolean added = false;
             boolean cleared = false;
 
             for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
                 StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
-                        .append(" ").append(" ");
+                        .append(" ");
 
                 String enemyName = null;
 
