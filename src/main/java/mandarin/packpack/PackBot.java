@@ -79,10 +79,17 @@ public class PackBot {
 
         builder.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS);
         builder.disableCache(CacheFlag.VOICE_STATE);
-        builder.setActivity(Activity.playing(normal));
         builder.addEventListeners(new AllEventAdapter());
 
         ShardManager client = builder.build();
+
+        if (StaticStore.bannerHolder.pickedBanner != null) {
+            String status = "p!help for command | Banner by " + StaticStore.bannerHolder.pickedBanner.author();
+
+            client.setPresence(OnlineStatus.ONLINE, Activity.customStatus(status.substring(0, Math.min(status.length(), Activity.MAX_ACTIVITY_STATE_LENGTH))));
+        } else {
+            client.setPresence(OnlineStatus.ONLINE, Activity.customStatus("p!help for command!"));
+        }
 
         StaticStore.logger.assignClient(client);
 
