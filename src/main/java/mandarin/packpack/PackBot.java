@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BannerHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -190,12 +191,14 @@ public class PackBot {
                 if ((banner % 1440 == 0 || banner >= 1440) && System.currentTimeMillis() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
                     BannerHolder.BannerData pickedBanner = StaticStore.bannerHolder.pickBanner();
 
-                    System.out.println(pickedBanner);
-
                     if (pickedBanner != null && manager != null) {
                         try {
                             manager = manager.setBanner(Icon.from(pickedBanner.bannerFile()));
                             managerChanged = true;
+
+                            String status = "p!help for command | Banner by " + pickedBanner.author();
+
+                            client.setPresence(OnlineStatus.ONLINE, Activity.customStatus(status.substring(0, Math.min(status.length(), Activity.MAX_ACTIVITY_STATE_LENGTH))));
                         } catch (IOException e) {
                             StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to change profile image");
                         }
