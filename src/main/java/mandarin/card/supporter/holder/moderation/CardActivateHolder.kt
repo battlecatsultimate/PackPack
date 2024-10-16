@@ -9,7 +9,6 @@ import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -25,6 +24,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CardActivateHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    companion object {
+        const val PAGE_CHUNK = 15
+    }
+    
     private val cards = ArrayList<Card>(CardData.cards.sortedWith(CardComparator()))
 
     private var page = 0
@@ -270,7 +273,7 @@ class CardActivateHolder(author: Message, userID: String, channelID: String, mes
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for(i in page * PAGE_CHUNK until min(dataSize, (page + 1) * PAGE_CHUNK)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -290,7 +293,7 @@ class CardActivateHolder(author: Message, userID: String, channelID: String, mes
 
         var totalPage = getTotalPage(cards.size)
 
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
             if(totalPage > 10) {
@@ -332,7 +335,7 @@ class CardActivateHolder(author: Message, userID: String, channelID: String, mes
         builder.append("\n\n### Cards List\n\n")
 
         if (cards.isNotEmpty()) {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(cards.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * PAGE_CHUNK until min(cards.size, (page + 1) * PAGE_CHUNK)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
                 if (cards[i] in CardData.deactivatedCards)

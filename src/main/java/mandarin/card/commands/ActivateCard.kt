@@ -10,7 +10,6 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -108,7 +107,7 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+            for(i in 0 until min(dataSize, CardActivateHolder.PAGE_CHUNK)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -126,12 +125,12 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
 
         rows.add(ActionRow.of(cardCategory))
 
-        var totPage = dataSize / SearchHolder.PAGE_CHUNK
+        var totPage = dataSize / CardActivateHolder.PAGE_CHUNK
 
-        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
+        if (dataSize % CardActivateHolder.PAGE_CHUNK != 0)
             totPage++
 
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > CardActivateHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
             if(totPage > 10) {
@@ -171,7 +170,7 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
         builder.append("\n\n### Cards List\n\n")
 
         if (cards.isNotEmpty()) {
-            for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
+            for (i in 0 until min(CardActivateHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
                 if (cards[i] in CardData.deactivatedCards)
