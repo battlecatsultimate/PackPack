@@ -132,7 +132,7 @@ class CardActivateHolder(author: Message, userID: String, channelID: String, mes
                 applyResult(event)
             }
             "confirm" -> {
-                event.deferReply()
+                event.deferEdit()
                     .setContent("Successfully configured cards activation!")
                     .setComponents()
                     .setAllowedMentions(ArrayList())
