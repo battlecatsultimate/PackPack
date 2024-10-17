@@ -56,3 +56,6 @@ hs_err_pid*
 /data/bannerData.json
 /data/banner/
 /data/banner/*
+/data/cardBanner/
+/data/cardBanner/*
+/data/cardBannerData.json
