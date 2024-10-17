@@ -20,8 +20,10 @@ import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.bc.DataToString
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.data.BannerHolder
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -108,8 +110,17 @@ object CardBot : ListenerAdapter() {
             GatewayIntent.SCHEDULED_EVENTS
         )
 
+        val statusText = if (test) "B" else "A"
+        val pickedBanner = StaticStore.bannerHolder.pickedBanner
+
+        val status = if (pickedBanner == null) {
+            statusText
+        } else {
+            "$statusText | Banner by ${pickedBanner.author}"
+        }
+
         builder.disableCache(CacheFlag.VOICE_STATE)
-        builder.setActivity(Activity.playing(if (test) "B" else "A"))
+        builder.setActivity(Activity.playing(status))
         builder.addEventListeners(CardBot)
         builder.setEnableShutdownHook(true)
 
@@ -252,6 +263,16 @@ object CardBot : ListenerAdapter() {
 
                     if (percentage >= 90.0) {
                         StaticStore.logger.uploadLog("Warning : Memory is at danger, above 90% (${DataToString.df.format(percentage)}%)")
+                    }
+
+                    if (CardData.getUnixEpochTime() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
+                        val pickedBanner = StaticStore.bannerHolder.pickBanner()
+
+                        if (pickedBanner != null) {
+                            client.shards.firstOrNull()?.selfUser?.manager?.setBanner(Icon.from(pickedBanner.bannerFile))?.queue()
+
+                            client.setActivity(Activity.playing("$statusText | Banner by ${pickedBanner.author}"))
+                        }
                     }
 
                     Logger.writeLog(Logger.BotInstance.CARD_DEALER)
@@ -762,6 +783,8 @@ object CardBot : ListenerAdapter() {
 
         LangID.initialize()
 
+        BannerHolder.initializeBannerData("cardBanner", "cardBannerData")
+
         readCardData()
 
         Initializer.checkAssetDownload(false)
@@ -1169,6 +1192,12 @@ object CardBot : ListenerAdapter() {
                 val card = CardData.cards.find { c -> c.unitID == e.asInt } ?: return@forEach
 
                 CardData.deactivatedCards.add(card)
+            }
+        }
+
+        if (obj.has("bannerHolder")) {
+            obj.getAsJsonObject("bannerHolder").also {
+                BannerHolder.fromJson(StaticStore.bannerHolder, it)
             }
         }
     }
