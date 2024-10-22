@@ -145,9 +145,9 @@ object CardData {
             //Summer Gals
             arrayOf(274, 275, 354, 438, 494, 563, 564, 614, 666, 714, 759),
             //Halloweens
-            arrayOf(229, 230, 302, 570, 683),
+            arrayOf(229, 230, 302, 570, 683, 772),
             //X-Mas
-            arrayOf(241, 242, 243, 310, 526, 584, 687, 772),
+            arrayOf(241, 242, 243, 310, 526, 584, 687),
 
             //Collaboration
 
