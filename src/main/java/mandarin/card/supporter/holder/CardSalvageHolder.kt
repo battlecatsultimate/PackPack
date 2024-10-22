@@ -41,7 +41,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
         CardData.SalvageMode.T3 -> CardData.Tier.ULTRA
         CardData.SalvageMode.T4 -> CardData.Tier.LEGEND
     }
-    private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }.sortedWith(CardComparator()))
+    private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID !in CardData.bannedT3 }.sortedWith(CardComparator()))
 
     private val selectedCard = ArrayList<Card>()
 
@@ -299,7 +299,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
         if (banner[0] == -1) {
             cards.addAll(
-                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID !in CardData.bannedT3 }
                     .filter { c ->
                         when (salvageMode) {
                             CardData.SalvageMode.T2 -> c.isRegularUncommon()
@@ -445,7 +445,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
         confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.isEmpty()).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
 
-        val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+        val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.unitID !in CardData.bannedT3 }
             .filter { c ->
                 when (salvageMode) {
                     CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlmighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()

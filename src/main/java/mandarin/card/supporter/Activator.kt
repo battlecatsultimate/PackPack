@@ -31,5 +31,7 @@ enum class Activator(val tier: CardData.Tier, val banner: Int, val title: String
     //Valkyrie
     LilValkyrie(CardData.Tier.ULTRA, 3, "Li'l Valkyrie"),
     //Dark Valkyrie
-    LilValkyrieDark(CardData.Tier.ULTRA, 4, "Li'l Valkyrie Dark");
+    LilValkyrieDark(CardData.Tier.ULTRA, 4, "Li'l Valkyrie Dark"),
+    //Trixi
+    Trixi(CardData.Tier.ULTRA, 5, "Trixi the Revenant");
 }

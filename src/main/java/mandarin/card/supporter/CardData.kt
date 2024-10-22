@@ -198,6 +198,8 @@ object CardData {
             arrayOf(435),
             //Dark Lil valk
             arrayOf(484),
+            //Trixi
+            arrayOf(758),
             //???
             arrayOf(-1002)
         ),
@@ -213,6 +215,8 @@ object CardData {
             arrayOf(-1003)
         )
     )
+
+    val bannedT3 = arrayOf(435, 484, 758)
 
     val busters = arrayOf(283, 286, 397, 559, 612, 686)
 
