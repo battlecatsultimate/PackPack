@@ -93,20 +93,28 @@ public class FormButtonHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
-        ArrayList<Button> buttons = new ArrayList<>();
+        ArrayList<ActionRow> rows = new ArrayList<>();
 
-        for(Button button : message.getButtons()) {
-            if(button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
-                buttons.add(button);
-            } else if(!configData.compact) {
-                buttons.add(button.asDisabled());
+        for (ActionRow row : message.getActionRows()) {
+            ArrayList<Button> expiredButtons = new ArrayList<>();
+
+            for (Button button : row.getButtons()) {
+                if (button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
+                    expiredButtons.add(button);
+                } else if (!configData.compact) {
+                    expiredButtons.add(button.asDisabled());
+                }
+            }
+
+            if (!expiredButtons.isEmpty()) {
+                rows.add(ActionRow.of(expiredButtons));
             }
         }
 
-        if(buttons.isEmpty()) {
+        if(rows.isEmpty()) {
             message.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
         } else {
-            message.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents(rows).mentionRepliedUser(false).queue(null, e -> {});
         }
     }
 }
