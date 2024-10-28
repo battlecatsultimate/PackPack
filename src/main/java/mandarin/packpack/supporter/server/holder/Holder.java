@@ -93,34 +93,38 @@ public abstract class Holder {
     public abstract void clean();
 
     public final void expire() {
-        expired = true;
+        try {
+            expired = true;
 
-        if (schedule != null) {
-            schedule.cancel(true);
-        }
-
-        HolderHub hub = StaticStore.getHolderHub(userID);
-
-        if(hub == null)
-            throw new IllegalStateException("E/Holder::expire - Unregistered holder found : " + getClass().getName());
-
-        if (isRoot) {
-            Holder childHolder = child;
-
-            while (childHolder != null) {
-                childHolder.expired = true;
-
-                if (childHolder.schedule != null) {
-                    childHolder.schedule.cancel(true);
-                }
-
-                childHolder = childHolder.child;
+            if (schedule != null) {
+                schedule.cancel(true);
             }
+
+            HolderHub hub = StaticStore.getHolderHub(userID);
+
+            if(hub == null)
+                throw new IllegalStateException("E/Holder::expire - Unregistered holder found : " + getClass().getName());
+
+            if (isRoot) {
+                Holder childHolder = child;
+
+                while (childHolder != null) {
+                    childHolder.expired = true;
+
+                    if (childHolder.schedule != null) {
+                        childHolder.schedule.cancel(true);
+                    }
+
+                    childHolder = childHolder.child;
+                }
+            }
+
+            onExpire();
+
+            StaticStore.removeHolder(userID, this);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/Holder::expire - Failed to perform holder expiration");
         }
-
-        onExpire();
-
-        StaticStore.removeHolder(userID, this);
     }
 
     public final void end(boolean finishAll) {
