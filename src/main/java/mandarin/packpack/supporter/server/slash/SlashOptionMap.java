@@ -29,7 +29,7 @@ public class SlashOptionMap {
                 }
                 case INTEGER -> {
                     type = int.class;
-                    data = option.getAsInt();
+                    data = (int) option.getAsLong();
                 }
                 case BOOLEAN -> {
                     type = boolean.class;
@@ -67,9 +67,6 @@ public class SlashOptionMap {
         }
 
         Class<?> c = MethodType.methodType(defaultValue.getClass()).unwrap().returnType();
-
-        System.out.println(c);
-        System.out.println(data.type());
 
         if (c != data.type()) {
             return defaultValue;

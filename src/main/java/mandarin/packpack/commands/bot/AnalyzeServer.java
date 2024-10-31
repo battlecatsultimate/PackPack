@@ -15,6 +15,8 @@ import javax.annotation.Nonnull;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AnalyzeServer extends ConstraintCommand {
@@ -33,83 +35,111 @@ public class AnalyzeServer extends ConstraintCommand {
 
         StringBuilder builder = new StringBuilder("----- SERVER ANALYSIS -----\n\n");
 
+        List<Guild> guilds = new ArrayList<>();
+
         int i = 1;
 
         for(String id : StaticStore.idHolder.keySet()) {
             try {
-                IDHolder idHolder = StaticStore.idHolder.get(id);
                 Guild g = client.getGuildById(id);
 
-                if(g != null) {
-                    String size;
-                    int s = g.getMemberCount();
-
-                    if(s > 1000)
-                        size = "Large";
-                    else if(s > 100)
-                        size = "Medium";
-                    else
-                        size = "Small";
-
-                    builder.append("Server No. ")
-                            .append(i)
-                            .append("\n")
-                            .append("Name : ")
-                            .append(g.getName())
-                            .append(" (")
-                            .append(id)
-                            .append(")\n")
-                            .append("Number of users : ")
-                            .append(g.getMemberCount())
-                            .append(" (")
-                            .append(size)
-                            .append(")\n")
-                            .append("Owner : ");
-
-                    AtomicBoolean running = new AtomicBoolean(true);
-
-                    g.retrieveOwner().queue(owner -> {
-                        if(owner == null) {
-                            builder.append("Unknown\n\n");
-                        } else {
-                            User user = owner.getUser();
-
-                            builder.append(user.getEffectiveName())
-                                    .append(" (")
-                                    .append(user.getId())
-                                    .append(")")
-                                    .append("\n");
-                        }
-
-                        running.set(false);
-                    }, e -> running.set(false));
-
-                    while(true) {
-                        if (!running.get())
-                            break;
-                    }
-
-                    Role role;
-
-                    if (idHolder.moderator == null) {
-                        role = null;
-                    } else {
-                        role = g.getRoleById(idHolder.moderator);
-                    }
-
-                    if(role == null) {
-                        builder.append("\nisProperlySet? : No moderator role\n\n");
-                    } else {
-                        builder.append("isProperlySet? : ")
-                                .append(!role.getName().equals("PackPackMod"))
-                                .append("\nisFully Set? :")
-                                .append(!role.getName().equals("PackPackMod") && idHolder.member != null)
-                                .append("\n\n");
-                    }
-
-                    i++;
+                if (g != null) {
+                    guilds.add(g);
                 }
             } catch (Exception ignored) {}
+        }
+
+        guilds.sort((g1, g2) -> {
+            if (g1 == null && g2 == null) {
+                return 0;
+            }
+
+            if (g1 == null) {
+                return 1;
+            }
+
+            if (g2 == null) {
+                return -1;
+            }
+
+            return -Integer.compare(g1.getMemberCount(), g2.getMemberCount());
+        });
+
+        for (Guild g : guilds) {
+            String id = g.getId();
+            IDHolder idHolder = StaticStore.idHolder.get(id);
+
+            if (idHolder == null) {
+                continue;
+            }
+
+            String size;
+            int s = g.getMemberCount();
+
+            if(s > 1000)
+                size = "Large";
+            else if(s > 100)
+                size = "Medium";
+            else
+                size = "Small";
+
+            builder.append("Server No. ")
+                    .append(i)
+                    .append("\n")
+                    .append("Name : ")
+                    .append(g.getName())
+                    .append(" (")
+                    .append(id)
+                    .append(")\n")
+                    .append("Number of users : ")
+                    .append(g.getMemberCount())
+                    .append(" (")
+                    .append(size)
+                    .append(")\n")
+                    .append("Owner : ");
+
+            AtomicBoolean running = new AtomicBoolean(true);
+
+            g.retrieveOwner().queue(owner -> {
+                if(owner == null) {
+                    builder.append("Unknown\n\n");
+                } else {
+                    User user = owner.getUser();
+
+                    builder.append(user.getEffectiveName())
+                            .append(" (")
+                            .append(user.getId())
+                            .append(")")
+                            .append("\n");
+                }
+
+                running.set(false);
+            }, e -> running.set(false));
+
+            while(true) {
+                if (!running.get())
+                    break;
+            }
+
+            Role role;
+
+            if (idHolder.moderator == null) {
+                role = null;
+            } else {
+                role = g.getRoleById(idHolder.moderator);
+            }
+
+            if(role == null) {
+                builder.append("\nisProperlySet? : No moderator role\n\n");
+            } else {
+                builder.append("isProperlySet? : ")
+                        .append(!role.getName().equals("PackPackMod"))
+                        .append("\nisFully Set? :")
+                        .append(!role.getName().equals("PackPackMod") && idHolder.member != null)
+                        .append("\n\n");
+            }
+
+            i++;
         }
 
         File f = new File("./temp");
