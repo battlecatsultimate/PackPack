@@ -176,7 +176,7 @@ object CardData {
             //Mola
             arrayOf(174),
             //Metal
-            arrayOf(222, 223, 224, 225),
+            arrayOf(222, 223, 224, 225, 727),
             //Princess Punt
             arrayOf(66, 161, 337, 485, 530),
             //Tower of Savior
