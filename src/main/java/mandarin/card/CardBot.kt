@@ -101,7 +101,7 @@ object CardBot : ListenerAdapter() {
 
         builder.setEnabledIntents(
             GatewayIntent.GUILD_MEMBERS,
-            GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+            GatewayIntent.GUILD_EXPRESSIONS,
             GatewayIntent.GUILD_MESSAGES,
             GatewayIntent.DIRECT_MESSAGES,
             GatewayIntent.GUILD_MESSAGE_REACTIONS,
