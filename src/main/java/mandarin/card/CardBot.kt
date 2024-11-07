@@ -99,7 +99,7 @@ object CardBot : ListenerAdapter() {
         val token = args[0]
         val builder = DefaultShardManagerBuilder.createDefault(token)
 
-        builder.setEnabledIntents(
+        builder.enableIntents(
             GatewayIntent.GUILD_MEMBERS,
             GatewayIntent.GUILD_EXPRESSIONS,
             GatewayIntent.GUILD_MESSAGES,
