@@ -85,21 +85,27 @@ public class StageStatAnalyzer extends ConstraintCommand {
             return;
         }
 
-        if(!validateFile(workspace, code, mid, localeCode)) {
-            ch.sendMessage("Couldn't find sufficient data for stage code : "+code+ " - "+mid).queue();
+        String result = validateFile(workspace, code, mid, localeCode);
+
+        if(result != null) {
+            ch.sendMessage("Couldn't find sufficient data for stage code : "+code+ " - "+mid + "\nReason : " + result).queue();
 
             return;
         }
 
         String stageCode;
 
-        if(code.equals("E")) {
-            code = "RE";
-            stageCode = "EX";
-        } else if(code.equals("RE")) {
-            stageCode = "EX";
-        } else {
-            stageCode = "R" + code;
+        switch (code) {
+            case "E" -> {
+                code = "RE";
+                stageCode = "EX";
+            }
+            case "RE" -> stageCode = "EX";
+            case "G" -> {
+                code = "G";
+                stageCode = "G";
+            }
+            default -> stageCode = "R" + code;
         }
 
         File dataLocal = new File(workspace, "DataLocal");
@@ -534,24 +540,37 @@ public class StageStatAnalyzer extends ConstraintCommand {
             return "jp";
     }
 
-    private boolean validateFile(File workspace, String code, int mID, String locale) throws Exception {
+    private String validateFile(File workspace, String code, int mID, String locale) throws Exception {
         String stageCode;
 
-        if(code.equals("E")) {
-            code = "RE";
-            stageCode = "EX";
-        } else if(code.equals("RE")) {
-            stageCode = "EX";
-        } else {
-            stageCode = "R" + code;
+        switch (code) {
+            case "E" -> {
+                code = "RE";
+                stageCode = "EX";
+            }
+            case "RE" -> stageCode = "EX";
+            case "G" -> {
+                code = "G";
+                stageCode = "G";
+            }
+            default -> stageCode = "R" + code;
         }
 
         File dataLocal = new File(workspace, "DataLocal");
         File imageLocal = new File(workspace, "ImageLocal");
         File resLocal = new File(workspace, "resLocal");
 
-        if(!dataLocal.exists() || !imageLocal.exists() || !resLocal.exists())
-            return false;
+        if (!dataLocal.exists()) {
+            return "No DataLocal folder found";
+        }
+
+        if (!imageLocal.exists()) {
+            return "No ImageLocal folder found";
+        }
+
+        if (!resLocal.exists()) {
+            return "No resLocal folder found";
+        }
 
         String loc = switch (locale) {
             case "en" -> "en";
@@ -562,8 +581,9 @@ public class StageStatAnalyzer extends ConstraintCommand {
 
         File mapData = new File(dataLocal, "MapStageData" + code + "_" + Data.trio(mID % 1000) + ".csv");
 
-        if(!mapData.exists())
-            return false;
+        if(!mapData.exists()) {
+            return "Failed to find MapStageData%s_%s.csv file in DataLocal".formatted(code, Data.trio(mID % 1000));
+        }
 
         int len = getStageLength(mapData);
 
@@ -572,8 +592,9 @@ public class StageStatAnalyzer extends ConstraintCommand {
         for(int i = 0; i < len; i++) {
             File stageData = new File(dataLocal, "stage" + stageCode + Data.trio(mID % 1000) + "_" + Data.duo(i) + ".csv");
 
-            if(!stageData.exists())
-                return false;
+            if(!stageData.exists()) {
+                return "Failed to find stage%s%s_%s.csv file in DataLocal".formatted(stageCode, Data.trio(mID % 1000), Data.duo(i));
+            }
 
             BufferedReader stageReader = new BufferedReader(new FileReader(stageData, StandardCharsets.UTF_8));
 
@@ -602,7 +623,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
                         if(vf == null) {
                             stageReader.close();
 
-                            return false;
+                            return "Failed to find enemy icon in assets : %s".formatted("./org/enemy/"+Data.trio(enemyData[0] - 2)+"/enemy_icon_"+Data.trio(enemyData[0] - 2)+".png");
                         }
                     }
                 }
@@ -615,7 +636,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
             File enemyName = new File(resLocal, "Enemyname.tsv");
 
             if(!enemyName.exists())
-                return false;
+                return "Failed to find Enemyname.tsv in resLocal";
         }
 
         List<Integer> newRewards = new ArrayList<>();
@@ -695,13 +716,13 @@ public class StageStatAnalyzer extends ConstraintCommand {
             File rewardText = new File(resLocal, "GatyaitemName.csv");
 
             if(!rewardText.exists())
-                return false;
+                return "Failed to find GatyaitemName.csv file in resLocal";
 
             for(int reward : newRewards) {
                 File rewardIcon = new File(imageLocal, "gatyaitemD_"+Data.duo(reward)+"_f.png");
 
                 if(!rewardIcon.exists())
-                    return false;
+                    return "Failed to find gatyaitemD_%s_f.png file in ImageLocal".formatted(Data.duo(reward));
             }
         }
 
@@ -709,7 +730,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
             File unitDrop = new File(dataLocal, "drop_chara.csv");
 
             if(!unitDrop.exists())
-                return false;
+                return "Failed to find drop_chara.csv in DataLocal";
 
             BufferedReader dropReader = new BufferedReader(new FileReader(unitDrop, StandardCharsets.UTF_8));
 
@@ -732,7 +753,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     if(!unitBuy.exists()) {
                         dropReader.close();
 
-                        return false;
+                        return "Failed to find unitbuy.csv in DataLocal";
                     }
 
                     if(dropData[2] >= UserProfile.getBCData().units.size()) {
@@ -746,7 +767,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                         if(!icon.exists() || !name.exists()) {
                             dropReader.close();
 
-                            return false;
+                            if (!icon.exists()) {
+                                return "Failed to find %s in ImageLocal".formatted(iconName);
+                            } else {
+                                return "Failed to find Unit_Explanation%d_%s.csv in resLocal".formatted(dropData[2] + 1, loc);
+                            }
                         }
                     }
                 }
@@ -755,14 +780,14 @@ public class StageStatAnalyzer extends ConstraintCommand {
             dropReader.close();
 
             if(!newUnits.isEmpty())
-                return false;
+                return "Failed to get new unit data as reward drop";
         }
 
         if(!newTrueForms.isEmpty()) {
             File unitBuy = new File(dataLocal, "unitbuy.csv");
 
             if(!unitBuy.exists())
-                return false;
+                return "Failed to get unitbuy.csv in DataLocal";
 
             BufferedReader buyReader = new BufferedReader(new FileReader(unitBuy, StandardCharsets.UTF_8));
 
@@ -787,7 +812,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     if(!icon.exists() || !name.exists()) {
                         buyReader.close();
 
-                        return false;
+                        if (!icon.exists()) {
+                            return "Failed to get %s in ImageLocal".formatted(iconName);
+                        } else {
+                            return "Failed to get Unit_Explanation%s_%s.csv in resLocal".formatted(Data.trio(count), loc);
+                        }
                     }
                 }
 
@@ -806,13 +835,19 @@ public class StageStatAnalyzer extends ConstraintCommand {
         return exists(mapOption, stageOption, characterGroup, specialRule, specialRuleOption);
     }
 
-    private boolean exists(File... files) {
+    private String exists(File... files) {
         for(int i = 0; i < files.length; i++) {
+            File parent = files[i].getParentFile();
+
             if(!files[i].exists())
-                return false;
+                if (parent == null) {
+                    return "Failed to find %s file".formatted(files[i].getName());
+                } else {
+                    return "Failed to find %s in %s".formatted(files[i].getName(), parent.getName());
+                }
         }
 
-        return true;
+        return null;
     }
 
     private int getEggValue(int uid, File unitBuy) throws Exception {
