@@ -92,7 +92,7 @@ object CardData {
             //Dragon Emperors
             arrayOf(83, 84, 85, 86, 87, 177, 396, 505, 620, 660, 760),
             //Dynamites
-            arrayOf(42, 43, 44, 57, 59, 143, 427, 519, 617, 668),
+            arrayOf(42, 43, 44, 57, 59, 143, 427, 519, 617, 668, 763),
             //Elemental Pixies
             arrayOf(359, 360, 361, 401, 569, 631, 655, 719),
             //Galaxy Gals
