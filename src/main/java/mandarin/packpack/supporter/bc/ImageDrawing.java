@@ -15,13 +15,12 @@ import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.pack.Background;
 import common.util.pack.bgeffect.BackgroundEffect;
-import common.util.stage.MapColc;
-import common.util.stage.SCDef;
-import common.util.stage.Stage;
-import common.util.stage.StageMap;
+import common.util.stage.*;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.AbEnemy;
 import common.util.unit.Enemy;
+import common.util.unit.Form;
+import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.cell.AbilityCellDrawer;
 import mandarin.packpack.supporter.bc.cell.CellDrawer;
@@ -36,7 +35,10 @@ import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -146,6 +148,11 @@ public class ImageDrawing {
     private static final int BOSS = 8;
     private static final int STAGE_WIDTH = 9;
     private static final int STAGE_HEIGHT = 10;
+
+    private static final int lineupIconGap = 15;
+    private static final int lineupBorderGap = 30;
+    private static final float lineupLevelSizeFactor = 0.5f;
+    private static final int lineupLevelOffset = 5;
 
     public static void initialize() {
         File regular = new File("./data/NotoRegular.otf");
@@ -2689,6 +2696,72 @@ public class ImageDrawing {
         return image;
     }
 
+    public static File drawLineupImage(BattlePreset preset) throws Exception {
+        File temp = new File("./temp");
+
+        if (!temp.exists() && !temp.mkdirs()) {
+            return null;
+        }
+
+        File image = StaticStore.generateTempFile(temp, "lineup", ".png", false);
+
+        if (image == null) {
+            return null;
+        }
+
+        FakeImage dummyIcon = CommonStatic.getBCAssets().slot[0].getImg();
+
+        int w = lineupBorderGap * 2 + dummyIcon.getWidth() * 5 + lineupIconGap * 4;
+        int h = lineupBorderGap * 2 + dummyIcon.getHeight() * 2 + lineupIconGap;
+
+        CountDownLatch countDown = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
+            connector.queue(g -> {
+                g.setColor(51, 53, 60, 255);
+                g.fillRect(0f, 0f, w, h);
+
+                int offsetX = lineupBorderGap;
+                int offsetY = lineupBorderGap;
+
+                for (int y = 0; y < 2; y++) {
+                    for (int x = 0; x < 5; x++) {
+                        Form f = preset.fs[y][x];
+
+                        if (f == null) {
+                            g.drawImage(dummyIcon, offsetX, offsetY);
+                        } else {
+                            f.anim.load();
+
+                            g.drawImage(f.anim.getUni().getImg(), offsetX, offsetY);
+
+                            f.anim.unload();
+                        }
+
+                        offsetX += lineupIconGap + dummyIcon.getWidth();
+                    }
+
+                    offsetX = lineupBorderGap;
+                    offsetY += lineupIconGap + dummyIcon.getHeight();
+                }
+
+                drawLineupLevel(preset, dummyIcon, g);
+
+                return null;
+            });
+
+            return null;
+        }, i -> image, () -> {
+            countDown.countDown();
+
+            return null;
+        });
+
+        countDown.await();
+
+        return image;
+    }
+
     public static Object[] plotGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
@@ -5016,5 +5089,57 @@ public class ImageDrawing {
         }
 
         return null;
+    }
+
+    private static void drawLineupLevel(BattlePreset preset, FakeImage dummyIcon, GLGraphics g) {
+        int offsetX = lineupBorderGap;
+        int offsetY = lineupBorderGap;
+
+        FakeImage zeroNumber = CommonStatic.getBCAssets().num[0][0].getImg();
+
+        for (int y = 0; y < 2; y++) {
+            for (int x = 0; x < 5; x++) {
+                Form f = preset.fs[y][x];
+
+                if (f == null)
+                    continue;
+
+                Level level = preset.levels[y][x];
+
+                String text = String.valueOf(level.getLv());
+
+                if (level.getPlusLv() > 0) {
+                    text += "+" + level.getPlusLv();
+                }
+
+                float realOffsetX = offsetX + dummyIcon.getWidth() - zeroNumber.getWidth() * lineupLevelSizeFactor + lineupLevelOffset;
+                float realOffsetY = offsetY + dummyIcon.getHeight() - zeroNumber.getHeight() * lineupLevelSizeFactor + lineupLevelOffset;
+
+                for (int i = text.length() - 1; i >= 0; i--) {
+                    char c = text.charAt(i);
+
+                    System.out.println(c);
+
+                    FakeImage letterImage;
+
+                    if (Character.isDigit(c)) {
+                        int index = c - '0';
+
+                        letterImage = CommonStatic.getBCAssets().num[0][index].getImg();
+                    } else {
+                        letterImage = CommonStatic.getBCAssets().num[0][11].getImg();
+                    }
+
+                    g.drawImage(letterImage, realOffsetX, realOffsetY, letterImage.getWidth() * lineupLevelSizeFactor, letterImage.getHeight() * lineupLevelSizeFactor);
+
+                    realOffsetX -= letterImage.getWidth() * lineupLevelSizeFactor;
+                }
+
+                offsetX += lineupIconGap + dummyIcon.getWidth();
+            }
+
+            offsetX = lineupBorderGap;
+            offsetY += lineupIconGap + dummyIcon.getHeight();
+        }
     }
 }

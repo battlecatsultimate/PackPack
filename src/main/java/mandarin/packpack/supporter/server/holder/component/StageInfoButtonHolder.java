@@ -10,6 +10,7 @@ import common.util.stage.Music;
 import common.util.stage.Stage;
 import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.EntityHandler;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -99,6 +100,13 @@ public class StageInfoButtonHolder extends ComponentHolder {
                     Castle.performButton(event, cs);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for castle");
+                }
+            }
+            case "lineup" -> {
+                try {
+                    EntityHandler.showFixedLineupData(st.preset, event, lang);
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to show fixed lineup data embed");
                 }
             }
         }

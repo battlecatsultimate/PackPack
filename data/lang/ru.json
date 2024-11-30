@@ -724,6 +724,67 @@
         "2" : "Into the Future Гл. 2",
         "3" : "Into the Future Гл. 3"
       },
+      "battlePreset" : {
+        "description" : "This embed displays detailed information about fixed lineup for this stage",
+        "failed" : "Failed to generate lineup image... Please retry later",
+        "level" : "Stage Level : %s%d",
+        "title" : "Battle Preset Info",
+        "cannonType" : {
+          "title" : "Cannon Type",
+          "format" : {
+            "normal" : "Normal Cannon | Base Health : Lv. %d",
+            "special" : "%s [Lv. %d] | Base Health : Lv. %d"
+          },
+          "cannon" : {
+            "slowBeam" : "Slow Beam",
+            "ironWall" : "Iron Wall",
+            "thunderbolt" : "Thunderbolt",
+            "waterblast" : "Waterblast",
+            "holyBlast" : "Holy Blast",
+            "breakerblast" : "Breakerblast",
+            "curseblast" : "Curseblast"
+          }
+        },
+        "baseUpgrade" : {
+          "format" : "- %s : Lv. %d",
+          "title" : "Base Upgrade Level",
+          "type" : {
+            "accountant" : "Accountant",
+            "baseHealth" : "Base Health",
+            "cannonAttack" : "Cat Cannon Attack",
+            "cannonCharge" : "Cat Cannon Charge",
+            "cannonRange" : "Cat Cannon Range",
+            "research" : "Research",
+            "study" : "Study",
+            "wallet" : "Worker Cat Wallet",
+            "worker" : "Worker Cat Rate"
+          }
+        },
+        "lineup" : {
+          "description" : "Numbers in each icon indicates each unit's levels",
+          "title" : "Lineup Image"
+        },
+        "treasure" : {
+          "base" : "Adds 20k to base health",
+          "format" : "- %s",
+          "title" : "Activated Treasure",
+          "CotC" : {
+            "1" : "Cats of the Cosmos Ch. 1",
+            "2" : "Cats of the Cosmos Ch. 2",
+            "3" : "Cats of the Cosmos Ch. 3"
+          },
+          "EoC" : {
+            "1" : "Empire of Cats Ch. 1",
+            "2" : "Empire of Cats Ch. 2",
+            "3" : "Empire of Cats Ch. 3"
+          },
+          "ItF" : {
+            "1" : "Into the Future Ch. 1",
+            "2" : "Into the Future Ch. 2",
+            "3" : "Into the Future Ch. 3"
+          }
+        }
+      },
       "boss" : {
         "normal" : "Босс",
         "shake" : "Босс (Тряска)"
@@ -2663,6 +2724,7 @@
     "button" : {
       "background" : "Фон",
       "castle" : "Замок",
+      "fixedLineup" : "Fixed Lineup",
       "music" : "Музыка",
       "secondMusic" : "Второстепенная Музыка"
     },

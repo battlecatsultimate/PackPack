@@ -18,10 +18,7 @@ import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.pack.Background;
 import common.util.pack.Soul;
-import common.util.stage.MapColc;
-import common.util.stage.SCDef;
-import common.util.stage.Stage;
-import common.util.stage.StageMap;
+import common.util.stage.*;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
 import mandarin.packpack.commands.Command;
@@ -44,6 +41,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -1189,6 +1187,10 @@ public class EntityHandler {
             buttons.add(Button.secondary("music2", LangID.getStringByID("stageInfo.button.secondMusic", lang)).withEmoji(EmojiStore.MUSIC_BOSS));
         }
 
+        if (st.preset != null) {
+            buttons.add(Button.secondary("lineup", LangID.getStringByID("stageInfo.button.fixedLineup", lang)).withEmoji(EmojiStore.ABILITY.get("LINEUP")));
+        }
+
         components.add(ActionRow.of(buttons));
 
         List<FileUpload> files = new ArrayList<>();
@@ -1231,6 +1233,187 @@ public class EntityHandler {
                 Command.replyToMessageSafely(event, additionalContent, a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
             }
         }
+    }
+
+    public static void showFixedLineupData(BattlePreset preset, ButtonInteractionEvent sender, CommonStatic.Lang.Locale lang) throws Exception {
+        File f = ImageDrawing.drawLineupImage(preset);
+
+        if (f == null) {
+            sender.deferReply()
+                    .setContent(LangID.getStringByID("data.stage.battlePreset.failed", lang))
+                    .setEphemeral(true)
+                    .mentionRepliedUser(false)
+                    .queue();
+
+            return;
+        }
+
+        EmbedBuilder spec = new EmbedBuilder();
+
+        spec.setTitle(LangID.getStringByID("data.stage.battlePreset.title", lang));
+        spec.setDescription(LangID.getStringByID("data.stage.battlePreset.description", lang));
+        spec.setColor(new Color(237, 81, 221));
+
+        StringBuilder baseUpgradeDescription = new StringBuilder();
+
+        for (int i = 0; i < 9; i++) {
+            int index;
+            String typeName;
+
+            switch (i) {
+                case 0 -> {
+                    index = Data.LV_CATK;
+                    typeName = "cannonAttack";
+                }
+                case 1 -> {
+                    index = Data.LV_CRG;
+                    typeName = "cannonRange";
+                }
+                case 2 -> {
+                    index = Data.LV_RECH;
+                    typeName = "cannonCharge";
+                }
+                case 3 -> {
+                    index = Data.LV_WORK;
+                    typeName = "worker";
+                }
+                case 4 -> {
+                    index = Data.LV_WALT;
+                    typeName = "wallet";
+                }
+                case 5 -> {
+                    index = Data.LV_BASE;
+                    typeName = "baseHealth";
+                }
+                case 6 -> {
+                    index = Data.LV_RES;
+                    typeName = "research";
+                }
+                case 7 -> {
+                    index = Data.LV_ACC;
+                    typeName = "accountant";
+                }
+                case 8 -> {
+                    index = Data.LV_XP;
+                    typeName = "study";
+                }
+                default -> {
+                    index = -1;
+                    typeName = null;
+                }
+            }
+
+            baseUpgradeDescription.append(
+                LangID.getStringByID("data.stage.battlePreset.baseUpgrade.format", lang)
+                        .formatted(LangID.getStringByID("data.stage.battlePreset.baseUpgrade.type." + typeName, lang), preset.tech[index])
+            ).append("\n");
+        }
+
+        spec.addField(LangID.getStringByID("data.stage.battlePreset.baseUpgrade.title", lang), baseUpgradeDescription.toString(), false);
+
+        String formatted;
+
+        if (preset.cannonType == Data.BASE_H) {
+            formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.normal", lang).formatted(preset.bslv[0]);
+        } else {
+            String cannonName = switch (preset.cannonType) {
+                case Data.BASE_SLOW -> "slowBeam";
+                case Data.BASE_WALL ->  "ironWall";
+                case Data.BASE_STOP -> "thunderbolt";
+                case Data.BASE_WATER -> "waterblast";
+                case Data.BASE_GROUND -> "holyBlast";
+                case Data.BASE_BARRIER -> "breakerblast";
+                case Data.BASE_CURSE -> "curseblast";
+                default -> throw new IllegalStateException("E/EntityHandler::showFixedLineupData - Invalid cannon ID : %d found".formatted(preset.cannonType));
+            };
+
+            formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.special", lang).formatted(
+                    LangID.getStringByID("data.stage.battlePreset.cannonType.cannon." + cannonName, lang),
+                    preset.bslv[preset.cannonType],
+                    preset.bslv[0]
+            );
+        }
+
+        spec.addField(
+                LangID.getStringByID("data.stage.battlePreset.cannonType.title", lang),
+                formatted,
+                false
+        );
+
+        StringBuilder treasureBuilder = new StringBuilder();
+
+        if (preset.baseHealthBoost) {
+            treasureBuilder.append(LangID.getStringByID("data.stage.battlePreset.treasure.base", lang)).append("\n");
+        }
+
+        for (BattlePreset.ActivatedTreasure treasure : preset.activatedTreasures) {
+            String treasureName = switch (treasure) {
+                case EOC1 -> "EoC.1";
+                case EOC2 -> "EoC.2";
+                case EOC3 -> "EoC.3";
+                case ITF1 -> "ItF.1";
+                case ITF2 -> "ItF.2";
+                case ITF3 -> "ItF.3";
+                case COTC1 -> "CotC.1";
+                case COTC2 -> "CotC.2";
+                case COTC3 -> "CotC.3";
+                case BASE -> "base";
+            };
+
+            treasureBuilder.append(LangID.getStringByID("data.stage.battlePreset.treasure.format", lang).formatted(LangID.getStringByID("data.stage.battlePreset.treasure." + treasureName, lang))).append("\n");
+        }
+
+        spec.addField(LangID.getStringByID("data.stage.battlePreset.treasure.title", lang), treasureBuilder.toString(), false);
+
+        StringBuilder lineupBuilder = new StringBuilder();
+
+        for (int y = 0; y < 2; y++) {
+            for (int x = 0; x < 5; x++) {
+                Form form = preset.fs[y][x];
+
+                if (form == null)
+                    continue;
+
+                String formName = StaticStore.safeMultiLangGet(form, lang);
+
+                if (formName == null || formName.isBlank()) {
+                    formName = form.names.toString();
+                }
+
+                String idFormat = Data.trio(form.unit.id.id) + "-" + Data.trio(form.fid);
+
+                if (formName.isBlank()) {
+                    lineupBuilder.append("- ").append(idFormat).append("\n");
+                } else {
+                    lineupBuilder.append("- [").append(idFormat).append("] ").append(formName).append("\n");
+                }
+            }
+        }
+
+        lineupBuilder.append(LangID.getStringByID("data.stage.battlePreset.lineup.description", lang));
+
+        spec.addField(LangID.getStringByID("data.stage.battlePreset.lineup.title", lang), lineupBuilder.toString(), false);
+
+        spec.setImage("attachment://lineup.png");
+
+        spec.setFooter(LangID.getStringByID("data.stage.battlePreset.level", lang).formatted(Emoji.fromUnicode("👑").getFormatted(), preset.level + 1));
+
+        sender.deferReply()
+                .setEmbeds(spec.build())
+                .setFiles(FileUpload.fromData(f, "lineup.png"))
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue(hook -> hook.retrieveOriginal().queue(m -> {
+                    if (f.exists() && !f.delete()) {
+                        StaticStore.logger.uploadLog("W/EntityHandler::showFixedLineupData - Failed to delete file : %s".formatted(f.getAbsolutePath()));
+                    }
+                }, e -> {
+                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::showFixedLineupData - Failed to show fixed lineup data embed");
+
+                    if (f.exists() && !f.delete()) {
+                        StaticStore.logger.uploadLog("W/EntityHandler::showFixedLineupData - Failed to delete file : %s".formatted(f.getAbsolutePath()));
+                    }
+                }));
     }
 
     private static File generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int star, TreasureHolder holder) throws Exception {

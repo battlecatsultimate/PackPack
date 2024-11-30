@@ -724,6 +724,67 @@
         "2" : "미래편 2장",
         "3" : "미래편 3장"
       },
+      "battlePreset" : {
+        "description" : "이 임베디드는 해당 스테이지에 대한 고정된 라인업 데이터를 다룹니다",
+        "failed" : "라인업 이미지를 생성하는데 실패하였습니다... 나중에 다시 시도해 주세요",
+        "level" : "스테이지 레벨 : %s%d",
+        "title" : "전투 프리셋 정보",
+        "cannonType" : {
+          "title" : "대포 타입",
+          "format" : {
+            "normal" : "냥코 대포 | 성 체력 : Lv. %d",
+            "special" : "%s [Lv. %d] | 성 체력 : Lv. %d"
+          },
+          "cannon" : {
+            "slowBeam" : "슬로우포",
+            "ironWall" : "철벽포",
+            "thunderbolt" : "천둥포",
+            "waterblast" : "물총포",
+            "holyBlast" : "천사포",
+            "breakerblast" : "캐논포",
+            "curseblast" : "저주포"
+          }
+        },
+        "baseUpgrade" : {
+          "format" : "- %s : Lv. %d",
+          "title" : "기본 파워업 레벨",
+          "type" : {
+            "accountant" : "회계력",
+            "baseHealth" : "성 체력",
+            "cannonAttack" : "냥코 대포 공격력",
+            "cannonCharge" : "냥코 대포 충전",
+            "cannonRange" : "냥코 대포 사정거리",
+            "research" : "연구력",
+            "study" : "공부력",
+            "wallet" : "일 고양이의 지갑",
+            "worker" : "일 고양이의 일 효율"
+          }
+        },
+        "lineup" : {
+          "description" : "각 아이콘에 적혀있는 숫자는 해당 유닛의 레벨을 표시합니다",
+          "title" : "라인업 이미지"
+        },
+        "treasure" : {
+          "base" : "성 체력에 2만 부여",
+          "format" : "- %s",
+          "title" : "활성화된 보물",
+          "CotC" : {
+            "1" : "우주편 1장",
+            "2" : "우주편 2장",
+            "3" : "우주편 3장"
+          },
+          "EoC" : {
+            "1" : "세계편 1장",
+            "2" : "세계편 2장",
+            "3" : "세계편 3장"
+          },
+          "ItF" : {
+            "1" : "미래편 1장",
+            "2" : "미래편 2장",
+            "3" : "미래편 3장"
+          }
+        }
+      },
       "boss" : {
         "normal" : "보스",
         "shake" : "보스 (흔들림)"
@@ -2665,6 +2726,7 @@
     "button" : {
       "background" : "배경",
       "castle" : "성",
+      "fixedLineup" : "고정된 라인업",
       "music" : "음악",
       "secondMusic" : "두번째 음악"
     },
