@@ -5130,7 +5130,7 @@ public class ImageDrawing {
                         letterImage = CommonStatic.getBCAssets().num[0][11].getImg();
                     }
 
-                    g.drawImage(letterImage, realOffsetX, realOffsetY, letterImage.getWidth() * lineupLevelSizeFactor, letterImage.getHeight() * lineupLevelSizeFactor);
+                    g.drawImageNoRelease(letterImage, realOffsetX, realOffsetY, letterImage.getWidth() * lineupLevelSizeFactor, letterImage.getHeight() * lineupLevelSizeFactor);
 
                     realOffsetX -= letterImage.getWidth() * lineupLevelSizeFactor;
                 }

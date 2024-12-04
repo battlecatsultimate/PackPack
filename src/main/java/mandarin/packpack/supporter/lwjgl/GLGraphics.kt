@@ -191,6 +191,31 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         usedTexture.add(bimg)
     }
 
+    fun drawImageNoRelease(bimg: FakeImage, x: Float, y: Float) {
+        if (bimg !is GLImage)
+            return
+
+        val texture = bimg.bimg()
+
+        if (texture !is TextureMesh)
+            return
+
+        val save = transformation2D.save()
+
+        translate(x, y)
+
+        applyMatrix()
+
+        state = State.TEXTURE
+
+        texture.draw()
+
+        transformation2D.restore(save)
+        Transformation2D.giveBack(save)
+
+        applyMatrix()
+    }
+
     override fun drawImage(bimg: FakeImage, x: Float, y: Float, w: Float, h: Float) {
         if (bimg !is GLImage)
             return
@@ -218,6 +243,33 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         Transformation2D.giveBack(save)
 
         usedTexture.add(bimg)
+    }
+
+    fun drawImageNoRelease(bimg: FakeImage, x: Float, y: Float, w: Float, h: Float) {
+        if (bimg !is GLImage)
+            return
+
+        val texture = bimg.bimg()
+
+        if (texture !is TextureMesh)
+            return
+
+        val wr = w / texture.width
+        val hr = h / texture.height
+
+        val save = transformation2D.save()
+
+        translate(x, y)
+        scale(wr, hr)
+
+        applyMatrix()
+
+        state = State.TEXTURE
+
+        texture.draw()
+
+        transformation2D.restore(save)
+        Transformation2D.giveBack(save)
     }
 
     fun drawText(text: String, x: Float, y: Float, xSnap: HorizontalSnap, ySnap: VerticalSnap) {
