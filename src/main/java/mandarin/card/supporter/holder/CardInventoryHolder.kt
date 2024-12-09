@@ -25,6 +25,12 @@ import kotlin.math.max
 import kotlin.math.min
 
 class CardInventoryHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    private enum class FilterMode {
+        NONE,
+        FAVORITE_ONLY,
+        NON_FAVORITE_ONLY
+    }
+
     private val cards = ArrayList<Card>(inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator()))
 
     private var page = 0
@@ -38,7 +44,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
 
-    private var filterFavorite = false
+    private var filterMode = FilterMode.NONE
 
     init {
         registerAutoExpiration(FIVE_MIN)
@@ -79,7 +85,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
                 applyResult(event)
             }
             "filter" -> {
-                filterFavorite = !filterFavorite
+                filterMode = FilterMode.entries[(filterMode.ordinal + 1) % FilterMode.entries.size]
 
                 filterCards()
 
@@ -191,9 +197,13 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
             }
         }
 
-        if (filterFavorite) {
+        if (filterMode == FilterMode.FAVORITE_ONLY) {
             cards.removeIf { card ->
-                return@removeIf (inventory.cards[card] ?: 0) == 0
+                return@removeIf inventory.cards.containsKey(card)
+            }
+        } else if (filterMode == FilterMode.NON_FAVORITE_ONLY) {
+            cards.removeIf { card ->
+                return@removeIf inventory.favorites.containsKey(card)
             }
         }
 
@@ -344,14 +354,14 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
 
         val confirmButtons = ArrayList<Button>()
 
-        val filterEmoji = if (filterFavorite) {
-            EmojiStore.SWITCHON
-        } else {
-            EmojiStore.SWITCHOFF
+        val text = when(filterMode) {
+            FilterMode.NONE -> "Filter Mode : None"
+            FilterMode.FAVORITE_ONLY -> "Filter Mode : Favorites Only"
+            FilterMode.NON_FAVORITE_ONLY -> "Filter Mode : Non-Favorites Only"
         }
 
         confirmButtons.add(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CROSS))
-        confirmButtons.add(Button.secondary("filter", "Filter Favorites").withEmoji(filterEmoji))
+        confirmButtons.add(Button.secondary("filter", text))
 
         rows.add(ActionRow.of(confirmButtons))
 
@@ -365,16 +375,16 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ")
 
-                if (!filterFavorite && inventory.favorites.containsKey(cards[i])) {
+                if (filterMode != FilterMode.NON_FAVORITE_ONLY && inventory.favorites.containsKey(cards[i])) {
                     builder.append("⭐")
                 }
 
                 builder.append(cards[i].cardInfo())
 
-                val amount = if (filterFavorite) {
-                    (inventory.cards[cards[i]] ?: 0)
-                } else {
-                    (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
+                val amount = when(filterMode) {
+                    FilterMode.NONE -> (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
+                    FilterMode.FAVORITE_ONLY -> inventory.favorites[cards[i]] ?: 0
+                    FilterMode.NON_FAVORITE_ONLY -> inventory.cards[cards[i]] ?: 0
                 }
 
                 if (amount >= 2) {
