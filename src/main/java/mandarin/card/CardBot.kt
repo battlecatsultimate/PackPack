@@ -558,6 +558,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}sm" -> SlotMachineManual().execute(event)
             "${globalPrefix}activatecard",
             "${globalPrefix}ac" -> ActivateCard().execute(event)
+            "${globalPrefix}cardranking",
+            "${globalPrefix}car" -> CardRanking().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
