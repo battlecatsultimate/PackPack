@@ -83,30 +83,6 @@ class BuyHolder(author: Message, userID: String, channelID: String, message: Mes
                     else -> throw IllegalStateException("Invalid product name ${event.values[0]}")
                 }
 
-                if (product.requiredFilter == product.possibleFilters.size && product.possibleFilters.any { f -> !f.match(inventory.cards.keys.toList(), inventory)}) {
-                    event.deferEdit()
-                        .setContent("It seems you can't afford this item with your cards")
-                        .setAllowedMentions(ArrayList())
-                        .setComponents()
-                        .mentionRepliedUser(false)
-                        .queue()
-
-                    return
-                } else {
-                    val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
-
-                    if (doableFilters.size < product.requiredFilter) {
-                        event.deferEdit()
-                            .setContent("It seems you can't afford this item with your cards")
-                            .setAllowedMentions(ArrayList())
-                            .setComponents()
-                            .mentionRepliedUser(false)
-                            .queue()
-
-                        return
-                    }
-                }
-
                 val itemName = when(event.values[0]) {
                     "250cf" -> "cat foods"
                     "1cf" -> "cat foods"
