@@ -145,6 +145,8 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
 
                         buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
 
+                        buttons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
+
                         buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
                         if (totPage > 10) {
@@ -152,6 +154,8 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
                         }
 
                         rows.add(ActionRow.of(buttons))
+                    } else {
+                        rows.add(ActionRow.of(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"])))
                     }
 
                     val possibleCards = cards.filter { c -> (inventory.cards[c] ?: 0) - (session.suggestion[index].cards[c] ?: 0) > 1 }
@@ -160,7 +164,7 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
 
                     confirmButtons.add(Button.primary("confirm", "Suggest"))
                     confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(session.suggestion[index].cards.size >= CardData.MAX_CARD_TYPE || possibleCards.isEmpty()))
-                    confirmButtons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
+                    confirmButtons.add(Button.secondary("all", "Add All").withDisabled(session.suggestion[index].cards.size >= CardData.MAX_CARD_TYPE || possibleCards.isEmpty()))
                     confirmButtons.add(Button.danger("reset", "Clear Suggestions"))
                     confirmButtons.add(Button.danger("cancel", "Cancel"))
 

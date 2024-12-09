@@ -207,7 +207,7 @@ class SuggestInventoryHolder(
 
                 if (card.unitID == -56) {
                     event.deferReply()
-                        .setContent("Don't you dare \uD83D\uDC41\uFE0F, you can't trade it")
+                        .setContent("Don't you dare 👁️, you can't trade it")
                         .setEphemeral(true)
                         .queue()
 
@@ -234,10 +234,6 @@ class SuggestInventoryHolder(
 
                         filterCards()
 
-                        val totalPage = getTotalPage(cards.size)
-
-                        page = min(page, max(0, totalPage - 1))
-
                         suggestionMessage
                             .editMessage(backup.suggestionInfo(member))
                             .mentionRepliedUser(false)
@@ -258,10 +254,6 @@ class SuggestInventoryHolder(
                         .mentionRepliedUser(false)
                         .setAllowedMentions(ArrayList())
                         .queue()
-
-                    if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
-                        page--
-                    }
 
                     applyResult()
                 }
@@ -291,6 +283,30 @@ class SuggestInventoryHolder(
                 }
 
                 event.deferReply().setContent("Successfully added duplicated! Check the result above").setEphemeral(true).queue()
+
+                filterCards()
+
+                suggestionMessage
+                    .editMessage(backup.suggestionInfo(member))
+                    .mentionRepliedUser(false)
+                    .setAllowedMentions(ArrayList())
+                    .queue()
+
+                applyResult()
+            }
+            "all" -> {
+                cards.filter { c -> (inventory.cards[c] ?: 0) - (backup.cards[c] ?: 0) >= 0 }.forEach { c ->
+                    if (backup.cards.size >= CardData.MAX_CARD_TYPE)
+                        return@forEach
+
+                    val realAmount = (inventory.cards[c] ?: 0) - (backup.cards[c] ?: 0)
+
+                    backup.cards[c] = (backup.cards[c] ?: 0) + realAmount
+                }
+
+                event.deferReply().setContent("Successfully tried to add all cards! Check the result above").setEphemeral(true).queue()
+
+                filterCards()
 
                 suggestionMessage
                     .editMessage(backup.suggestionInfo(member))
@@ -512,6 +528,8 @@ class SuggestInventoryHolder(
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).withDisabled(page - 1 < 0))
 
+            buttons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
+
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).withDisabled(page + 1 >= totalPage))
 
             if(totalPage > 10) {
@@ -519,6 +537,8 @@ class SuggestInventoryHolder(
             }
 
             rows.add(ActionRow.of(buttons))
+        } else {
+            rows.add(ActionRow.of(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"])))
         }
 
         val possibleCards = cards.filter { c -> (inventory.cards[c] ?: 0) - (session.suggestion[index].cards[c] ?: 0) > 1 }
@@ -527,7 +547,7 @@ class SuggestInventoryHolder(
 
         confirmButtons.add(Button.primary("confirm", "Suggest"))
         confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(session.suggestion[index].cards.size >= CardData.MAX_CARD_TYPE || possibleCards.isEmpty()))
-        confirmButtons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
+        confirmButtons.add(Button.secondary("all", "Add All").withDisabled(session.suggestion[index].cards.size >= CardData.MAX_CARD_TYPE || possibleCards.isEmpty()))
         confirmButtons.add(Button.danger("reset", "Clear Suggestions"))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
 
