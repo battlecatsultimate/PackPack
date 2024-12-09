@@ -20,6 +20,7 @@ class CardRankingListHolder(author: Message, userID: String, channelID: String, 
         const val CHUNK_SIZE = 15
     }
 
+    private val totalCards: Long
     private val entries = ArrayList<Map.Entry<Long, Int>>()
 
     private var page = 0
@@ -29,15 +30,19 @@ class CardRankingListHolder(author: Message, userID: String, channelID: String, 
 
         val ranking = HashMap<Long, Int>()
 
+        var amount = 0L
+
         CardData.inventories.entries.forEach { (userID, inventory) ->
             if (!inventory.cards.containsKey(card)) {
                 return@forEach
             }
 
             ranking[userID] = inventory.cards[card] ?: 0
+            amount += (inventory.cards[card] ?: 0).toLong()
         }
 
         entries.addAll(ranking.entries.sortedBy { e -> e.value })
+        totalCards = amount
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -99,7 +104,7 @@ class CardRankingListHolder(author: Message, userID: String, channelID: String, 
     }
 
     private fun getContents() : String {
-        val builder = StringBuilder("Ranking of users who have ").append(card.simpleCardInfo()).append("\n\n")
+        val builder = StringBuilder("Ranking of users who have ").append(card.simpleCardInfo()).append("\nThere are in total ").append(totalCards).append(" cards").append("\n\n")
 
         if (entries.isEmpty()) {
             builder.append("- No one owns this card yet")
