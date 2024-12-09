@@ -23,11 +23,20 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+    private enum class FilterMode {
+        NONE,
+        PURCHASE_AMOUNT,
+        SKIN_NAME,
+        CAT_FOOD,
+        PLATINUM_SHARDS
+    }
+
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private val skins = CardData.skins.filter { skin -> skin.card == card && skin !in inventory.skins }.toMutableList()
 
     private var page = 0
+    private var filterMode = FilterMode.NONE
 
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
@@ -56,6 +65,34 @@ class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: Strin
                 val skin = skins[index]
 
                 connectTo(event, SkinPurchasePayHolder(authorMessage, userID, channelID, message, skin))
+            }
+            "filter" -> {
+                if (event !is StringSelectInteractionEvent)
+                    return
+
+                filterMode = FilterMode.valueOf(event.values.first().toString())
+
+                when(filterMode) {
+                    FilterMode.NONE -> {
+                        skins.clear()
+
+                        skins.addAll(CardData.skins.filter { skin -> skin.card == card && skin !in inventory.skins })
+                    }
+                    FilterMode.PURCHASE_AMOUNT -> {
+                        skins.sortBy { s -> return@sortBy CardData.inventories.values.count { i -> s in i.skins } }
+                    }
+                    FilterMode.SKIN_NAME -> {
+                        skins.sortBy { s -> return@sortBy s.name }
+                    }
+                    FilterMode.CAT_FOOD -> {
+                        skins.sortBy { s -> return@sortBy s.cost.catFoods }
+                    }
+                    FilterMode.PLATINUM_SHARDS -> {
+                        skins.sortBy { s -> return@sortBy s.cost.platinumShards }
+                    }
+                }
+
+                applyResult(event)
             }
             "back" -> {
                 goBack(event)
@@ -145,7 +182,13 @@ class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: Strin
             builder.append("- You owned all skins of this card!\n")
         } else {
             for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-                builder.append(i + 1).append(". ").append(skins[i].name).append("\n")
+                val authorName = if (skins[i].creator == -1L) {
+                    "System"
+                } else {
+                    "<@" + skins[i].creator + ">"
+                }
+
+                builder.append(i + 1).append(". ").append(skins[i].name).append(" [By ").append(authorName).append("]").append("\n")
             }
         }
 
@@ -188,7 +231,7 @@ class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: Strin
                 val description = if (purchaseText.isBlank()) {
                     "${skin.skinID} | $purchasable"
                 } else {
-                    "${skin.skinID} | $purchasable | $purchasable"
+                    "${skin.skinID} | $purchasable | $purchaseText"
                 }
 
                 options.add(SelectOption.of(skins[i].name, i.toString()).withDescription(description))
@@ -201,6 +244,30 @@ class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: Strin
                 .setRequiredRange(1, 1)
                 .setPlaceholder("Select skin to purchase")
                 .setDisabled(skins.isEmpty())
+                .build()
+        ))
+
+        val filterModeOption = ArrayList< SelectOption>()
+
+        for (filterMode in FilterMode.entries) {
+            val labelName = when(filterMode) {
+                FilterMode.NONE -> "None"
+                FilterMode.PURCHASE_AMOUNT -> "By Purchased Amount"
+                FilterMode.SKIN_NAME -> "By Skin Name"
+                FilterMode.CAT_FOOD -> "By Cat Food Cost"
+                FilterMode.PLATINUM_SHARDS -> "By Platinum Shard Cost"
+            }
+
+            filterModeOption.add(SelectOption.of(labelName, filterMode.name))
+        }
+
+        result.add(ActionRow.of(
+            StringSelectMenu.create("filter")
+                .addOptions(filterModeOption)
+                .setRequiredRange(1, 1)
+                .setPlaceholder("Sort skin by")
+                .setDisabled(skins.isEmpty())
+                .setDefaultValues(filterMode.name)
                 .build()
         ))
 

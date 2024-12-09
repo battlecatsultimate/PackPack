@@ -303,7 +303,6 @@ class SkinPurchaseCardHolder(author: Message, userID: String, channelID: String,
 
         result.add(ActionRow.of(cardCategory))
 
-
         var totPage = dataSize / SearchHolder.PAGE_CHUNK
 
         if (dataSize % SearchHolder.PAGE_CHUNK != 0)
