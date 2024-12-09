@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.pack
 
 import common.CommonStatic
 import mandarin.card.supporter.card.Card
@@ -29,8 +29,26 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.lang.IllegalStateException
+import java.lang.StringBuilder
+import java.util.ArrayList
+import kotlin.collections.any
+import kotlin.collections.contains
+import kotlin.collections.count
+import kotlin.collections.filter
+import kotlin.collections.find
+import kotlin.collections.forEach
+import kotlin.collections.forEachIndexed
+import kotlin.collections.isNotEmpty
+import kotlin.collections.sortWith
+import kotlin.collections.sumOf
+import kotlin.collections.toSet
+import kotlin.jvm.javaClass
 import kotlin.math.ceil
 import kotlin.math.min
+import kotlin.ranges.until
+import kotlin.text.split
+import kotlin.text.toInt
 
 class CardCostPayHolder(
     author: Message,
@@ -180,6 +198,28 @@ class CardCostPayHolder(
 
                 event.deferReply()
                     .setContent("Successfully added all duplicated cards! Check the result above")
+                    .setEphemeral(true)
+                    .queue()
+
+                filterCards()
+                applyResult()
+            }
+            "all" -> {
+                for (card in cards) {
+                    val amount = (inventory.cards[card] ?: 0) - containers.sumOf { c -> c.pickedCards.count { cd -> cd.unitID == card.unitID } }
+
+                    if (amount > 0) {
+                        repeat(min(amount, container.cost.amount.toInt() - container.pickedCards.size)) {
+                            container.pickedCards.add(card)
+                        }
+                    }
+
+                    if (container.paid())
+                        break
+                }
+
+                event.deferReply()
+                    .setContent("Successfully added all cards! Check the result above")
                     .setEphemeral(true)
                     .queue()
 
@@ -428,6 +468,7 @@ class CardCostPayHolder(
         confirmButtons.add(Button.secondary("dupe", "Select Duplicated").withDisabled(container.paid() || !cards.any { card ->
             (inventory.cards[card] ?: 0) - containers.sumOf { ct -> ct.pickedCards.count { c -> c.unitID == card.unitID } } > 1
         }))
+        confirmButtons.add(Button.secondary("all", "Add All").withDisabled(container.paid() || cards.isEmpty()))
         confirmButtons.add(Button.danger("clear", "Clear").withDisabled(container.pickedCards.isEmpty()))
 
         result.add(ActionRow.of(confirmButtons))

@@ -3,7 +3,7 @@ package mandarin.card.supporter.holder.skin
 import common.CommonStatic
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Skin
-import mandarin.card.supporter.holder.CardCostPayHolder
+import mandarin.card.supporter.holder.pack.CardCostPayHolder
 import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore

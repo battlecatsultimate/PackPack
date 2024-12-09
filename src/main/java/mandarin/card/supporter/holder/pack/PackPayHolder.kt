@@ -6,7 +6,6 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
-import mandarin.card.supporter.holder.CardCostPayHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.CardPayContainer
