@@ -843,6 +843,10 @@
           "description" : "Max _ 円",
           "title" : "**最大コスト**"
         },
+        "maxSpawn" : {
+          "description" : "In total %d units can be spawned",
+          "title" : "- **Unit Spawn Number Limit**"
+        },
         "minCost" : {
           "description" : "Min _ 円",
           "title" : "**最小コスト**"

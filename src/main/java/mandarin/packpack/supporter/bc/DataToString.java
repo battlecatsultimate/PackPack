@@ -1468,6 +1468,13 @@ public class DataToString extends Data {
                     );
                 }
             }
+
+            if (l.stageLimit.maxUnitSpawn > 0) {
+                res.add(
+                        LangID.getStringByID("data.stage.limit.maxSpawn.title", lang) + "\n" +
+                        LangID.getStringByID("data.stage.limit.maxSpawn.description", lang).formatted(l.stageLimit.maxUnitSpawn)
+                );
+            }
         }
 
         return res;

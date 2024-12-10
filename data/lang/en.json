@@ -843,6 +843,10 @@
           "description" : "Max deploy cost _",
           "title" : "- **Maximum Deploy Cost**"
         },
+        "maxSpawn" : {
+          "description" : "In total %d units can be spawned",
+          "title" : "- **Unit Spawn Number Limit**"
+        },
         "minCost" : {
           "description" : "Min deploy cost _",
           "title" : "- **Minimum Deploy Cost**"

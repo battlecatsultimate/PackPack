@@ -843,6 +843,10 @@
           "description" : "최대 _ 원",
           "title" : "**최대 코스트**"
         },
+        "maxSpawn" : {
+          "description" : "총 유닛 %d 마리 스폰 가능",
+          "title" : "- **유닛 스폰 수 제한**"
+        },
         "minCost" : {
           "description" : "최소 _ 원",
           "title" : "**최소 코스트**"

@@ -843,6 +843,10 @@
           "description" : "_元以內",
           "title" : "**貓咪金錢限制**"
         },
+        "maxSpawn" : {
+          "description" : "In total %d units can be spawned",
+          "title" : "- **Unit Spawn Number Limit**"
+        },
         "minCost" : {
           "description" : "_元以上",
           "title" : "**貓咪金錢限制**"

@@ -843,6 +843,10 @@
           "description" : "Макс. Стоимость _",
           "title" : "**Максимальная Стоимость**"
         },
+        "maxSpawn" : {
+          "description" : "In total %d units can be spawned",
+          "title" : "- **Unit Spawn Number Limit**"
+        },
         "minCost" : {
           "description" : "Мин. Стоимость _",
           "title" : "**Минимальная Стоимость**"
