@@ -199,11 +199,11 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
 
         if (filterMode == FilterMode.FAVORITE_ONLY) {
             cards.removeIf { card ->
-                return@removeIf inventory.cards.containsKey(card)
+                return@removeIf !inventory.favorites.containsKey(card)
             }
         } else if (filterMode == FilterMode.NON_FAVORITE_ONLY) {
             cards.removeIf { card ->
-                return@removeIf inventory.favorites.containsKey(card)
+                return@removeIf !inventory.cards.containsKey(card)
             }
         }
 
