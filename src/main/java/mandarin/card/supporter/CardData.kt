@@ -147,7 +147,7 @@ object CardData {
             //Halloweens
             arrayOf(229, 230, 302, 570, 683, 772),
             //X-Mas
-            arrayOf(241, 242, 243, 310, 526, 584, 687),
+            arrayOf(241, 242, 243, 310, 526, 584, 687, 777),
 
             //Collaboration
 
