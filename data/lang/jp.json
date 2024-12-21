@@ -1273,6 +1273,8 @@
       "842" : "レアチケット&XPセール",
       "843" : "伝説の罠パック",
       "844" : "ユーザーランク300達成セール",
+      "845" : "おかわりプレミアムセール",
+      "846" : "限定復活プレミアムセール",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1379,6 +1381,8 @@
       "35019" : "Event Stamp",
       "35020" : "Halloween Event Stamp",
       "35021" : "12th Anniversary Stamp",
+      "35022" : "Event Stamp",
+      "35023" : "Event Stamp",
       "rankingDojo" : "ランキングの間 _"
     },
     "permanentSchedule" : {
@@ -1466,7 +1470,8 @@
         "2" : "レア度代表戦",
         "3" : "ワンコイン",
         "4" : "特売セール:激レア",
-        "5" : "Deploy Limit"
+        "5" : "生産キャラ数制限",
+        "6" : "超特売セール　EX"
       }
     },
     "section" : {

@@ -1273,6 +1273,8 @@
       "842" : "Rare Ticket & XP Sale",
       "843" : "Legendary Trap Pack",
       "844" : "User Rank 300 Achievement Sale",
+      "845" : "Bonus Platinum Ticket Sale",
+      "846" : "Second Chance Platinum Ticket Sale",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1379,6 +1381,8 @@
       "35019" : "Event Stamp",
       "35020" : "Halloween Event Stamp",
       "35021" : "12th Anniversary Stamp",
+      "35022" : "Event Stamp",
+      "35023" : "Event Stamp",
       "rankingDojo" : "Ranking Dojo _"
     },
     "permanentSchedule" : {
@@ -1466,7 +1470,8 @@
         "2" : "Rarity Deploy Limit",
         "3" : "Cost Limit",
         "4" : "Super Rare Cost/Cooldown Buff",
-        "5" : "Deploy Limit"
+        "5" : "Deploy Limit",
+        "6" : "EX Cost/Cooldown Buff"
       }
     },
     "section" : {
