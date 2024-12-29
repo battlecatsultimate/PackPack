@@ -88,7 +88,7 @@ object CardData {
         //Tier 1
         arrayOf(
             //Dark Heroes
-            arrayOf(194, 195, 196, 212, 226, 261, 431, 533, 634, 698),
+            arrayOf(194, 195, 196, 212, 226, 261, 431, 533, 634, 698, 774),
             //Dragon Emperors
             arrayOf(83, 84, 85, 86, 87, 177, 396, 505, 620, 660, 760),
             //Dynamites
