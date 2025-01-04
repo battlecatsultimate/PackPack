@@ -4,6 +4,7 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.AuctionSession
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.ServerData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
@@ -13,6 +14,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 class CancelBid : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
+
+        if (u.id != ServerData.get("gid") && u.id != StaticStore.MANDARIN_SMELL) {
+            return
+        }
+
         val ch = loader.channel
 
         val segments = loader.content.split(Regex(" "), 3)
