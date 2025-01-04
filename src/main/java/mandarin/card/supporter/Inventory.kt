@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.StaticStore
 import java.io.File
 import java.io.FileWriter
 import java.util.HashMap
+import java.util.HashSet
 import kotlin.math.min
 
 class Inventory(private val id: Long) {
@@ -20,7 +21,7 @@ class Inventory(private val id: Long) {
 
     var vanityRoles = ArrayList<CardData.Role>()
 
-    var skins = ArrayList<Skin>()
+    var skins = HashSet<Skin>()
     var equippedSkins = HashMap<Card, Skin>()
 
     var catFoods = 0L
