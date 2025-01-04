@@ -14,7 +14,6 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -32,6 +31,10 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
 class CardSalvageHolder(author: Message, userID: String, channelID: String, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    companion object {
+        const val PAGE_CHUNK = 15
+    }
+    
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val tier = when(salvageMode) {
         CardData.SalvageMode.T1 -> CardData.Tier.COMMON
@@ -151,7 +154,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
                 filterCards()
 
-                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                if (cards.size <= page * PAGE_CHUNK && page > 0) {
                     page--
                 }
 
@@ -190,7 +193,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
                         filterCards()
 
-                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                        if (cards.size <= page * PAGE_CHUNK && page > 0) {
                             page--
                         }
 
@@ -201,7 +204,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
                     filterCards()
 
-                    if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                    if (cards.size <= page * PAGE_CHUNK && page > 0) {
                         page--
                     }
 
@@ -384,7 +387,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for(i in page * PAGE_CHUNK until min(dataSize, (page + 1) * PAGE_CHUNK)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -402,12 +405,9 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
         rows.add(ActionRow.of(cardCategory))
 
-        var totPage = dataSize / SearchHolder.PAGE_CHUNK
+        var totPage = getTotalPage(dataSize, PAGE_CHUNK)
 
-        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++
-
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
             if(totPage > 10) {
@@ -506,7 +506,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
         builder.append("\n```md\n")
 
         if (cards.isNotEmpty()) {
-            for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
+            for (i in page * PAGE_CHUNK until min((page + 1) * PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
                 val amount = (inventory.cards[cards[i]] ?: 0) - selectedCard.filter { c -> cards[i].unitID == c.unitID }.size
