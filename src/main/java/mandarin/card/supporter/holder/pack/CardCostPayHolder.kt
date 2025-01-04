@@ -45,6 +45,7 @@ import kotlin.collections.sumOf
 import kotlin.collections.toSet
 import kotlin.jvm.javaClass
 import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.ranges.until
 import kotlin.text.split
@@ -325,6 +326,8 @@ class CardCostPayHolder(
         }
 
         cards.sortWith(CardComparator())
+
+        page = max(0, min(page, getTotalPage(cards.size) - 1))
     }
 
     private fun getContent() : String {
