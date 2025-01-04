@@ -17,6 +17,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.util.concurrent.CountDownLatch
+import kotlin.math.abs
 
 class Skin {
     companion object {
@@ -84,8 +85,8 @@ class Skin {
         var maxID = 1
 
         CardData.skins.filter { skin -> skin.card == card }.forEach { skin ->
-            if (maxID <= skin.skinID / 10000) {
-                maxID = skin.skinID / 10000 + 1
+            if (maxID <= abs(skin.skinID) / 10000) {
+                maxID = abs(skin.skinID) / 10000 + 1
             }
         }
 
