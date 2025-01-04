@@ -43,6 +43,16 @@ class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: Strin
 
                 val auctionSession = CardData.auctionSessions.find { s -> s.channel == value } ?: return
 
+                if ((auctionSession.bidData[event.user.idLong] ?: 0) == -1L) {
+                    event.deferReply()
+                        .setContent("It seems that you have left the server while participating this auction. So you aren't allowed to bid this auction")
+                        .setEphemeral(true)
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    return
+                }
+
                 val textInput = TextInput.create("bid", "Bid Cat Foods (Minimum ${auctionSession.currentBid + auctionSession.minimumBid})", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setValue(null)

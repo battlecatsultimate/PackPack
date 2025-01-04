@@ -68,6 +68,12 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
                     return
                 }
 
+                if ((auctionSession.bidData[u.idLong] ?: 0) == -1L) {
+                    replyToMessageSafely(ch, "It seems that you have left the server while participating this auction. So you aren't allowed to bid this auction", loader.message) { a -> a }
+
+                    return
+                }
+
                 val catFoods = getCatFoods(segments[2])
 
                 if (catFoods == null) {
@@ -132,6 +138,12 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
                 loader.message.delete().queue {
                     replyToMessageSafely(ch, "This auction is anonymous auction! Users shall not see who bid this auction. Please call this command via DM", loader.message) { a -> a }
                 }
+
+                return
+            }
+
+            if ((auctionSession.bidData[u.idLong] ?: 0) == -1L) {
+                replyToMessageSafely(ch, "It seems that you have left the server while participating this auction. So you aren't allowed to bid this auction", loader.message) { a -> a }
 
                 return
             }
