@@ -153,6 +153,30 @@ class AuctionSession(
         }
     }
 
+    fun leavingCancelBid(userID: Long) {
+        val previousAmount = bidData[userID] ?: 0L
+        val currentBid = currentBid
+
+        bidData[userID] = -1L
+
+        if (this::auctionMessage.isInitialized) {
+            auctionMessage
+                .editMessage(getAuctionInfo())
+                .setAllowedMentions(ArrayList())
+                .queue()
+        }
+
+        if (this::auctionChannel.isInitialized && currentBid == previousAmount) {
+            if (anonymous) {
+                auctionChannel.sendMessage("User left the server and their bid ${EmojiStore.ABILITY["CF"]?.formatted} $previousAmount has been canceled!").queue()
+            } else {
+                auctionChannel.sendMessage("User $userID left the server and their bid ${EmojiStore.ABILITY["CF"]?.formatted} $previousAmount has been canceled!")
+                    .setAllowedMentions(ArrayList())
+                    .queue()
+            }
+        }
+    }
+
     fun forceCancelBid(canceler: Long, userID: Long) {
         val previousAmount = bidData[userID] ?: 0L
 

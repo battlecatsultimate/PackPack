@@ -31,6 +31,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -286,6 +288,12 @@ object CardBot : ListenerAdapter() {
     override fun onGuildBan(event: GuildBanEvent) {
         val userID = event.user.idLong
 
+        CardData.auctionSessions.forEach { session ->
+            if (session.bidData.containsKey(userID)) {
+                session.leavingCancelBid(userID)
+            }
+        }
+
         val inventory = CardData.inventories.remove(userID) ?: return
         CardData.notifierGroup.remove(userID)
         LogSession.gatherPreviousSessions(CardData.getUnixEpochTime(), -1).forEach { log ->
@@ -310,6 +318,18 @@ object CardBot : ListenerAdapter() {
                         Files.deleteIfExists(targetFile.toPath())
                     }
             }
+    }
+
+    override fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {
+        super.onGuildMemberRemove(event)
+
+        val userID = event.user.idLong
+
+        CardData.auctionSessions.forEach { session ->
+            if (session.bidData.containsKey(userID)) {
+                session.leavingCancelBid(userID)
+            }
+        }
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
