@@ -208,6 +208,8 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
         }
 
         cards.sortWith(CardComparator())
+
+        page = max(0, min(page, getTotalPage(cards.size) - 1))
     }
 
     private fun applyResult(event: IMessageEditCallback) {
