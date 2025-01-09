@@ -11,9 +11,9 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction
 
-class PlatinumShard : Command(CommonStatic.Lang.Locale.EN, true) {
+class PlatinumShard : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val m = loader.member
+        val u = loader.user
         val contents = loader.content.split(" ")
 
         if (contents.size >= 2) {
@@ -31,9 +31,9 @@ class PlatinumShard : Command(CommonStatic.Lang.Locale.EN, true) {
                 replyToMessageSafely(loader.channel, "You have passed invalid format of ID! Please provide member data via either raw ID or mention", loader.message) { a -> a }
             }
         } else {
-            val inventory = Inventory.getInventory(m.idLong)
+            val inventory = Inventory.getInventory(u.idLong)
 
-            replyToMessageSafely(loader.channel, "${m.asMention}, you currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}", loader.message) { a -> a }
+            replyToMessageSafely(loader.channel, "${u.asMention}, you currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}", loader.message) { a -> a }
         }
     }
 

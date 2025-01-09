@@ -17,13 +17,37 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.ceil
 import kotlin.math.min
 
-class Roll : Command(CommonStatic.Lang.Locale.EN, true) {
+class Roll : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel
-        val m = loader.member
+        val m = if (loader.hasGuild()) {
+            loader.member
+        } else {
+            val u = loader.user
+            val g = loader.client.getGuildById(CardData.guild) ?: return
+
+            val retriever = AtomicReference<Member>(null)
+            val countdown = CountDownLatch(1)
+
+            g.retrieveMember(u).queue({ m ->
+                retriever.set(m)
+
+                countdown.countDown()
+            }) { e ->
+                StaticStore.logger.uploadErrorLog(e, "E/Craft::doSomething - Failed to retrieve member data from user ID ${u.idLong}")
+
+                countdown.countDown()
+            }
+
+            countdown.await()
+
+            retriever.get() ?: return
+        }
 
         if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
@@ -44,7 +68,7 @@ class Roll : Command(CommonStatic.Lang.Locale.EN, true) {
 
             val noImage = arrayOf("-s", "-simple", "-n", "-noimage").any { p -> p in content }
 
-            StaticStore.putHolder(m.id, PackSelectHolder(loader.message, m.id, ch.id, loader.member, msg, noImage))
+            StaticStore.putHolder(m.id, PackSelectHolder(loader.message, m.id, ch.id, m, msg, noImage))
         })
     }
 

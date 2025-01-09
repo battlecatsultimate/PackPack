@@ -20,16 +20,22 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.requests.RestAction
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.min
 
-class Cards : Command(CommonStatic.Lang.Locale.EN, true) {
+class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val g = loader.guild
+        val g = if (loader.hasGuild()) {
+            loader.guild
+        } else {
+            loader.client.getGuildById(CardData.guild) ?: return
+        }
 
         val memberAction = findMember(loader.content.split(" "), g)
 
         if (memberAction == null) {
-            performCommand(loader, loader.member)
+            performCommand(loader, null)
         } else {
             memberAction.queue { member ->
                 performCommand(loader, member)
@@ -37,10 +43,35 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, true) {
         }
     }
 
-    private fun performCommand(loader: CommandLoader, member: Member) {
+    private fun performCommand(loader: CommandLoader, member: Member?) {
         val ch = loader.channel
-        val m = loader.member
         val author = loader.message
+
+        val m = if (loader.hasGuild()) {
+            loader.member
+        } else {
+            val u = loader.user
+            val g = loader.client.getGuildById(CardData.guild) ?: return
+
+            val retriever = AtomicReference<Member>(null)
+            val countdown = CountDownLatch(1)
+
+            g.retrieveMember(u).queue({ m ->
+                retriever.set(m)
+
+                countdown.countDown()
+            }) { e ->
+                StaticStore.logger.uploadErrorLog(e, "E/Craft::doSomething - Failed to retrieve member data from user ID ${u.idLong}")
+
+                countdown.countDown()
+            }
+
+            countdown.await()
+
+            retriever.get() ?: return
+        }
+
+        val member = member ?: m
 
         if (m.id != member.id && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL && !CardData.isOrganizer(m)) {
             replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", loader.message) { a -> a }

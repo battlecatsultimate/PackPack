@@ -12,9 +12,9 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction
 
-class CatFood : Command(CommonStatic.Lang.Locale.EN, true) {
+class CatFood : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val m = loader.member
+        val u = loader.user
         val contents = loader.content.split(" ")
 
         val cf = EmojiStore.ABILITY["CF"]?.formatted
@@ -38,19 +38,19 @@ class CatFood : Command(CommonStatic.Lang.Locale.EN, true) {
                 replyToMessageSafely(loader.channel, "You have passed invalid format of ID! Please provide member data via either raw ID or mention", loader.message) { a -> a }
             }
         } else {
-            val inventory = Inventory.getInventory(m.idLong)
+            val inventory = Inventory.getInventory(u.idLong)
 
-            if (CardData.taxedCatFoods.containsKey(m.idLong)) {
-                replyToMessageSafely(loader.channel, "${m.asMention}, here's your $cf status\n" +
+            if (CardData.taxedCatFoods.containsKey(u.idLong)) {
+                replyToMessageSafely(loader.channel, "${u.asMention}, here's your $cf status\n" +
                         "\n" +
                         "In total, you have $cf ${inventory.catFoods}\n" +
                         "$cf ${inventory.tradePendingCatFoods} are queued in trading sessions\n" +
                         "$cf ${inventory.auctionPendingCatFoods} are queued in auction sessions\n" +
-                        "$cf ${CardData.taxedCatFoods[m.idLong]} are taxed\n" +
+                        "$cf ${CardData.taxedCatFoods[u.idLong]} are taxed\n" +
                         "\n" +
                         "You can actually use $cf ${inventory.actualFakeCatFood}", loader.message) { a -> a }
             } else {
-                replyToMessageSafely(loader.channel, "${m.asMention}, here's your $cf status\n" +
+                replyToMessageSafely(loader.channel, "${u.asMention}, here's your $cf status\n" +
                         "\n" +
                         "In total, you have $cf ${inventory.catFoods}\n" +
                         "$cf ${inventory.tradePendingCatFoods} are queued in trading sessions\n" +

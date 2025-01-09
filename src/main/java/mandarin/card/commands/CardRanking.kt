@@ -10,17 +10,42 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.min
 
-class CardRanking : Command(CommonStatic.Lang.Locale.EN, true) {
+class CardRanking : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val m = loader.member
+        val m = if (loader.hasGuild()) {
+            loader.member
+        } else {
+            val u = loader.user
+            val g = loader.client.getGuildById(CardData.guild) ?: return
+
+            val retriever = AtomicReference<Member>(null)
+            val countdown = CountDownLatch(1)
+
+            g.retrieveMember(u).queue({ m ->
+                retriever.set(m)
+
+                countdown.countDown()
+            }) { e ->
+                StaticStore.logger.uploadErrorLog(e, "E/Craft::doSomething - Failed to retrieve member data from user ID ${u.idLong}")
+
+                countdown.countDown()
+            }
+
+            countdown.await()
+
+            retriever.get() ?: return
+        }
 
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return

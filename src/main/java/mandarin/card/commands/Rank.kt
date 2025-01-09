@@ -17,11 +17,11 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class Rank : Command(CommonStatic.Lang.Locale.EN, true) {
+class Rank : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val m = loader.member
+        val u = loader.user
 
-        Inventory.getInventory(m.idLong)
+        Inventory.getInventory(u.idLong)
 
         val users = CardData.inventories.keys.sortedBy { id ->
             val inventory = Inventory.getInventory(id)
@@ -35,8 +35,8 @@ class Rank : Command(CommonStatic.Lang.Locale.EN, true) {
             inventory.catFoods
         }
 
-        replyToMessageSafely(loader.channel, getRankList(users, catFoods, m.idLong), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
-            StaticStore.putHolder(m.id, RankListHolder(loader.message, m.id, loader.channel.id, msg, users, catFoods, true))
+        replyToMessageSafely(loader.channel, getRankList(users, catFoods, u.idLong), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
+            StaticStore.putHolder(u.id, RankListHolder(loader.message, u.id, loader.channel.id, msg, users, catFoods, true))
         }
     }
 

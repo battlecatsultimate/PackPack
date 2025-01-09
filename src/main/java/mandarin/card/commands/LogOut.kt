@@ -12,11 +12,11 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import kotlin.system.exitProcess
 
-class LogOut : Command(CommonStatic.Lang.Locale.EN, true) {
+class LogOut : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        val m = loader.member
+        val u = loader.user
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid"))
+        if (u.id != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid"))
             return
 
         val ch = loader.channel
@@ -57,7 +57,7 @@ class LogOut : Command(CommonStatic.Lang.Locale.EN, true) {
         registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), CommonStatic.Lang.Locale.EN).queue { msg ->
             StaticStore.logger.uploadLog("Logging out : ${loader.user.asMention}")
 
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, u.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
                 val self = ch.jda.selfUser.asMention
                 val channel = if (CardBot.test) {
                     null
