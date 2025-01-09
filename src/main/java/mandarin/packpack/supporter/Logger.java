@@ -32,7 +32,7 @@ public class Logger {
     };
     private static final String separatorHalf = "==========";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(Logger.class);
 
     public final static List<String> logMessages = new ArrayList<>();
 
