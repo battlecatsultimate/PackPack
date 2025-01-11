@@ -63,7 +63,7 @@ class Slot : Command(CommonStatic.Lang.Locale.EN, false){
         val skip = "-s" in contents || "-skip" in contents
 
         replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(loader.user, possibleSlotMachines)) }) { msg ->
-            StaticStore.putHolder(loader.user.id, SlotMachineSelectHolder(loader.message, loader.user.id, loader.channel.id, msg, skip))
+            StaticStore.putHolder(loader.user.id, SlotMachineSelectHolder(loader.message, loader.user.id, loader.channel.id, msg, m, skip))
         }
     }
 
