@@ -166,8 +166,8 @@ public class StaticStore {
         rgb(218,232,240)
     };
 
-    public final static String UNITARCHIVE = "964536593715200112";
-    public final static String ENEMYARCHIVE = "964536611276738641";
+    public final static String UNITARCHIVE = "1327548891847069728";
+    public final static String ENEMYARCHIVE = "1327548910465581057";
     public final static String MISCARCHIVE = "964536641526067310";
 
     public final static String SUPPORT_SERVER = "964054872649515048";
