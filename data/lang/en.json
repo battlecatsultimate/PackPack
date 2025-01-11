@@ -1471,7 +1471,8 @@
         "3" : "Cost Limit",
         "4" : "Super Rare Cost/Cooldown Buff",
         "5" : "Deploy Limit",
-        "6" : "EX Cost/Cooldown Buff"
+        "6" : "Cooldown Limit",
+        "7" : "EX Cost/Cooldown Buff"
       }
     },
     "section" : {
