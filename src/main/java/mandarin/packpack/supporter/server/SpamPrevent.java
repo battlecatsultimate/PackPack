@@ -97,7 +97,7 @@ public class SpamPrevent {
         if(current - lastTime > MINIMUM_INTERVAL) {
             lastTime = current;
 
-            count = 0;
+            count--;
         } else {
             lastTime = current;
 
@@ -155,7 +155,7 @@ public class SpamPrevent {
         if(current - lastTime > MINIMUM_INTERVAL) {
             lastTime = current;
 
-            count = 0;
+            count--;
         } else {
             lastTime = current;
 
