@@ -6,7 +6,9 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -105,7 +107,27 @@ public class SpamPrevent {
 
                 scale *= 4;
 
-                StaticStore.logger.uploadLog("Spammer found : " + id);
+                StringBuilder builder = new StringBuilder("I/SpamPrevent::isPrevented - Spammer found from message command : User <@")
+                        .append(id)
+                        .append("> [")
+                        .append(id)
+                        .append("], Current Time : ")
+                        .append(current)
+                        .append(", Last Time : ")
+                        .append(lastTime)
+                        .append(", Interval : ")
+                        .append(current - lastTime)
+                        .append(", Count : ")
+                        .append(count);
+
+                if (ch instanceof GuildChannel gc) {
+                    Guild g = gc.getGuild();
+
+                    builder.append(", Guild : ")
+                            .append(g.getId());
+                }
+
+                StaticStore.logger.uploadLog(builder.toString());
 
                 ch.sendMessage(LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
 
@@ -137,21 +159,39 @@ public class SpamPrevent {
             if(count == 5) {
                 preventTime = PREVENT_TIME * scale;
 
-                scale *= 2;
+                scale *= 4;
 
                 CommonStatic.Lang.Locale lang = CommonStatic.Lang.Locale.EN;
 
-                if(interaction.getMember() != null) {
-                    Member m = interaction.getMember();
+                User u = interaction.getUser();
 
-                    if(StaticStore.config.containsKey(m.getUser().getId())) {
-                        lang =  StaticStore.config.get(m.getUser().getId()).lang;
-                    }
-
-                    return LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.getUser().getId());
-                } else {
-                    return "";
+                if(StaticStore.config.containsKey(u.getId())) {
+                    lang =  StaticStore.config.get(u.getId()).lang;
                 }
+
+                StringBuilder builder = new StringBuilder("I/SpamPrevent::isPrevented - Spammer found from slash command : User <@")
+                        .append(u.getId())
+                        .append("> [")
+                        .append(u.getId())
+                        .append("], Current Time : ")
+                        .append(current)
+                        .append(", Last Time : ")
+                        .append(lastTime)
+                        .append(", Interval : ")
+                        .append(current - lastTime)
+                        .append(", Count : ")
+                        .append(count);
+
+                Guild g = interaction.getGuild();
+
+                if (g != null) {
+                    builder.append(", Guild : ")
+                            .append(g.getId());
+                }
+
+                StaticStore.logger.uploadLog(builder.toString());
+
+                return LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", u.getId());
             }
         }
 

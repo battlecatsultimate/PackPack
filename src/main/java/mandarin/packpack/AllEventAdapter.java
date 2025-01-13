@@ -840,7 +840,6 @@ public class AllEventAdapter extends ListenerAdapter {
 
                         if (result != null) {
                             if (!result.isBlank()) {
-
                                 i.deferReply().setContent(result).queue();
                             }
 
