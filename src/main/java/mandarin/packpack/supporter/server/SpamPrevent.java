@@ -84,9 +84,6 @@ public class SpamPrevent {
     long scale = 1;
 
     public boolean isPrevented(MessageChannel ch, CommonStatic.Lang.Locale lang, String id) {
-        if(id.equals(StaticStore.MANDARIN_SMELL))
-            return false;
-
         long current = System.currentTimeMillis();
 
         if(preventTime > 0 && current - lastTime > preventTime) {
@@ -99,7 +96,11 @@ public class SpamPrevent {
 
         if(current - lastTime > MINIMUM_INTERVAL) {
             lastTime = current;
+
+            count = 0;
         } else {
+            lastTime = current;
+
             count++;
 
             if(count == 5) {
@@ -153,7 +154,11 @@ public class SpamPrevent {
 
         if(current - lastTime > MINIMUM_INTERVAL) {
             lastTime = current;
+
+            count = 0;
         } else {
+            lastTime = current;
+
             count++;
 
             if(count == 5) {
