@@ -2036,9 +2036,9 @@ public class EntityHandler {
                 long max;
 
                 if(debug || limit > 0)
-                    max = getBoosterFileLimit(booster) * 1024L * 1024;
+                    max = getBoosterFileLimit(booster) * 1024L * 1024L;
                 else
-                    max = 8 * 1024 * 1024;
+                    max = Message.MAX_FILE_SIZE;
 
                 if (img == null) {
                     ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
