@@ -100,10 +100,14 @@ public class PackBot {
                 Calendar c = Calendar.getInstance();
 
                 if(save % 5 == 0) {
-                    System.out.println("Save Process");
-                    StaticStore.saveServerInfo();
+                    try {
+                        System.out.println("Save Process");
+                        StaticStore.saveServerInfo();
 
-                    EventFactor.currentYear = c.get(Calendar.YEAR);
+                        EventFactor.currentYear = c.get(Calendar.YEAR);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to save file");
+                    }
 
                     save = 1;
                 } else {
@@ -111,18 +115,22 @@ public class PackBot {
                 }
 
                 if(backup % 360 == 0) {
-                    System.out.println("Backup save file");
+                    try {
+                        System.out.println("Backup save file");
 
-                    if (!test) {
-                        client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
-                                .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
-                                .queue()));
-
-                        for (int i = 0; i < StaticStore.maintainers.size(); i++) {
-                            client.retrieveUserById(StaticStore.maintainers.get(i)).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
+                        if (!test) {
+                            client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
                                     .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
                                     .queue()));
+
+                            for (int i = 0; i < StaticStore.maintainers.size(); i++) {
+                                client.retrieveUserById(StaticStore.maintainers.get(i)).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
+                                        .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
+                                        .queue()));
+                            }
                         }
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to send backup file");
                     }
 
                     backup = 1;
@@ -131,9 +139,9 @@ public class PackBot {
                 }
 
                 if(udp % 30 == 0) {
-                    System.out.println("Fetch UDP");
-
                     try {
+                        System.out.println("Fetch UDP");
+
                         StaticStore.fetchUDPData();
                     } catch (Exception e) {
                         StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to fetch UDP data");
@@ -277,17 +285,21 @@ public class PackBot {
 
                 if (!test) {
                     if (updateStatus == 5) {
-                        updateStatus = 0;
+                        try {
+                            BotListPlatformHandler.handleUpdatingBotStatus(client);
 
-                        BotListPlatformHandler.handleUpdatingBotStatus(client);
+                            Set<String> guilds = new HashSet<>();
 
-                        Set<String> guilds = new HashSet<>();
+                            for(JDA shard : client.getShards()) {
+                                guilds.addAll(shard.getGuilds().stream().map(ISnowflake::getId).toList());
+                            }
 
-                        for(JDA shard : client.getShards()) {
-                            guilds.addAll(shard.getGuilds().stream().map(ISnowflake::getId).toList());
+                            StaticStore.holders.entrySet().removeIf(e -> guilds.contains(e.getKey()));
+                        } catch (Exception e) {
+                            StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to update status of bot to bot list sites");
                         }
 
-                        StaticStore.holders.entrySet().removeIf(e -> guilds.contains(e.getKey()));
+                        updateStatus = 0;
                     } else {
                         updateStatus++;
                     }
