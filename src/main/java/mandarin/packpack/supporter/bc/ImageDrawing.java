@@ -55,6 +55,8 @@ public class ImageDrawing {
         ZERO_FORM
     }
 
+    private static final float ignoreOpacity = 0.4f;
+
     private static final int bgAnimTime = 450;
     private static final int bgAnimHeight = 720;
     private static final float bgAnimRatio = bgAnimHeight * 0.8f / 2 / 512f;
@@ -533,6 +535,10 @@ public class ImageDrawing {
             if(fi.getHeight() == 1 && fi.getWidth() == 1)
                 continue;
 
+            if (anim.getOrder()[i].opa() <= ignoreOpacity) {
+                continue;
+            }
+
             RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
 
             getter.apply(anim.getOrder()[i], siz, false);
@@ -678,6 +684,10 @@ public class ImageDrawing {
 
                 if(fi.getWidth() == 1 && fi.getHeight() == 1)
                     continue;
+
+                if (anim.getOrder()[j].opa() <= ignoreOpacity) {
+                    continue;
+                }
 
                 RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
 
@@ -960,6 +970,10 @@ public class ImageDrawing {
                 if(fi.getWidth() == 1 && fi.getHeight() == 1)
                     continue;
 
+                if (anim.getOrder()[j].opa() <= ignoreOpacity) {
+                    continue;
+                }
+
                 RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
 
                 getter.apply(anim.getOrder()[j], siz * 0.5f, false);
@@ -1221,6 +1235,10 @@ public class ImageDrawing {
 
                         if(fi.getWidth() == 1 && fi.getHeight() == 1)
                             continue;
+
+                        if (anim.getOrder()[k].opa() <= ignoreOpacity) {
+                            continue;
+                        }
 
                         RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
 
