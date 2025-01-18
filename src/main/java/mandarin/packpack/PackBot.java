@@ -220,7 +220,7 @@ public class PackBot {
                     manager.queue();
                 }
 
-                if(event % 30 == 0) {
+                if(event % 5 == 0) {
                     System.out.println("Checking event data");
 
                     try {
