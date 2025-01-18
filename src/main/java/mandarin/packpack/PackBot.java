@@ -50,7 +50,6 @@ public class PackBot {
     public static int backup = 0;
     public static int updateStatus = 0;
     public static int banner = 0;
-    public static int a = 0;
 
     public static final String normal = "p!help for command info!";
 
@@ -256,18 +255,6 @@ public class PackBot {
 
                             notifyEvent(client, result);
                         }
-                    } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "Error happened while trying to check event data");
-                    }
-
-                    event = 1;
-                } else {
-                    event++;
-                }
-
-                if (a == 1) {
-                    try {
-                        boolean doNotify = false;
 
                         boolean[] versionResult = StaticStore.event.checkBCVersion();
 
@@ -285,12 +272,12 @@ public class PackBot {
                             notifyNewVersion(client, versionResult);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        StaticStore.logger.uploadErrorLog(e, "Error happened while trying to check event data");
                     }
 
-                    a = 1;
+                    event = 1;
                 } else {
-                    a++;
+                    event++;
                 }
 
                 for(SpamPrevent spam : StaticStore.spamData.values()) {
