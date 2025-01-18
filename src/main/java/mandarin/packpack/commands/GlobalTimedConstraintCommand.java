@@ -144,12 +144,12 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
         SpamPrevent spam;
 
-        if(StaticStore.spamData.containsKey(u.getId())) {
+        if(StaticStore.spamData.containsKey(u.getId()) && loader.fromMessage) {
             spam = StaticStore.spamData.get(u.getId());
 
             if(spam.isPrevented(ch, lang, u.getId()))
                 return;
-        } else {
+        } else if(!StaticStore.spamData.containsKey(u.getId())) {
             spam = new SpamPrevent();
 
             StaticStore.spamData.put(u.getId(), spam);

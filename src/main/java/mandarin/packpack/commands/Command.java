@@ -34,7 +34,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -442,8 +441,6 @@ public abstract class Command {
 
         MessageChannel ch = loader.getChannel();
 
-        AtomicReference<Boolean> prevented = new AtomicReference<>(false);
-
         if(requireGuild && !(ch instanceof GuildChannel)) {
             if (loader.fromMessage) {
                 replyToMessageSafely(ch, LangID.getStringByID("bot.sendFailure.reason.serverRequired", lang), loader.getMessage(), a -> a);
@@ -458,18 +455,16 @@ public abstract class Command {
 
         SpamPrevent spam;
 
-        if(StaticStore.spamData.containsKey(u.getId())) {
+        if(StaticStore.spamData.containsKey(u.getId()) && loader.fromMessage) {
             spam = StaticStore.spamData.get(u.getId());
 
-            prevented.set(spam.isPrevented(ch, lang, u.getId()));
-        } else {
+            if(spam.isPrevented(ch, lang, u.getId()))
+                return;
+        } else if(!StaticStore.spamData.containsKey(u.getId())) {
             spam = new SpamPrevent();
 
             StaticStore.spamData.put(u.getId(), spam);
         }
-
-        if (prevented.get())
-            return;
 
         StaticStore.executed++;
 
