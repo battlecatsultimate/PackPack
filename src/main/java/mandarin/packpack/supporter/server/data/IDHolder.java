@@ -166,7 +166,7 @@ public class IDHolder implements Cloneable {
             Map<CommonStatic.Lang.Locale, String> eventMessage;
 
             if (obj.has("eventMessage")) {
-                eventMessage = id.jsonObjectToMapLocaleString(obj.getAsJsonArray("eventMessage").getAsJsonArray());;
+                eventMessage = id.jsonObjectToMapLocaleString(obj.getAsJsonArray("eventMessage").getAsJsonArray());
             } else {
                 eventMessage = new HashMap<>();
             }

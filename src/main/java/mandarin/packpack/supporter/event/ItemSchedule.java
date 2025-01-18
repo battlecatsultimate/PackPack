@@ -174,7 +174,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
             result.append("\u001B[0;33m {").append(title).append("}");
         }
 
-        if(getVersionNumber(minVersion) > StaticStore.event.getVersionCode(lang, true)) {
+        if(getVersionNumber(minVersion) > StaticStore.event.getVersionCode(locale, true)) {
             result.append("\u001B[0;35m <").append(LangID.getStringByID("event.versionRequired", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
