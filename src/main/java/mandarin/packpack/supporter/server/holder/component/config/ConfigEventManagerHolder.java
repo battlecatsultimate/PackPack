@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.server.holder.component.config;
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.EventDataConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
@@ -45,7 +46,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     return;
 
                 if (e.getValues().isEmpty()) {
-                    holder.eventMap.remove(locale);
+                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder(-1L)).channelID = -1L;
 
                     applyResult(event);
                 } else {
@@ -71,16 +72,25 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                         return;
                     }
 
-                    holder.eventMap.put(locale, id);
+                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder(channel.getIdLong())).channelID = channel.getIdLong();
 
                     applyResult(event);
                 }
             }
-            case "additional" -> {
+            case "newVersion" -> {
+                EventDataConfigHolder config = holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder(-1L));
+
+                config.notifyNewVersion = !config.notifyNewVersion;
+
+                applyResult(event);
+            }
+            case "newAdditional", "additional" -> {
+                boolean forEventData = event.getComponentId().equals("additional");
+
                 TextInput input = TextInput.create("message", LangID.getStringByID("serverConfig.eventData.message", lang), TextInputStyle.PARAGRAPH)
-                        .setPlaceholder(LangID.getStringByID("serverConfig.eventData.typeAdditional", lang))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.eventData.typeAdditional." + (forEventData ? "eventData" : "newVersion"), lang))
                         .setRequired(false)
-                        .setRequiredRange(0, 500)
+                        .setRequiredRange(0, 300)
                         .build();
 
                 Modal modal = Modal.create("additional", LangID.getStringByID("serverConfig.eventData.additionalMessage", lang))
@@ -89,10 +99,12 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), userID, channelID, message, holder, lang, locale));
+                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), userID, channelID, message, holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder(-1L)), lang, forEventData));
             }
             case "sort" -> {
-                holder.eventRaw = !holder.eventRaw;
+                EventDataConfigHolder config = holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder(-1L));
+
+                config.eventRaw = !config.eventRaw;
 
                 applyResult(event);
             }
@@ -151,6 +163,8 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
+        EventDataConfigHolder config = holder.eventData.getOrDefault(locale, new EventDataConfigHolder(-1L));
+
         Emoji emoji;
         String bcVersion;
 
@@ -176,7 +190,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
         String sort;
 
-        if (holder.eventRaw) {
+        if (config.eventRaw) {
             sort = LangID.getStringByID("serverConfig.eventData.sortMethod.raw", lang);
         } else {
             sort = LangID.getStringByID("serverConfig.eventData.sortMethod.date", lang);
@@ -184,18 +198,34 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
         String channel;
 
-        if (holder.eventMap.containsKey(locale)) {
-            channel = "<#" + holder.eventMap.get(locale) + ">";
+        if (config.channelID != -1L) {
+            channel = "<#" + config.channelID + ">";
         } else {
             channel = LangID.getStringByID("data.none", lang);
         }
 
+        String newVersion;
+
+        if (config.notifyNewVersion) {
+            newVersion = LangID.getStringByID("data.true", lang);
+        } else {
+            newVersion = LangID.getStringByID("data.false", lang);
+        }
+
         String additional;
 
-        if (holder.eventMessage.containsKey(locale)) {
+        if (!config.eventMessage.isBlank()) {
             additional = LangID.getStringByID("serverConfig.eventData.info.content.checkBelow", lang);
         } else {
             additional = LangID.getStringByID("serverConfig.eventData.info.content.none", lang);
+        }
+
+        String newAdditional;
+
+        if (!config.newVersionMessage.isBlank()) {
+            newAdditional = LangID.getStringByID("serverConfig.eventData.info.content.checkBelow", lang);
+        } else {
+            newAdditional = LangID.getStringByID("serverConfig.eventData.info.content.none", lang);
         }
 
         StringBuilder builder = new StringBuilder();
@@ -206,51 +236,74 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 .append(LangID.getStringByID("serverConfig.eventData.info.version", lang).formatted(emoji.getFormatted(), bcVersion)).append("\n")
                 .append(LangID.getStringByID("serverConfig.eventData.info.sortMethod", lang).formatted(sort)).append("\n")
                 .append(LangID.getStringByID("serverConfig.eventData.info.channel", lang).formatted(channel)).append("\n")
-                .append(LangID.getStringByID("serverConfig.eventData.info.additionalMessage", lang).formatted(additional));
+                .append(LangID.getStringByID("serverConfig.eventData.info.newVersion", lang).formatted(newVersion)).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.additionalMessage.eventData", lang).formatted(additional)).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.additionalMessage.newVersion", lang).formatted(newAdditional));
 
-        if (holder.eventMessage.containsKey(locale)) {
-            String message = holder.eventMessage.get(locale);
+        boolean warn = false;
 
-            builder.append("\n\n```\n")
-                    .append(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang))
-                    .append("\n```\n")
-                    .append(message)
-                    .append("\n\n```\n")
-                    .append("=".repeat(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang).length()))
-                    .append("\n```");
+        if (!config.eventMessage.isBlank()) {
+            builder.append("\n\n").append(LangID.getStringByID("serverConfig.eventData.info.content.indicator.eventData", lang)).append("\n")
+                    .append(config.eventMessage);
 
-            if (message.matches("(.+)?(<@&?\\d+>|@everyone|@here)(.+)?")) {
-                Emoji warning = Emoji.fromUnicode("⚠️");
+            warn |= config.eventMessage.matches("(.+)?(<@&?\\d+>|@everyone|@here)(.+)?");
+        }
 
-                builder.append("\n\n").append(LangID.getStringByID("serverConfig.eventData.info.content.warning", lang).formatted(warning, warning));
+        if (!config.newVersionMessage.isBlank()) {
+            if (config.eventMessage.isBlank()) {
+                builder.append("\n");
             }
+
+            builder.append("\n").append(LangID.getStringByID("serverConfig.eventData.info.content.indicator.newVersion", lang)).append("\n")
+                    .append(config.newVersionMessage);
+
+            warn |= config.newVersionMessage.matches("(.+)?(<@&?\\d+>|@everyone|@here)(.+)?");
+        }
+
+        if (warn) {
+            Emoji warning = Emoji.fromUnicode("⚠️");
+
+            builder.append("\n\n").append(LangID.getStringByID("serverConfig.eventData.info.content.warning", lang).formatted(warning, warning));
         }
 
         return builder.toString();
     }
 
     private List<LayoutComponent> getComponents() {
+        EventDataConfigHolder config = holder.eventData.getOrDefault(locale, new EventDataConfigHolder(-1L));
+
         List<LayoutComponent> result = new ArrayList<>();
 
         EntitySelectMenu.Builder channelBuilder = EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL).setChannelTypes(ChannelType.TEXT);
 
-        if (holder.eventMap.containsKey(locale)) {
-            String channelID = holder.eventMap.get(locale);
-
-            channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(channelID)).setRequiredRange(0, 1);
+        if (config.channelID != -1L) {
+            channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(String.valueOf(config.channelID))).setRequiredRange(0, 1);
         }
 
         String sortButton;
 
-        if (holder.eventRaw) {
+        if (config.eventRaw) {
             sortButton = LangID.getStringByID("serverConfig.eventData.sortMethod.raw", lang);
         } else {
             sortButton = LangID.getStringByID("serverConfig.eventData.sortMethod.date", lang);
         }
 
         result.add(ActionRow.of(channelBuilder.build()));
-        result.add(ActionRow.of(Button.secondary("additional", LangID.getStringByID("serverConfig.eventData.setAdditional", lang)).withEmoji(Emoji.fromUnicode("💬"))));
+        result.add(ActionRow.of(
+                Button.secondary("additional", LangID.getStringByID("serverConfig.eventData.setAdditional.eventData", lang)).withEmoji(Emoji.fromUnicode("💬")),
+                Button.secondary("newAdditional", LangID.getStringByID("serverConfig.eventData.setAdditional.newVersion", lang)).withEmoji(Emoji.fromUnicode("💬"))
+        ));
         result.add(ActionRow.of(Button.secondary("sort", LangID.getStringByID("serverConfig.eventData.setSort", lang).formatted(sortButton)).withEmoji(Emoji.fromUnicode("⚖️"))));
+
+        Emoji newVersionSwitch;
+
+        if (config.notifyNewVersion) {
+            newVersionSwitch = EmojiStore.SWITCHON;
+        } else {
+            newVersionSwitch = EmojiStore.SWITCHOFF;
+        }
+
+        result.add(ActionRow.of(Button.secondary("newVersion", LangID.getStringByID("serverConfig.eventData.newVersion", lang)).withEmoji(newVersionSwitch)));
 
         result.add(
                 ActionRow.of(

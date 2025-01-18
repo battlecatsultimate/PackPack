@@ -186,11 +186,13 @@ public class AllEventAdapter extends ListenerAdapter {
             if(idh.announceChannel != null && idh.announceChannel.equals(ch.getId()))
                 idh.announceChannel = null;
 
-            for(CommonStatic.Lang.Locale key : idh.eventMap.keySet()) {
-                String channel = idh.eventMap.get(key);
+            for(CommonStatic.Lang.Locale key : idh.eventData.keySet()) {
+                EventDataConfigHolder config = idh.eventData.get(key);
 
-                if(channel == null || channel.isBlank() || channel.equals(ch.getId())) {
-                    idh.eventMap.remove(key);
+                if(config != null && config.channelID == ch.getIdLong()) {
+                    config.channelID = -1L;
+                } else if (config == null) {
+                    idh.eventData.remove(key);
                 }
             }
 
@@ -520,7 +522,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "subscribeevent", "se" -> new SubscribeEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "printgachaevent", "pge" ->
                     new PrintGachaEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "setbcversion", "sbv" -> new SetBCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "bcversion", "bv" -> new BCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "logout", "lo" -> new LogOut(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "printitemevent", "pie" -> new PrintItemEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "printevent", "pe" -> new PrintEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
@@ -694,7 +696,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "subscribeevent", "se" -> new SubscribeEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "printgachaevent", "pge" ->
                     new PrintGachaEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "setbcversion", "sbv" -> new SetBCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "bcversion", "bv" -> new BCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "logout", "lo" -> new LogOut(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "printitemevent", "pie" -> new PrintItemEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "printevent", "pe" -> new PrintEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);

@@ -10,10 +10,12 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.LwjglContext;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BannerHolder;
+import mandarin.packpack.supporter.server.data.EventDataConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -48,6 +50,7 @@ public class PackBot {
     public static int backup = 0;
     public static int updateStatus = 0;
     public static int banner = 0;
+    public static int a = 0;
 
     public static final String normal = "p!help for command info!";
 
@@ -262,6 +265,34 @@ public class PackBot {
                     event++;
                 }
 
+                if (a == 1) {
+                    try {
+                        boolean doNotify = false;
+
+                        boolean[] versionResult = StaticStore.event.checkBCVersion();
+
+                        for(int i = 0; i < versionResult.length; i++) {
+                            if (versionResult[i]) {
+                                doNotify = true;
+
+                                break;
+                            }
+                        }
+
+                        if (doNotify) {
+                            StaticStore.saveServerInfo();
+
+                            notifyNewVersion(client, versionResult);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    a = 1;
+                } else {
+                    a++;
+                }
+
                 for(SpamPrevent spam : StaticStore.spamData.values()) {
                     if(spam.count > 0)
                         spam.count--;
@@ -391,124 +422,45 @@ public class PackBot {
                         gachaChange[index] = r[index][j];
                     }
 
-                    if(r[index][j] && holder.eventMap.containsKey(locale) && holder.eventMap.get(locale) != null) {
-                        try {
-                            GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(locale));
+                    if (!r[index][j] || holder.eventData.containsKey(locale))
+                        continue;
 
-                            if(ch instanceof GuildMessageChannel && ((GuildMessageChannel) ch).canTalk()) {
-                                if(j == EventFactor.SALE) {
-                                    Map<EventFactor.SCHEDULE, List<String>> result = StaticStore.event.printStageEvent(locale, holder.config.lang, false, holder.eventRaw, false, 0);
+                    EventDataConfigHolder config = holder.eventData.get(locale);
 
-                                    if(result.isEmpty())
+                    if (config == null || config.channelID == -1L)
+                        continue;
+
+                    try {
+                        GuildChannel ch = client.getGuildChannelById(config.channelID);
+
+                        if(ch instanceof GuildMessageChannel && ((GuildMessageChannel) ch).canTalk()) {
+                            if(j == EventFactor.SALE) {
+                                Map<EventFactor.SCHEDULE, List<String>> result = StaticStore.event.printStageEvent(locale, holder.config.lang, false, config.eventRaw, false, 0);
+
+                                if(result.isEmpty())
+                                    continue;
+
+                                boolean wasDone = done[index];
+
+                                done[index] = true;
+
+                                if(!eventDone) {
+                                    eventDone = true;
+
+                                    ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event.title." + locale.code, holder.config.lang)).queue();
+                                }
+
+                                boolean started = false;
+
+                                for(EventFactor.SCHEDULE type : result.keySet()) {
+                                    List<String> data = result.get(type);
+
+                                    if(data == null || data.isEmpty())
                                         continue;
 
-                                    boolean wasDone = done[index];
+                                    boolean initial = false;
 
-                                    done[index] = true;
-
-                                    if(!eventDone) {
-                                        eventDone = true;
-
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event.title." + locale.code, holder.config.lang)).queue();
-                                    }
-
-                                    boolean started = false;
-
-                                    for(EventFactor.SCHEDULE type : result.keySet()) {
-                                        List<String> data = result.get(type);
-
-                                        if(data == null || data.isEmpty())
-                                            continue;
-
-                                        boolean initial = false;
-
-                                        while(!data.isEmpty()) {
-                                            StringBuilder builder = new StringBuilder();
-
-                                            if(!started) {
-                                                started = true;
-
-                                                if(wasDone) {
-                                                    builder.append("** **\n");
-                                                }
-
-                                                builder.append(LangID.getStringByID("event.section.stage", holder.config.lang)).append("\n\n");
-                                            }
-
-                                            if(!initial) {
-                                                initial = true;
-
-                                                builder.append(builder.isEmpty() ? "** **\n" : "");
-
-                                                switch (type) {
-                                                    case DAILY ->
-                                                            builder.append(LangID.getStringByID("event.permanentSchedule.daily", holder.config.lang)).append("\n\n```ansi\n");
-                                                    case WEEKLY ->
-                                                            builder.append(LangID.getStringByID("event.permanentSchedule.weekly", holder.config.lang)).append("\n\n```ansi\n");
-                                                    case MONTHLY ->
-                                                            builder.append(LangID.getStringByID("event.permanentSchedule.monthly", holder.config.lang)).append("\n\n```ansi\n");
-                                                    case YEARLY ->
-                                                            builder.append(LangID.getStringByID("event.permanentSchedule.yearly", holder.config.lang)).append("\n\n```ansi\n");
-                                                    case MISSION ->
-                                                            builder.append(LangID.getStringByID("event.section.mission", holder.config.lang)).append("\n\n```ansi\n");
-                                                    default -> builder.append("```ansi\n");
-                                                }
-                                            } else {
-                                                builder.append("```ansi\n");
-                                            }
-
-                                            while(builder.length() < 1980 && !data.isEmpty()) {
-                                                String line = data.getFirst();
-
-                                                if(line.length() > 1950) {
-                                                    data.removeFirst();
-
-                                                    continue;
-                                                }
-
-                                                if(builder.length() + line.length() > 1980)
-                                                    break;
-
-                                                builder.append(line).append("\n");
-
-                                                if(type == EventFactor.SCHEDULE.MISSION)
-                                                    builder.append("\n");
-
-                                                data.removeFirst();
-                                                dataFound[index] += 1;
-                                            }
-
-                                            builder.append("```");
-
-                                            ((GuildMessageChannel) ch).sendMessage(builder.toString())
-                                                    .setAllowedMentions(new ArrayList<>())
-                                                    .queue();
-                                        }
-                                    }
-                                } else {
-                                    List<String> result;
-
-                                    if(j == EventFactor.GATYA)
-                                        result = StaticStore.event.printGachaEvent(locale, holder.config.lang, false, holder.eventRaw, false, 0);
-                                    else
-                                        result = StaticStore.event.printItemEvent(locale, holder.config.lang, false, holder.eventRaw, false, 0);
-
-                                    if(result.isEmpty())
-                                        continue;
-
-                                    boolean wasDone = done[index];
-
-                                    done[index] = true;
-
-                                    if(!eventDone) {
-                                        eventDone = true;
-
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event.title." + locale.code, holder.config.lang)).queue();
-                                    }
-
-                                    boolean started = false;
-
-                                    while(!result.isEmpty()) {
+                                    while(!data.isEmpty()) {
                                         StringBuilder builder = new StringBuilder();
 
                                         if(!started) {
@@ -518,103 +470,192 @@ public class PackBot {
                                                 builder.append("** **\n");
                                             }
 
-                                            if(j == EventFactor.GATYA) {
-                                                builder.append(LangID.getStringByID("event.section.gacha", holder.config.lang)).append("\n\n");
-                                            } else {
-                                                builder.append(LangID.getStringByID("event.section.item", holder.config.lang)).append("\n\n");
-                                            }
+                                            builder.append(LangID.getStringByID("event.section.stage", holder.config.lang)).append("\n\n");
                                         }
 
-                                        builder.append("```ansi\n");
+                                        if(!initial) {
+                                            initial = true;
 
-                                        while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
-                                            String line = result.getFirst();
+                                            builder.append(builder.isEmpty() ? "** **\n" : "");
+
+                                            switch (type) {
+                                                case DAILY ->
+                                                        builder.append(LangID.getStringByID("event.permanentSchedule.daily", holder.config.lang)).append("\n\n```ansi\n");
+                                                case WEEKLY ->
+                                                        builder.append(LangID.getStringByID("event.permanentSchedule.weekly", holder.config.lang)).append("\n\n```ansi\n");
+                                                case MONTHLY ->
+                                                        builder.append(LangID.getStringByID("event.permanentSchedule.monthly", holder.config.lang)).append("\n\n```ansi\n");
+                                                case YEARLY ->
+                                                        builder.append(LangID.getStringByID("event.permanentSchedule.yearly", holder.config.lang)).append("\n\n```ansi\n");
+                                                case MISSION ->
+                                                        builder.append(LangID.getStringByID("event.section.mission", holder.config.lang)).append("\n\n```ansi\n");
+                                                default -> builder.append("```ansi\n");
+                                            }
+                                        } else {
+                                            builder.append("```ansi\n");
+                                        }
+
+                                        while(builder.length() < 1980 && !data.isEmpty()) {
+                                            String line = data.getFirst();
 
                                             if(line.length() > 1950) {
-                                                result.removeFirst();
+                                                data.removeFirst();
 
                                                 continue;
                                             }
 
-                                            if(builder.length() + line.length() > (j == EventFactor.GATYA ? 1800 : 1950))
+                                            if(builder.length() + line.length() > 1980)
                                                 break;
 
                                             builder.append(line).append("\n");
 
-                                            result.removeFirst();
+                                            if(type == EventFactor.SCHEDULE.MISSION)
+                                                builder.append("\n");
+
+                                            data.removeFirst();
                                             dataFound[index] += 1;
                                         }
 
-                                        if(result.isEmpty() && j == EventFactor.GATYA) {
-                                            builder.append("\n")
-                                                    .append(LangID.getStringByID("event.gachaCode.guaranteed.code", holder.config.lang))
-                                                    .append(" : ")
-                                                    .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", holder.config.lang))
-                                                    .append(" | ")
-                                                    .append(LangID.getStringByID("event.gachaCode.stepUp.code", holder.config.lang))
-                                                    .append(" : ")
-                                                    .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", holder.config.lang))
-                                                    .append(" | ")
-                                                    .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", holder.config.lang))
-                                                    .append(" : ")
-                                                    .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", holder.config.lang))
-                                                    .append(" | ")
-                                                    .append(LangID.getStringByID("event.gachaCode.platinumShard.code", holder.config.lang))
-                                                    .append(" : ")
-                                                    .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", holder.config.lang))
-                                                    .append(" | ")
-                                                    .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", holder.config.lang))
-                                                    .append(" : ")
-                                                    .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", holder.config.lang))
-                                                    .append(" | ")
-                                                    .append(LangID.getStringByID("event.gachaCode.grandon.code", holder.config.lang))
-                                                    .append(" : ")
-                                                    .append(LangID.getStringByID("event.gachaCode.grandon.fullName", holder.config.lang))
-                                                    .append(" | ")
-                                                    .append(LangID.getStringByID("event.gachaCode.reinforcement.code", holder.config.lang))
-                                                    .append(" : ")
-                                                    .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", holder.config.lang))
-                                                    .append("\n```");
-                                        } else {
-                                            builder.append("```");
-                                        }
+                                        builder.append("```");
 
                                         ((GuildMessageChannel) ch).sendMessage(builder.toString())
                                                 .setAllowedMentions(new ArrayList<>())
                                                 .queue();
                                     }
                                 }
-                            }
-                        } catch(Exception ignored) {
+                            } else {
+                                List<String> result;
 
+                                if(j == EventFactor.GATYA)
+                                    result = StaticStore.event.printGachaEvent(locale, holder.config.lang, false, config.eventRaw, false, 0);
+                                else
+                                    result = StaticStore.event.printItemEvent(locale, holder.config.lang, false, config.eventRaw, false, 0);
+
+                                if(result.isEmpty())
+                                    continue;
+
+                                boolean wasDone = done[index];
+
+                                done[index] = true;
+
+                                if(!eventDone) {
+                                    eventDone = true;
+
+                                    ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event.title." + locale.code, holder.config.lang)).queue();
+                                }
+
+                                boolean started = false;
+
+                                while(!result.isEmpty()) {
+                                    StringBuilder builder = new StringBuilder();
+
+                                    if(!started) {
+                                        started = true;
+
+                                        if(wasDone) {
+                                            builder.append("** **\n");
+                                        }
+
+                                        if(j == EventFactor.GATYA) {
+                                            builder.append(LangID.getStringByID("event.section.gacha", holder.config.lang)).append("\n\n");
+                                        } else {
+                                            builder.append(LangID.getStringByID("event.section.item", holder.config.lang)).append("\n\n");
+                                        }
+                                    }
+
+                                    builder.append("```ansi\n");
+
+                                    while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
+                                        String line = result.getFirst();
+
+                                        if(line.length() > 1950) {
+                                            result.removeFirst();
+
+                                            continue;
+                                        }
+
+                                        if(builder.length() + line.length() > (j == EventFactor.GATYA ? 1800 : 1950))
+                                            break;
+
+                                        builder.append(line).append("\n");
+
+                                        result.removeFirst();
+                                        dataFound[index] += 1;
+                                    }
+
+                                    if(result.isEmpty() && j == EventFactor.GATYA) {
+                                        builder.append("\n")
+                                                .append(LangID.getStringByID("event.gachaCode.guaranteed.code", holder.config.lang))
+                                                .append(" : ")
+                                                .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", holder.config.lang))
+                                                .append(" | ")
+                                                .append(LangID.getStringByID("event.gachaCode.stepUp.code", holder.config.lang))
+                                                .append(" : ")
+                                                .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", holder.config.lang))
+                                                .append(" | ")
+                                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", holder.config.lang))
+                                                .append(" : ")
+                                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", holder.config.lang))
+                                                .append(" | ")
+                                                .append(LangID.getStringByID("event.gachaCode.platinumShard.code", holder.config.lang))
+                                                .append(" : ")
+                                                .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", holder.config.lang))
+                                                .append(" | ")
+                                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", holder.config.lang))
+                                                .append(" : ")
+                                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", holder.config.lang))
+                                                .append(" | ")
+                                                .append(LangID.getStringByID("event.gachaCode.grandon.code", holder.config.lang))
+                                                .append(" : ")
+                                                .append(LangID.getStringByID("event.gachaCode.grandon.fullName", holder.config.lang))
+                                                .append(" | ")
+                                                .append(LangID.getStringByID("event.gachaCode.reinforcement.code", holder.config.lang))
+                                                .append(" : ")
+                                                .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", holder.config.lang))
+                                                .append("\n```");
+                                    } else {
+                                        builder.append("```");
+                                    }
+
+                                    ((GuildMessageChannel) ch).sendMessage(builder.toString())
+                                            .setAllowedMentions(new ArrayList<>())
+                                            .queue();
+                                }
+                            }
                         }
+                    } catch(Exception ignored) {
+
                     }
                 }
             }
 
-            List<String> sentChannels = new ArrayList<>();
+            List<Long> sentChannels = new ArrayList<>();
 
             for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
                 int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
 
-                if(done[index] && holder.eventMap.containsKey(locale)) {
-                    GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(locale));
+                if(done[index] && holder.eventData.containsKey(locale)) {
+                    EventDataConfigHolder config = holder.eventData.get(locale);
+
+                    if (config == null || config.channelID == -1L)
+                        continue;
+
+                    GuildChannel ch = client.getGuildChannelById(config.channelID);
 
                     if(ch instanceof GuildMessageChannel) {
-                        if (!sentChannels.contains(holder.eventMap.get(locale))) {
+                        if (!sentChannels.contains(config.channelID)) {
                             sent = true;
-                            sentChannels.add(holder.eventMap.get(locale));
+
+                            sentChannels.add(config.channelID);
 
                             ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event.warning", holder.config.lang)).queue();
                         }
 
-                        if(!holder.eventMessage.isEmpty()) {
+                        if(!config.eventMessage.isEmpty()) {
                             Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
 
-                            if(holder.eventMessage.containsKey(locale)) {
-                                if(!p.matcher(holder.eventMessage.get(locale)).find() || (gachaChange[index] || dataFound[index] >= 5)) {
-                                    ((GuildMessageChannel) ch).sendMessage(holder.eventMessage.get(locale)).queue();
-                                }
+                            if(!p.matcher(config.eventMessage).find() || (gachaChange[index] || dataFound[index] >= 5)) {
+                                ((GuildMessageChannel) ch).sendMessage(config.eventMessage).queue();
                             }
                         }
                     }
@@ -625,6 +666,61 @@ public class PackBot {
         if(sent) {
             StaticStore.logger.uploadLogWithPing("<@"+StaticStore.MANDARIN_SMELL+"> I caught new event data and successfully announced analyzed data to servers. Below is the updated list : \n\n"+parseResult(r));
         }
+    }
+
+    public static void notifyNewVersion(ShardManager client, boolean[] r) {
+        List<Guild> guilds = client.getGuilds();
+
+        for (Guild g : guilds) {
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+
+            for (CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
+                int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
+
+                if (index == -1)
+                    continue;
+
+                if (!r[index])
+                    continue;
+
+                EventDataConfigHolder config = holder.eventData.get(locale);
+
+                if (config == null || config.channelID == -1L || !config.notifyNewVersion)
+                    continue;
+
+                TextChannel ch = g.getTextChannelById(config.channelID);
+
+                if (ch == null)
+                    continue;
+
+                String gameName = switch (locale) {
+                    case JP -> LangID.getStringByID("event.gameName.jp", holder.config.lang);
+                    case KR -> LangID.getStringByID("event.gameName.kr", holder.config.lang);
+                    case ZH -> LangID.getStringByID("event.gameName.tw", holder.config.lang);
+                    default -> LangID.getStringByID("event.gameName.en", holder.config.lang);
+                };
+
+                ch.sendMessage(LangID.getStringByID("event.newVersion", holder.config.lang).formatted(gameName, beautifyVersionName(StaticStore.event.getVersionCode(locale, false)))).queue();
+
+                if (!config.newVersionMessage.isBlank()) {
+                    ch.sendMessage(config.newVersionMessage).queue();
+                }
+            }
+        }
+    }
+
+    private static String beautifyVersionName(long version) {
+        long main = version / 100000;
+
+        version -= main * 100000;
+
+        long major = version / 1000;
+
+        version -= major * 1000;
+
+        long minor = version % 1000;
+
+        return main + "." + major + "." + minor;
     }
 
     private static String parseResult(boolean[][] result) {

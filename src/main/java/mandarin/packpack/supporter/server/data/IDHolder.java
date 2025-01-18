@@ -160,12 +160,45 @@ public class IDHolder implements Cloneable {
             }
         }
 
-        if(obj.has("eventMessage")) {
-            id.eventMessage = id.jsonObjectToMapLocaleString(obj.getAsJsonArray("eventMessage").getAsJsonArray());
-        }
-
+        // Handling old save structure
         if(obj.has("eventMap")) {
-            id.eventMap = id.jsonObjectToMapLocaleString(obj.get("eventMap"));
+            Map<CommonStatic.Lang.Locale, String> eventMap = id.jsonObjectToMapLocaleString(obj.get("eventMap"));
+            Map<CommonStatic.Lang.Locale, String> eventMessage;
+
+            if (obj.has("eventMessage")) {
+                eventMessage = id.jsonObjectToMapLocaleString(obj.getAsJsonArray("eventMessage").getAsJsonArray());;
+            } else {
+                eventMessage = new HashMap<>();
+            }
+
+            for (Map.Entry<CommonStatic.Lang.Locale, String> entry : eventMap.entrySet()) {
+                String value = entry.getValue();
+
+                if (value == null || !StaticStore.isNumeric(value)) {
+                    continue;
+                }
+
+                EventDataConfigHolder data = new EventDataConfigHolder(StaticStore.safeParseLong(value));
+
+                data.eventMessage = eventMessage.getOrDefault(entry.getKey(), "");
+
+                id.eventData.put(entry.getKey(), data);
+            }
+        } else if (obj.has("eventData")) {
+            for (JsonElement e : obj.getAsJsonArray("eventData")) {
+                if (!(e instanceof JsonObject o)) {
+                    continue;
+                }
+
+                if (!o.has("key") && !o.has("val")) {
+                    continue;
+                }
+
+                CommonStatic.Lang.Locale loc = CommonStatic.Lang.Locale.valueOf(o.get("key").getAsString());
+                EventDataConfigHolder data = EventDataConfigHolder.fromJson(o.getAsJsonObject("val"));
+
+                id.eventData.put(loc, data);
+            }
         }
 
         if(obj.has("boosterPin")) {
@@ -218,11 +251,6 @@ public class IDHolder implements Cloneable {
      */
     public boolean publish = false;
     /**
-     * Sorting method for posting event data. Bot will post event data with raw order in the
-     * file if this is true
-     */
-    public boolean eventRaw = false;
-    /**
      * Flag value whether bot will force users to use compact embed mode or not regardless of
      *  user's preferences
      */
@@ -268,15 +296,10 @@ public class IDHolder implements Cloneable {
      */
     public Map<String, String> ID = new TreeMap<>();
     /**
-     * Additional message that will be sent whenever bot posts new event data. Key is locale
-     * value (BCEN, BCKR, ...), and value is contents of additional message
+     * Event data posting config. Key stands for locale, and value stands for Event data config for
+     * each BC version
      */
-    public Map<CommonStatic.Lang.Locale, String> eventMessage = new HashMap<>();
-    /**
-     * Event data posting channels. Key is locale value (BCEN, BCKR, ...), and value is channel
-     * ID
-     */
-    public Map<CommonStatic.Lang.Locale, String> eventMap = new TreeMap<>();
+    public Map<CommonStatic.Lang.Locale, EventDataConfigHolder> eventData = new HashMap<>();
     /**
      * Channel permission data. Key is assigned role ID, and value is list of allowed channels.
      * If channel list is null, it means this role allows users to use commands in all channels
@@ -349,14 +372,13 @@ public class IDHolder implements Cloneable {
         channel = holder.channel;
         ID = holder.ID;
         logDM = holder.logDM;
-        eventMap = holder.eventMap;
+        eventData = holder.eventData;
         config.inject(config);
         banned = holder.banned;
         channelException = holder.channelException;
         forceCompact = holder.forceCompact;
         forceFullTreasure = holder.forceFullTreasure;
         announceMessage = holder.announceMessage;
-        eventMessage = holder.eventMessage;
         boosterPin = holder.boosterPin;
         boosterPinChannel = holder.boosterPinChannel;
     }
@@ -378,14 +400,13 @@ public class IDHolder implements Cloneable {
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", logDM);
-        obj.add("eventMap", mapLocaleStringToJsonArray(eventMap));
+        obj.add("eventData", mapLocaleEventData(eventData));
         obj.add("config", config.jsonfy());
         obj.add("banned", listStringToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
         obj.addProperty("forceCompact", forceCompact);
         obj.addProperty("forceFullTreasure", forceFullTreasure);
         obj.addProperty("announceMessage", announceMessage);
-        obj.add("eventMessage", mapLocaleStringToJsonArray(eventMessage));
         obj.addProperty("boosterPin", boosterPin);
         obj.addProperty("boosterAll", boosterAll);
         obj.add("boosterPinChannel", listStringToJsonObject(boosterPinChannel));
@@ -456,17 +477,17 @@ public class IDHolder implements Cloneable {
         return array;
     }
 
-    private JsonElement mapLocaleStringToJsonArray(Map<CommonStatic.Lang.Locale, String> map) {
+    private JsonElement mapLocaleEventData(Map<CommonStatic.Lang.Locale, EventDataConfigHolder> map) {
         JsonArray array = new JsonArray();
 
         for(CommonStatic.Lang.Locale key : map.keySet()) {
-            if(map.get(key) == null || map.get(key).isBlank())
+            if(map.get(key) == null || map.get(key) == null)
                 continue;
 
             JsonObject obj = new JsonObject();
 
             obj.addProperty("key", key.name());
-            obj.addProperty("val", map.get(key));
+            obj.add("val", map.get(key).toJson());
 
             array.add(obj);
         }
@@ -632,7 +653,6 @@ public class IDHolder implements Cloneable {
             id.logDM = logDM;
 
             id.publish = publish;
-            id.eventRaw = eventRaw;
             id.forceCompact = forceCompact;
             id.forceFullTreasure = forceFullTreasure;
             id.boosterPin = boosterPin;
@@ -644,8 +664,7 @@ public class IDHolder implements Cloneable {
             id.boosterPinChannel = new ArrayList<>(boosterPinChannel);
 
             id.ID = new HashMap<>(ID);
-            id.eventMessage = new HashMap<>(eventMessage);
-            id.eventMap = new HashMap<>(eventMap);
+            id.eventData = new HashMap<>();
 
             for(String key : channel.keySet()) {
                 id.channel.put(key, new ArrayList<>(channel.get(key)));
@@ -653,6 +672,15 @@ public class IDHolder implements Cloneable {
 
             for(String key : channelException.keySet()) {
                 id.channelException.put(key, new ArrayList<>(channelException.get(key)));
+            }
+
+            for (CommonStatic.Lang.Locale key : eventData.keySet()) {
+                EventDataConfigHolder data = eventData.get(key);
+
+                if (data == null)
+                    continue;
+
+                id.eventData.put(key, data.clone());
             }
 
             return id;

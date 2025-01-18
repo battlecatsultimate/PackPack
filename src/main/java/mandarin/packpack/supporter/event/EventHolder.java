@@ -29,6 +29,11 @@ public class EventHolder extends EventFactor {
     public Map<CommonStatic.Lang.Locale, List<Integer>> gachaCache = new HashMap<>();
     public Map<CommonStatic.Lang.Locale, List<Integer>> itemCache = new HashMap<>();
 
+    public long bcenVersionCode = 0L;
+    public long bctwVersionCode = 0L;
+    public long bckrVersionCode = 0L;
+    public long bcjpVersionCode = 0L;
+
     public void updateStage(File f, CommonStatic.Lang.Locale locale, boolean init) throws Exception {
         if(failedToPrepareFile(locale))
             return;
@@ -924,6 +929,128 @@ public class EventHolder extends EventFactor {
         }
 
         return updates;
+    }
+
+    public boolean[] checkBCVersion() throws Exception {
+        File googlePlay = new File("./googlePlay/internal/play/");
+
+        if(!googlePlay.exists() || googlePlay.isFile()) {
+            StaticStore.logger.uploadLog("W/EventHolder::checkBCVersion - Failed to find google play folder");
+
+            return null;
+        }
+
+        boolean[] result = new boolean[4];
+
+        for (int i = 0; i < 4; i++) {
+            String packageName = switch (i) {
+                case 0 -> "jp.co.ponos.battlecatsen";
+                case 1 -> "jp.co.ponos.battlecatstw";
+                case 2 -> "jp.co.ponos.battlecatskr";
+                case 3 -> "jp.co.ponos.battlecats";
+                default -> throw new IllegalStateException("E/EventHolder::checkBCVersion - Invalid i value " + i);
+            };
+
+            ProcessBuilder builder = new ProcessBuilder("./googlePlay/internal/play/play", "-i", packageName);
+            builder.redirectErrorStream(true);
+
+            Process pro = builder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+
+            String line;
+
+            List<String> lines = new ArrayList<>();
+
+            while((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+
+            pro.waitFor();
+
+            reader.close();
+            pro.destroy();
+
+            String foundLine = lines.stream().filter(l -> l.startsWith("version code = ")).findAny().orElse("");
+
+            if (foundLine.isBlank()) {
+                continue;
+            }
+
+            String[] data = foundLine.split(" = ");
+
+            if(data.length != 2) {
+                StaticStore.logger.uploadLog("W/EventHolder::checkBCVersion - Invalid version code data : " + foundLine);
+
+                continue;
+            }
+
+            String versionText = data[1];
+
+            if (!StaticStore.isNumeric(versionText)) {
+                StaticStore.logger.uploadLog("W/EventHolder::checkBCVersion - Invalid version code format : " + versionText);
+
+                continue;
+            }
+
+            long versionCode = StaticStore.safeParseLong(versionText);
+
+            switch (i) {
+                case 0 -> {
+                    result[i] = bcenVersionCode != versionCode;
+
+                    if (result[i]) {
+                        StaticStore.logger.uploadLogWithPing("<@" + StaticStore.MANDARIN_SMELL + "> New version for BCEN is found : " + versionCode);
+                    }
+
+                    bcenVersionCode = versionCode;
+                }
+                case 1 -> {
+                    result[i] = bctwVersionCode != versionCode;
+
+                    if (result[i]) {
+                        StaticStore.logger.uploadLogWithPing("<@" + StaticStore.MANDARIN_SMELL + "> New version for BCTW is found : " + versionCode);
+                    }
+
+                    bctwVersionCode = versionCode;
+                }
+                case 2 -> {
+                    result[i] = bckrVersionCode != versionCode;
+
+                    if (result[i]) {
+                        StaticStore.logger.uploadLogWithPing("<@" + StaticStore.MANDARIN_SMELL + "> New version for BCKR is found : " + versionCode);
+                    }
+
+                    bckrVersionCode = versionCode;
+                }
+                case 3 -> {
+                    result[i] = bcjpVersionCode != versionCode;
+
+                    if (result[i]) {
+                        StaticStore.logger.uploadLogWithPing("<@" + StaticStore.MANDARIN_SMELL + "> New version for BCJP is found : " + versionCode);
+                    }
+
+                    bcjpVersionCode = versionCode;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public long getVersionCode(CommonStatic.Lang.Locale locale, boolean sixDigit) {
+        long version = switch (locale) {
+            case ZH -> bctwVersionCode;
+            case KR -> bckrVersionCode;
+            case JP -> bcjpVersionCode;
+            default -> bcenVersionCode;
+        };
+
+        if (sixDigit) {
+            return version / 1000 * 100 + version % 1000;
+        } else {
+            return version;
+        }
     }
 
     private String getMD5fromURL(String url) throws Exception {

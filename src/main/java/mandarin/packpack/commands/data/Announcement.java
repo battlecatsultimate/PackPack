@@ -34,38 +34,28 @@ public class Announcement extends ConstraintCommand {
         switch (param) {
             case PARAM_EN -> {
                 loc = "en";
-                ver = StaticStore.englishVersion;
+                ver = String.valueOf(StaticStore.event.getVersionCode(CommonStatic.Lang.Locale.EN, true));
             }
             case PARAM_JP -> {
                 loc = "ja";
-                ver = StaticStore.japaneseVersion;
+                ver = String.valueOf(StaticStore.event.getVersionCode(CommonStatic.Lang.Locale.JP, true));
             }
             case PARAM_KR -> {
                 loc = "ko";
-                ver = StaticStore.koreanVersion;
+                ver = String.valueOf(StaticStore.event.getVersionCode(CommonStatic.Lang.Locale.KR, true));
             }
             case PARAM_TW -> {
                 loc = "tw";
-                ver = StaticStore.taiwaneseVersion;
+                ver = String.valueOf(StaticStore.event.getVersionCode(CommonStatic.Lang.Locale.ZH, true));
             }
             default -> {
+                ver = String.valueOf(StaticStore.event.getVersionCode(lang, true));
+
                 switch (lang) {
-                    case ZH -> {
-                        loc = "tw";
-                        ver = StaticStore.taiwaneseVersion;
-                    }
-                    case KR -> {
-                        loc = "ko";
-                        ver = StaticStore.koreanVersion;
-                    }
-                    case JP -> {
-                        loc = "ja";
-                        ver = StaticStore.japaneseVersion;
-                    }
-                    default -> {
-                        loc = "en";
-                        ver = StaticStore.englishVersion;
-                    }
+                    case ZH -> loc = "tw";
+                    case KR -> loc = "ko";
+                    case JP -> loc = "ja";
+                    default -> loc = "en";
                 }
             }
         }

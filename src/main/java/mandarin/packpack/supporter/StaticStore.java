@@ -82,11 +82,6 @@ public class StaticStore {
     public static final String COMMAND_FORMDPS_ID = "fdps";
     public static final String COMMAND_ENEMYDPS_ID = "edps";
 
-    public static String englishVersion = "110000";
-    public static String taiwaneseVersion = "110000";
-    public static String koreanVersion = "110000";
-    public static String japaneseVersion = "110000";
-
     public static final int MAX_STAGE_IMAGE_LENGTH = 128;
 
     public static final ConfigHolder defaultConfig = new ConfigHolder();
@@ -661,10 +656,10 @@ public class StaticStore {
         obj.addProperty("rating", ratingChannel);
         obj.addProperty("serverpre", globalPrefix);
         obj.addProperty("executed", executed);
-        obj.addProperty("englishVersion", englishVersion);
-        obj.addProperty("taiwaneseVersion", taiwaneseVersion);
-        obj.addProperty("koreanVersion", koreanVersion);
-        obj.addProperty("japaneseVersion", japaneseVersion);
+        obj.addProperty("bcenVersionCode", event.bcenVersionCode);
+        obj.addProperty("bctwVersionCode", event.bctwVersionCode);
+        obj.addProperty("bckrVersionCode", event.bckrVersionCode);
+        obj.addProperty("bcjpVersionCode", event.bcjpVersionCode);
         obj.add("lang", mapToJsonString(langs));
         obj.add("music", mapToJsonString(musics));
         obj.add("config", mapToJsonConfigHolder(config));
@@ -847,20 +842,20 @@ public class StaticStore {
                 needFixing = jsonToListString(obj.getAsJsonArray("needFixing"));
             }
 
-            if(obj.has("englishVersion")) {
-                englishVersion = obj.get("englishVersion").getAsString();
+            if(obj.has("bcenVersionCode")) {
+                event.bcenVersionCode = obj.get("bcenVersionCode").getAsLong();
             }
 
-            if(obj.has("japaneseVersion")) {
-                japaneseVersion = obj.get("japaneseVersion").getAsString();
+            if(obj.has("bctwVersionCode")) {
+                event.bctwVersionCode = obj.get("bctwVersionCode").getAsLong();
             }
 
-            if(obj.has("koreanVersion")) {
-                koreanVersion = obj.get("koreanVersion").getAsString();
+            if(obj.has("bckrVersionCode")) {
+                event.bckrVersionCode = obj.get("bckrVersionCode").getAsLong();
             }
 
-            if(obj.has("taiwaneseVersion")) {
-                taiwaneseVersion = obj.get("taiwaneseVersion").getAsString();
+            if(obj.has("bcjpVersionCode")) {
+                event.bcjpVersionCode = obj.get("bcjpVersionCode").getAsLong();
             }
 
             if(obj.has("gachaCache")) {
@@ -1235,15 +1230,6 @@ public class StaticStore {
         }
 
         return builder.toString();
-    }
-
-    public static String getVersion(CommonStatic.Lang.Locale lang) {
-        return switch (lang) {
-            case EN -> englishVersion;
-            case ZH -> taiwaneseVersion;
-            case KR -> koreanVersion;
-            default -> japaneseVersion;
-        };
     }
 
     public static String beautifyFileSize(File f) {

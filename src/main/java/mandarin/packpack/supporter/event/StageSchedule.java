@@ -639,8 +639,8 @@ public class StageSchedule extends EventFactor implements Schedule {
             result.append(")");
         }
 
-        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
-            result.append("\u001B[0;35m <").append(LangID.getStringByID("event.newVersion", lang).replace("_", beautifyVersion(minVersion))).append(">");
+        if(getVersionNumber(minVersion) > StaticStore.event.getVersionCode(locale, true)) {
+            result.append("\u001B[0;35m <").append(LangID.getStringByID("event.versionRequired", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
         if(isMission) {

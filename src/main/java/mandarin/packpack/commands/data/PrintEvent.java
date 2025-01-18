@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.EventDataConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -30,6 +31,9 @@ public class PrintEvent extends ConstraintCommand {
 
         CommonStatic.Lang.Locale loc = getLocale(loader.getContent());
         CommonStatic.Lang.Locale l = followServerLocale(loader.getContent()) ? holder.config.lang : lang;
+
+        EventDataConfigHolder config = holder.eventData.getOrDefault(loc, new EventDataConfigHolder(-1L));
+
         boolean full = isFull(loader.getContent());
         boolean raw = isRaw(loader.getContent());
 
@@ -43,7 +47,7 @@ public class PrintEvent extends ConstraintCommand {
 
         List<String> gacha = StaticStore.event.printGachaEvent(loc, l , full, raw, false, 0);
         List<String> item = StaticStore.event.printItemEvent(loc, l, full, raw, false, 0);
-        Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(loc, l, false, holder.eventRaw, false, 0);
+        Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(loc, l, false, config.eventRaw, false, 0);
 
         if(gacha.isEmpty() && item.isEmpty() && stage.isEmpty()) {
             ch.sendMessage(LangID.getStringByID("checkEvent.noEvent", lang)).queue();
