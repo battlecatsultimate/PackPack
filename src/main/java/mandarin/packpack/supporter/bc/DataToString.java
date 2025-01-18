@@ -2168,24 +2168,41 @@ public class DataToString extends Data {
     public static String getComboDescription(int type, int lv, CommonStatic.Lang.Locale lang) {
         int factor = getComboFactor(type, lv);
 
-        String desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).replace("_", String.valueOf(factor));
+        String desc;
 
         if(type == 14) {
-            desc = desc.replace("ttt", df.format(0.5 * (100 - factor) / 100.0))
-                    .replace("TTT", df.format(0.4 * (100 - factor) / 100.0))
-                    .replace("ggg", df.format(1.5 * (100 + factor) / 100.0))
-                    .replace("GGG", df.format(1.8 * (100 + factor) / 100.0));
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).formatted(
+                    factor,
+                    df.format(0.5 * (100 - factor) / 100.0),
+                    df.format(0.4 * (100 - factor) / 100.0),
+                    df.format(1.5 * (100 + factor) / 100.0),
+                    df.format(1.8 * (100 + factor) / 100.0)
+            );
         } else if(type == 15) {
-            desc = desc.replace("ggg", df.format(3.0 * (100 + factor) / 100.0))
-                    .replace("GGG", df.format(4.0 * (100 + factor) / 100.0));
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).formatted(
+                    factor,
+                    df.format(3.0 * (100 + factor) / 100.0),
+                    df.format(4.0 * (100 + factor) / 100.0)
+            );
         } else if(type == 16) {
-            desc = desc.replace("ttt", df.format(0.25 * (100 - factor) / 100.0))
-                    .replace("TTT", df.format(0.2 * (100 - factor) / 100.0));
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).formatted(
+                    factor,
+                    df.format(0.25 * (100 - factor) / 100.0),
+                    df.format(0.2 * (100 - factor) / 100.0)
+            );
         } else if(type == 22 || type == 23) {
-            desc = desc.replace("ttt", df.format(0.2 / ((100 + factor) / 100.0)))
-                    .replace("ggg", df.format(5 * (100 + factor) / 100.0));
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).formatted(
+                    factor,
+                    df.format(0.2 / ((100 + factor) / 100.0)),
+                    df.format(5 * (100 + factor) / 100.0)
+            );
         } else if(type == 7 || type == 11) {
-            desc = desc.replace("-", df.format(factor / 30.0));
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).formatted(
+                    factor,
+                    df.format(factor / 30.0)
+            );
+        } else {
+            desc = LangID.getStringByID("data.combo."+getComboKeyword(type)+".description", lang).formatted(factor);
         }
 
         return desc;
