@@ -15,7 +15,6 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -640,23 +639,25 @@ public class PackBot {
                     if (config == null || config.channelID == -1L)
                         continue;
 
-                    GuildChannel ch = client.getGuildChannelById(config.channelID);
+                    GuildChannel gc = client.getGuildChannelById(config.channelID);
 
-                    if(ch instanceof GuildMessageChannel) {
-                        if (!sentChannels.contains(config.channelID)) {
-                            sent = true;
+                    if(!(gc instanceof GuildMessageChannel ch)) {
+                        continue;
+                    }
 
-                            sentChannels.add(config.channelID);
+                    if (!sentChannels.contains(config.channelID)) {
+                        sent = true;
 
-                            ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event.warning", holder.config.lang)).queue();
-                        }
+                        sentChannels.add(config.channelID);
 
-                        if(!config.eventMessage.isEmpty()) {
-                            Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
+                        ch.sendMessage(LangID.getStringByID("event.warning", holder.config.lang)).queue();
+                    }
 
-                            if(!p.matcher(config.eventMessage).find() || (gachaChange[index] || dataFound[index] >= 5)) {
-                                ((GuildMessageChannel) ch).sendMessage(config.eventMessage).queue();
-                            }
+                    if(!config.eventMessage.isEmpty()) {
+                        Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
+
+                        if(!p.matcher(config.eventMessage).find() || (gachaChange[index] || dataFound[index] >= 5)) {
+                            ch.sendMessage(config.eventMessage).queue();
                         }
                     }
                 }
@@ -688,9 +689,9 @@ public class PackBot {
                 if (config == null || config.channelID == -1L || !config.notifyNewVersion)
                     continue;
 
-                TextChannel ch = g.getTextChannelById(config.channelID);
+                GuildChannel gc = g.getGuildChannelById(config.channelID);
 
-                if (ch == null)
+                if (!(gc instanceof GuildMessageChannel ch))
                     continue;
 
                 String gameName = switch (locale) {
