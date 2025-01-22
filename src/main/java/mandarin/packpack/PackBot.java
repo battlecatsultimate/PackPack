@@ -40,16 +40,25 @@ import java.util.regex.Pattern;
  */
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class PackBot {
+    public static final int SAVE_TERM = 5;
+    public static final int BACKUP_TERM = 360;
+    public static final int UDP_FETCH_TERM = 30;
+    public static final int PFP_UPDATE_TERM = 60;
+    public static final int BANNER_UPDATE_TERM = 1440;
+    public static final int EVENT_UPDATE_TERM = 5;
+    public static final int LOG_WRITE_TERM = 60;
+    public static final int STATUS_UPDATE_TERM = 5;
+
     public static boolean test = false;
 
-    public static int save = 0;
-    public static int event = 0;
-    public static int pfp = 0;
-    public static int udp = 0;
-    public static int log = 0;
-    public static int backup = 0;
-    public static int updateStatus = 0;
-    public static int banner = 0;
+    public static int save = Math.max(0, SAVE_TERM - 1);
+    public static int backup = Math.max(0, BACKUP_TERM - 1);
+    public static int udp = Math.max(0, UDP_FETCH_TERM - 1);
+    public static int pfp = Math.max(0, PFP_UPDATE_TERM - 1);
+    public static int banner = Math.max(0, BANNER_UPDATE_TERM - 1);
+    public static int event = Math.max(0, EVENT_UPDATE_TERM - 1);
+    public static int log = Math.max(0, LOG_WRITE_TERM - 1);
+    public static int updateStatus = Math.max(0, STATUS_UPDATE_TERM - 1);
 
     public static final String normal = "p!help for command info!";
 
@@ -101,7 +110,7 @@ public class PackBot {
             public void run() {
                 Calendar c = Calendar.getInstance();
 
-                if(save % 5 == 0) {
+                if(save % SAVE_TERM == 0) {
                     try {
                         System.out.println("Save Process");
                         StaticStore.saveServerInfo();
@@ -116,7 +125,7 @@ public class PackBot {
                     save++;
                 }
 
-                if(backup % 360 == 0) {
+                if(backup % BACKUP_TERM == 0) {
                     try {
                         System.out.println("Backup save file");
 
@@ -140,7 +149,7 @@ public class PackBot {
                     backup++;
                 }
 
-                if(udp % 30 == 0) {
+                if(udp % UDP_FETCH_TERM == 0) {
                     try {
                         System.out.println("Fetch UDP");
 
@@ -167,7 +176,7 @@ public class PackBot {
                     manager = null;
                 }
 
-                if(pfp % 60 == 0) {
+                if(pfp % PFP_UPDATE_TERM == 0) {
                     try {
                         String fileName;
 
@@ -205,7 +214,7 @@ public class PackBot {
                     pfp++;
                 }
 
-                if ((banner % 1440 == 0 || banner >= 1440) && System.currentTimeMillis() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
+                if ((banner % BANNER_UPDATE_TERM == 0 || banner >= BANNER_UPDATE_TERM) && System.currentTimeMillis() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
                     BannerHolder.BannerData pickedBanner = StaticStore.bannerHolder.pickBanner();
 
                     if (pickedBanner != null && manager != null) {
@@ -230,7 +239,7 @@ public class PackBot {
                     manager.queue();
                 }
 
-                if(event % 5 == 0) {
+                if(event % EVENT_UPDATE_TERM == 0) {
                     System.out.println("Checking event data");
 
                     try {
@@ -293,7 +302,7 @@ public class PackBot {
                     StaticStore.previousExecuted = StaticStore.executed;
                 }
 
-                if (log == 60) {
+                if (log == LOG_WRITE_TERM) {
                     log = 0;
 
                     Logger.writeLog(Logger.BotInstance.PACK_PACK);
@@ -302,7 +311,7 @@ public class PackBot {
                 }
 
                 if (!test) {
-                    if (updateStatus == 5) {
+                    if (updateStatus == STATUS_UPDATE_TERM) {
                         try {
                             BotListPlatformHandler.handleUpdatingBotStatus(client);
 
@@ -381,21 +390,22 @@ public class PackBot {
     public static void notifyEvent(ShardManager client, boolean[][] r) {
         List<Guild> guilds = client.getGuilds();
 
+        System.out.println(Arrays.deepToString(r));
+
         boolean sent = false;
 
         for(Guild g : guilds) {
+            System.out.println("------");
+
             String gID = g.getId();
 
-            IDHolder holder = StaticStore.idHolder.get(gID);
+            System.out.println(gID);
 
-            if(holder == null) {
-                StaticStore.logger.uploadLog("No ID Holder found for guild ID : "+gID);
-                continue;
-            }
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(gID, k -> new IDHolder(g));
 
             boolean[] done = new boolean[EventFactor.supportedVersions.length];
-            boolean[] gachaChange = new boolean[4];
-            int[] dataFound = new int[4];
+            boolean[] gachaChange = new boolean[EventFactor.supportedVersions.length];
+            int[] dataFound = new int[EventFactor.supportedVersions.length];
 
             for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
                 boolean eventDone = false;
@@ -404,17 +414,20 @@ public class PackBot {
                 if (index == -1)
                     continue;
 
+                if (!holder.eventData.containsKey(locale))
+                    continue;
+
+                EventDataConfigHolder config = holder.eventData.get(locale);
+
+                if (config == null || config.channelID == -1L)
+                    continue;
+
                 for(int j = 0; j < r[index].length; j++) {
                     if(j == EventFactor.GATYA) {
                         gachaChange[index] = r[index][j];
                     }
 
-                    if (!r[index][j] || holder.eventData.containsKey(locale))
-                        continue;
-
-                    EventDataConfigHolder config = holder.eventData.get(locale);
-
-                    if (config == null || config.channelID == -1L)
+                    if (!r[index][j])
                         continue;
 
                     try {
