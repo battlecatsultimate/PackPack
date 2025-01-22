@@ -56,7 +56,7 @@ class MassCatFood : Command(CommonStatic.Lang.Locale.EN, true) {
                     val inventory = Inventory.getInventory(member.idLong)
 
                     if (amount < 0) {
-                        inventory.platinumShard < abs(amount)
+                        inventory.actualCatFood < abs(amount)
                     } else {
                         false
                     }
