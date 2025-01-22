@@ -718,9 +718,15 @@ public class PackBot {
 
         version -= major * 1000;
 
-        long minor = version % 1000;
+        long minor = version / 10;
 
-        return main + "." + major + "." + minor;
+        long subMinor = version % 10;
+
+        if (subMinor != 0) {
+            return main + "." + major + "." + subMinor;
+        } else {
+            return main + "." + major + "." + minor;
+        }
     }
 
     private static String parseResult(boolean[][] result) {
