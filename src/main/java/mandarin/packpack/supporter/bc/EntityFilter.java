@@ -35,6 +35,8 @@ public class EntityFilter {
             18, 19, 20, 21, 22, 23, 35, 36, 49
     };
 
+    private static final String spaceRegex = "[\\-☆]";
+
     public static ArrayList<Form> findUnitWithName(String name, boolean trueForm, CommonStatic.Lang.Locale lang) {
         ArrayList<Form> res = new ArrayList<>();
         ArrayList<Form> clear = new ArrayList<>();
@@ -93,7 +95,7 @@ public class EntityFilter {
                             formName = null;
                     }
 
-                    if(formName != null && formName.replaceAll("-", " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                    if(formName != null && formName.replaceAll(spaceRegex, " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
                         added = true;
                     }
 
@@ -289,7 +291,7 @@ public class EntityFilter {
                     added = true;
                 }
 
-                if(enemyName != null && enemyName.replaceAll("-", " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                if(enemyName != null && enemyName.replaceAll(spaceRegex, " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
                     added = true;
                 }
 
@@ -2130,11 +2132,11 @@ public class EntityFilter {
         int distance = calculateRawDistance(src, target);
 
         if (target.contains("-") && target.contains(".")) {
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("-", " ")));
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll(spaceRegex, " ")));
             distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("\\.", "")));
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("-", " ").replaceAll("\\.", "")));
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll(spaceRegex, " ").replaceAll("\\.", "")));
         } else if (target.contains("-")) {
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("-", " ")));
+            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll(spaceRegex, " ")));
         } else if (target.contains(".")) {
             distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("\\.", "")));
         }
