@@ -191,7 +191,7 @@ object CardData {
             //Epicfest Exclusives
             arrayOf(333, 378, 441, 543, 609, 657, 705),
             //Uberfest Exclusives
-            arrayOf(269, 318, 380, 529, 585, 641, 690),
+            arrayOf(269, 318, 380, 529, 585, 641, 690, 779),
             //Other Exclusives
             arrayOf(283, 286, 397, 559, 612, 686, 758),
             //LilValk
