@@ -52,7 +52,7 @@ class Balance : Command(CommonStatic.Lang.Locale.EN, false) {
                         "- **For Platinum Shards**\n" +
                         "You currently have $ps ${inventory.platinumShard}", loader.message) { a -> a }
             } else {
-                replyToMessageSafely(loader.channel, "${u.asMention}, here's your $cf status\n" +
+                replyToMessageSafely(loader.channel, "${u.asMention}, here's your balance status\n" +
                         "\n" +
                         "- **For Cat Foods**\n" +
                         "In total, you have $cf ${inventory.catFoods}\n" +
