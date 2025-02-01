@@ -371,7 +371,23 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     }
 
     private fun getContents() : String {
-        val builder = StringBuilder("Inventory of ${member.asMention}\n\n```md\n")
+        val cardAmount = cards.sumOf { c ->
+            return@sumOf when(filterMode) {
+                FilterMode.NONE -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0)
+                FilterMode.FAVORITE_ONLY -> inventory.favorites[c] ?: 0
+                FilterMode.NON_FAVORITE_ONLY -> inventory.cards[c] ?: 0
+            }
+        }
+
+        val start = if (cardAmount >= 2) {
+            "Inventory of ${member.asMention}\n\nNumber of Filtered Cards : $cardAmount cards\n\n```md\n"
+        } else if (cardAmount == 1) {
+            "Inventory of ${member.asMention}\n\nNumber of Filtered Cards : $cardAmount card\n\n```md\n"
+        } else {
+            "Inventory of ${member.asMention}\n\n```md\n"
+        }
+
+        val builder = StringBuilder(start)
 
         if (cards.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {

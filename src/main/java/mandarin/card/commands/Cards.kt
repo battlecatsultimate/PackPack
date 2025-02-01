@@ -190,9 +190,17 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
     private fun getText(member: Member, inventory: Inventory) : String {
         val cards = inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
 
-        val authorMention = member.asMention
+        val cardAmount = cards.sumOf { c -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0) }
 
-        val builder = StringBuilder("Inventory of ${authorMention}\n\n```md\n")
+        val start = if (cardAmount >= 2) {
+            "Inventory of ${member.asMention}\n\nNumber of Filtered Cards : $cardAmount cards\n\n```md\n"
+        } else if (cardAmount == 1) {
+            "Inventory of ${member.asMention}\n\nNumber of Filtered Cards : $cardAmount card\n\n```md\n"
+        } else {
+            "Inventory of ${member.asMention}\n\n```md\n"
+        }
+
+        val builder = StringBuilder(start)
 
         if (cards.isNotEmpty()) {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
