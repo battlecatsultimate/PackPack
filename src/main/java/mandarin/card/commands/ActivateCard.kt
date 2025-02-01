@@ -146,12 +146,7 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
             rows.add(ActionRow.of(buttons))
         }
 
-        val confirmButtons = ArrayList<Button>()
-
-        confirmButtons.add(Button.success("confirm", "Confirm"))
-        confirmButtons.add(Button.danger("cancel", "Cancel"))
-
-        rows.add(ActionRow.of(confirmButtons))
+        rows.add(ActionRow.of(Button.primary("close", "Close")))
 
         return rows
     }

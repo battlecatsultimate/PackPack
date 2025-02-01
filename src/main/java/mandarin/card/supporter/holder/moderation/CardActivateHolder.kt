@@ -131,16 +131,6 @@ class CardActivateHolder(author: Message, userID: String, channelID: String, mes
 
                 applyResult(event)
             }
-            "confirm" -> {
-                event.deferEdit()
-                    .setContent("Successfully configured cards activation!")
-                    .setComponents()
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
-
-                end(true)
-            }
             "close" -> {
                 event.deferEdit()
                     .setContent("Card Activation closed")
@@ -311,12 +301,7 @@ class CardActivateHolder(author: Message, userID: String, channelID: String, mes
             rows.add(ActionRow.of(buttons))
         }
 
-        val confirmButtons = ArrayList<Button>()
-
-        confirmButtons.add(Button.success("confirm", "Confirm"))
-        confirmButtons.add(Button.danger("cancel", "Cancel"))
-
-        rows.add(ActionRow.of(confirmButtons))
+        rows.add(ActionRow.of(Button.primary("close", "Close")))
 
         return rows
     }
