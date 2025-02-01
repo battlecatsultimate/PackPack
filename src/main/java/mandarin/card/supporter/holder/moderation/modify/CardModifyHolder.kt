@@ -144,7 +144,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                 } else {
                     val realAmount = (inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0) - (selectedCards[card] ?: 0)
 
-                    if (realAmount > 2) {
+                    if (realAmount >= 2) {
                         val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
                             .setPlaceholder("Put amount up to $realAmount")
                             .build()
