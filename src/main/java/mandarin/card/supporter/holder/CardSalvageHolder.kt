@@ -173,7 +173,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
                 val realAmount = (inventory.cards[card] ?: 0) - selectedCard.count { c -> c.unitID == card.unitID }
 
-                if (realAmount > 2) {
+                if (realAmount >= 2) {
                     val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
                         .setPlaceholder("Put amount up to ${realAmount - 1L}")
                         .build()
