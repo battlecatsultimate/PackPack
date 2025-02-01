@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
-import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -580,6 +579,10 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}ac" -> ActivateCard().execute(event)
             "${globalPrefix}cardranking",
             "${globalPrefix}car" -> CardRanking().execute(event)
+            "${globalPrefix}balance",
+            "${globalPrefix}bal",
+            "${globalPrefix}currency",
+            "${globalPrefix}cur" -> Balance().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
