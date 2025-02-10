@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.sharding.ShardManager
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ScheduledFuture
 import kotlin.math.max
@@ -65,7 +66,7 @@ class AuctionSession(
                 val o = e.asJsonObject
 
                 if (StaticStore.hasAllTag(o, "key", "val")) {
-                    session.bid(o.get("key").asLong, o.get("val").asLong)
+                    session.bid(null, o.get("key").asLong, o.get("val").asLong)
                 }
             }
 
@@ -103,7 +104,9 @@ class AuctionSession(
 
     private var scheduler: ScheduledFuture<*>? = null
 
-    fun bid(userId: Long, amount: Long) {
+    fun bid(client: ShardManager?, userId: Long, amount: Long) {
+        val previousMostBidUser = getMostBidMember()
+
         bidData[userId] = max((bidData[userId] ?: 0L), amount)
 
         lastBidTime = CardData.getUnixEpochTime()
@@ -125,6 +128,20 @@ class AuctionSession(
                     .setAllowedMentions(ArrayList())
                     .queue()
             }
+        }
+
+        val currentMostBidUser = getMostBidMember()
+
+        if (client != null && previousMostBidUser != 0L && previousMostBidUser != currentMostBidUser) {
+            client.retrieveUserById(previousMostBidUser).queue { u -> u.openPrivateChannel().queue { ch ->
+                val content = if (this::auctionChannel.isInitialized) {
+                    "Another user has bid higher amount ${EmojiStore.ABILITY["CF"]?.formatted} than yours in **Auction #$id**!\n\nLink is here : ${auctionChannel.jumpUrl}"
+                } else {
+                    "Another user has bid higher amount ${EmojiStore.ABILITY["CF"]?.formatted} than yours in **Auction #$id**!"
+                }
+
+                ch.sendMessage(content).queue()
+            }}
         }
     }
 

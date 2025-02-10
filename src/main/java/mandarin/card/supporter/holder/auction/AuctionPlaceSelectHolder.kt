@@ -72,7 +72,7 @@ class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: Strin
                     )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
-                        auctionSession.bid(authorMessage.author.idLong, bid)
+                        auctionSession.bid(event.jda.shardManager, authorMessage.author.idLong, bid)
 
                         e.deferEdit()
                             .setContent("Successfully bid ${EmojiStore.ABILITY["CF"]?.formatted} $bid to Auction #${auctionSession.id} <#${auctionSession.channel}>!")
