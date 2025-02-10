@@ -33,12 +33,12 @@ class CardRankingListHolder(author: Message, userID: String, channelID: String, 
         var amount = 0L
 
         CardData.inventories.entries.forEach { (userID, inventory) ->
-            if (!inventory.cards.containsKey(card)) {
+            if (!inventory.cards.containsKey(card) && !inventory.favorites.containsKey(card)) {
                 return@forEach
             }
 
-            ranking[userID] = inventory.cards[card] ?: 0
-            amount += (inventory.cards[card] ?: 0).toLong()
+            ranking[userID] = (inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0)
+            amount += ((inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0)).toLong()
         }
 
         entries.addAll(ranking.entries.sortedBy { e -> e.value })
