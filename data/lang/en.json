@@ -433,7 +433,7 @@
       "description" : {
         "colossusSlayer" : " (Receives damage 0.7x / Deals damage 1.6x)",
         "evaAngelKiller" : " (Receives damage 0.2x / Deals damage 5x)",
-        "sageSlayer" : " (Receives damage 0.5x / Deals damage 1.2x)",
+        "sageSlayer" : " (Receives damage 0.5x / Deals damage 1.2x / Bypass Resists)",
         "witchKiller" : " (Receives damage 0.1x / Deals damage 5x)",
         "insaneDamage" : {
           "normal" : " (Deals damage 5~6x)",
@@ -815,21 +815,32 @@
             "title" : "- **Cooldown Limit**"
           },
           "multiplier" : {
+            "multiplier" : "%s : %d%%",
+            "title" : "- **Cooldown Multiplier**",
             "description" : {
               "plural" : "Unit rarities below get cooldown multiplier",
               "singular" : "Unit rarity below gets cooldown multiplier"
-            },
-            "multiplier" : "%s : %d%%",
-            "title" : "- **Cooldown Multiplier**"
+            }
           }
         },
         "cost" : {
+          "multiplier" : "%s : %d%%",
+          "title" : "- **Cost Multiplier**",
           "description" : {
             "plural" : "Unit rarities below get cost multiplier",
             "singular" : "Unit rarity below gets cost multiplier"
+          }
+        },
+        "duplication" : {
+          "title" : "**Duplicated Deploy**",
+          "format" : {
+            "frame" : "%s : %d units per deploy with %df term",
+            "second" : "%s : %d units per deploy with %ss term"
           },
-          "multiplier" : "%s : %d%%",
-          "title" : "- **Cost Multiplier**"
+          "description" : {
+            "plural" : "Unit rarities below get duplicated deploys",
+            "singular" : "Unit rarity below get duplicated deploys"
+          }
         },
         "globalCost" : {
           "description" : "All units have %d cost globally",

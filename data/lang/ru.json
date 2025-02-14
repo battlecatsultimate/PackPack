@@ -433,7 +433,7 @@
       "description" : {
         "colossusSlayer" : " (Получает урона 0.7x / Наносит урона 1.6x)",
         "evaAngelKiller" : " (Получает урона 0.2x / Наносит урона 5x)",
-        "sageSlayer" : " (Получает урона 0.5x / Наносит урона 1.2x)",
+        "sageSlayer" : " (Получает урона 0.5x / Наносит урона 1.2x / Bypass Resists)",
         "witchKiller" : " (Получает урона 0.1x / Наносит урона 5x)",
         "insaneDamage" : {
           "normal" : " (Наносит урона 5~6x)",
@@ -830,6 +830,17 @@
           },
           "multiplier" : "%s : %d%%",
           "title" : "- **Множитель Стоимости**"
+        },
+        "duplication" : {
+          "title" : "**Duplicated Deploy**",
+          "format" : {
+            "frame" : "%s : %d units per deploy with %df term",
+            "second" : "%s : %d units per deploy with %ss term"
+          },
+          "description" : {
+            "plural" : "Unit rarities below get duplicated deploys",
+            "singular" : "Unit rarity below get duplicated deploys"
+          }
         },
         "globalCost" : {
           "description" : "Все юниты имеют стоимость %d",

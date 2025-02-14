@@ -433,7 +433,7 @@
       "description" : {
         "colossusSlayer" : " (被ダメx0.7/ 与ダメx1.6)",
         "evaAngelKiller" : " (被ダメx0.2/ 与ダメx5)",
-        "sageSlayer" : " (被ダメx0.5/ 与ダメx1.2)",
+        "sageSlayer" : " (被ダメx0.5/ 与ダメx1.2/ Bypass Resists)",
         "witchKiller" : " (被ダメx0.1/ 与ダメx5)",
         "insaneDamage" : {
           "normal" : " (与ダメx5~x6)",
@@ -830,6 +830,17 @@
           },
           "multiplier" : "%s : %d%%",
           "title" : "- **Cost Multiplier**"
+        },
+        "duplication" : {
+          "title" : "**Duplicated Deploy**",
+          "format" : {
+            "frame" : "%s : %d units per deploy with %df term",
+            "second" : "%s : %d units per deploy with %ss term"
+          },
+          "description" : {
+            "plural" : "Unit rarities below get duplicated deploys",
+            "singular" : "Unit rarity below get duplicated deploys"
+          }
         },
         "globalCost" : {
           "description" : "All units have %d cost globally",

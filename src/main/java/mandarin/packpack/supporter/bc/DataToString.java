@@ -1475,6 +1475,52 @@ public class DataToString extends Data {
                         LangID.getStringByID("data.stage.limit.maxSpawn.description", lang).formatted(l.stageLimit.maxUnitSpawn)
                 );
             }
+
+            if (Arrays.stream(l.stageLimit.deployDuplicationTimes).anyMatch(t -> t > 0)) {
+                StringBuilder duplication = new StringBuilder();
+                int count = 0;
+
+                for (int i = 0; i < l.stageLimit.deployDuplicationTimes.length; i++) {
+                    if (l.stageLimit.deployDuplicationTimes[i] > 0) {
+                        duplication.append("> ");
+
+                        String rarity = switch (i) {
+                            case 0 -> LangID.getStringByID("data.unit.rarity.basic", lang);
+                            case 1 -> LangID.getStringByID("data.unit.rarity.ex", lang);
+                            case 2 -> LangID.getStringByID("data.unit.rarity.rare", lang);
+                            case 3 -> LangID.getStringByID("data.unit.rarity.superRare", lang);
+                            case 4 -> LangID.getStringByID("data.unit.rarity.uberRare", lang);
+                            case 5 -> LangID.getStringByID("data.unit.rarity.legendRare", lang);
+                            default -> throw new IllegalStateException("E/DataToString::getLimit - Unknown rarity value %d".formatted(i));
+                        };
+
+                        if (isFrame) {
+                            duplication.append(LangID.getStringByID("data.stage.limit.duplication.format.frame", lang).formatted(rarity, l.stageLimit.deployDuplicationTimes[i] + 1, l.stageLimit.deployDuplicationDelay[i]));
+                        } else {
+                            duplication.append(LangID.getStringByID("data.stage.limit.duplication.format.second", lang).formatted(rarity, l.stageLimit.deployDuplicationTimes[i] + 1, df.format(l.stageLimit.deployDuplicationDelay[i] / 30f)));
+                        }
+
+                        duplication.append("\n");
+
+                        count++;
+                    }
+                }
+
+                if (count == 1) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.duplication.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.duplication.description.singular", lang) + "\n" +
+                                    duplication.toString().trim()
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.duplication.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.duplication.description.plural", lang) + "\n" +
+                                    duplication.toString().trim()
+                    );
+                }
+
+            }
         }
 
         return res;

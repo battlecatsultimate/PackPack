@@ -433,7 +433,7 @@
       "description" : {
         "colossusSlayer" : " (피격 시 0.7x / 공격 시 1.6x)",
         "evaAngelKiller" : " (피격 시 x0.2 / 공격 시 x5)",
-        "sageSlayer" : " (피격 시 0.5x / 공격 시 1.2x)",
+        "sageSlayer" : " (피격 시 0.5x / 공격 시 1.2x / 저항 무시)",
         "witchKiller" : " (피격 시 x0.1 / 공격 시 x5)",
         "insaneDamage" : {
           "normal" : " (공격 시 x5~x6)",
@@ -830,6 +830,17 @@
           },
           "multiplier" : "%s : %d%%",
           "title" : "- **코스트 배율**"
+        },
+        "duplication" : {
+          "title" : "**유닛 복제**",
+          "format" : {
+            "frame" : "%s : %d개의 유닛이 %df 간격으로 스폰",
+            "second" : "%s : %d개의 유닛이 %ss 간격으로 스폰"
+          },
+          "description" : {
+            "plural" : "아래의 유닛 타입들은 복제돼서 스폰됩니다",
+            "singular" : "아래의 유닛 타입은 복제돼서 스폰됩니다"
+          }
         },
         "globalCost" : {
           "description" : "모든 유닛들이 %d 코스트를 갖게 됩니다",

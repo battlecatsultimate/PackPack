@@ -433,7 +433,7 @@
       "description" : {
         "colossusSlayer" : " (受到0.7倍傷害 / 造成1.6倍傷害)",
         "evaAngelKiller" : " (受到0.2倍傷害 / 造成5倍傷害)",
-        "sageSlayer" : " (受到0.5倍傷害 / 造成1.2倍傷害)",
+        "sageSlayer" : " (受到0.5倍傷害 / 造成1.2倍傷害 / Bypass Resists)",
         "witchKiller" : " (受到0.1倍傷害 / 造成5倍傷害)",
         "insaneDamage" : {
           "normal" : " (造成5~6倍傷害)",
@@ -830,6 +830,17 @@
           },
           "multiplier" : "%s : %d%%",
           "title" : "- **Cost Multiplier**"
+        },
+        "duplication" : {
+          "title" : "**Duplicated Deploy**",
+          "format" : {
+            "frame" : "%s : %d units per deploy with %df term",
+            "second" : "%s : %d units per deploy with %ss term"
+          },
+          "description" : {
+            "plural" : "Unit rarities below get duplicated deploys",
+            "singular" : "Unit rarity below get duplicated deploys"
+          }
         },
         "globalCost" : {
           "description" : "All units have %d cost globally",
