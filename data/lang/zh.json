@@ -1296,6 +1296,8 @@
       "845" : "稀有券禮包",
       "846" : "Bonus Platinum Ticket Sale",
       "847" : "Second Chance Platinum Ticket Sale",
+      "848" : "100M Download Anniversary Ticket Sale",
+      "849" : "Chocosurp Cat C Sale",
       "900" : "Mushroom Garden Stamp",
       "901" : "回鍋登入獎勵章",
       "902" : "回鍋首天登入稀有券獎勵章",
@@ -1404,6 +1406,7 @@
       "35021" : "12th Anniversary Stamp",
       "35022" : "New Year Event Stamp",
       "35023" : "Event Stamp",
+      "35024" : "100M Download Celebrating Stamp",
       "rankingDojo" : "排行賽會場：_"
     },
     "permanentSchedule" : {
@@ -1493,7 +1496,8 @@
         "4" : "Super Rare Cost/Cooldown Buff",
         "5" : "Deploy Limit",
         "6" : "Cooldown Limit",
-        "7" : "EX Cost/Cooldown Buff"
+        "7" : "EX Cost/Cooldown Buff",
+        "8" : "UR Deploy Duplication"
       }
     },
     "section" : {

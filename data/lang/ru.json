@@ -1294,6 +1294,8 @@
       "845" : "Акция Редкий Билет",
       "846" : "Bonus Platinum Ticket Sale",
       "847" : "Second Chance Platinum Ticket Sale",
+      "848" : "100M Download Anniversary Ticket Sale",
+      "849" : "Chocosurp Cat C Sale",
       "900" : "Подарки: Грибовый Сад",
       "901" : "Подарки: Бонус Возвращения",
       "902" : "Подарки: Бонус Возвращения Золотого Билета",
@@ -1402,6 +1404,7 @@
       "35021" : "Подарки: 12-ой Годовщины",
       "35022" : "New Year Event Stamp",
       "35023" : "Подарки в честь События",
+      "35024" : "100M Download Celebrating Stamp",
       "rankingDojo" : "Ранговый Додзё _"
     },
     "permanentSchedule" : {
@@ -1491,7 +1494,8 @@
         "4" : "Дешёвые Супер Редкие/Улучшенная Перезарядка",
         "5" : "Ограниченное Размещение",
         "6" : "Ограниченная Перезарядка",
-        "7" : "EX Cost/Cooldown Buff"
+        "7" : "EX Cost/Cooldown Buff",
+        "8" : "UR Deploy Duplication"
       }
     },
     "section" : {

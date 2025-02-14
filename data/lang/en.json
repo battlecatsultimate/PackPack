@@ -1294,6 +1294,8 @@
       "845" : "Rare Ticket Sale",
       "846" : "Bonus Platinum Ticket Sale",
       "847" : "Second Chance Platinum Ticket Sale",
+      "848" : "100M Download Anniversary Ticket Sale",
+      "849" : "Chocosurp Cat C Sale",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1402,6 +1404,7 @@
       "35021" : "12th Anniversary Stamp",
       "35022" : "New Year Event Stamp",
       "35023" : "Event Stamp",
+      "35024" : "100M Download Celebrating Stamp",
       "rankingDojo" : "Ranking Dojo _"
     },
     "permanentSchedule" : {
@@ -1491,7 +1494,8 @@
         "4" : "Super Rare Cost/Cooldown Buff",
         "5" : "Deploy Limit",
         "6" : "Cooldown Limit",
-        "7" : "EX Cost/Cooldown Buff"
+        "7" : "EX Cost/Cooldown Buff",
+        "8" : "UR Deploy Duplication"
       }
     },
     "section" : {
