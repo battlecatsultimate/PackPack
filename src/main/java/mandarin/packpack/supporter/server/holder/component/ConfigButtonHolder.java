@@ -203,7 +203,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                     languages.add(SelectOption.of(LangID.getStringByID("config.locale.auto", lang), "auto").withDefault(config.lang == null));
 
-                    for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.Locale.values()) {
+                    for (CommonStatic.Lang.Locale locale : StaticStore.supportedLanguages) {
                         String l = LangID.getStringByID("bot.language." + locale.code, lang);
 
                         languages.add(

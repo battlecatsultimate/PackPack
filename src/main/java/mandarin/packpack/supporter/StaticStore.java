@@ -150,6 +150,17 @@ public class StaticStore {
             "🇮🇹",
             "🇹🇭"
     };
+    public static final CommonStatic.Lang.Locale[] supportedLanguages = {
+            CommonStatic.Lang.Locale.EN,
+            CommonStatic.Lang.Locale.ZH,
+            CommonStatic.Lang.Locale.JP,
+            CommonStatic.Lang.Locale.KR,
+            CommonStatic.Lang.Locale.DE,
+            CommonStatic.Lang.Locale.FR,
+            CommonStatic.Lang.Locale.ES,
+            CommonStatic.Lang.Locale.IT,
+            CommonStatic.Lang.Locale.TH
+    };
 
     public static final int[] rainbow = {rgb(217, 65, 68), rgb(217, 128, 65), rgb(224, 213, 85)
     , rgb(118, 224, 85), rgb(85, 169, 224), rgb(185, 85, 224)};

@@ -53,7 +53,7 @@ public class Config extends ConstraintCommand {
                 case ES -> LangID.getStringByID("bot.language.es", lang);
                 case DE -> LangID.getStringByID("bot.language.de", lang);
                 case TH -> LangID.getStringByID("bot.language.th", lang);
-                default -> LangID.getStringByID("config.locale.auto", lang);
+                case RU -> LangID.getStringByID("bot.language.ru", lang);
             };
         }
 
@@ -70,7 +70,7 @@ public class Config extends ConstraintCommand {
 
         languages.add(SelectOption.of(LangID.getStringByID("config.locale.auto", lang), "auto").withDefault(config.lang == null));
 
-        for (CommonStatic.Lang.Locale loc : CommonStatic.Lang.supportedLanguage) {
+        for (CommonStatic.Lang.Locale loc : StaticStore.supportedLanguages) {
             String l = LangID.getStringByID("bot.language." + loc.code, config.lang);
 
             languages.add(SelectOption.of(LangID.getStringByID("config.locale.title", lang).replace("_", l), loc.name()).withDefault(config.lang == loc));
