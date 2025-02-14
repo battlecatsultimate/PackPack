@@ -155,6 +155,7 @@ public class StaticStore {
             CommonStatic.Lang.Locale.ZH,
             CommonStatic.Lang.Locale.JP,
             CommonStatic.Lang.Locale.KR,
+            CommonStatic.Lang.Locale.RU,
             CommonStatic.Lang.Locale.DE,
             CommonStatic.Lang.Locale.FR,
             CommonStatic.Lang.Locale.ES,
