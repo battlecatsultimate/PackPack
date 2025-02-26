@@ -53,6 +53,7 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
                 Banner.PrincessPunt -> "Princess Punt"
                 Banner.TowerOfSavior -> "Tower of Savior"
                 Banner.RurouniKenshin -> "Rurouni Kenshin"
+                Banner.PuellaMagiMadokaMagica -> "Magica Madoka"
                 Banner.Collaboration,
                 Banner.Seasonal,
                 Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner $banner found")
@@ -100,6 +101,7 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
         PrincessPunt(CardData.Tier.UNCOMMON, 24),
         TowerOfSavior(CardData.Tier.UNCOMMON, 25),
         RurouniKenshin(CardData.Tier.UNCOMMON, 26),
+        PuellaMagiMadokaMagica(CardData.Tier.UNCOMMON, 27),
         EpicfestExclusives(CardData.Tier.ULTRA, 0),
         UberfestExclusives(CardData.Tier.ULTRA, 1),
         OtherExclusives(CardData.Tier.ULTRA, 2),
