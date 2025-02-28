@@ -27,6 +27,7 @@ enum class Activator(val tier: CardData.Tier, val banner: Int, val title: String
     PrincessPunt(CardData.Tier.UNCOMMON, 24, "Princess Punt"),
     TowerOfSavior(CardData.Tier.UNCOMMON, 25, "Tower of Savior"),
     RurouniKenshin(CardData.Tier.UNCOMMON, 26, "Rurouni Kenshin"),
+    PuellaMagiMadokaMagica(CardData.Tier.UNCOMMON, 27, "Magica Madoka"),
 
     //Valkyrie
     LilValkyrie(CardData.Tier.ULTRA, 3, "Li'l Valkyrie"),
