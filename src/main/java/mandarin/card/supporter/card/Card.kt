@@ -9,6 +9,12 @@ import java.io.File
 import kotlin.collections.contains
 
 class Card(val unitID: Int, val tier: Tier, val name: String, val cardImage: File) {
+    enum class CardType {
+        NORMAL,
+        COLLABORATION,
+        SEASONAL
+    }
+
     companion object {
         fun fromJson(obj: JsonObject) : Card? {
             if (!obj.has("id") || !obj.has("tier") || !obj.has("name")) {
@@ -40,12 +46,18 @@ class Card(val unitID: Int, val tier: Tier, val name: String, val cardImage: Fil
             val card = Card(id, tier, name, cardFile)
 
             card.activated = obj.has("activated") && obj.get("activated").asBoolean
+            card.cardType = if (obj.has("cardType")) {
+                CardType.valueOf(obj.get("cardType").asString)
+            } else {
+                CardType.NORMAL
+            }
 
             return card
         }
     }
 
     var activated = false
+    var cardType = CardType.NORMAL
 
     override fun toString(): String {
         return cardInfo()
@@ -89,6 +101,7 @@ class Card(val unitID: Int, val tier: Tier, val name: String, val cardImage: Fil
         obj.addProperty("tier", tier.name)
         obj.addProperty("name", name)
         obj.addProperty("activated", activated)
+        obj.addProperty("cardType", cardType.name)
 
         return obj
     }
