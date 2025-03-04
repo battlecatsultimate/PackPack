@@ -9,6 +9,7 @@ import com.google.gson.JsonPrimitive
 import common.CommonStatic
 import mandarin.card.commands.*
 import mandarin.card.supporter.*
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.log.LogSession
@@ -819,6 +820,22 @@ object CardBot : ListenerAdapter() {
     }
 
     private fun readCardData() {
+        val element: JsonElement? = StaticStore.getJsonFile(if (test) "testCardSave" else "cardSave")
+
+        if (element == null || !element.isJsonObject)
+            return
+
+        val obj = element.asJsonObject
+
+        if (obj.has("banners")) {
+            obj.getAsJsonArray("banners").forEach { e ->
+                if (e !is JsonObject)
+                    return@forEach
+
+                CardData.banners.add(Banner.fromJson(e))
+            }
+        }
+
         val cardFolder = File("./data/cards")
 
         if (!cardFolder.exists())
@@ -900,6 +917,67 @@ object CardBot : ListenerAdapter() {
             if (abs(c.id) >= 1000) {
                 c.cardType = Card.CardType.APRIL_FOOL
             }
+
+            CardData.bannerData.forEachIndexed { x, tier ->
+                tier.forEachIndexed { y, banner ->
+                    if (c.id in banner) {
+                        when(x) {
+                            1 -> {
+                                when(y) {
+                                    0 -> c.banner = Banner.fromName("Dark Heroes")
+                                    1 -> c.banner = Banner.fromName("Dragon Emperors")
+                                    2 -> c.banner = Banner.fromName("Dynamites")
+                                    3 -> c.banner = Banner.fromName("Elemental Pixies")
+                                    4 -> c.banner = Banner.fromName("Galaxy Gals")
+                                    5 -> c.banner = Banner.fromName("Iron Legion")
+                                    6 -> c.banner = Banner.fromName("Sengoku Wargods")
+                                    7 -> c.banner = Banner.fromName("The Nekoluga Family")
+                                    8 -> c.banner = Banner.fromName("Ultra Souls")
+                                }
+                            }
+                            2 -> {
+                                when(y) {
+                                    0 -> c.banner = Banner.fromName("Girls and Monsters")
+                                    1 -> c.banner = Banner.fromName("The Almighties")
+                                    4 -> c.banner = Banner.fromName("Valentine")
+                                    5 -> c.banner = Banner.fromName("Whiteday")
+                                    6 -> c.banner = Banner.fromName("Easter")
+                                    7 -> c.banner = Banner.fromName("June Bride")
+                                    8 -> c.banner = Banner.fromName("Summer Gals")
+                                    9 -> c.banner = Banner.fromName("Halloweens")
+                                    10 -> c.banner = Banner.fromName("X-Mas")
+                                    11 -> c.banner = Banner.fromName("Bikkuriman")
+                                    12 -> c.banner = Banner.fromName("Crash Fever")
+                                    13 -> c.banner = Banner.fromName("Fate/Stay: Night")
+                                    14 -> c.banner = Banner.fromName("Hatsune Miku")
+                                    15 -> c.banner = Banner.fromName("Merc Storia")
+                                    16 -> c.banner = Banner.fromName("Neon Genesis Evangelion")
+                                    17 -> c.banner = Banner.fromName("Power Pro Baseball")
+                                    18 -> c.banner = Banner.fromName("Ranma 1/2")
+                                    19 -> c.banner = Banner.fromName("River City Clash Capsules")
+                                    20 -> c.banner = Banner.fromName("Shoumetsu Toshi")
+                                    21 -> c.banner = Banner.fromName("Street Fighters")
+                                    22 -> c.banner = Banner.fromName("Survive! Mola Mola!")
+                                    23 -> c.banner = Banner.fromName("Metal Slug")
+                                    24 -> c.banner = Banner.fromName("Princess Punt")
+                                    25 -> c.banner = Banner.fromName("Tower of Savior")
+                                    26 -> c.banner = Banner.fromName("Rurouni Kenshin")
+                                    27 -> c.banner = Banner.fromName("Puella Magi Madoka Magica")
+                                }
+                            }
+                            3 -> {
+                                when(y) {
+                                    0 -> c.banner = Banner.fromName("Epicfest Exclusives")
+                                    1 -> c.banner = Banner.fromName("Uberfest Exclusives")
+                                    2 -> c.banner = Banner.fromName("Li'l Valkyrie")
+                                    3 -> c.banner = Banner.fromName("Li'l Valkyrie Dark")
+                                    4 -> c.banner = Banner.fromName("Trixi the Revenant")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         CardData.special.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.SPECIAL })
@@ -917,13 +995,6 @@ object CardBot : ListenerAdapter() {
                 StaticStore.langs = StaticStore.jsonToMapString(serverInfo.getAsJsonArray("lang"))
             }
         }
-
-        val element: JsonElement? = StaticStore.getJsonFile(if (test) "testCardSave" else "cardSave")
-
-        if (element == null || !element.isJsonObject)
-            return
-
-        val obj = element.asJsonObject
 
         if (obj.has("skins")) {
             val arr = obj.getAsJsonArray("skins")
@@ -1242,15 +1313,6 @@ object CardBot : ListenerAdapter() {
                 BannerHolder.fromJson(StaticStore.bannerHolder, it)
             }
         }
-
-        if (obj.has("banners")) {
-            obj.getAsJsonArray("banners").forEach { e ->
-                if (e !is JsonPrimitive)
-                    return@forEach
-
-                CardData.banners.add(e.asString)
-            }
-        }
     }
 
     @Synchronized
@@ -1524,7 +1586,7 @@ object CardBot : ListenerAdapter() {
         val banners = JsonArray()
 
         CardData.banners.forEach { b ->
-            banners.add(b)
+            banners.add(b.toJson())
         }
 
         obj.add("banners", banners)

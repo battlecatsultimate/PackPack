@@ -1,5 +1,6 @@
 package mandarin.card.supporter.card
 
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import common.util.Data
 import mandarin.card.supporter.CardData
@@ -56,11 +57,17 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
             }
 
             card.banner = if (obj.has("banner")) {
-                val bannerName = obj.get("banner").asString
+                val banner = obj.get("banner")
 
-                CardData.banners.find { b -> b == bannerName } ?: ""
+                if (banner is JsonNull) {
+                    Banner.NONE
+                } else {
+                    val bannerName = banner.asString
+
+                    CardData.banners.find { b -> b.name == bannerName } ?: Banner.NONE
+                }
             } else {
-                ""
+                Banner.NONE
             }
 
             return card
@@ -70,7 +77,7 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
     var activated = false
     var bcCard = false
     var cardType = CardType.NORMAL
-    var banner = ""
+    var banner = Banner.NONE
 
     override fun toString(): String {
         return cardInfo()
@@ -116,7 +123,12 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
         obj.addProperty("activated", activated)
         obj.addProperty("bcCard", bcCard)
         obj.addProperty("cardType", cardType.name)
-        obj.addProperty("banner", banner)
+
+        if (banner === Banner.NONE) {
+            obj.add("banner", null)
+        } else {
+            obj.addProperty("banner", banner.name)
+        }
 
         return obj
     }

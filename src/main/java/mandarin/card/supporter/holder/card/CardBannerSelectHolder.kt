@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder.card
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -24,7 +25,7 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "none" -> {
-                card.banner = ""
+                card.banner = Banner.NONE
 
                 event.deferReply()
                     .setContent("Successfully set the banner to none!")
@@ -96,13 +97,13 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(Button.secondary("none", "None").withEmoji(EmojiStore.CROSS).withDisabled(card.banner.isBlank())))
+        result.add(ActionRow.of(Button.secondary("none", "None").withEmoji(EmojiStore.CROSS).withDisabled(card.banner === Banner.NONE)))
 
         val options = ArrayList<SelectOption>()
 
         if (CardData.banners.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.banners.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-                options.add(SelectOption.of(CardData.banners[i], i.toString()).withDefault(card.banner == CardData.banners[i]))
+                options.add(SelectOption.of(CardData.banners[i].name, i.toString()).withDefault(card.banner == CardData.banners[i]))
             }
 
             result.add(ActionRow.of(StringSelectMenu.create("banner").addOptions(options).setPlaceholder("Select banner to assign").build()))

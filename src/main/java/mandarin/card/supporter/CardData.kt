@@ -1,5 +1,6 @@
 package mandarin.card.supporter
 
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.pack.CardPack
@@ -58,7 +59,7 @@ object CardData {
 
     val cards = ArrayList<Card>()
     val skins = ArrayList<Skin>()
-    val banners = ArrayList<String>()
+    val banners = ArrayList<Banner>()
 
     val supportedFileFormat = arrayOf(
         "png", "jpg", "gif", "mp4"
