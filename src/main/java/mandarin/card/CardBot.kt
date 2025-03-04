@@ -56,6 +56,7 @@ import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.abs
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
@@ -885,6 +886,22 @@ object CardBot : ListenerAdapter() {
             result
         }
 
+        CardData.cards.forEach { c ->
+            c.activated = true
+
+            if (c.id in CardData.bannerData[2][2]) {
+                c.cardType = Card.CardType.SEASONAL
+            }
+
+            if (c.id in CardData.bannerData[2][3]) {
+                c.cardType = Card.CardType.COLLABORATION
+            }
+
+            if (abs(c.id) >= 1000) {
+                c.cardType = Card.CardType.APRIL_FOOL
+            }
+        }
+
         CardData.special.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.SPECIAL })
         CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
         CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
@@ -1225,6 +1242,15 @@ object CardBot : ListenerAdapter() {
                 BannerHolder.fromJson(StaticStore.bannerHolder, it)
             }
         }
+
+        if (obj.has("banners")) {
+            obj.getAsJsonArray("banners").forEach { e ->
+                if (e !is JsonPrimitive)
+                    return@forEach
+
+                CardData.banners.add(e.asString)
+            }
+        }
     }
 
     @Synchronized
@@ -1494,6 +1520,14 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("deactivatedCards", deactivatedCards)
+
+        val banners = JsonArray()
+
+        CardData.banners.forEach { b ->
+            banners.add(b)
+        }
+
+        obj.add("banners", banners)
 
         try {
             val folder = File("./data/")

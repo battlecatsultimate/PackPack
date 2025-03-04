@@ -249,6 +249,9 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                     }, CommonStatic.Lang.Locale.EN)
                 )
             }
+            "confirm" -> {
+                goBack(event)
+            }
             "cancel" -> {
                 registerPopUp(event, "Are you sure you want to cancel creating the card? This cannot be undone")
 

@@ -16,7 +16,7 @@ class CardModeHolder(author: Message, userID: String, channelID: String, message
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "modify" -> {
-
+                connectTo(event, CardSelectHolder(authorMessage, userID, channelID, message))
             }
             "create" -> {
                 connectTo(event, CardFileHolder(authorMessage, userID, channelID, message, null))
