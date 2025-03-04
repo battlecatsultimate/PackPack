@@ -43,7 +43,7 @@ class SpecificCardCost(val cards: HashSet<Card>, amount: Long) : CardCost(CostTy
     }
 
     override fun getCostName(): String {
-        return cards.map { c -> c.simpleCardInfo() }.joinToString(", ", "{ ", " }") + " x" + amount
+        return cards.joinToString(", ", "{ ", " }") { c -> c.simpleCardInfo() } + " x" + amount
     }
 
     fun simpleCostName() : String {

@@ -308,10 +308,7 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
             return
         }
 
-        val availableSkins = result.toSet()
-            .filter { c -> inventory.equippedSkins.containsKey(c) }
-            .map { c -> inventory.equippedSkins[c] }
-            .filterNotNull()
+        val availableSkins = result.toSet().filter { c -> inventory.equippedSkins.containsKey(c) }.mapNotNull { c -> inventory.equippedSkins[c] }
 
         if (availableSkins.isEmpty()) {
             event.deferEdit()

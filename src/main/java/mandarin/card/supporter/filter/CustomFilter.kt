@@ -19,17 +19,6 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
             }
         }
 
-        fun withLD(amount: Int, name: String) : CustomFilter {
-            return CustomFilter(amount, name) { c ->
-                if (c.id < 0)
-                    return@CustomFilter false
-
-                val u = UserProfile.getBCData().units[c.id] ?: return@CustomFilter false
-
-                u.forms.any { f -> f.du.isLD }
-            }
-        }
-
         fun withRangeNoLuga(amount: Int, name: String) : CustomFilter {
             return CustomFilter(amount, name) { c ->
                 if (c.id < 0)

@@ -15,7 +15,7 @@ class CardComparator : Comparator<Card> {
             return -1
 
         return if (o1.tier == o2.tier) {
-            if (o1.id < 0 && o2.id < 0)
+            if (o1.id < 0)
                 -o1.id.compareTo(o2.id)
             else
                 o1.id.compareTo(o2.id)
