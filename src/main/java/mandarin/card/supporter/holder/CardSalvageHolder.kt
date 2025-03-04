@@ -44,7 +44,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
         CardData.SalvageMode.T3 -> CardData.Tier.ULTRA
         CardData.SalvageMode.T4 -> CardData.Tier.LEGEND
     }
-    private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID !in CardData.bannedT3 }.sortedWith(CardComparator()))
+    private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier && c.id !in CardData.bannedT3 }.sortedWith(CardComparator()))
 
     private val selectedCard = ArrayList<Card>()
 
@@ -171,7 +171,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
                 val card = cards[index]
 
-                val realAmount = (inventory.cards[card] ?: 0) - selectedCard.count { c -> c.unitID == card.unitID }
+                val realAmount = (inventory.cards[card] ?: 0) - selectedCard.count { c -> c.id == card.id }
 
                 if (realAmount >= 2) {
                     val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
@@ -302,7 +302,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
         if (banner[0] == -1) {
             cards.addAll(
-                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID !in CardData.bannedT3 }
+                inventory.cards.keys.filter { c -> c.tier == tier && c.id !in CardData.bannedT3 }
                     .filter { c ->
                         when (salvageMode) {
                             CardData.SalvageMode.T2 -> c.isRegularUncommon()
@@ -311,10 +311,10 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
                             else -> true
                         }
                     }
-                    .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 }
+                    .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.id == c.id}.size > 0 }
             )
         } else {
-            cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] }.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 })
+            cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] }.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.id == c.id}.size > 0 })
         }
 
         cards.sortWith(CardComparator())
@@ -445,17 +445,17 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
         confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.isEmpty()).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
 
-        val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.unitID !in CardData.bannedT3 }
+        val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.id !in CardData.bannedT3 }
             .filter { c ->
                 when (salvageMode) {
-                    CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlmighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
-                    CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
-                    CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                    CardData.SalvageMode.T2 -> c.id in BannerFilter.Banner.TheAlmighties.getBannerData() || c.id in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                    CardData.SalvageMode.SEASONAL -> c.id in BannerFilter.Banner.Seasonal.getBannerData()
+                    CardData.SalvageMode.COLLAB -> c.id in BannerFilter.Banner.Collaboration.getBannerData()
                     else -> true
                 }
             }
             .filter { c ->
-                (inventory.cards[c] ?: 0 ) - selectedCard.count { card -> card.unitID == c.unitID } > 1
+                (inventory.cards[c] ?: 0 ) - selectedCard.count { card -> card.id == c.id } > 1
             }
 
         confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(duplicated.isEmpty()))
@@ -509,7 +509,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
             for (i in page * PAGE_CHUNK until min((page + 1) * PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
-                val amount = (inventory.cards[cards[i]] ?: 0) - selectedCard.filter { c -> cards[i].unitID == c.unitID }.size
+                val amount = (inventory.cards[cards[i]] ?: 0) - selectedCard.filter { c -> cards[i].id == c.id }.size
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

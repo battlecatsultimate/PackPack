@@ -212,11 +212,11 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
         CardData.activatedBanners
 
         val cards = when(craftMode) {
-            CardData.CraftMode.T2 -> CardData.cards.filter { c -> c.unitID > 0 && c.unitID in BannerFilter.Banner.TheAlmighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData() }
-            CardData.CraftMode.SEASONAL -> CardData.cards.filter { c -> c.unitID > 0 && c.unitID in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
-            CardData.CraftMode.COLLAB -> CardData.cards.filter { c -> c.unitID > 0 && c.unitID in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
-            CardData.CraftMode.T3 -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA && c.unitID > 0 && c.unitID !in CardData.bannedT3 }
-            CardData.CraftMode.T4 -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND && c.unitID > 0 }
+            CardData.CraftMode.T2 -> CardData.cards.filter { c -> c.id > 0 && c.id in BannerFilter.Banner.TheAlmighties.getBannerData() || c.id in BannerFilter.Banner.GirlsAndMonsters.getBannerData() }
+            CardData.CraftMode.SEASONAL -> CardData.cards.filter { c -> c.id > 0 && c.id in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
+            CardData.CraftMode.COLLAB -> CardData.cards.filter { c -> c.id > 0 && c.id in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
+            CardData.CraftMode.T3 -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA && c.id > 0 && c.id !in CardData.bannedT3 }
+            CardData.CraftMode.T4 -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND && c.id > 0 }
         }
 
         val result = ArrayList<Card>()

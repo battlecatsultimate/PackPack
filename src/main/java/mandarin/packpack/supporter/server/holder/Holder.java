@@ -231,8 +231,9 @@ public abstract class Holder {
     }
 
     public void handleMessageUpdated(@Nonnull Message message) {
-        if (!(this instanceof MessageUpdater updater))
-            return;
+        if (parent != null) {
+            parent.handleMessageUpdated(message);
+        }
 
         if(author == null) {
             throw new NotSupportedException("E/Holder::getAuthorMessage - This holder doesn't support author message getter! : " + getClass().getName());
@@ -244,7 +245,7 @@ public abstract class Holder {
         if (message.getIdLong() != this.message.getIdLong())
             return;
 
-        updater.onMessageUpdated(message);
+        this.message = message;
     }
 
     public void connectTo(Holder holder) {
@@ -308,10 +309,6 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            if (parent instanceof MessageUpdater updater) {
-                updater.onMessageUpdated(message);
-            }
-
             Objects.requireNonNull(parent).onBack(this);
         }
     }
@@ -340,10 +337,6 @@ public abstract class Holder {
 
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
-
-            if (parent instanceof MessageUpdater updater) {
-                updater.onMessageUpdated(message);
-            }
 
             Objects.requireNonNull(parent).onBack(event, this);
         }
@@ -393,10 +386,6 @@ public abstract class Holder {
 
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
-
-                    if (parent instanceof MessageUpdater updater) {
-                        updater.onMessageUpdated(message);
-                    }
 
                     parent.onBack(this);
 
@@ -468,10 +457,6 @@ public abstract class Holder {
 
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
-
-                    if (parent instanceof MessageUpdater updater) {
-                        updater.onMessageUpdated(message);
-                    }
 
                     parent.onBack(event, this);
 

@@ -516,7 +516,7 @@ object TransactionLogger {
             checker.append("- ")
                 .append(card.cardInfo())
 
-            val amount = cards.filter { c -> card.unitID == c.unitID }.size
+            val amount = cards.filter { c -> card.id == c.id }.size
 
             if (amount >= 2) {
                 checker.append(" x")
@@ -538,7 +538,7 @@ object TransactionLogger {
             for (card in cards.toSet()) {
                 var line = "- ${card.cardInfo()}"
 
-                val amount = cards.filter { c -> card.unitID == c.unitID }.size
+                val amount = cards.filter { c -> card.id == c.id }.size
 
                 if (amount >= 2) {
                     line += " x$amount"
@@ -597,7 +597,7 @@ object TransactionLogger {
         val cardList = StringBuilder()
 
         craftedCards.toSet().forEach { c ->
-            val amount = craftedCards.filter { card -> card.unitID == c.unitID }.size
+            val amount = craftedCards.filter { card -> card.id == c.id }.size
 
             cardList.append("- ").append(c.simpleCardInfo())
 
@@ -1113,9 +1113,15 @@ object TransactionLogger {
 
         builder.setColor(StaticStore.rainbow.random())
 
-        builder.setDescription("Manager <@$canceler> has canceled the auction #${session.id}")
+        if (canceler == -1L) {
+            builder.setDescription("System has canceled the auction #${session.id} due to deletion of the card")
 
-        builder.addField("Canceler", "<@$canceler> [$canceler]", false)
+            builder.addField("Canceler", "System", false)
+        } else {
+            builder.setDescription("Manager <@$canceler> has canceled the auction #${session.id}")
+
+            builder.addField("Canceler", "<@$canceler> [$canceler]", false)
+        }
 
         builder.addField("Auction Session", "Auction Session #${session.id} <#${session.channel}> [${session.channel}]", false)
 

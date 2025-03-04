@@ -6,7 +6,6 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
-import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -22,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private enum class FilterMode {
         NONE,
         PURCHASE_AMOUNT,
@@ -118,10 +117,6 @@ class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: Strin
                 applyResult(event)
             }
         }
-    }
-
-    override fun onMessageUpdated(message: Message) {
-        this.message = message
     }
 
     override fun onConnected(event: IMessageEditCallback, parent: Holder) {

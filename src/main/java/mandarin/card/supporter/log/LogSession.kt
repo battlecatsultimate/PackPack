@@ -257,7 +257,7 @@ class LogSession {
                         val co = ce.asJsonObject
 
                         if (co.has("key") && co.has("val")) {
-                            val card = CardData.cards.find { c -> c.unitID == co.get("key").asInt }
+                            val card = CardData.cards.find { c -> c.id == co.get("key").asInt }
 
                             if (card != null) {
                                 cardMap[card] = co.get("val").asLong
@@ -728,7 +728,7 @@ class LogSession {
             cardMap.forEach { (card, amount) ->
                 val co = JsonObject()
 
-                co.addProperty("key", card.unitID)
+                co.addProperty("key", card.id)
                 co.addProperty("val", amount)
 
                 cardArr.add(co)

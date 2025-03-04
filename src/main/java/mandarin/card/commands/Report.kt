@@ -223,7 +223,7 @@ class Report : Command(CommonStatic.Lang.Locale.EN, true) {
                     } else if (c0.value != c1.value) {
                         return@comparator -c0.value.compareTo(c1.value)
                     } else {
-                        return@comparator -c0.key.unitID.compareTo(c1.key.unitID)
+                        return@comparator -c0.key.id.compareTo(c1.key.id)
                     }
                 }
 

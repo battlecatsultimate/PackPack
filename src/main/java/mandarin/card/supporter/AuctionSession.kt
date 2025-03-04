@@ -38,7 +38,7 @@ class AuctionSession(
             val author = obj.get("author").asLong
 
             val cardId = obj.get("card").asInt
-            val card = CardData.cards.find { c -> c.unitID == cardId } ?: throw IllegalStateException("E/AuctionSession::fromJson - Failed to find card with ID of $cardId")
+            val card = CardData.cards.find { c -> c.id == cardId } ?: throw IllegalStateException("E/AuctionSession::fromJson - Failed to find card with ID of $cardId")
 
             val amount = obj.get("amount").asInt
             val endDate = obj.get("endDate").asLong
@@ -543,7 +543,7 @@ class AuctionSession(
         obj.addProperty("id", id)
         obj.addProperty("channel", channel)
         obj.addProperty("author", author)
-        obj.addProperty("card", card.unitID)
+        obj.addProperty("card", card.id)
         obj.addProperty("amount", amount)
         obj.addProperty("endDate", endDate)
         obj.addProperty("anonymous", anonymous)

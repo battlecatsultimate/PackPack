@@ -8,7 +8,6 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.MessageDetector
-import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -21,7 +20,7 @@ import java.io.File
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
 
-class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
+class SkinFileHolder : ComponentHolder, MessageDetector {
     private val card: Card
     private val skin: Skin?
 
@@ -82,10 +81,6 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
                 }, CommonStatic.Lang.Locale.EN))
             }
         }
-    }
-
-    override fun onMessageUpdated(message: Message) {
-        this.message = message
     }
 
     override fun onMessageDetected(msg: Message) {
@@ -209,7 +204,7 @@ class SkinFileHolder : ComponentHolder, MessageDetector, MessageUpdater {
     }
 
     private fun getContents() : String {
-        return "Please upload the file\n### Supported File Type : ${CardData.supportedFileFormat.map { s -> s.uppercase() }.joinToString(", ")}"
+        return "Please upload the file\n### Supported File Type : ${CardData.supportedFileFormat.joinToString(", ") { s -> s.uppercase() }}"
     }
 
     private fun getComponents() : List<LayoutComponent> {

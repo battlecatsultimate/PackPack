@@ -9,7 +9,6 @@ import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.holder.modal.CardFavoriteAmountHolder
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
-import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.EmbedBuilder
@@ -30,7 +29,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardFavoriteHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class CardFavoriteHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val skins = inventory.skins.filter { s -> s.card == card }
 
     private var page = 0
@@ -174,12 +173,6 @@ class CardFavoriteHolder(author: Message, userID: String, channelID: String, mes
         }
     }
 
-    override fun onMessageUpdated(message: Message) {
-        this.message = message
-
-        println(message.attachments)
-    }
-
     override fun onBack(child: Holder) {
         applyResult()
     }
@@ -238,7 +231,7 @@ class CardFavoriteHolder(author: Message, userID: String, channelID: String, mes
 
         val favorite = if (inventory.favorites.containsKey(card)) " ⭐ " else ""
 
-        embedBuilder.setTitle(favorite + "Card No.${Data.trio(card.unitID)}" + favorite)
+        embedBuilder.setTitle(favorite + "Card No.${Data.trio(card.id)}" + favorite)
 
         embedBuilder.setColor(CardData.grade[card.tier.ordinal])
 

@@ -7,10 +7,10 @@ import mandarin.card.supporter.card.Card
 
 class ProcFilter(private val proc: String, amount: Int, name: String) : Filter(amount, name) {
     override fun filter(card: Card): Boolean {
-        if (card.unitID < 0)
+        if (card.id < 0)
             return false
 
-        val u = UserProfile.getBCData().units[card.unitID] ?: return false
+        val u = UserProfile.getBCData().units[card.id] ?: return false
 
         return u.forms.any { f ->
             val p = if (f.fid == 2 && f.du.pCoin != null) {

@@ -9,7 +9,6 @@ import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.Holder
-import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -23,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 
-class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     private val containers = Array(skin.cost.cardsCosts.size) {
@@ -137,10 +136,6 @@ class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, 
                 }
             }
         }
-    }
-
-    override fun onMessageUpdated(message: Message) {
-        this.message = message
     }
 
     override fun onBack(event: IMessageEditCallback, child: Holder) {

@@ -32,7 +32,7 @@ class Skin {
 
             val cardID = obj.get("card").asInt
 
-            val card = CardData.cards.find { c -> c.unitID == cardID } ?: throw NullPointerException("E/Skin::fromJson - Failed to find card $cardID")
+            val card = CardData.cards.find { c -> c.id == cardID } ?: throw NullPointerException("E/Skin::fromJson - Failed to find card $cardID")
 
             val skinID = obj.get("skinID").asInt
             val name = obj.get("name").asString
@@ -90,10 +90,10 @@ class Skin {
             }
         }
 
-        skinID = if (card.unitID < 0) {
-            -10000 * maxID + card.unitID
+        skinID = if (card.id < 0) {
+            -10000 * maxID + card.id
         } else {
-            10000 * maxID + card.unitID
+            10000 * maxID + card.id
         }
 
         val folder = File("./data/cards/Skin/")
@@ -340,7 +340,7 @@ class Skin {
         obj.add("cost", cost.asJson())
         obj.addProperty("public", public)
         obj.addProperty("creator", creator)
-        obj.addProperty("card", card.unitID)
+        obj.addProperty("card", card.id)
         obj.addProperty("skinID", skinID)
         obj.addProperty("name", name)
         obj.addProperty("messageID", messageID)

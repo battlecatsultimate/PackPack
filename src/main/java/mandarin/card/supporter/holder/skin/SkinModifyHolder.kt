@@ -10,7 +10,6 @@ import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.Holder
-import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -36,7 +35,7 @@ class SkinModifyHolder(
     message: Message,
     private val skin: Skin,
     private val new: Boolean
-) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -194,12 +193,6 @@ class SkinModifyHolder(
                 }, CommonStatic.Lang.Locale.EN))
             }
         }
-    }
-
-    override fun onMessageUpdated(message: Message) {
-        this.message = message
-
-        println(message.attachments)
     }
 
     override fun onConnected(parent: Holder) {

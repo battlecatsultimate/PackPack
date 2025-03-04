@@ -3,7 +3,6 @@ package mandarin.card.supporter
 import mandarin.card.supporter.card.Card
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
-import java.lang.UnsupportedOperationException
 
 @Suppress("unused")
 class Restoration(val message: Message) {
@@ -278,7 +277,7 @@ class Restoration(val message: Message) {
                 for (line in cardLines) {
                     val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                    val card = CardData.cards.find { card -> card.unitID == cardID }
+                    val card = CardData.cards.find { card -> card.id == cardID }
 
                     if (card == null) {
                         log("W/ Failed to obtain card data : $cardID")
@@ -316,7 +315,7 @@ class Restoration(val message: Message) {
                 for (line in cardLines) {
                     val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                    val card = CardData.cards.find { card -> card.unitID == cardID }
+                    val card = CardData.cards.find { card -> card.id == cardID }
 
                     if (card == null) {
                         log("W/ Failed to obtain card data : $cardID")
@@ -361,7 +360,7 @@ class Restoration(val message: Message) {
                     for (line in cardLines) {
                         val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                        val card = CardData.cards.find { card -> card.unitID == cardID }
+                        val card = CardData.cards.find { card -> card.id == cardID }
 
                         if (card == null) {
                             log("W/ Failed to obtain card data : $cardID")
@@ -387,7 +386,7 @@ class Restoration(val message: Message) {
                     for (line in cardLines) {
                         val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                        val card = CardData.cards.find { card -> card.unitID == cardID }
+                        val card = CardData.cards.find { card -> card.id == cardID }
 
                         if (card == null) {
                             log("W/ Failed to obtain card data : $cardID")
@@ -428,7 +427,7 @@ class Restoration(val message: Message) {
 
                 val cardID = value.split("No.")[1].split(" : ")[0].toInt()
 
-                val card = CardData.cards.find { card -> card.unitID == cardID }
+                val card = CardData.cards.find { card -> card.id == cardID }
 
                 if (card == null) {
                     log("W/ Failed to obtain card data : $cardID")
@@ -477,7 +476,7 @@ class Restoration(val message: Message) {
                 for (line in cardLines) {
                     val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                    val card = CardData.cards.find { card -> card.unitID == cardID }
+                    val card = CardData.cards.find { card -> card.id == cardID }
 
                     if (card == null) {
                         log("W/ Failed to obtain card data : $cardID")
@@ -522,7 +521,7 @@ class Restoration(val message: Message) {
                     for (line in cardLines) {
                         val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                        val card = CardData.cards.find { card -> card.unitID == cardID }
+                        val card = CardData.cards.find { card -> card.id == cardID }
 
                         if (card == null) {
                             log("W/ Failed to obtain card data : $cardID")
@@ -548,7 +547,7 @@ class Restoration(val message: Message) {
                     for (line in cardLines) {
                         val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                        val card = CardData.cards.find { card -> card.unitID == cardID }
+                        val card = CardData.cards.find { card -> card.id == cardID }
 
                         if (card == null) {
                             log("W/ Failed to obtain card data : $cardID")
@@ -602,7 +601,7 @@ class Restoration(val message: Message) {
                     for (line in cardLines) {
                         val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                        val card = CardData.cards.find { card -> card.unitID == cardID }
+                        val card = CardData.cards.find { card -> card.id == cardID }
 
                         if (card == null) {
                             log("W/ Failed to obtain card data : $cardID")
@@ -628,7 +627,7 @@ class Restoration(val message: Message) {
                     for (line in cardLines) {
                         val cardID = line.trim().split("No.")[1].split(" : ")[0].toInt()
 
-                        val card = CardData.cards.find { card -> card.unitID == cardID }
+                        val card = CardData.cards.find { card -> card.id == cardID }
 
                         if (card == null) {
                             log("W/ Failed to obtain card data : $cardID")
@@ -689,7 +688,7 @@ class Restoration(val message: Message) {
                 for (line in cardLines) {
                     val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                    val card = CardData.cards.find { card -> card.unitID == cardID }
+                    val card = CardData.cards.find { card -> card.id == cardID }
 
                     if (card == null) {
                         log("W/ Failed to obtain card data : $cardID")
@@ -739,7 +738,7 @@ class Restoration(val message: Message) {
                 for (line in cardLines) {
                     val cardID = line.split("No.")[1].split(" : ")[0].toInt()
 
-                    val card = CardData.cards.find { card -> card.unitID == cardID }
+                    val card = CardData.cards.find { card -> card.id == cardID }
 
                     if (card == null) {
                         log("W/ Failed to obtain card data : $cardID")

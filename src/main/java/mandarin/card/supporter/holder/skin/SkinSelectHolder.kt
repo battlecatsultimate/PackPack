@@ -5,7 +5,6 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
-import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -21,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+class SkinSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val skins = CardData.skins.filter { s -> s.card == card }.toMutableList()
 
     private var page = 0
@@ -89,10 +88,6 @@ class SkinSelectHolder(author: Message, userID: String, channelID: String, messa
                 end(true)
             }
         }
-    }
-
-    override fun onMessageUpdated(message: Message) {
-        this.message = message
     }
 
     override fun onConnected(event: IMessageEditCallback, parent: Holder) {

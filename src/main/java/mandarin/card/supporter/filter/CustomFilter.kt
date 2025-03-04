@@ -10,10 +10,10 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
     companion object {
         fun withOmni(amount: Int, name: String) : CustomFilter {
             return CustomFilter(amount, name) { c ->
-                if (c.unitID < 0)
+                if (c.id < 0)
                     return@CustomFilter false
 
-                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
+                val u = UserProfile.getBCData().units[c.id] ?: return@CustomFilter false
 
                 u.forms.any { f -> f.du.isOmni }
             }
@@ -21,10 +21,10 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
 
         fun withLD(amount: Int, name: String) : CustomFilter {
             return CustomFilter(amount, name) { c ->
-                if (c.unitID < 0)
+                if (c.id < 0)
                     return@CustomFilter false
 
-                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
+                val u = UserProfile.getBCData().units[c.id] ?: return@CustomFilter false
 
                 u.forms.any { f -> f.du.isLD }
             }
@@ -32,12 +32,12 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
 
         fun withRangeNoLuga(amount: Int, name: String) : CustomFilter {
             return CustomFilter(amount, name) { c ->
-                if (c.unitID < 0)
+                if (c.id < 0)
                     return@CustomFilter false
 
-                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
+                val u = UserProfile.getBCData().units[c.id] ?: return@CustomFilter false
 
-                if (c.unitID in BannerFilter.Banner.TheNekolugaFamily.getBannerData()) {
+                if (c.id in BannerFilter.Banner.TheNekolugaFamily.getBannerData()) {
                     u.forms.any { f -> f.fid != 0 && !f.du.isRange }
                 } else {
                     u.forms.any { f -> !f.du.isRange }
@@ -47,10 +47,10 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
 
         fun withAntiWave(amount: Int, name: String) : CustomFilter {
             return CustomFilter(amount, name) { c ->
-                if (c.unitID < 0)
+                if (c.id < 0)
                     return@CustomFilter false
 
-                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
+                val u = UserProfile.getBCData().units[c.id] ?: return@CustomFilter false
 
                 u.forms.any { f ->
                     val du = if (f.fid == 2 && f.du.pCoin != null)

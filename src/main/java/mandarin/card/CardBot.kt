@@ -392,9 +392,7 @@ object CardBot : ListenerAdapter() {
 
         val hub = StaticStore.getHolderHub(u.id)
 
-        if (hub != null) {
-            hub.componentHolder?.handleMessageDetected(event.message)
-        }
+        hub?.componentHolder?.handleMessageDetected(event.message)
 
         val firstSegment = if (segments.isEmpty())
             ""
@@ -557,7 +555,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}banuser",
             "${globalPrefix}bu" -> BanUser().execute(event)
             "${globalPrefix}managecardskin",
-            "${globalPrefix}mc" -> ManageCardSkin().execute(event)
+            "${globalPrefix}mcs" -> ManageCardSkin().execute(event)
             "${globalPrefix}buyskin",
             "${globalPrefix}bs" -> BuySkin().execute(event)
             "${globalPrefix}optout" -> OptOut().execute(event)
@@ -583,6 +581,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}bal",
             "${globalPrefix}currency",
             "${globalPrefix}cur" -> Balance().execute(event)
+            "${globalPrefix}managecard",
+            "${globalPrefix}mc" -> ManageCard().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -876,20 +876,20 @@ object CardBot : ListenerAdapter() {
             if (c.tier == CardData.Tier.SPECIAL)
                 return@removeIf false
 
-            val result = !CardData.bannerData.any { t -> t.any { b -> c.tier == CardData.Tier.LEGEND || c.unitID in b } }
+            val result = !CardData.bannerData.any { t -> t.any { b -> c.tier == CardData.Tier.LEGEND || c.id in b } }
 
             if (result) {
-                println("Removing ${c.unitID}")
+                println("Removing ${c.id}")
             }
 
             result
         }
 
         CardData.special.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.SPECIAL })
-        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.unitID in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.unitID in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.unitID in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[r.tier.ordinal].any { arr -> r.unitID !in arr } })
+        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
+        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
+        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
+        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[r.tier.ordinal].any { arr -> r.id !in arr } })
 
         val serverElement: JsonElement? = StaticStore.getJsonFile(if (test) "testserverinfo" else "serverinfo")
 
@@ -1214,7 +1214,7 @@ object CardBot : ListenerAdapter() {
 
         if (obj.has("deactivatedCards")) {
             obj.getAsJsonArray("deactivatedCards").forEach { e ->
-                val card = CardData.cards.find { c -> c.unitID == e.asInt } ?: return@forEach
+                val card = CardData.cards.find { c -> c.id == e.asInt } ?: return@forEach
 
                 CardData.deactivatedCards.add(card)
             }
@@ -1490,7 +1490,7 @@ object CardBot : ListenerAdapter() {
         val deactivatedCards = JsonArray()
 
         CardData.deactivatedCards.forEach { card ->
-            deactivatedCards.add(card.unitID)
+            deactivatedCards.add(card.id)
         }
 
         obj.add("deactivatedCards", deactivatedCards)
