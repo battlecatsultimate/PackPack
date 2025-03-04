@@ -285,15 +285,12 @@ class CardSelectHolder(author: Message, userID: String, channelID: String, messa
 
         rows.add(ActionRow.of(cardCategory))
 
-        var totPage = dataSize / SearchHolder.PAGE_CHUNK
-
-        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++
+        val totalPage = getTotalPage(dataSize)
 
         if (dataSize > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 if(page - 10 < 0) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
                 } else {
@@ -307,14 +304,14 @@ class CardSelectHolder(author: Message, userID: String, channelID: String, messa
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
             }
 
-            if(page + 1 >= totPage) {
+            if(page + 1 >= totalPage) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
             } else {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
             }
 
-            if(totPage > 10) {
-                if(page + 10 >= totPage) {
+            if(totalPage > 10) {
+                if(page + 10 >= totalPage) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
                 } else {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
