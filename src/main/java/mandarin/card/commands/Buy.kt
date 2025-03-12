@@ -4,7 +4,6 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.Product
 import mandarin.card.supporter.holder.BuyHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
