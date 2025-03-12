@@ -130,7 +130,7 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
     }
 
     override fun onExpire() {
-        message.editMessage("Card ranking expired").queue()
+        message.editMessage("Card ranking expired").setComponents().queue()
     }
 
     override fun onBack(event: IMessageEditCallback, child: Holder) {

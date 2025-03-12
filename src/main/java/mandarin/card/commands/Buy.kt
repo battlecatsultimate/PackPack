@@ -4,7 +4,6 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.Product
 import mandarin.card.supporter.holder.BuyHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
@@ -70,13 +69,14 @@ class Buy : Command(CommonStatic.Lang.Locale.EN, true) {
 //
 //        restOptions.add(SelectOption.of("Custom Emoji", "emoji").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
-        val affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
-
-        restOptions.add(SelectOption.of("Custom Role", "role").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
+//        val affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
+//
+//        restOptions.add(SelectOption.of("Custom Role", "role").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
         val restMenu = StringSelectMenu.create("rest")
             .addOptions(restOptions)
             .setPlaceholder("Select Other")
+            .setDisabled(true)
             .build()
 
         rows.add(ActionRow.of(roleMenu))

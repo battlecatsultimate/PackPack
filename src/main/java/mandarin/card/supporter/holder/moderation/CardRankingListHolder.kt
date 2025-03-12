@@ -41,7 +41,7 @@ class CardRankingListHolder(author: Message, userID: String, channelID: String, 
             amount += ((inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0)).toLong()
         }
 
-        entries.addAll(ranking.entries.sortedBy { e -> e.value })
+        entries.addAll(ranking.entries.sortedByDescending { e -> e.value })
         totalCards = amount
     }
 

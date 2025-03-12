@@ -132,7 +132,9 @@ class Trade : Command(CommonStatic.Lang.Locale.EN, true) {
                     "\n" +
                     "If you want to cancel trading, please call `${CardBot.globalPrefix}cancel`. Any of user calling this command will directly cancel the trading, and this session will be closed\n" +
                     "\n" +
-                    "**__DO NOT scam others.__**  Keep in mind that all transactions will be logged, and this post won't be deleted"
+                    "**__DO NOT scam others.__**  Keep in mind that all transactions will be logged, and this post won't be deleted\n" +
+                    "\n" +
+                    "Command link : ${loader.message.jumpUrl}"
             )
 
             forum.createForumPost("Trading Session #${CardData.sessionNumber}", postData).queue { post ->

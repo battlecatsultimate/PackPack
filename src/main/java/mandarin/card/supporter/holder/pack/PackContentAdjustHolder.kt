@@ -147,6 +147,10 @@ class PackContentAdjustHolder(
         applyResult()
     }
 
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
+        applyResult(event)
+    }
+
     override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         applyResult(event)
     }
