@@ -135,18 +135,14 @@ class CardChancePairHolder(
                     )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
-                        e.deferEdit().queue()
-
-                        goBack()
+                        goBack(e)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
                     if (pack in CardData.cardPacks) {
                         CardBot.saveCardData()
                     }
 
-                    event.deferEdit().queue()
-
-                    goBack()
+                    goBack(event)
                 }
             }
             "delete" -> {

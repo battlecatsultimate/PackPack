@@ -118,7 +118,7 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-openvr::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-openxr::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opus::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-ovr::$lwjglNatives"
+    if (lwjglNatives != "natives-linux") runtimeOnly "org.lwjgl:lwjgl-ovr::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-par::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-remotery::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-rpmalloc::$lwjglNatives"

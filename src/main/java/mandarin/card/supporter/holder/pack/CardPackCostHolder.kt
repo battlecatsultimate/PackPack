@@ -132,6 +132,10 @@ class CardPackCostHolder(author: Message, userID: String, channelID: String, mes
         applyResult(event)
     }
 
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
+        applyResult(event)
+    }
+
     override fun onBack(child: Holder) {
         applyResult()
     }
