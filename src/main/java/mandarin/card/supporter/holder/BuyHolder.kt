@@ -189,6 +189,7 @@ class BuyHolder(author: Message, userID: String, channelID: String, message: Mes
         val restMenu = StringSelectMenu.create("rest")
             .addOptions(restOptions)
             .setPlaceholder("Select Other")
+            .setDisabled(true)
             .build()
 
         rows.add(ActionRow.of(roleMenu))
