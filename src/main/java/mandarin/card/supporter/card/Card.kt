@@ -69,13 +69,16 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
             } else {
                 Banner.NONE
             }
+            
+            card.tradable = obj.has("tradable") && obj.get("tradable").asBoolean
 
             return card
         }
     }
 
-    var activated = false
+    var activated = true
     var bcCard = false
+    var tradable = true
     var cardType = CardType.NORMAL
     var banner = Banner.NONE
 
@@ -122,6 +125,7 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
         obj.addProperty("name", name)
         obj.addProperty("activated", activated)
         obj.addProperty("bcCard", bcCard)
+        obj.addProperty("tradable", tradable)
         obj.addProperty("cardType", cardType.name)
 
         if (banner === Banner.NONE) {
