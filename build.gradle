@@ -5,12 +5,16 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.1.10'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+kotlin {
+    jvmToolchain(21)
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url = 'https://jitpack.io' }
 }
 
 switch (OperatingSystem.current()) {
