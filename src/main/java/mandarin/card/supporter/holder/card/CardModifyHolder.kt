@@ -143,6 +143,11 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
 
                 applyResult(event)
             }
+            "tradable" -> {
+                card.tradable = !card.tradable
+
+                applyResult(event)
+            }
             "create" -> {
                 val tierFolder = when(card.tier) {
                     CardData.Tier.SPECIAL -> "Tier 0"
@@ -386,6 +391,12 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
             EmojiStore.SWITCHOFF
         }
 
+        val tradable = if (card.tradable) {
+            EmojiStore.SWITCHON
+        } else {
+            EmojiStore.SWITCHOFF
+        }
+
         result.add(ActionRow.of(
             Button.secondary("id", "Change Card ID").withEmoji(Emoji.fromUnicode("🆔")),
             Button.secondary("name", "Change Card Name").withEmoji(Emoji.fromUnicode("🏷️")),
@@ -396,6 +407,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
             Button.secondary("banner", "Change Banner").withEmoji(Emoji.fromUnicode("🗂️")),
             Button.secondary("image", "Change Card Image").withEmoji(EmojiStore.PNG),
             Button.secondary("bcCard", "Toggle BC Card").withEmoji(bcCard).withDisabled(card.tier == CardData.Tier.SPECIAL),
+            Button.secondary("tradable", "Tradable").withEmoji(tradable)
         ))
 
         val possibleTiers = CardData.Tier.entries.filter { t -> t != CardData.Tier.NONE }
