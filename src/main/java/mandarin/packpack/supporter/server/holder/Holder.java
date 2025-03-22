@@ -4,6 +4,7 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
@@ -35,6 +36,14 @@ public abstract class Holder {
     }
 
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
+
+    public static int getTotalPage(int size) {
+        return (int) Math.ceil(size * 1.0 / SearchHolder.PAGE_CHUNK);
+    }
+
+    public static int getTotalPage(int size, int chunk) {
+        return (int) Math.ceil(size * 1.0 / chunk);
+    }
 
     public final long time = System.currentTimeMillis();
     @Nullable

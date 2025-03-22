@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
@@ -30,8 +31,54 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
             field = max(0, min(field, totalPage - 1))
         }
 
-    override fun onEvent(event: GenericComponentInteractionCreateEvent) {
+    init {
+        registerAutoExpiration(FIVE_MIN)
+    }
 
+    override fun onEvent(event: GenericComponentInteractionCreateEvent) {
+        when(event.componentId) {
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "prev10" -> {
+                page -= 10
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
+            }
+            "next10" -> {
+                page += 10
+
+                applyResult(event)
+            }
+            "create" -> {
+
+            }
+            "close" -> {
+                event.deferEdit()
+                    .setContent("Banner manager closed")
+                    .setComponents()
+                    .setAllowedMentions(arrayListOf())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                end(true)
+            }
+            "banner" -> {
+                if (event !is StringSelectInteractionEvent)
+                    return
+
+                val index = event.values.first().toInt()
+
+                val banner = CardData.banners[index]
+            }
+        }
     }
 
     override fun clean() {
@@ -39,7 +86,11 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
     }
 
     override fun onExpire() {
-
+        message.editMessage("Banner manager expired")
+            .setComponents()
+            .setAllowedMentions(arrayListOf())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     override fun onBack(event: IMessageEditCallback, child: Holder) {
@@ -138,7 +189,10 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
             result.add(ActionRow.of(buttons))
         }
 
-        result.add(ActionRow.of(Button.secondary("back", "Back").withEmoji(EmojiStore.BACK)))
+        result.add(ActionRow.of(
+            Button.success("create", "Create New Banner").withEmoji(Emoji.fromUnicode("➕")),
+            Button.secondary("close", "Close").withEmoji(EmojiStore.CROSS)
+        ))
 
         return result
     }

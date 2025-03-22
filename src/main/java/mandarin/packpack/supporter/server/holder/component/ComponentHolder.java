@@ -41,14 +41,6 @@ public abstract class ComponentHolder extends Holder {
         return StaticStore.safeParseInt(((StringSelectInteractionEvent) event).getValues().getFirst());
     }
 
-    public int getTotalPage(int size) {
-        return (int) Math.ceil(size * 1.0 / SearchHolder.PAGE_CHUNK);
-    }
-
-    public int getTotalPage(int size, int chunk) {
-        return (int) Math.ceil(size * 1.0 / chunk);
-    }
-
     private boolean canHandleEvent(GenericComponentInteractionCreateEvent event) {
         return event.getChannel().getId().equals(channelID)
                 && event.getMessage().getId().equals(message.getId())
