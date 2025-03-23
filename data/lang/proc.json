@@ -79,7 +79,7 @@
         "abbr_name": "wave",
         "full_name": "Wave",
         "tooltip": null,
-        "format": "(prob)% chance to create a Lv.(lv) [(inverted){inverted }]wave attack",
+        "format": "(prob)% chance to create a Lv.(lv) (_left)(_waveRange(lv)) Range(_right) [(inverted){inverted }]wave attack",
         "class": {
             "prob": {
                 "name": "chance",
@@ -834,7 +834,7 @@
         "abbr_name": "surge",
         "full_name": "Surge",
         "tooltip": null,
-        "format": "(prob)% chance to make a Lv (time/20) surge attack (_left)Lasts (_dispFruit(time)), created within (dis_0) ~ (dis_1) range(_right)",
+        "format": "(prob)% chance to make a Lv (time/20) surge attack (_left)Lasts (_dispTime(time)), created within (dis_0) ~ (dis_1) range(_right)",
         "class": {
             "prob": {
                 "name": "chance",
@@ -1178,7 +1178,7 @@
         "abbr_name": "D.Surge",
         "full_name": "Death Surge",
         "tooltip": null,
-        "format": "(prob)% chance to make a surge attack for (_dispFruit(time)) when killed (_left)Created within (dis_0) ~ (dis_1) range(_right)",
+        "format": "(prob)% chance to make a surge attack for (_dispTime(time)) when killed (_left)Created within (dis_0) ~ (dis_1) range(_right)",
         "class": {
             "prob": {
                 "name": "chance",
@@ -1270,7 +1270,7 @@
         "abbr_name": "m. surge",
         "full_name": "Mini Surge",
         "tooltip": "Creates small surge that does exactly same behavior of normal surge, but with less damage",
-        "format": "(prob)% chance to make a Lv (time/20) mini surge attack (_left)Lasts (_dispFruit(time)), created within (dis_0) ~ (dis_1) range, with (mult)% damage of attacker(_right)",
+        "format": "(prob)% chance to make a Lv (time/20) mini surge attack (_left)Lasts (_dispTime(time)), created within (dis_0) ~ (dis_1) range, with (mult)% damage of attacker(_right)",
         "class": {
             "prob": {
                 "name": "chance",
