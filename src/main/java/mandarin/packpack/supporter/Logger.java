@@ -7,8 +7,8 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ public class Logger {
     };
     private static final String separatorHalf = "==========";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(Logger.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Logger.class);
 
     public final static List<String> logMessages = new ArrayList<>();
 
