@@ -218,7 +218,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
 
             result.add(ActionRow.of(
                     EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
-                            .setChannelTypes(ChannelType.TEXT)
+                            .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
                             .setPlaceholder(LangID.getStringByID("serverConfig.boosterPin.selectChannel", lang))
                             .setRequiredRange(1, EntitySelectMenu.OPTIONS_MAX_AMOUNT)
                             .setDisabled(channelNotManageable)

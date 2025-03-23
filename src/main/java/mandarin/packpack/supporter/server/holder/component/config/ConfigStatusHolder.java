@@ -174,7 +174,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
 
         result.add(ActionRow.of(
                 EntitySelectMenu.create("assign", EntitySelectMenu.SelectTarget.CHANNEL)
-                        .setChannelTypes(ChannelType.TEXT)
+                        .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
                         .setPlaceholder(LangID.getStringByID("serverConfig.status.assignChannel", lang).formatted(SelectMenu.OPTIONS_MAX_AMOUNT))
                         .setDisabled(holder.status.size() >= SelectMenu.OPTIONS_MAX_AMOUNT)
                         .setRequiredRange(1, 1)

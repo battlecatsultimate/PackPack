@@ -274,7 +274,8 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
         List<LayoutComponent> result = new ArrayList<>();
 
-        EntitySelectMenu.Builder channelBuilder = EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL).setChannelTypes(ChannelType.TEXT);
+        EntitySelectMenu.Builder channelBuilder = EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
+                .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
 
         if (config.channelID != -1L) {
             channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(String.valueOf(config.channelID))).setRequiredRange(0, 1);

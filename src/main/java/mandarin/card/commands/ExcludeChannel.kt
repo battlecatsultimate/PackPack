@@ -56,7 +56,7 @@ class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
         result.add(
             ActionRow.of(
                 EntitySelectMenu.create("addChannel", EntitySelectMenu.SelectTarget.CHANNEL)
-                    .setChannelTypes(ChannelType.TEXT, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
+                    .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
                     .setPlaceholder("Select channels to add them into exclusion list")
                     .setMaxValues(25)
                     .build()

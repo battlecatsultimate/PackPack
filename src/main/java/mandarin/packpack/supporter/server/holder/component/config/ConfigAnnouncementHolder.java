@@ -184,7 +184,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
         List<LayoutComponent> result = new ArrayList<>();
 
         EntitySelectMenu.Builder channelBuilder = EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
-                .setChannelTypes(ChannelType.TEXT)
+                .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
                 .setPlaceholder(LangID.getStringByID("serverConfig.announcement.selectChannel", lang));
 
         if (holder.announceChannel != null) {
