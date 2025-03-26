@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.banner
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
@@ -58,7 +58,22 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
                 applyResult(event)
             }
             "create" -> {
+                var index = 0
 
+                var name: String
+
+                while(true) {
+                    name = "Banner $index"
+
+                    if (CardData.banners.any { b -> b.name == name })
+                        index++
+                    else
+                        break
+                }
+
+                val banner = Banner(name, false)
+
+                connectTo(event, BannerEditHolder(authorMessage, userID, channelID, message, banner, true))
             }
             "close" -> {
                 event.deferEdit()
@@ -77,6 +92,8 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
                 val index = event.values.first().toInt()
 
                 val banner = CardData.banners[index]
+
+                connectTo(event, BannerEditHolder(authorMessage, userID, channelID, message, banner, false))
             }
         }
     }
@@ -136,8 +153,6 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
 
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
-
-        result.add(ActionRow.of(Button.secondary("create", "Create New Banner").withEmoji(Emoji.fromUnicode("➕"))))
 
         val options = ArrayList<SelectOption>()
 

@@ -2,12 +2,11 @@ package mandarin.card.commands
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.BannerManageHolder
+import mandarin.card.supporter.holder.banner.BannerManageHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.Holder.getTotalPage
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -48,8 +47,6 @@ class ManageBanner : Command(CommonStatic.Lang.Locale.EN, false) {
 
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
-
-        result.add(ActionRow.of(Button.secondary("create", "Create New Banner").withEmoji(Emoji.fromUnicode("➕"))))
 
         val options = ArrayList<SelectOption>()
 
