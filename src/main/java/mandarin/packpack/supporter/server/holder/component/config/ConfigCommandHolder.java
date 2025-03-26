@@ -286,12 +286,15 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
             }
             case 1 -> {
-                Emoji extraSwitch;
+                Emoji compacted;
+                String compactedText;
 
-                if (holder.config.extra) {
-                    extraSwitch = EmojiStore.SWITCHON;
+                if (holder.config.compact) {
+                    compacted = EmojiStore.SWITCHON;
+                    compactedText = LangID.getStringByID("data.true", lang);
                 } else {
-                    extraSwitch = EmojiStore.SWITCHOFF;
+                    compacted = EmojiStore.SWITCHOFF;
+                    compactedText = LangID.getStringByID("data.false", lang);
                 }
 
                 Emoji forceCompactSwitch;
@@ -310,7 +313,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     trueFormSwitch = EmojiStore.SWITCHOFF;
                 }
 
-                result.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("serverConfig.command.button.compactEmbed", lang)).withEmoji(extraSwitch)));
+                result.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("serverConfig.command.button.compactEmbed", lang).formatted(compactedText)).withEmoji(compacted)));
                 result.add(ActionRow.of(Button.secondary("forceCompact", LangID.getStringByID("serverConfig.command.button.forceCompact", lang)).withEmoji(forceCompactSwitch)));
                 result.add(ActionRow.of(Button.secondary("trueForm", LangID.getStringByID("serverConfig.command.button.trueFormSearch", lang)).withEmoji(trueFormSwitch)));
             }

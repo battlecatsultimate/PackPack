@@ -217,7 +217,7 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
 
         result.add(ActionRow.of(
                 EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
-                        .setChannelTypes(ChannelType.TEXT, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.FORUM)
+                        .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
                         .setPlaceholder(LangID.getStringByID("serverConfig.channelPermission.role.selectChannel", lang))
                         .setRequiredRange(1, StringSelectMenu.OPTIONS_MAX_AMOUNT)
                         .build()
