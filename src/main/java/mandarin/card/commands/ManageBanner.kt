@@ -36,7 +36,7 @@ class ManageBanner : Command(CommonStatic.Lang.Locale.EN, false) {
             builder.append("No banner\n```")
         } else {
             for (i in 0 until min(CardData.banners.size, SearchHolder.PAGE_CHUNK)) {
-                builder.append(i + 1).append(". ").append(CardData.banners[i]).append("\n")
+                builder.append(i + 1).append(". ").append(CardData.banners[i].name).append("\n")
             }
 
             builder.append("```")

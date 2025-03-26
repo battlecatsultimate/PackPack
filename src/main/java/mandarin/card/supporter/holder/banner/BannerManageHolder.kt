@@ -142,7 +142,7 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
             builder.append("No banner\n```")
         } else {
             for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.banners.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-                builder.append(i + 1).append(". ").append(CardData.banners[i]).append("\n")
+                builder.append(i + 1).append(". ").append(CardData.banners[i].name).append("\n")
             }
 
             builder.append("```")
