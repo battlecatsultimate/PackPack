@@ -76,13 +76,11 @@ object CardBot : ListenerAdapter() {
     @JvmStatic
     fun main(args: Array<String>) {
         Runtime.getRuntime().addShutdownHook(Thread { Logger.writeLog(Logger.BotInstance.CARD_DEALER) })
-        Thread.currentThread().uncaughtExceptionHandler = object : Thread.UncaughtExceptionHandler {
-            override fun uncaughtException(t: Thread?, e: Throwable?) {
-                if (e == null) {
-                    StaticStore.logger.uploadLog("E/CardBot::main - Uncaught exception found without trace : ${t?.name}")
-                } else {
-                    StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Uncaught exception found : ${t?.name}")
-                }
+        Thread.currentThread().uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { t, e ->
+            if (e == null) {
+                StaticStore.logger.uploadLog("E/CardBot::main - Uncaught exception found without trace : ${t?.name}")
+            } else {
+                StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Uncaught exception found : ${t?.name}")
             }
         }
 
@@ -269,12 +267,12 @@ object CardBot : ListenerAdapter() {
                     }
 
                     if (CardData.getUnixEpochTime() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
-                        val pickedBanner = StaticStore.bannerHolder.pickBanner()
+                        val banner = StaticStore.bannerHolder.pickBanner()
 
-                        if (pickedBanner != null) {
-                            client.shards.firstOrNull()?.selfUser?.manager?.setBanner(Icon.from(pickedBanner.bannerFile))?.queue()
+                        if (banner != null) {
+                            client.shards.firstOrNull()?.selfUser?.manager?.setBanner(Icon.from(banner.bannerFile))?.queue()
 
-                            client.setActivity(Activity.playing("$statusText | Banner by ${pickedBanner.author}"))
+                            client.setActivity(Activity.playing("$statusText | Banner by ${banner.author}"))
                         }
                     }
 
@@ -736,7 +734,7 @@ object CardBot : ListenerAdapter() {
 
                 val countdown = CountDownLatch(1)
 
-                g.retrieveMember(UserSnowflake.fromId(userID)).queue({ member ->
+                g.retrieveMember(UserSnowflake.fromId(userID)).queue({ _ ->
                     StaticStore.logger.uploadLog("W/CardBot::onReady - Unbanned member is found in banned user list? <@$userID> ($userID)")
 
                     countdown.countDown()
@@ -1088,7 +1086,7 @@ object CardBot : ListenerAdapter() {
                     }
                 } else if (e is JsonObject && e.has("key") && e.has("val")) {
                     val id = e.get("key").asLong
-                    val array = e.getAsJsonArray("val").map { e -> e.asBoolean }.toBooleanArray()
+                    val array = e.getAsJsonArray("val").map { element -> element.asBoolean }.toBooleanArray()
 
                     CardData.notifierGroup[id] = array
                 }
