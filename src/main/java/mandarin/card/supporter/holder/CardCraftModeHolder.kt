@@ -3,7 +3,6 @@ package mandarin.card.supporter.holder
 import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -92,7 +91,7 @@ class CardCraftModeHolder(author: Message, userID: String, channelID: String, me
                 .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T2))
         )
 
-        val seasonalCards = CardData.cards.filter { c -> c.id in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
+        val seasonalCards = CardData.cards.filter { c -> c.isSeasonalUncommon }
 
         if (seasonalCards.isNotEmpty()) {
             options.add(
@@ -102,7 +101,7 @@ class CardCraftModeHolder(author: Message, userID: String, channelID: String, me
             )
         }
 
-        val collaborationCards = CardData.cards.filter { c -> c.id in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
+        val collaborationCards = CardData.cards.filter { c -> c.isCollaborationUncommon }
 
         if (collaborationCards.isNotEmpty()) {
             options.add(

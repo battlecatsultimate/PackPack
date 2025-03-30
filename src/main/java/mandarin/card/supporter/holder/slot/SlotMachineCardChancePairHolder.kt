@@ -3,7 +3,6 @@ package mandarin.card.supporter.holder.slot
 import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.slot.SlotMachineCardChanceHolder
 import mandarin.card.supporter.pack.CardChancePair
 import mandarin.card.supporter.pack.CardChancePairList
@@ -27,7 +26,6 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
 import kotlin.math.min
 
 class SlotMachineCardChancePairHolder(
@@ -98,7 +96,7 @@ class SlotMachineCardChancePairHolder(
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                val selectedBanner = BannerFilter.Banner.valueOf(event.values[0])
+                val selectedBanner = CardData.banners[event.values.first().toInt()]
 
                 if (selectedBanner in pair.cardGroup.extra) {
                     pair.cardGroup.extra.remove(selectedBanner)
@@ -106,7 +104,7 @@ class SlotMachineCardChancePairHolder(
                     pair.cardGroup.extra.add(selectedBanner)
                 }
 
-                pair.cardGroup.extra.sortBy { b -> b.ordinal }
+                pair.cardGroup.extra.sortBy { b -> b.name }
 
                 if (slotMachine in CardData.slotMachines) {
                     CardBot.saveCardData()
@@ -267,12 +265,12 @@ class SlotMachineCardChancePairHolder(
 
         builder.append("### Banner\n")
 
-        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, BannerFilter.pureBanners.size)
+        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, CardData.banners.size)
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            val bannerName = BannerFilter.getBannerName(BannerFilter.pureBanners[i])
+            val bannerName = CardData.banners[i].name
 
-            val emoji = if (BannerFilter.pureBanners[i] in pair.cardGroup.extra) {
+            val emoji = if (CardData.banners[i] in pair.cardGroup.extra) {
                 EmojiStore.SWITCHON.formatted
             } else {
                 EmojiStore.SWITCHOFF.formatted
@@ -316,12 +314,12 @@ class SlotMachineCardChancePairHolder(
 
         val bannerOptions = ArrayList<SelectOption>()
 
-        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, BannerFilter.pureBanners.size)
+        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, CardData.banners.size)
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            val bannerName = BannerFilter.getBannerName(BannerFilter.pureBanners[i])
+            val bannerName = CardData.banners[i].name
 
-            bannerOptions.add(SelectOption.of(bannerName, BannerFilter.pureBanners[i].name))
+            bannerOptions.add(SelectOption.of(bannerName, i.toString()))
         }
 
         result.add(
@@ -335,7 +333,7 @@ class SlotMachineCardChancePairHolder(
 
         val buttons = ArrayList<Button>()
 
-        val totalPage = ceil(BannerFilter.pureBanners.size * 1.0 / SearchHolder.PAGE_CHUNK)
+        val totalPage = Holder.getTotalPage(CardData.banners.size)
 
         if (totalPage > 10) {
             buttons.add(Button.secondary("prev10", "Previous 10 Pages").withEmoji(EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

@@ -69,7 +69,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
 
                 val oldTier = card.tier
 
-                var tier = CardData.Tier.valueOf(event.values.first())
+                val tier = CardData.Tier.valueOf(event.values.first())
 
                 if (tier == CardData.Tier.SPECIAL && card.tier != CardData.Tier.SPECIAL && CardData.cards.filter { c -> c.tier == CardData.Tier.SPECIAL }.any { c -> -c.id == card.id }) {
                     event.deferReply()
@@ -197,11 +197,11 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                 )
 
                 connectTo(
-                    ConfirmPopUpHolder(authorMessage, userID, channelID, message, { event ->
+                    ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         if(!card.cardImage.delete()) {
                             StaticStore.logger.uploadLog("W/CardModifyHolder::onEvent - Failed to delete the card image : ${card.cardImage.absolutePath}")
 
-                            event.deferReply().setContent("Failed to delete card image! Aborting deletion of the card")
+                            e.deferReply().setContent("Failed to delete card image! Aborting deletion of the card")
                                 .setEphemeral(true)
                                 .queue()
 
@@ -246,7 +246,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
 
                         CardBot.saveCardData()
 
-                        event.deferReply()
+                        e.deferReply()
                             .setContent("Successfully removed the card!")
                             .setEphemeral(true)
                             .queue()
@@ -262,12 +262,12 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                 registerPopUp(event, "Are you sure you want to cancel creating the card? This cannot be undone")
 
                 connectTo(
-                    ConfirmPopUpHolder(authorMessage, userID, channelID, message, { event ->
+                    ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         if (!card.cardImage.delete()) {
                             StaticStore.logger.uploadLog("W/CardModifyHolder::onEvent - Failed to delete card image : ${card.cardImage.absolutePath}")
                         }
 
-                        goBack(event)
+                        goBack(e)
                     }, CommonStatic.Lang.Locale.EN)
                 )
             }
@@ -352,7 +352,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
         val bannerName = if (card.banner === Banner.NONE) {
             "None"
         } else {
-            card.banner
+            card.banner.name
         }
 
         val bcCard = if (card.bcCard) {
@@ -366,7 +366,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                 "- **Tier** : $tierName\n" +
                 "- **Type** : $typeName\n" +
                 "- **Banner** : $bannerName\n" +
-                "- **Is BC Card** : $bcCard"
+                "- **Is BC Card** : $bcCard\n" +
                 "- **Is Activated** : $active"
 
         if (CardData.cards.any { c -> c !== card && c.id == card.id }) {

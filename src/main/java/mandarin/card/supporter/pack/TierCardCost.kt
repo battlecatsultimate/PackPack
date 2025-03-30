@@ -23,9 +23,9 @@ class TierCardCost(var tier: CardPack.CardType, amount: Long) : CardCost(CostTyp
         return when(tier) {
             CardPack.CardType.T1 -> c.tier == CardData.Tier.COMMON
             CardPack.CardType.T2 -> c.tier == CardData.Tier.UNCOMMON
-            CardPack.CardType.REGULAR -> c.isRegularUncommon()
-            CardPack.CardType.SEASONAL -> c.isSeasonalUncommon()
-            CardPack.CardType.COLLABORATION -> c.isCollaborationUncommon()
+            CardPack.CardType.REGULAR -> c.isRegularUncommon
+            CardPack.CardType.SEASONAL -> c.isSeasonalUncommon
+            CardPack.CardType.COLLABORATION -> c.isCollaborationUncommon
             CardPack.CardType.T3 -> c.tier == CardData.Tier.ULTRA
             CardPack.CardType.T4 -> c.tier == CardData.Tier.LEGEND
         }

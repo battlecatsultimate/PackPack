@@ -5,10 +5,9 @@ import com.google.gson.JsonObject
 import common.util.Data
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.CardData.Tier
-import mandarin.card.supporter.filter.BannerFilter
 import mandarin.packpack.supporter.StaticStore
 import java.io.File
-import kotlin.collections.contains
+import kotlin.math.abs
 
 class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
     enum class CardType {
@@ -25,6 +24,7 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
             }
 
             val id = obj.get("id").asInt
+            val name = obj.get("name").asString
             val tier = Tier.valueOf(obj.get("tier").asString)
 
             val folderName = when(tier) {
@@ -36,15 +36,13 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
                 Tier.NONE -> throw IllegalStateException("E/Card::fromJson - Invalid tier NONE found")
             }
 
-            val cardFile = File("./cards/$folderName/${Data.trio(id)}.png")
+            val cardFile = File("./data/cards/$folderName/${if (tier == Tier.SPECIAL || id >= 0) Data.trio(abs(id)) else id.toString()}-${name}.png")
 
             if (!cardFile.exists()) {
                 StaticStore.logger.uploadLog("W/Card::fromJson - No such ${cardFile.absolutePath} card file found")
 
                 return null
             }
-
-            val name = obj.get("name").asString
 
             val card = Card(id, tier, name, cardFile)
 
@@ -82,6 +80,13 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
     var cardType = CardType.NORMAL
     var banner = Banner.NONE
 
+    val isRegularUncommon: Boolean
+        get() = tier == Tier.UNCOMMON && cardType == CardType.NORMAL
+    val isSeasonalUncommon: Boolean
+        get() = tier == Tier.UNCOMMON && cardType == CardType.SEASONAL
+    val isCollaborationUncommon: Boolean
+        get() = tier == Tier.UNCOMMON && cardType == CardType.COLLABORATION
+
     override fun toString(): String {
         return cardInfo()
     }
@@ -103,18 +108,6 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
             Tier.LEGEND -> "Legend Rare"
             Tier.NONE -> "Unknown"
         }
-    }
-
-    fun isRegularUncommon() : Boolean {
-        return tier == Tier.UNCOMMON && id !in BannerFilter.Banner.Seasonal.getBannerData() && id !in BannerFilter.Banner.Collaboration.getBannerData()
-    }
-
-    fun isSeasonalUncommon() : Boolean {
-        return tier == Tier.UNCOMMON && id in BannerFilter.Banner.Seasonal.getBannerData()
-    }
-
-    fun isCollaborationUncommon() : Boolean {
-        return tier == Tier.UNCOMMON && id in BannerFilter.Banner.Collaboration.getBannerData()
     }
 
     fun toJson() : JsonObject {

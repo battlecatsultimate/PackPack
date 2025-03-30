@@ -9,16 +9,16 @@ class CardPayContainer(val cost: CardCost) {
     fun paid() : Boolean {
         when(cost) {
             is BannerCardCost -> {
-                return pickedCards.filter { c -> c.id in cost.banner.getBannerData() }.size.toLong() == cost.amount
+                return pickedCards.filter { c -> c.banner === cost.banner }.size.toLong() == cost.amount
             }
             is TierCardCost -> {
                 return pickedCards.filter { c ->
                     when(cost.tier) {
                         CardPack.CardType.T1 -> c.tier == CardData.Tier.COMMON
                         CardPack.CardType.T2 -> c.tier == CardData.Tier.UNCOMMON
-                        CardPack.CardType.REGULAR -> c.isRegularUncommon()
-                        CardPack.CardType.SEASONAL -> c.isSeasonalUncommon()
-                        CardPack.CardType.COLLABORATION -> c.isCollaborationUncommon()
+                        CardPack.CardType.REGULAR -> c.isRegularUncommon
+                        CardPack.CardType.SEASONAL -> c.isSeasonalUncommon
+                        CardPack.CardType.COLLABORATION -> c.isCollaborationUncommon
                         CardPack.CardType.T3 -> c.tier == CardData.Tier.ULTRA
                         CardPack.CardType.T4 -> c.tier == CardData.Tier.LEGEND
                     }

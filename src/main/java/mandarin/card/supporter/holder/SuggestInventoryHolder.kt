@@ -3,6 +3,7 @@ package mandarin.card.supporter.holder
 import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.*
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
@@ -47,7 +48,7 @@ class SuggestInventoryHolder(
 
     private var page = 0
     private var tier = CardData.Tier.NONE
-    private var banner = intArrayOf(-1, -1)
+    private var banner = Banner.NONE
 
     private var confirmed = false
 
@@ -155,12 +156,11 @@ class SuggestInventoryHolder(
 
                 val value = event.values[0]
 
-                banner = if (value == "all") {
-                    intArrayOf(-1, -1)
-                } else {
-                    val data = value.split("-")
-
-                    intArrayOf(data[1].toInt(), data[2].toInt())
+                banner = when(value) {
+                    "all" -> Banner.NONE
+                    "seasonal" -> Banner.SEASONAL
+                    "collab" -> Banner.COLLABORATION
+                    else -> CardData.banners[value.toInt()]
                 }
 
                 page = 0
@@ -184,9 +184,7 @@ class SuggestInventoryHolder(
                     CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
-                banner[0] = -1
-                banner[1] = -1
-
+                banner = Banner.NONE
                 page = 0
 
                 filterCards()
@@ -352,18 +350,16 @@ class SuggestInventoryHolder(
         if (backup.cards.size >= CardData.MAX_CARD_TYPE) {
             cards.addAll(backup.cards.keys)
         } else {
+            cards.addAll(inventory.cards.keys.union(inventory.favorites.keys))
+
+            val collectedCards = banner.collectCards()
+
+            if (banner !== Banner.NONE) {
+                cards.removeIf { c -> c !in collectedCards }
+            }
+
             if (tier != CardData.Tier.NONE) {
-                if (banner[0] == -1) {
-                    cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier })
-                } else {
-                    cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] })
-                }
-            } else {
-                if (banner[0] == -1) {
-                    cards.addAll(inventory.cards.keys)
-                } else {
-                    cards.addAll(inventory.cards.keys.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] })
-                }
+                cards.removeIf { c -> c.tier != tier }
             }
         }
 
@@ -424,7 +420,7 @@ class SuggestInventoryHolder(
 
             if (index == CardData.Tier.SPECIAL.ordinal) {
                 if (member != null && CardData.canTradeT0(member) && CardData.canTradeT0(targetMember)) {
-                    tierCategoryElements.add(SelectOption.of(text, "tier${index}").withEmoji(emoji))
+                    tierCategoryElements.add(SelectOption.of(text, "tier${CardData.Tier.SPECIAL.ordinal}").withEmoji(emoji))
                 }
             } else {
                 tierCategoryElements.add(SelectOption.of(text, "tier${index}").withEmoji(emoji))
@@ -445,37 +441,24 @@ class SuggestInventoryHolder(
 
         rows.add(ActionRow.of(tierCategory.build()))
 
-        if (tier == CardData.Tier.NONE || CardData.bannerCategoryText[tier.ordinal].isNotEmpty()) {
-            val bannerCategoryElements = ArrayList<SelectOption>()
+        val bannerCategoryElements = ArrayList<SelectOption>()
 
-            bannerCategoryElements.add(SelectOption.of("All", "all"))
+        bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(banner === Banner.NONE))
+        bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal").withDefault(banner === Banner.SEASONAL))
+        bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
 
-            if (tier == CardData.Tier.NONE) {
-                CardData.bannerCategoryText.forEachIndexed { index, array ->
-                    array.forEachIndexed { i, a ->
-                        bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
-                    }
-                }
-            } else {
-                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
-                }
-            }
+        val bannerList = if (tier != CardData.Tier.NONE) {
+            CardData.banners.filter { b -> b.category && CardData.cards.any { c -> c.banner === b && c.tier == tier } }
+        } else {
+            CardData.banners.filter { b -> b.category }
+        }
 
+        bannerCategoryElements.addAll(bannerList.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()).withDefault(it === banner) })
+
+        if (bannerCategoryElements.size > 1) {
             val bannerCategory = StringSelectMenu.create("category")
                 .addOptions(bannerCategoryElements)
                 .setPlaceholder("Filter Cards by Banners")
-
-            val id = if (tier == CardData.Tier.NONE) {
-                "category-${banner[0]}-${banner[1]}"
-            } else {
-                "category-${tier.ordinal}-${banner[1]}"
-            }
-
-            val option = bannerCategoryElements.find { e -> e.value == id }
-
-            if (option != null)
-                bannerCategory.setDefaultOptions(option)
 
             rows.add(ActionRow.of(bannerCategory.build()))
         }
@@ -516,7 +499,7 @@ class SuggestInventoryHolder(
 
         rows.add(ActionRow.of(cardCategory))
 
-        var totalPage = getTotalPage(cards.size)
+        val totalPage = getTotalPage(cards.size)
 
         if (cards.size > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()

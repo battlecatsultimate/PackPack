@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.banner
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
 
@@ -32,7 +33,7 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
         }
 
     init {
-        registerAutoExpiration(FIVE_MIN)
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -58,7 +59,22 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
                 applyResult(event)
             }
             "create" -> {
+                var index = 0
 
+                var name: String
+
+                while(true) {
+                    name = "Banner $index"
+
+                    if (CardData.banners.any { b -> b.name == name })
+                        index++
+                    else
+                        break
+                }
+
+                val banner = Banner(name, false)
+
+                connectTo(event, BannerEditHolder(authorMessage, userID, channelID, message, banner, true))
             }
             "close" -> {
                 event.deferEdit()
@@ -77,6 +93,8 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
                 val index = event.values.first().toInt()
 
                 val banner = CardData.banners[index]
+
+                connectTo(event, BannerEditHolder(authorMessage, userID, channelID, message, banner, false))
             }
         }
     }
@@ -125,7 +143,7 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
             builder.append("No banner\n```")
         } else {
             for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.banners.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-                builder.append(i + 1).append(". ").append(CardData.banners[i]).append("\n")
+                builder.append(i + 1).append(". ").append(CardData.banners[i].name).append("\n")
             }
 
             builder.append("```")
@@ -136,8 +154,6 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
 
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
-
-        result.add(ActionRow.of(Button.secondary("create", "Create New Banner").withEmoji(Emoji.fromUnicode("➕"))))
 
         val options = ArrayList<SelectOption>()
 

@@ -1,16 +1,12 @@
 package mandarin.card.supporter.holder.pack
 
 import common.CommonStatic
-import mandarin.card.supporter.card.Card
-import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Banner
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
-import mandarin.card.supporter.pack.BannerCardCost
-import mandarin.card.supporter.pack.CardPack
-import mandarin.card.supporter.pack.CardPayContainer
-import mandarin.card.supporter.pack.SpecificCardCost
-import mandarin.card.supporter.pack.TierCardCost
+import mandarin.card.supporter.pack.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -28,25 +24,9 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
-import java.util.ArrayList
-import kotlin.collections.any
-import kotlin.collections.contains
-import kotlin.collections.count
-import kotlin.collections.filter
-import kotlin.collections.find
-import kotlin.collections.forEach
-import kotlin.collections.forEachIndexed
-import kotlin.collections.isNotEmpty
-import kotlin.collections.sortWith
-import kotlin.collections.sumOf
-import kotlin.collections.toSet
-import kotlin.jvm.javaClass
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.ranges.until
-import kotlin.text.split
-import kotlin.text.toInt
 
 class CardCostPayHolder(
     author: Message,
@@ -57,15 +37,14 @@ class CardCostPayHolder(
     private val containers: Array<CardPayContainer>
 ) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
-    private val cards = ArrayList<Card>(inventory.cards.keys)
+    private val cards = ArrayList(inventory.cards.keys)
 
     private var page = 0
-    private val tier = if (container.cost is SpecificCardCost) {
+    private val tier = if (container.cost is SpecificCardCost || container.cost is BannerCardCost) {
         CardData.Tier.NONE
     } else {
         when(when(container.cost) {
             is TierCardCost -> container.cost.tier
-            is BannerCardCost -> container.cost.banner.getCardType()
             else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
         }) {
             CardPack.CardType.T1 -> CardData.Tier.COMMON
@@ -79,9 +58,9 @@ class CardCostPayHolder(
     }
 
     private var banner = when(container.cost) {
-        is TierCardCost -> intArrayOf(-1, -1)
-        is BannerCardCost -> intArrayOf(container.cost.banner.tier.ordinal, container.cost.banner.category)
-        is SpecificCardCost -> intArrayOf(-1, -1)
+        is TierCardCost -> Banner.NONE
+        is BannerCardCost -> container.cost.banner
+        is SpecificCardCost -> Banner.NONE
         else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
     }
 
@@ -166,12 +145,11 @@ class CardCostPayHolder(
 
                 val value = event.values[0]
 
-                banner = if (value == "all") {
-                    intArrayOf(-1, -1)
-                } else {
-                    val data = value.split("-")
-
-                    intArrayOf(data[1].toInt(), data[2].toInt())
+                banner = when(value) {
+                    "all" -> Banner.NONE
+                    "seasonal" -> Banner.SEASONAL
+                    "collab" -> Banner.COLLABORATION
+                    else -> CardData.banners[value.toInt()]
                 }
 
                 page = 0
@@ -304,11 +282,17 @@ class CardCostPayHolder(
         if (container.cost is SpecificCardCost) {
             cards.addAll(inventory.cards.keys.filter { c -> container.cost.cards.any { card -> card.id == c.id} })
         } else {
-            cards.addAll(
-                inventory.cards.keys.filter { c ->
-                    c.tier == tier && (if (banner[0] == -1) true else c.id in CardData.bannerData[tier.ordinal][banner[1]])
-                }.filter(container.cost::filter)
-            )
+            cards.addAll(inventory.cards.keys)
+
+            if (tier != CardData.Tier.NONE) {
+                cards.removeIf { c -> c.tier != tier }
+            }
+
+            if (banner != Banner.NONE) {
+                cards.removeIf { c -> c.banner !== banner }
+            }
+
+            cards.removeIf { c -> !container.cost.filter(c) }
 
             cards.removeIf { card ->
                 val amount = inventory.cards[card] ?: 0
@@ -379,36 +363,25 @@ class CardCostPayHolder(
         if (container.cost is TierCardCost) {
             val bannerCategoryElements = ArrayList<SelectOption>()
 
-            bannerCategoryElements.add(SelectOption.of("All", "all"))
+            bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(banner === Banner.NONE))
+            bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal").withDefault(banner === Banner.SEASONAL))
+            bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
 
-            if (tier == CardData.Tier.NONE) {
-                CardData.bannerCategoryText.forEachIndexed { index, array ->
-                    array.forEachIndexed { i, a ->
-                        bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
-                    }
-                }
+            val bannerList = if (tier != CardData.Tier.NONE) {
+                CardData.banners.filter { b -> b.category && CardData.cards.any { c -> c.banner === b && c.tier == tier } }
             } else {
-                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
-                }
+                CardData.banners.filter { b -> b.category }
             }
 
-            val bannerCategory = StringSelectMenu.create("category")
-                .addOptions(bannerCategoryElements)
-                .setPlaceholder("Filter Cards by Banners")
+            bannerCategoryElements.addAll(bannerList.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()).withDefault(it === banner) })
 
-            val id = if (tier == CardData.Tier.NONE) {
-                "category-${banner[0]}-${banner[1]}"
-            } else {
-                "category-${tier.ordinal}-${banner[1]}"
+            if (bannerCategoryElements.size > 1) {
+                val bannerCategory = StringSelectMenu.create("category")
+                    .addOptions(bannerCategoryElements)
+                    .setPlaceholder("Filter Cards by Banners")
+
+                result.add(ActionRow.of(bannerCategory.build()))
             }
-
-            val option = bannerCategoryElements.find { e -> e.value == id }
-
-            if (option != null)
-                bannerCategory.setDefaultOptions(option)
-
-            result.add(ActionRow.of(bannerCategory.build()))
         }
 
         val dataSize = cards.size

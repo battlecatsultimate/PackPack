@@ -347,9 +347,9 @@ class LogSession {
 
     fun logCraft(member: Long, usedShards: Long, cards: List<Card>) {
         val shardMap = when {
-            cards[0].isSeasonalUncommon() -> shardCraftT2Seasonal
-            cards[0].isCollaborationUncommon() -> shardCraftT2Collaboration
-            cards[0].isRegularUncommon() -> shardCraftT2Regular
+            cards[0].isSeasonalUncommon -> shardCraftT2Seasonal
+            cards[0].isCollaborationUncommon -> shardCraftT2Collaboration
+            cards[0].isRegularUncommon -> shardCraftT2Regular
             else -> {
                 when(cards[0].tier) {
                     CardData.Tier.ULTRA -> shardCraftT3
@@ -362,9 +362,9 @@ class LogSession {
 
         cards.forEach { c ->
             val cardMap = when {
-                c.isSeasonalUncommon() -> shardCraftCardT2Seasonal
-                c.isCollaborationUncommon() -> shardCraftCardT2Collaboration
-                c.isRegularUncommon() -> shardCraftCardT2Regular
+                c.isSeasonalUncommon -> shardCraftCardT2Seasonal
+                c.isCollaborationUncommon -> shardCraftCardT2Collaboration
+                c.isRegularUncommon -> shardCraftCardT2Regular
                 else -> {
                     when(c.tier) {
                         CardData.Tier.ULTRA -> shardCraftCardT3
@@ -439,9 +439,9 @@ class LogSession {
 
     fun logSalvage(member: Long, usedCards: List<Card>, shard: Long) {
         val shardMap = when {
-            usedCards[0].isSeasonalUncommon() -> shardSalvageT2Seasonal
-            usedCards[0].isCollaborationUncommon() -> shardSalvageT2Collaboration
-            usedCards[0].isRegularUncommon() -> shardSalvageT2Regular
+            usedCards[0].isSeasonalUncommon -> shardSalvageT2Seasonal
+            usedCards[0].isCollaborationUncommon -> shardSalvageT2Collaboration
+            usedCards[0].isRegularUncommon -> shardSalvageT2Regular
             else -> {
                 when(usedCards[0].tier) {
                     CardData.Tier.COMMON -> shardSalvageT1
@@ -454,9 +454,9 @@ class LogSession {
 
         usedCards.forEach { c ->
             val cardMap = when {
-                c.isSeasonalUncommon() -> shardSalvageCardT2Seasonal
-                c.isCollaborationUncommon() -> shardSalvageCardT2Collaboration
-                c.isRegularUncommon() -> shardSalvageCardT2Regular
+                c.isSeasonalUncommon -> shardSalvageCardT2Seasonal
+                c.isCollaborationUncommon -> shardSalvageCardT2Collaboration
+                c.isRegularUncommon -> shardSalvageCardT2Regular
                 else -> {
                     when(c.tier) {
                         CardData.Tier.COMMON -> shardSalvageCardT1

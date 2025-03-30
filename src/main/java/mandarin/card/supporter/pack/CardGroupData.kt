@@ -4,11 +4,11 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.filter.BannerFilter
+import mandarin.card.supporter.card.Banner
 
 class CardGroupData(
     val types: ArrayList<CardPack.CardType>,
-    val extra: ArrayList<BannerFilter.Banner>
+    val extra: ArrayList<Banner>
 ) {
     companion object {
         fun fromJson(obj: JsonObject) : CardGroupData {
@@ -26,7 +26,7 @@ class CardGroupData(
                 val arr = obj.getAsJsonArray("extra")
 
                 arr.forEach { e ->
-                    groupData.extra.add(BannerFilter.Banner.valueOf(e.asString))
+                    groupData.extra.add(Banner.fromName(e.asString))
                 }
             }
 
@@ -41,23 +41,23 @@ class CardGroupData(
             result.addAll(
                 when (type) {
                     CardPack.CardType.T1 -> CardData.cards.filter { c -> c.tier == CardData.Tier.COMMON }
-                    CardPack.CardType.T2 -> CardData.appendUncommon()
-                    CardPack.CardType.REGULAR -> CardData.cards.filter { c -> c.isRegularUncommon() }
-                    CardPack.CardType.SEASONAL -> CardData.cards.filter { c -> c.isSeasonalUncommon() }
-                    CardPack.CardType.COLLABORATION -> CardData.cards.filter { c -> c.isCollaborationUncommon() }
-                    CardPack.CardType.T3 -> CardData.appendUltra()
-                    CardPack.CardType.T4 -> CardData.appendLR()
+                    CardPack.CardType.T2 -> CardData.cards.filter { c -> c.tier == CardData.Tier.UNCOMMON }
+                    CardPack.CardType.REGULAR -> CardData.cards.filter { c -> c.isRegularUncommon }
+                    CardPack.CardType.SEASONAL -> CardData.cards.filter { c -> c.isSeasonalUncommon }
+                    CardPack.CardType.COLLABORATION -> CardData.cards.filter { c -> c.isCollaborationUncommon }
+                    CardPack.CardType.T3 -> CardData.cards.filter { c -> c.tier == CardData.Tier.UNCOMMON }
+                    CardPack.CardType.T4 -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND }
                 }
             )
         }
 
+        result.removeIf { c -> !c.activated && c.banner !in CardData.activatedBanners }
+
         result.removeIf { c -> c.id < 0 }
 
         for (banner in extra) {
-            result.addAll(banner.getBannerData().mapNotNull { id -> CardData.cards.find { c -> c.id == id } })
+            result.addAll(CardData.cards.filter { c -> c.banner === banner })
         }
-
-        result.removeIf { c -> c in CardData.deactivatedCards }
 
         return result.toSet().toList()
     }
@@ -88,7 +88,7 @@ class CardGroupData(
         }
 
         for (i in extra.indices) {
-            val bannerName = BannerFilter.getBannerName(extra[i])
+            val bannerName = extra[i].name
 
             builder.append(bannerName)
 

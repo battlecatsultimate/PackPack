@@ -165,18 +165,18 @@ class Report : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         val totalT2RegularCards = CardData.inventories.map { (_, inventory) -> inventory }.sumOf { inventory ->
-            inventory.cards.filter { (c, _) -> c.isRegularUncommon() }.map { (_, amount) -> amount }.sum() +
-            inventory.favorites.filter { (c, _) -> c.isRegularUncommon() }.map { (_, amount) -> amount }.sum()
+            inventory.cards.filter { (c, _) -> c.isRegularUncommon }.map { (_, amount) -> amount }.sum() +
+            inventory.favorites.filter { (c, _) -> c.isRegularUncommon }.map { (_, amount) -> amount }.sum()
         }
 
         val totalT2SeasonalCards = CardData.inventories.map { (_, inventory) -> inventory }.sumOf { inventory ->
-            inventory.cards.filter { (c, _) -> c.isSeasonalUncommon() }.map { (_, amount) -> amount }.sum() +
-            inventory.favorites.filter { (c, _) -> c.isSeasonalUncommon() }.map { (_, amount) -> amount }.sum()
+            inventory.cards.filter { (c, _) -> c.isSeasonalUncommon }.map { (_, amount) -> amount }.sum() +
+            inventory.favorites.filter { (c, _) -> c.isSeasonalUncommon }.map { (_, amount) -> amount }.sum()
         }
 
         val totalT2CollaborationCards = CardData.inventories.map { (_, inventory) -> inventory }.sumOf { inventory ->
-            inventory.cards.filter { (c, _) -> c.isCollaborationUncommon() }.map { (_, amount) -> amount }.sum() +
-            inventory.favorites.filter { (c, _) -> c.isCollaborationUncommon() }.map { (_, amount) -> amount }.sum()
+            inventory.cards.filter { (c, _) -> c.isCollaborationUncommon }.map { (_, amount) -> amount }.sum() +
+            inventory.favorites.filter { (c, _) -> c.isCollaborationUncommon }.map { (_, amount) -> amount }.sum()
         }
 
         val totalT3Cards = CardData.inventories.map { (_, inventory) -> inventory }.sumOf { inventory ->
@@ -494,9 +494,9 @@ class Report : Command(CommonStatic.Lang.Locale.EN, true) {
                             card.tier == CardData.Tier.COMMON -> t1CardMap[card] = (t1CardMap[card] ?: 0) + amount
                             card.tier == CardData.Tier.ULTRA -> t3CardMap[card] = (t3CardMap[card] ?: 0 ) + amount
                             card.tier == CardData.Tier.LEGEND -> t4CardMap[card] = (t4CardMap[card] ?: 0 ) + amount
-                            card.isSeasonalUncommon() -> t2SeasonalCardMap[card] = (t2SeasonalCardMap[card] ?: 0) + amount
-                            card.isCollaborationUncommon() -> t2CollaborationCardMap[card] = (t2CollaborationCardMap[card] ?: 0) + amount
-                            card.isRegularUncommon() -> t2RegularCardMap[card] = (t2RegularCardMap[card] ?: 0) + amount
+                            card.isSeasonalUncommon -> t2SeasonalCardMap[card] = (t2SeasonalCardMap[card] ?: 0) + amount
+                            card.isCollaborationUncommon -> t2CollaborationCardMap[card] = (t2CollaborationCardMap[card] ?: 0) + amount
+                            card.isRegularUncommon -> t2RegularCardMap[card] = (t2RegularCardMap[card] ?: 0) + amount
                         }
                     }
 
@@ -505,9 +505,9 @@ class Report : Command(CommonStatic.Lang.Locale.EN, true) {
                             card.tier == CardData.Tier.COMMON -> t1CardMap[card] = (t1CardMap[card] ?: 0) + amount
                             card.tier == CardData.Tier.ULTRA -> t3CardMap[card] = (t3CardMap[card] ?: 0 ) + amount
                             card.tier == CardData.Tier.LEGEND -> t4CardMap[card] = (t4CardMap[card] ?: 0 ) + amount
-                            card.isSeasonalUncommon() -> t2SeasonalCardMap[card] = (t2SeasonalCardMap[card] ?: 0) + amount
-                            card.isCollaborationUncommon() -> t2CollaborationCardMap[card] = (t2CollaborationCardMap[card] ?: 0) + amount
-                            card.isRegularUncommon() -> t2RegularCardMap[card] = (t2RegularCardMap[card] ?: 0) + amount
+                            card.isSeasonalUncommon -> t2SeasonalCardMap[card] = (t2SeasonalCardMap[card] ?: 0) + amount
+                            card.isCollaborationUncommon -> t2CollaborationCardMap[card] = (t2CollaborationCardMap[card] ?: 0) + amount
+                            card.isRegularUncommon -> t2RegularCardMap[card] = (t2RegularCardMap[card] ?: 0) + amount
                         }
                     }
                 }

@@ -57,7 +57,6 @@ import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.math.abs
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
@@ -76,13 +75,11 @@ object CardBot : ListenerAdapter() {
     @JvmStatic
     fun main(args: Array<String>) {
         Runtime.getRuntime().addShutdownHook(Thread { Logger.writeLog(Logger.BotInstance.CARD_DEALER) })
-        Thread.currentThread().uncaughtExceptionHandler = object : Thread.UncaughtExceptionHandler {
-            override fun uncaughtException(t: Thread?, e: Throwable?) {
-                if (e == null) {
-                    StaticStore.logger.uploadLog("E/CardBot::main - Uncaught exception found without trace : ${t?.name}")
-                } else {
-                    StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Uncaught exception found : ${t?.name}")
-                }
+        Thread.currentThread().uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { t, e ->
+            if (e == null) {
+                StaticStore.logger.uploadLog("E/CardBot::main - Uncaught exception found without trace : ${t?.name}")
+            } else {
+                StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Uncaught exception found : ${t?.name}")
             }
         }
 
@@ -269,12 +266,12 @@ object CardBot : ListenerAdapter() {
                     }
 
                     if (CardData.getUnixEpochTime() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
-                        val pickedBanner = StaticStore.bannerHolder.pickBanner()
+                        val banner = StaticStore.bannerHolder.pickBanner()
 
-                        if (pickedBanner != null) {
-                            client.shards.firstOrNull()?.selfUser?.manager?.setBanner(Icon.from(pickedBanner.bannerFile))?.queue()
+                        if (banner != null) {
+                            client.shards.firstOrNull()?.selfUser?.manager?.setBanner(Icon.from(banner.bannerFile))?.queue()
 
-                            client.setActivity(Activity.playing("$statusText | Banner by ${pickedBanner.author}"))
+                            client.setActivity(Activity.playing("$statusText | Banner by ${banner.author}"))
                         }
                     }
 
@@ -585,6 +582,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}cur" -> Balance().execute(event)
             "${globalPrefix}managecard",
             "${globalPrefix}mc" -> ManageCard().execute(event)
+            "${globalPrefix}managebanner",
+            "${globalPrefix}mb" -> ManageBanner().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -734,7 +733,7 @@ object CardBot : ListenerAdapter() {
 
                 val countdown = CountDownLatch(1)
 
-                g.retrieveMember(UserSnowflake.fromId(userID)).queue({ member ->
+                g.retrieveMember(UserSnowflake.fromId(userID)).queue({ _ ->
                     StaticStore.logger.uploadLog("W/CardBot::onReady - Unbanned member is found in banned user list? <@$userID> ($userID)")
 
                     countdown.countDown()
@@ -836,155 +835,13 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        val cardFolder = File("./data/cards")
+        if (obj.has("cards")) {
+            obj.getAsJsonArray("cards").filterIsInstance<JsonObject>().forEach { o ->
+                val c = Card.fromJson(o) ?: return@forEach
 
-        if (!cardFolder.exists())
-            return
-
-        val tiers = cardFolder.listFiles() ?: return
-
-        for(t in tiers) {
-            if (t.name == "Skin")
-                continue
-
-            val cards = t.listFiles() ?: continue
-
-            cards.sortBy {
-                if (it.name.startsWith("-")) {
-                    -it.name.split("-")[1].toInt()
-                } else {
-                    it.name.split("-")[0].toInt()
-                }
-            }
-
-            for(card in cards) {
-                val tier = when(t.name) {
-                    "Tier 0" -> CardData.Tier.SPECIAL
-                    "Tier 1" -> CardData.Tier.COMMON
-                    "Tier 2" -> CardData.Tier.UNCOMMON
-                    "Tier 3" -> CardData.Tier.ULTRA
-                    "Tier 4" -> CardData.Tier.LEGEND
-                    else -> throw IllegalStateException("Invalid tier type ${t.name} found")
-                }
-
-                val fileName = card.name.replace(".png", "")
-
-                val nameData = if (fileName.startsWith("-")) {
-                    val tempData = fileName.split(Regex("-"), 3)
-
-                    if (tempData.size != 3)
-                        throw IllegalStateException("Invalid card name format : $fileName")
-
-                    listOf("-" + tempData[1], tempData[2])
-                } else {
-                    fileName.split(Regex("-"), 2)
-                }
-
-                val cardID = if (tier == CardData.Tier.SPECIAL) {
-                    -(nameData[0].toInt())
-                } else {
-                    nameData[0].toInt()
-                }
-
-                CardData.cards.add(Card(cardID, tier, nameData[1], card))
+                CardData.cards.add(c)
             }
         }
-
-        CardData.cards.removeIf { c ->
-            if (c.tier == CardData.Tier.SPECIAL)
-                return@removeIf false
-
-            val result = !CardData.bannerData.any { t -> t.any { b -> c.tier == CardData.Tier.LEGEND || c.id in b } }
-
-            if (result) {
-                println("Removing ${c.id}")
-            }
-
-            result
-        }
-
-        CardData.cards.forEach { c ->
-            c.activated = true
-
-            if (c.id in CardData.bannerData[2][2]) {
-                c.cardType = Card.CardType.SEASONAL
-            }
-
-            if (c.id in CardData.bannerData[2][3]) {
-                c.cardType = Card.CardType.COLLABORATION
-            }
-
-            if (abs(c.id) >= 1000) {
-                c.cardType = Card.CardType.APRIL_FOOL
-            }
-
-            CardData.bannerData.forEachIndexed { x, tier ->
-                tier.forEachIndexed { y, banner ->
-                    if (c.id in banner) {
-                        when(x) {
-                            1 -> {
-                                when(y) {
-                                    0 -> c.banner = Banner.fromName("Dark Heroes")
-                                    1 -> c.banner = Banner.fromName("Dragon Emperors")
-                                    2 -> c.banner = Banner.fromName("Dynamites")
-                                    3 -> c.banner = Banner.fromName("Elemental Pixies")
-                                    4 -> c.banner = Banner.fromName("Galaxy Gals")
-                                    5 -> c.banner = Banner.fromName("Iron Legion")
-                                    6 -> c.banner = Banner.fromName("Sengoku Wargods")
-                                    7 -> c.banner = Banner.fromName("The Nekoluga Family")
-                                    8 -> c.banner = Banner.fromName("Ultra Souls")
-                                }
-                            }
-                            2 -> {
-                                when(y) {
-                                    0 -> c.banner = Banner.fromName("Girls and Monsters")
-                                    1 -> c.banner = Banner.fromName("The Almighties")
-                                    4 -> c.banner = Banner.fromName("Valentine")
-                                    5 -> c.banner = Banner.fromName("Whiteday")
-                                    6 -> c.banner = Banner.fromName("Easter")
-                                    7 -> c.banner = Banner.fromName("June Bride")
-                                    8 -> c.banner = Banner.fromName("Summer Gals")
-                                    9 -> c.banner = Banner.fromName("Halloweens")
-                                    10 -> c.banner = Banner.fromName("X-Mas")
-                                    11 -> c.banner = Banner.fromName("Bikkuriman")
-                                    12 -> c.banner = Banner.fromName("Crash Fever")
-                                    13 -> c.banner = Banner.fromName("Fate/Stay: Night")
-                                    14 -> c.banner = Banner.fromName("Hatsune Miku")
-                                    15 -> c.banner = Banner.fromName("Merc Storia")
-                                    16 -> c.banner = Banner.fromName("Neon Genesis Evangelion")
-                                    17 -> c.banner = Banner.fromName("Power Pro Baseball")
-                                    18 -> c.banner = Banner.fromName("Ranma 1/2")
-                                    19 -> c.banner = Banner.fromName("River City Clash Capsules")
-                                    20 -> c.banner = Banner.fromName("Shoumetsu Toshi")
-                                    21 -> c.banner = Banner.fromName("Street Fighters")
-                                    22 -> c.banner = Banner.fromName("Survive! Mola Mola!")
-                                    23 -> c.banner = Banner.fromName("Metal Slug")
-                                    24 -> c.banner = Banner.fromName("Princess Punt")
-                                    25 -> c.banner = Banner.fromName("Tower of Savior")
-                                    26 -> c.banner = Banner.fromName("Rurouni Kenshin")
-                                    27 -> c.banner = Banner.fromName("Puella Magi Madoka Magica")
-                                }
-                            }
-                            3 -> {
-                                when(y) {
-                                    0 -> c.banner = Banner.fromName("Epicfest Exclusives")
-                                    1 -> c.banner = Banner.fromName("Uberfest Exclusives")
-                                    2 -> c.banner = Banner.fromName("Li'l Valkyrie")
-                                    3 -> c.banner = Banner.fromName("Li'l Valkyrie Dark")
-                                    4 -> c.banner = Banner.fromName("Trixi the Revenant")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        CardData.special.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.SPECIAL })
-        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[r.tier.ordinal].any { arr -> r.id !in arr } })
 
         val serverElement: JsonElement? = StaticStore.getJsonFile(if (test) "testserverinfo" else "serverinfo")
 
@@ -1065,11 +922,15 @@ object CardBot : ListenerAdapter() {
         }
 
         if (obj.has("activatedBanners")) {
-            CardData.activatedBanners.addAll(
-                obj.getAsJsonArray("activatedBanners").map {
-                    Activator.valueOf(it.asString)
+            obj.getAsJsonArray("activatedBanners").filterIsInstance<JsonObject>().forEach { o ->
+                val banner = Banner.fromJson(o)
+
+                if (banner === Banner.NONE) {
+                    return@forEach
                 }
-            )
+
+                CardData.activatedBanners.add(banner)
+            }
         }
 
         if (obj.has("notifierGroup")) {
@@ -1086,7 +947,7 @@ object CardBot : ListenerAdapter() {
                     }
                 } else if (e is JsonObject && e.has("key") && e.has("val")) {
                     val id = e.get("key").asLong
-                    val array = e.getAsJsonArray("val").map { e -> e.asBoolean }.toBooleanArray()
+                    val array = e.getAsJsonArray("val").map { element -> element.asBoolean }.toBooleanArray()
 
                     CardData.notifierGroup[id] = array
                 }
@@ -1297,14 +1158,6 @@ object CardBot : ListenerAdapter() {
         if (obj.has("purchaseNotifier")) {
             obj.getAsJsonArray("purchaseNotifier").forEach { e ->
                 CardData.purchaseNotifier.add(e.asLong)
-            }
-        }
-
-        if (obj.has("deactivatedCards")) {
-            obj.getAsJsonArray("deactivatedCards").forEach { e ->
-                val card = CardData.cards.find { c -> c.id == e.asInt } ?: return@forEach
-
-                CardData.deactivatedCards.add(card)
             }
         }
 
@@ -1575,13 +1428,13 @@ object CardBot : ListenerAdapter() {
 
         obj.add("purchaseNotifier", purchaseNotifier)
 
-        val deactivatedCards = JsonArray()
+        val cards = JsonArray()
 
-        CardData.deactivatedCards.forEach { card ->
-            deactivatedCards.add(card.id)
+        CardData.cards.forEach { c ->
+            cards.add(c.toJson())
         }
 
-        obj.add("deactivatedCards", deactivatedCards)
+        obj.add("cards", cards)
 
         val banners = JsonArray()
 
