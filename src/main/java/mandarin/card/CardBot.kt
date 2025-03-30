@@ -843,12 +843,6 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        CardData.special.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.SPECIAL })
-        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.id in CardData.bannerData[r.tier.ordinal][i] } })
-        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[r.tier.ordinal].any { arr -> r.id !in arr } })
-
         val serverElement: JsonElement? = StaticStore.getJsonFile(if (test) "testserverinfo" else "serverinfo")
 
         if (serverElement != null && serverElement.isJsonObject) {

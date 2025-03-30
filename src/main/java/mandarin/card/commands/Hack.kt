@@ -13,12 +13,9 @@ class Hack : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val inventory = Inventory.getInventory(m.idLong)
 
-        CardData.permanents.forEachIndexed { index, bannerSet -> bannerSet.forEach { banner -> CardData.bannerData[index][banner].forEach { id ->
-            val card = CardData.cards.find { c -> c.id == id }
-
-            if (card != null)
-                inventory.cards[card] = (inventory.cards[card] ?: 0) + 1
-        } } }
+        CardData.cards.forEach { c ->
+            inventory.cards[c] = (inventory.cards[c] ?: 0) + 1
+        }
 
         ch.sendMessage("Prr").queue()
     }

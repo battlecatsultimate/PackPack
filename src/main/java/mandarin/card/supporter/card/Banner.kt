@@ -15,13 +15,21 @@ class Banner(var name: String, var category: Boolean) {
             val name = obj.get("name").asString
             val category = obj.get("category").asBoolean
 
-            return Banner(name, category)
+            val banner = Banner(name, category)
+
+            if (obj.has("legendCollector")) {
+                banner.legendCollector = obj.get("legendCollector").asBoolean
+            }
+
+            return banner
         }
 
         fun fromName(name: String) : Banner {
             return CardData.banners.find { b -> b.name == name } ?: NONE
         }
     }
+
+    var legendCollector = false
 
     fun toJson() : JsonObject {
         val obj = JsonObject()

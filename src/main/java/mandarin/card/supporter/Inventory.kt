@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.StaticStore
@@ -260,17 +261,20 @@ class Inventory(private val id: Long) {
     }
 
     fun validForLegendCollector() : Boolean {
-        val cardsTotal = cards.keys.map { card -> card.id }.union(favorites.keys.map { card -> card.id })
+        val cardsTotal = cards.keys.union(favorites.keys)
 
-        for (i in CardData.Tier.COMMON.ordinal..CardData.Tier.UNCOMMON.ordinal) {
-            if (CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.any { idSet -> idSet.any { id -> id !in cardsTotal } })
-                return false
+        CardData.banners.filter { b -> b.legendCollector }.forEach { b ->
+            CardData.cards.filter { c -> c.banner === b }.forEach { c ->
+                if (c !in cardsTotal) {
+                    return false
+                }
+            }
         }
 
-        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][0] }
-        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][1] }
-        val busters = cardsTotal.any { id -> id in CardData.bannedT3 || id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][2] }
-        val legends = cards.keys.any { card -> card.tier == CardData.Tier.LEGEND } || favorites.keys.any { card -> card.tier == CardData.Tier.LEGEND }
+        val epicFest = cardsTotal.any { c -> c.banner == Banner.fromName("Epicfest Exclusives") }
+        val uberFest = cardsTotal.any { c -> c.banner == Banner.fromName("Uberfest Exclusives") }
+        val busters = cardsTotal.any { c -> c.banner == Banner.fromName("Other Exclusives") }
+        val legends = cardsTotal.any { c -> c.tier == CardData.Tier.LEGEND }
 
         return uberFest && epicFest && busters && legends
     }
@@ -280,25 +284,20 @@ class Inventory(private val id: Long) {
 
         val missingCards = ArrayList<Card>()
 
-        val cardsTotal = this.cards.keys.map { card -> card.id }.union(favorites.keys.map { card -> card.id })
+        val cardsTotal = this.cards.keys.union(favorites.keys)
 
-        for (i in CardData.Tier.COMMON.ordinal..CardData.Tier.UNCOMMON.ordinal) {
-            CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.forEach { idSet ->
-                idSet.forEach { id ->
-                    if (id !in cardsTotal) {
-                        val c = CardData.cards.find { c -> c.id == id }
-
-                        if (c != null)
-                            missingCards.add(c)
-                    }
+        CardData.banners.filter { b -> b.legendCollector }.forEach { b ->
+            CardData.cards.filter { c -> c.banner === b }.forEach { c ->
+                if (c !in cardsTotal) {
+                    missingCards.add(c)
                 }
             }
         }
 
-        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][0] }
-        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][1] }
-        val busters = cardsTotal.any { id -> id in CardData.bannedT3 || id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][2] }
-        val legends = this.cards.keys.any { card -> card.tier == CardData.Tier.LEGEND } || favorites.keys.any { card -> card.tier == CardData.Tier.LEGEND }
+        val epicFest = cardsTotal.any { c -> c.banner == Banner.fromName("Epicfest Exclusives") }
+        val uberFest = cardsTotal.any { c -> c.banner == Banner.fromName("Uberfest Exclusives") }
+        val busters = cardsTotal.any { c -> c.banner == Banner.fromName("Other Exclusives") }
+        val legends = cardsTotal.any { c -> c.tier == CardData.Tier.LEGEND }
 
         if (missingCards.isNotEmpty()) {
             val cardBuilder = StringBuilder("- Missing T1/T2 cards -> ")

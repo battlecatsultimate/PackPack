@@ -64,15 +64,6 @@ object CardData {
     val supportedFileFormat = arrayOf(
         "png", "jpg", "gif", "mp4"
     )
-
-    val permanents = arrayOf(
-        0 until 1,
-        0 until 9,
-        0 until 2,
-        0 until 3,
-        0 until 1
-    )
-
     val grade = arrayOf(
         rgb(155, 245, 66),
         rgb(204,124,84),
