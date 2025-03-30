@@ -7,6 +7,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import common.CommonStatic
+import common.util.Data
 import mandarin.card.commands.*
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Banner
@@ -836,147 +837,11 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        val cardFolder = File("./data/cards")
+        if (obj.has("cards")) {
+            obj.getAsJsonArray("cards").filterIsInstance<JsonObject>().forEach { o ->
+                val c = Card.fromJson(o) ?: return@forEach
 
-        if (!cardFolder.exists())
-            return
-
-        val tiers = cardFolder.listFiles() ?: return
-
-        for(t in tiers) {
-            if (t.name == "Skin")
-                continue
-
-            val cards = t.listFiles() ?: continue
-
-            cards.sortBy {
-                if (it.name.startsWith("-")) {
-                    -it.name.split("-")[1].toInt()
-                } else {
-                    it.name.split("-")[0].toInt()
-                }
-            }
-
-            for(card in cards) {
-                val tier = when(t.name) {
-                    "Tier 0" -> CardData.Tier.SPECIAL
-                    "Tier 1" -> CardData.Tier.COMMON
-                    "Tier 2" -> CardData.Tier.UNCOMMON
-                    "Tier 3" -> CardData.Tier.ULTRA
-                    "Tier 4" -> CardData.Tier.LEGEND
-                    else -> throw IllegalStateException("Invalid tier type ${t.name} found")
-                }
-
-                val fileName = card.name.replace(".png", "")
-
-                val nameData = if (fileName.startsWith("-")) {
-                    val tempData = fileName.split(Regex("-"), 3)
-
-                    if (tempData.size != 3)
-                        throw IllegalStateException("Invalid card name format : $fileName")
-
-                    listOf("-" + tempData[1], tempData[2])
-                } else {
-                    fileName.split(Regex("-"), 2)
-                }
-
-                val cardID = if (tier == CardData.Tier.SPECIAL) {
-                    -(nameData[0].toInt())
-                } else {
-                    nameData[0].toInt()
-                }
-
-                CardData.cards.add(Card(cardID, tier, nameData[1], card))
-            }
-        }
-
-        CardData.cards.removeIf { c ->
-            if (c.tier == CardData.Tier.SPECIAL)
-                return@removeIf false
-
-            val result = !CardData.bannerData.any { t -> t.any { b -> c.tier == CardData.Tier.LEGEND || c.id in b } }
-
-            if (result) {
-                println("Removing ${c.id}")
-            }
-
-            result
-        }
-
-        CardData.cards.forEach { c ->
-            c.activated = true
-
-            if (c.id in CardData.bannerData[2][2]) {
-                c.cardType = Card.CardType.SEASONAL
-            }
-
-            if (c.id in CardData.bannerData[2][3]) {
-                c.cardType = Card.CardType.COLLABORATION
-            }
-
-            if (abs(c.id) >= 1000) {
-                c.cardType = Card.CardType.APRIL_FOOL
-            }
-
-            CardData.bannerData.forEachIndexed { x, tier ->
-                tier.forEachIndexed { y, banner ->
-                    if (c.id in banner) {
-                        when(x) {
-                            1 -> {
-                                when(y) {
-                                    0 -> c.banner = Banner.fromName("Dark Heroes")
-                                    1 -> c.banner = Banner.fromName("Dragon Emperors")
-                                    2 -> c.banner = Banner.fromName("Dynamites")
-                                    3 -> c.banner = Banner.fromName("Elemental Pixies")
-                                    4 -> c.banner = Banner.fromName("Galaxy Gals")
-                                    5 -> c.banner = Banner.fromName("Iron Legion")
-                                    6 -> c.banner = Banner.fromName("Sengoku Wargods")
-                                    7 -> c.banner = Banner.fromName("The Nekoluga Family")
-                                    8 -> c.banner = Banner.fromName("Ultra Souls")
-                                }
-                            }
-                            2 -> {
-                                when(y) {
-                                    0 -> c.banner = Banner.fromName("Girls and Monsters")
-                                    1 -> c.banner = Banner.fromName("The Almighties")
-                                    4 -> c.banner = Banner.fromName("Valentine")
-                                    5 -> c.banner = Banner.fromName("Whiteday")
-                                    6 -> c.banner = Banner.fromName("Easter")
-                                    7 -> c.banner = Banner.fromName("June Bride")
-                                    8 -> c.banner = Banner.fromName("Summer Gals")
-                                    9 -> c.banner = Banner.fromName("Halloweens")
-                                    10 -> c.banner = Banner.fromName("X-Mas")
-                                    11 -> c.banner = Banner.fromName("Bikkuriman")
-                                    12 -> c.banner = Banner.fromName("Crash Fever")
-                                    13 -> c.banner = Banner.fromName("Fate/Stay: Night")
-                                    14 -> c.banner = Banner.fromName("Hatsune Miku")
-                                    15 -> c.banner = Banner.fromName("Merc Storia")
-                                    16 -> c.banner = Banner.fromName("Neon Genesis Evangelion")
-                                    17 -> c.banner = Banner.fromName("Power Pro Baseball")
-                                    18 -> c.banner = Banner.fromName("Ranma 1/2")
-                                    19 -> c.banner = Banner.fromName("River City Clash Capsules")
-                                    20 -> c.banner = Banner.fromName("Shoumetsu Toshi")
-                                    21 -> c.banner = Banner.fromName("Street Fighters")
-                                    22 -> c.banner = Banner.fromName("Survive! Mola Mola!")
-                                    23 -> c.banner = Banner.fromName("Metal Slug")
-                                    24 -> c.banner = Banner.fromName("Princess Punt")
-                                    25 -> c.banner = Banner.fromName("Tower of Savior")
-                                    26 -> c.banner = Banner.fromName("Rurouni Kenshin")
-                                    27 -> c.banner = Banner.fromName("Puella Magi Madoka Magica")
-                                }
-                            }
-                            3 -> {
-                                when(y) {
-                                    0 -> c.banner = Banner.fromName("Epicfest Exclusives")
-                                    1 -> c.banner = Banner.fromName("Uberfest Exclusives")
-                                    2 -> c.banner = Banner.fromName("Li'l Valkyrie")
-                                    3 -> c.banner = Banner.fromName("Li'l Valkyrie Dark")
-                                    4 -> c.banner = Banner.fromName("Trixi the Revenant")
-                                }
-                            }
-                        }
-                    }
-                }
+                CardData.cards.add(c)
             }
         }
 
@@ -1582,6 +1447,14 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("deactivatedCards", deactivatedCards)
+
+        val cards = JsonArray()
+
+        CardData.cards.forEach { c ->
+            cards.add(c.toJson())
+        }
+
+        obj.add("cards", cards)
 
         val banners = JsonArray()
 
