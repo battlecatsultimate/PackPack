@@ -7,7 +7,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import common.CommonStatic
-import common.util.Data
 import mandarin.card.commands.*
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Banner
@@ -58,7 +57,6 @@ import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.math.abs
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
