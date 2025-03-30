@@ -101,7 +101,6 @@ class SkinSpecificCardCostHolder(
                     CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
-                banner = Banner.NONE
                 page = 0
 
 

@@ -94,7 +94,6 @@ class SkinPurchaseCardHolder(author: Message, userID: String, channelID: String,
                     CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
-                banner = Banner.NONE
                 page = 0
 
                 page = 0

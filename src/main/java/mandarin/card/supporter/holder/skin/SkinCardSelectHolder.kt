@@ -103,7 +103,6 @@ class SkinCardSelectHolder(author: Message, userID: String, channelID: String, m
                     CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
-                banner = Banner.NONE
                 page = 0
 
                 filterCards()

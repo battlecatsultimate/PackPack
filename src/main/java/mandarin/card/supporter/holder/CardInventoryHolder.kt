@@ -139,7 +139,6 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
                     CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
-                banner = Banner.NONE
                 page = 0
 
                 filterCards()
