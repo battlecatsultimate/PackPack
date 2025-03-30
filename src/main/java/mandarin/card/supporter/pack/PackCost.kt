@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Banner
-import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 
 class PackCost(

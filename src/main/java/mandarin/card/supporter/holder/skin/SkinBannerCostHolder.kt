@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
 import kotlin.math.min
 
 class SkinBannerCostHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {

@@ -3,7 +3,6 @@ package mandarin.card.supporter.holder
 import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
