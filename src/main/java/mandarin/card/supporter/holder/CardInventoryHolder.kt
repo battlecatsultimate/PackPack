@@ -182,8 +182,8 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
                 cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier }.union(inventory.favorites.keys.filter { c -> c.tier == tier }))
             } else {
                 cards.addAll(
-                    inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] }.union(
-                        inventory.favorites.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] }
+                    inventory.cards.keys.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] }.union(
+                        inventory.favorites.keys.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] }
                     )
                 )
             }
@@ -191,8 +191,8 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
             if (banner[0] == -1) {
                 cards.addAll(inventory.cards.keys.union(inventory.favorites.keys))
             } else {
-                cards.addAll(inventory.cards.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] }.union(
-                    inventory.favorites.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] }
+                cards.addAll(inventory.cards.keys.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] }.union(
+                    inventory.favorites.keys.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] }
                 ))
             }
         }

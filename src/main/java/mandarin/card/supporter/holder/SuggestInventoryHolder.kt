@@ -204,7 +204,7 @@ class SuggestInventoryHolder(
 
                 val card = cards[selectedID]
 
-                if (card.unitID == -56) {
+                if (card.id == -56) {
                     event.deferReply()
                         .setContent("Don't you dare 👁️, you can't trade it")
                         .setEphemeral(true)
@@ -356,13 +356,13 @@ class SuggestInventoryHolder(
                 if (banner[0] == -1) {
                     cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier })
                 } else {
-                    cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] })
+                    cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] })
                 }
             } else {
                 if (banner[0] == -1) {
                     cards.addAll(inventory.cards.keys)
                 } else {
-                    cards.addAll(inventory.cards.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] })
+                    cards.addAll(inventory.cards.keys.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] })
                 }
             }
         }

@@ -19,7 +19,7 @@ class SpecificCardCost(val cards: HashSet<Card>, amount: Long) : CardCost(CostTy
 
             obj.getAsJsonArray("cards").forEach { e ->
                 val cardID = e.asInt
-                val card = CardData.cards.find { c -> c.unitID == cardID } ?: return@forEach
+                val card = CardData.cards.find { c -> c.id == cardID } ?: return@forEach
 
                 cards.add(card)
             }
@@ -29,21 +29,21 @@ class SpecificCardCost(val cards: HashSet<Card>, amount: Long) : CardCost(CostTy
     }
 
     override fun filter(c: Card): Boolean {
-        return cards.any { card -> c.unitID == card.unitID }
+        return cards.any { card -> c.id == card.id }
     }
 
     override fun finishJson(obj: JsonObject) {
         val arr = JsonArray()
 
         cards.forEach { c ->
-            arr.add(c.unitID)
+            arr.add(c.id)
         }
 
         obj.add("cards", arr)
     }
 
     override fun getCostName(): String {
-        return cards.map { c -> c.simpleCardInfo() }.joinToString(", ", "{ ", " }") + " x" + amount
+        return cards.joinToString(", ", "{ ", " }") { c -> c.simpleCardInfo() } + " x" + amount
     }
 
     fun simpleCostName() : String {

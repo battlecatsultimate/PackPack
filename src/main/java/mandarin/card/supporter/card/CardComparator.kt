@@ -8,17 +8,17 @@ class CardComparator : Comparator<Card> {
         o1 ?: return -1
         o2 ?: return 1
 
-        if (o1.unitID < 0 && o2.unitID >= 0)
+        if (o1.id < 0 && o2.id >= 0)
             return 1
 
-        if (o1.unitID >= 0 && o2.unitID < 0)
+        if (o1.id >= 0 && o2.id < 0)
             return -1
 
         return if (o1.tier == o2.tier) {
-            if (o1.unitID < 0 && o2.unitID < 0)
-                -o1.unitID.compareTo(o2.unitID)
+            if (o1.id < 0)
+                -o1.id.compareTo(o2.id)
             else
-                o1.unitID.compareTo(o2.unitID)
+                o1.id.compareTo(o2.id)
         } else {
             o1.tier.ordinal.compareTo(o2.tier.ordinal)
         }

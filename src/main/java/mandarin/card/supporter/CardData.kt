@@ -1,5 +1,6 @@
 package mandarin.card.supporter
 
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.pack.CardPack
@@ -58,6 +59,7 @@ object CardData {
 
     val cards = ArrayList<Card>()
     val skins = ArrayList<Skin>()
+    val banners = ArrayList<Banner>()
 
     val supportedFileFormat = arrayOf(
         "png", "jpg", "gif", "mp4"
@@ -443,7 +445,7 @@ object CardData {
         val result = ArrayList(uncommon)
 
         activatedBanners.filter { b -> b.tier == Tier.UNCOMMON }.forEach { b ->
-            result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == b.tier } })
+            result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == b.tier } })
         }
 
         return result
@@ -453,7 +455,7 @@ object CardData {
         val result = ArrayList(ultraRare)
 
         activatedBanners.filter { b -> b.tier == Tier.ULTRA }.forEach { b ->
-            result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == b.tier } })
+            result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == b.tier } })
         }
 
         return result
@@ -463,9 +465,9 @@ object CardData {
         val result = ArrayList(legendRare)
 
         if (Activator.Bikkuriman in activatedBanners) {
-            result.addAll(bannerData[Tier.LEGEND.ordinal][0].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == Tier.LEGEND } })
+            result.addAll(bannerData[Tier.LEGEND.ordinal][0].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == Tier.LEGEND } })
         } else if (Activator.StreetFighters in activatedBanners) {
-            result.addAll(bannerData[Tier.LEGEND.ordinal][1].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == Tier.LEGEND } })
+            result.addAll(bannerData[Tier.LEGEND.ordinal][1].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == Tier.LEGEND } })
         }
 
         return result

@@ -33,15 +33,15 @@ class BannerCardCost(var banner: BannerFilter.Banner, amount: Long) : CardCost(C
     override fun filter(c: Card): Boolean {
         return when (banner) {
             BannerFilter.Banner.LegendRare -> {
-                val u = UserProfile.getBCData().units[c.unitID]
+                val u = UserProfile.getBCData().units[c.id]
 
                 u.rarity == 5
             }
             BannerFilter.Banner.BusterExclusives -> {
-                c.unitID in CardData.busters
+                c.id in CardData.busters
             }
             else -> {
-                c.unitID in banner.getBannerData()
+                c.id in banner.getBannerData()
             }
         }
     }

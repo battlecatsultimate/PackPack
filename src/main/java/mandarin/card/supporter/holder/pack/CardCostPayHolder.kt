@@ -13,7 +13,6 @@ import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
-import mandarin.packpack.supporter.server.holder.MessageUpdater
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -29,8 +28,6 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
-import java.lang.IllegalStateException
-import java.lang.StringBuilder
 import java.util.ArrayList
 import kotlin.collections.any
 import kotlin.collections.contains
@@ -58,7 +55,7 @@ class CardCostPayHolder(
     message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
-) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageUpdater {
+) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
     private val cards = ArrayList<Card>(inventory.cards.keys)
 
@@ -120,7 +117,7 @@ class CardCostPayHolder(
 
                 val card = cards[selectedID]
 
-                val realAmount = (inventory.cards[card] ?: 0) - containers.sumOf { container -> container.pickedCards.count { c -> c.unitID == card.unitID } }
+                val realAmount = (inventory.cards[card] ?: 0) - containers.sumOf { container -> container.pickedCards.count { c -> c.id == card.id } }
 
                 if (realAmount > 2 && container.cost.amount - container.pickedCards.size > 1) {
                     val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
@@ -185,7 +182,7 @@ class CardCostPayHolder(
             }
             "dupe" -> {
                 for (card in cards) {
-                    val amount = (inventory.cards[card] ?: 0) - containers.sumOf { c -> c.pickedCards.count { cd -> cd.unitID == card.unitID } }
+                    val amount = (inventory.cards[card] ?: 0) - containers.sumOf { c -> c.pickedCards.count { cd -> cd.id == card.id } }
 
                     if (amount > 1) {
                         repeat(min(amount - 1, container.cost.amount.toInt() - container.pickedCards.size)) {
@@ -207,7 +204,7 @@ class CardCostPayHolder(
             }
             "all" -> {
                 for (card in cards) {
-                    val amount = (inventory.cards[card] ?: 0) - containers.sumOf { c -> c.pickedCards.count { cd -> cd.unitID == card.unitID } }
+                    val amount = (inventory.cards[card] ?: 0) - containers.sumOf { c -> c.pickedCards.count { cd -> cd.id == card.id } }
 
                     if (amount > 0) {
                         repeat(min(amount, container.cost.amount.toInt() - container.pickedCards.size)) {
@@ -266,10 +263,6 @@ class CardCostPayHolder(
         }
     }
 
-    override fun onMessageUpdated(message: Message) {
-        this.message = message
-    }
-
     override fun onConnected(event: IMessageEditCallback, parent: Holder) {
         filterCards()
         applyResult(event)
@@ -309,17 +302,17 @@ class CardCostPayHolder(
         cards.clear()
 
         if (container.cost is SpecificCardCost) {
-            cards.addAll(inventory.cards.keys.filter { c -> container.cost.cards.any { card -> card.unitID == c.unitID} })
+            cards.addAll(inventory.cards.keys.filter { c -> container.cost.cards.any { card -> card.id == c.id} })
         } else {
             cards.addAll(
                 inventory.cards.keys.filter { c ->
-                    c.tier == tier && (if (banner[0] == -1) true else c.unitID in CardData.bannerData[tier.ordinal][banner[1]])
+                    c.tier == tier && (if (banner[0] == -1) true else c.id in CardData.bannerData[tier.ordinal][banner[1]])
                 }.filter(container.cost::filter)
             )
 
             cards.removeIf { card ->
                 val amount = inventory.cards[card] ?: 0
-                val selectedAmount = containers.sumOf { container -> container.pickedCards.count { c -> c.unitID == card.unitID } }
+                val selectedAmount = containers.sumOf { container -> container.pickedCards.count { c -> c.id == card.id } }
 
                 amount - selectedAmount <= 0
             }
@@ -341,7 +334,7 @@ class CardCostPayHolder(
             val selectedCards = StringBuilder()
 
             container.pickedCards.toSet().forEach { card ->
-                val amount = container.pickedCards.count { c -> c.unitID == card.unitID }
+                val amount = container.pickedCards.count { c -> c.id == card.id }
 
                 selectedCards.append(card.simpleCardInfo())
 
@@ -364,7 +357,7 @@ class CardCostPayHolder(
             builder.append("No cards")
         } else {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
-                val amount = (inventory.cards[cards[i]] ?: 0) - containers.sumOf { c -> c.pickedCards.count { card -> card.unitID == cards[i].unitID } }
+                val amount = (inventory.cards[cards[i]] ?: 0) - containers.sumOf { c -> c.pickedCards.count { card -> card.id == cards[i].id } }
 
                 builder.append(i + 1).append(". ").append(cards[i].simpleCardInfo())
 
@@ -469,7 +462,7 @@ class CardCostPayHolder(
 
         confirmButtons.add(Button.primary("confirm", "Confirm"))
         confirmButtons.add(Button.secondary("dupe", "Select Duplicated").withDisabled(container.paid() || !cards.any { card ->
-            (inventory.cards[card] ?: 0) - containers.sumOf { ct -> ct.pickedCards.count { c -> c.unitID == card.unitID } } > 1
+            (inventory.cards[card] ?: 0) - containers.sumOf { ct -> ct.pickedCards.count { c -> c.id == card.id } } > 1
         }))
         confirmButtons.add(Button.secondary("all", "Add All").withDisabled(container.paid() || cards.isEmpty()))
         confirmButtons.add(Button.danger("clear", "Clear").withDisabled(container.pickedCards.isEmpty()))

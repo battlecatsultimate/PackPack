@@ -4,6 +4,7 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
@@ -35,6 +36,14 @@ public abstract class Holder {
     }
 
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
+
+    public static int getTotalPage(int size) {
+        return (int) Math.ceil(size * 1.0 / SearchHolder.PAGE_CHUNK);
+    }
+
+    public static int getTotalPage(int size, int chunk) {
+        return (int) Math.ceil(size * 1.0 / chunk);
+    }
 
     public final long time = System.currentTimeMillis();
     @Nullable
@@ -231,8 +240,9 @@ public abstract class Holder {
     }
 
     public void handleMessageUpdated(@Nonnull Message message) {
-        if (!(this instanceof MessageUpdater updater))
-            return;
+        if (parent != null) {
+            parent.handleMessageUpdated(message);
+        }
 
         if(author == null) {
             throw new NotSupportedException("E/Holder::getAuthorMessage - This holder doesn't support author message getter! : " + getClass().getName());
@@ -244,7 +254,7 @@ public abstract class Holder {
         if (message.getIdLong() != this.message.getIdLong())
             return;
 
-        updater.onMessageUpdated(message);
+        this.message = message;
     }
 
     public void connectTo(Holder holder) {
@@ -308,10 +318,6 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            if (parent instanceof MessageUpdater updater) {
-                updater.onMessageUpdated(message);
-            }
-
             Objects.requireNonNull(parent).onBack(this);
         }
     }
@@ -340,10 +346,6 @@ public abstract class Holder {
 
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
-
-            if (parent instanceof MessageUpdater updater) {
-                updater.onMessageUpdated(message);
-            }
 
             Objects.requireNonNull(parent).onBack(event, this);
         }
@@ -393,10 +395,6 @@ public abstract class Holder {
 
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
-
-                    if (parent instanceof MessageUpdater updater) {
-                        updater.onMessageUpdated(message);
-                    }
 
                     parent.onBack(this);
 
@@ -468,10 +466,6 @@ public abstract class Holder {
 
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
-
-                    if (parent instanceof MessageUpdater updater) {
-                        updater.onMessageUpdated(message);
-                    }
 
                     parent.onBack(event, this);
 

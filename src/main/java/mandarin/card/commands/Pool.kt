@@ -22,6 +22,6 @@ class Pool(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.E
             else -> return
         }
 
-        replyToMessageSafely(ch, "Pool of ${CardData.tierCategoryText[tier.ordinal]}\n\n```${pool.joinToString(", ") { c -> c.unitID.toString() }}```", loader.message) { a -> a }
+        replyToMessageSafely(ch, "Pool of ${CardData.tierCategoryText[tier.ordinal]}\n\n```${pool.joinToString(", ") { c -> c.id.toString() }}```", loader.message) { a -> a }
     }
 }

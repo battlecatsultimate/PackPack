@@ -199,7 +199,7 @@ class Inventory(private val id: Long) {
         for(card in cards.keys) {
             val number = cards[card] ?: 1
 
-            c.addProperty(card.unitID.toString(), number)
+            c.addProperty(card.id.toString(), number)
         }
 
         obj.add("cards", c)
@@ -209,7 +209,7 @@ class Inventory(private val id: Long) {
         for (card in favorites.keys) {
             val number = favorites[card] ?: 1
 
-            f.addProperty(card.unitID.toString(), number)
+            f.addProperty(card.id.toString(), number)
         }
 
         obj.add("favorites", f)
@@ -227,7 +227,7 @@ class Inventory(private val id: Long) {
         equippedSkins.entries.forEach { (card, skin) ->
             val o = JsonObject()
 
-            o.addProperty("key", card.unitID)
+            o.addProperty("key", card.id)
             o.addProperty("val", skin.skinID)
 
             e.add(o)
@@ -240,7 +240,7 @@ class Inventory(private val id: Long) {
         for (card in auctionQueued.keys) {
             val number = auctionQueued[card] ?: 1
 
-            a.addProperty(card.unitID.toString(), number)
+            a.addProperty(card.id.toString(), number)
         }
 
         obj.add("auctionQueued", a)
@@ -260,7 +260,7 @@ class Inventory(private val id: Long) {
     }
 
     fun validForLegendCollector() : Boolean {
-        val cardsTotal = cards.keys.map { card -> card.unitID }.union(favorites.keys.map { card -> card.unitID })
+        val cardsTotal = cards.keys.map { card -> card.id }.union(favorites.keys.map { card -> card.id })
 
         for (i in CardData.Tier.COMMON.ordinal..CardData.Tier.UNCOMMON.ordinal) {
             if (CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.any { idSet -> idSet.any { id -> id !in cardsTotal } })
@@ -280,13 +280,13 @@ class Inventory(private val id: Long) {
 
         val missingCards = ArrayList<Card>()
 
-        val cardsTotal = this.cards.keys.map { card -> card.unitID }.union(favorites.keys.map { card -> card.unitID })
+        val cardsTotal = this.cards.keys.map { card -> card.id }.union(favorites.keys.map { card -> card.id })
 
         for (i in CardData.Tier.COMMON.ordinal..CardData.Tier.UNCOMMON.ordinal) {
             CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.forEach { idSet ->
                 idSet.forEach { id ->
                     if (id !in cardsTotal) {
-                        val c = CardData.cards.find { c -> c.unitID == id }
+                        val c = CardData.cards.find { c -> c.id == id }
 
                         if (c != null)
                             missingCards.add(c)
@@ -366,7 +366,7 @@ class Inventory(private val id: Long) {
                 val cardIDs = obj.getAsJsonObject("cards")
 
                 for(unitID in cardIDs.keySet()) {
-                    val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
+                    val foundCard = CardData.cards.find { c -> c.id == unitID.toInt() } ?: continue
 
                     inventory.cards[foundCard] = cardIDs.get(unitID).asInt
                 }
@@ -376,7 +376,7 @@ class Inventory(private val id: Long) {
                 val cardIDs = obj.getAsJsonObject("favorites")
 
                 for (unitID in cardIDs.keySet()) {
-                    val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
+                    val foundCard = CardData.cards.find { c -> c.id == unitID.toInt() } ?: continue
 
                     inventory.favorites[foundCard] = cardIDs.get(unitID).asInt
                 }
@@ -403,7 +403,7 @@ class Inventory(private val id: Long) {
                     if (o.has("key") && o.has("val")) {
                         val cardID = o.get("key").asInt
 
-                        val foundCard = CardData.cards.find { c -> c.unitID == cardID } ?: return@forEach
+                        val foundCard = CardData.cards.find { c -> c.id == cardID } ?: return@forEach
 
                         val skinID = o.get("val").asInt
 
@@ -418,7 +418,7 @@ class Inventory(private val id: Long) {
                 val cardIDs = obj.getAsJsonObject("auctionQueued")
 
                 for (unitID in cardIDs.keySet()) {
-                    val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
+                    val foundCard = CardData.cards.find { c -> c.id == unitID.toInt() } ?: continue
 
                     inventory.auctionQueued[foundCard] = cardIDs.get(unitID).asInt
                 }

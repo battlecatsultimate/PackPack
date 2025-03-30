@@ -1,7 +1,8 @@
-package mandarin.card.supporter.holder.moderation
+package mandarin.card.supporter.holder.card
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
@@ -18,21 +19,46 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import kotlin.math.max
 import kotlin.math.min
 
-class CardRankingSelectHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
-    private val cards = CardData.cards.sortedWith(CardComparator()).toMutableList()
+class CardSelectHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    private val cards = ArrayList<Card>(CardData.cards)
 
     private var page = 0
+        set(value) {
+            field = value
+
+            val totalPage = getTotalPage(cards.size)
+
+            field = max(0, min(field, totalPage - 1))
+        }
+
     private var tier = CardData.Tier.NONE
     private var banner = intArrayOf(-1, -1)
 
-    init {
-        registerAutoExpiration(FIVE_MIN)
-    }
-
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "prev10" -> {
+                page -= 10
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
+            }
+            "next10" -> {
+                page += 10
+
+                applyResult(event)
+            }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)
                     return
@@ -88,39 +114,13 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
                     return
 
                 val index = event.values[0].toInt()
+
                 val card = cards[index]
 
-                connectTo(event, CardRankingListHolder(authorMessage, userID, channelID, message, card))
+                connectTo(event, CardModifyHolder(authorMessage, userID, channelID, message, card, false))
             }
-            "prev" -> {
-                page--
-
-                applyResult(event)
-            }
-            "prev10" -> {
-                page -= 10
-
-                applyResult(event)
-            }
-            "next" -> {
-                page++
-
-                applyResult(event)
-            }
-            "next10" -> {
-                page += 10
-
-                applyResult(event)
-            }
-            "close" -> {
-                event.deferEdit()
-                    .setContent("Card ranking closed")
-                    .setComponents()
-                    .mentionRepliedUser(false)
-                    .setAllowedMentions(ArrayList())
-                    .queue()
-
-                end(true)
+            "back" -> {
+                goBack(event)
             }
         }
     }
@@ -130,7 +130,11 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
     }
 
     override fun onExpire() {
-        message.editMessage("Card ranking expired").setComponents().queue()
+
+    }
+
+    override fun onConnected(event: IMessageEditCallback, parent: Holder) {
+        applyResult(event)
     }
 
     override fun onBack(event: IMessageEditCallback, child: Holder) {
@@ -140,35 +144,54 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
     private fun filterCards() {
         cards.clear()
 
-        val tempCards = CardData.cards
-
         if (tier != CardData.Tier.NONE) {
             if (banner[0] == -1) {
-                cards.addAll(tempCards.filter { c -> c.tier == tier })
+                cards.addAll(CardData.cards.filter { c -> c.tier == tier })
             } else {
-                cards.addAll(tempCards.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] })
+                cards.addAll(CardData.cards.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] })
             }
         } else {
             if (banner[0] == -1) {
-                cards.addAll(tempCards)
+                cards.addAll(CardData.cards)
             } else {
-                cards.addAll(tempCards.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] })
+                cards.addAll(CardData.cards.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] })
             }
         }
 
         cards.sortWith(CardComparator())
+
+        page = max(0, min(page, getTotalPage(cards.size) - 1))
     }
 
     private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
-            .setContent(getText())
+            .setContent(getContents())
+            .setComponents(getComponents())
+            .setFiles()
             .mentionRepliedUser(false)
             .setAllowedMentions(ArrayList())
-            .setComponents(assignComponents())
             .queue()
     }
 
-    private fun assignComponents() : List<LayoutComponent> {
+    private fun getContents() : String {
+        val builder = StringBuilder("Select card to modify\n\n```md\n")
+
+        if (cards.isNotEmpty()) {
+            for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
+                builder.append("${i + 1}. ")
+
+                builder.append(cards[i].cardInfo()).append("\n")
+            }
+        } else {
+            builder.append("No Cards Found")
+        }
+
+        builder.append("```")
+
+        return builder.toString()
+    }
+
+    private fun getComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
         val tierCategoryElements = ArrayList<SelectOption>()
@@ -204,36 +227,38 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
 
         val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+        if (tier == CardData.Tier.NONE || CardData.bannerCategoryText[tier.ordinal].isNotEmpty()) {
+            bannerCategoryElements.add(SelectOption.of("All", "all"))
 
-        if (tier == CardData.Tier.NONE) {
-            CardData.bannerCategoryText.forEachIndexed { index, array ->
-                array.forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
+            if (tier == CardData.Tier.NONE) {
+                CardData.bannerCategoryText.forEachIndexed { index, array ->
+                    array.forEachIndexed { i, a ->
+                        bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
+                    }
+                }
+            } else {
+                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
+                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
                 }
             }
-        } else {
-            CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
+
+            val bannerCategory = StringSelectMenu.create("category")
+                .addOptions(bannerCategoryElements)
+                .setPlaceholder("Filter Cards by Banners")
+
+            val id = if (tier == CardData.Tier.NONE) {
+                "category-${banner[0]}-${banner[1]}"
+            } else {
+                "category-${tier.ordinal}-${banner[1]}"
             }
+
+            val option = bannerCategoryElements.find { e -> e.value == id }
+
+            if (option != null)
+                bannerCategory.setDefaultOptions(option)
+
+            rows.add(ActionRow.of(bannerCategory.build()))
         }
-
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
-
-        val id = if (tier == CardData.Tier.NONE) {
-            "category-${banner[0]}-${banner[1]}"
-        } else {
-            "category-${tier.ordinal}-${banner[1]}"
-        }
-
-        val option = bannerCategoryElements.find { e -> e.value == id }
-
-        if (option != null)
-            bannerCategory.setDefaultOptions(option)
-
-        rows.add(ActionRow.of(bannerCategory.build()))
 
         val dataSize = cards.size
 
@@ -242,7 +267,7 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1 ) * SearchHolder.PAGE_CHUNK)) {
+            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -253,15 +278,14 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
                 if (cards.isEmpty())
                     "No Cards To Select"
                 else
-                    "Select Card"
+                    "Select Card To See"
             )
             .setDisabled(cards.isEmpty())
             .build()
 
         rows.add(ActionRow.of(cardCategory))
 
-
-        var totalPage = getTotalPage(dataSize)
+        val totalPage = getTotalPage(dataSize)
 
         if (dataSize > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
@@ -297,28 +321,10 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
             rows.add(ActionRow.of(buttons))
         }
 
-        val confirmButtons = ArrayList<Button>()
-
-        confirmButtons.add(Button.danger("close", "Close").withEmoji(EmojiStore.CROSS))
-
-        rows.add(ActionRow.of(confirmButtons))
+        rows.add(ActionRow.of(
+            Button.secondary("back", "Back").withEmoji(EmojiStore.BACK)
+        ))
 
         return rows
-    }
-
-    private fun getText() : String {
-        val builder = StringBuilder("Please select the card that you want to see the ranking of\n\n```md\n")
-
-        if (cards.isNotEmpty()) {
-            for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
-                builder.append("${i + 1}. ${cards[i].cardInfo()}\n")
-            }
-        } else {
-            builder.append("No Cards Found")
-        }
-
-        builder.append("```")
-
-        return builder.toString()
     }
 }

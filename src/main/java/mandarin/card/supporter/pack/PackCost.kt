@@ -68,7 +68,7 @@ class PackCost(
             val bannerCards = HashMap<BannerFilter.Banner, Long>()
 
             cardsCosts.filterIsInstance<BannerCardCost>().forEach { cost ->
-                val existingCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.unitID in cost.banner.getBannerData()) amount else 0 } - (bannerCards[cost.banner] ?: 0)
+                val existingCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.id in cost.banner.getBannerData()) amount else 0 } - (bannerCards[cost.banner] ?: 0)
 
                 if (existingCards < cost.amount)
                     return false
@@ -127,7 +127,7 @@ class PackCost(
             val bannerCards = HashMap<BannerFilter.Banner, Long>()
 
             cardsCosts.filterIsInstance<BannerCardCost>().forEach { cost ->
-                val totalCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.unitID in cost.banner.getBannerData()) amount else 0 }
+                val totalCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.id in cost.banner.getBannerData()) amount else 0 }
                 val existingCards = totalCards - (bannerCards[cost.banner] ?: 0)
 
                 val bannerName = BannerFilter.getBannerName(cost.banner)

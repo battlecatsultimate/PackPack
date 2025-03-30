@@ -143,7 +143,7 @@ class FilterProcessHolder : ComponentHolder {
                     val spentCard = ArrayList<Card>()
 
                     for (card in totalCard.toSet()) {
-                        val number = cardGroups.maxOf { g -> g.filter { c -> c.unitID == card.unitID }.size }
+                        val number = cardGroups.maxOf { g -> g.filter { c -> c.id == card.id }.size }
 
                         repeat(number) {
                             spentCard.add(card)
@@ -338,23 +338,23 @@ class FilterProcessHolder : ComponentHolder {
             if (banner[0] == -1) {
                 cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier })
             } else {
-                cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] })
+                cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] })
             }
         } else {
             if (banner[0] == -1) {
                 cards.addAll(inventory.cards.keys)
             } else {
-                cards.addAll(inventory.cards.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] })
+                cards.addAll(inventory.cards.keys.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] })
             }
         }
 
         cards.removeIf { c ->
-            if (c.unitID < 0)
+            if (c.id < 0)
                 return@removeIf true
 
             val amount = inventory.cards[c] ?: 1
 
-            amount - cardGroups.maxOf { g -> g.filter { card -> card.unitID == c.unitID }.size } <= 0
+            amount - cardGroups.maxOf { g -> g.filter { card -> card.id == c.id }.size } <= 0
         }
 
         cards.removeIf { c -> !filters[currentIndex].filter(c) }
@@ -562,7 +562,7 @@ class FilterProcessHolder : ComponentHolder {
                     .append(". ")
                     .append(cards[i].cardInfo())
 
-                val amount = (inventory.cards[cards[i]] ?: 1) - cardGroups.maxOf { g -> g.filter { card -> card.unitID == cards[i].unitID }.size }
+                val amount = (inventory.cards[cards[i]] ?: 1) - cardGroups.maxOf { g -> g.filter { card -> card.id == cards[i].id }.size }
 
                 if (amount > 1) {
                     builder.append(" x$amount")

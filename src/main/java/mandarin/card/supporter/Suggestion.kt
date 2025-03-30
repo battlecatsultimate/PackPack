@@ -15,13 +15,13 @@ class Suggestion {
                 obj.getAsJsonArray("cards").forEach {
                     if (it is JsonObject && it.has("key") && it.has("val")) {
                         val cardID = it.get("key").asInt
-                        val foundCard = CardData.cards.find { c -> c.unitID == cardID } ?: return@forEach
+                        val foundCard = CardData.cards.find { c -> c.id == cardID } ?: return@forEach
 
                         val amount = it.get("val").asInt
 
                         suggestion.cards[foundCard] = amount
                     } else {
-                        val foundCard = CardData.cards.find { c -> c.unitID == it.asInt } ?: return@forEach
+                        val foundCard = CardData.cards.find { c -> c.id == it.asInt } ?: return@forEach
 
                         suggestion.cards[foundCard] = (suggestion.cards[foundCard] ?: 0) + 1
                     }
@@ -134,7 +134,7 @@ class Suggestion {
         cards.forEach { (card, amount) ->
             val o = JsonObject()
 
-            o.addProperty("key", card.unitID)
+            o.addProperty("key", card.id)
             o.addProperty("val", amount)
 
             arr.add(o)

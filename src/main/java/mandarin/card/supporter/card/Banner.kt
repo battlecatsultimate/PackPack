@@ -1,0 +1,34 @@
+package mandarin.card.supporter.card
+
+import com.google.gson.JsonObject
+import mandarin.card.supporter.CardData
+
+class Banner(var name: String, var category: Boolean) {
+    companion object {
+        val NONE = Banner("None", false)
+
+        fun fromJson(obj: JsonObject) : Banner {
+            if (!obj.has("name") || !obj.has("category")) {
+                throw IllegalStateException("E/Banner::fromJson - Invalid json data has passed")
+            }
+
+            val name = obj.get("name").asString
+            val category = obj.get("category").asBoolean
+
+            return Banner(name, category)
+        }
+
+        fun fromName(name: String) : Banner {
+            return CardData.banners.find { b -> b.name == name } ?: NONE
+        }
+    }
+
+    fun toJson() : JsonObject {
+        val obj = JsonObject()
+
+        obj.addProperty("name", name)
+        obj.addProperty("category", category)
+
+        return obj
+    }
+}
