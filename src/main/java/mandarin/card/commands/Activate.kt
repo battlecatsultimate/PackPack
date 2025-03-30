@@ -1,7 +1,6 @@
 package mandarin.card.commands
 
 import common.CommonStatic
-import mandarin.card.supporter.Activator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.moderation.ActivatorHolder
 import mandarin.packpack.commands.Command
@@ -25,19 +24,17 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
         replyToMessageSafely(ch, getText(), loader.message, { a -> a.setComponents(getComponents()) }, { msg ->
             StaticStore.putHolder(m.id, ActivatorHolder(loader.message, m.id, ch.id, msg))
         })
-
-
     }
 
     private fun getComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
-        val activators = Activator.entries.toTypedArray()
+        val banners = CardData.banners
 
-        val dataSize = Activator.entries.size
+        val dataSize = banners.size
 
         for (i in 0 until min(dataSize, 3)) {
-            rows.add(ActionRow.of(Button.secondary(i.toString(), activators[i].title).withEmoji(if (activators[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)))
+            rows.add(ActionRow.of(Button.secondary(i.toString(), banners[i].name).withEmoji(if (banners[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)))
         }
 
         var totPage = dataSize / 3
@@ -75,14 +72,14 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
     private fun getText() : String {
         val builder = StringBuilder("Select banners to activate/deactivate\n\n")
 
-        val activators = Activator.entries.toTypedArray()
+        val banners = CardData.banners
 
-        for (i in 0 until min(3, activators.size)) {
+        for (i in 0 until min(3, banners.size)) {
             builder.append("**")
-                .append(activators[i].title)
+                .append(banners[i].name)
                 .append("** : ")
 
-            if (activators[i] in CardData.activatedBanners) {
+            if (banners[i] in CardData.activatedBanners) {
                 builder.append("Activated")
             } else {
                 builder.append("Deactivated")

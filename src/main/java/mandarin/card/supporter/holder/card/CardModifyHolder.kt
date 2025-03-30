@@ -366,7 +366,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                 "- **Tier** : $tierName\n" +
                 "- **Type** : $typeName\n" +
                 "- **Banner** : $bannerName\n" +
-                "- **Is BC Card** : $bcCard" +
+                "- **Is BC Card** : $bcCard\n" +
                 "- **Is Activated** : $active"
 
         if (CardData.cards.any { c -> c !== card && c.id == card.id }) {

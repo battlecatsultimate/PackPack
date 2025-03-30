@@ -3,7 +3,7 @@ package mandarin.card.supporter.holder.pack
 import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.filter.BannerFilter
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardCost
 import mandarin.card.supporter.pack.CardPack
@@ -47,7 +47,7 @@ class CardCostTypeHolder(author: Message, userID: String, channelID: String, mes
 
             when(type) {
                 CardCost.CostType.BANNER -> {
-                    connectTo(event, BannerCostHolder(authorMessage, userID, channelID, message, pack, BannerCardCost(BannerFilter.Banner.DarkHeroes, 0), true))
+                    connectTo(event, BannerCostHolder(authorMessage, userID, channelID, message, pack, BannerCardCost(Banner.fromName("Dark Heroes"), 0), true))
                 }
                 CardCost.CostType.TIER -> {
                     connectTo(event, TierCostHolder(authorMessage, userID, channelID, message, pack, TierCardCost(CardPack.CardType.T1, 0), true))

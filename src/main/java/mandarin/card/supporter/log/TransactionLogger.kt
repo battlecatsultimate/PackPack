@@ -1,6 +1,7 @@
 package mandarin.card.supporter.log
 
 import mandarin.card.supporter.*
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.pack.CardPack
@@ -184,7 +185,7 @@ object TransactionLogger {
             .queue()
     }
 
-    fun logBannerActivate(activator: Activator, mod: Member, activated: Boolean) {
+    fun logBannerActivate(banner: Banner, mod: Member, activated: Boolean) {
         if (!this::modChannel.isInitialized)
             return
 
@@ -202,7 +203,7 @@ object TransactionLogger {
 
         builder.setDescription("Moderator ${mod.asMention} ${text.lowercase()} the banner")
 
-        builder.addField("Banner", activator.title, true)
+        builder.addField("Banner", banner.name, true)
 
         modChannel.sendMessageEmbeds(builder.build())
             .setAllowedMentions(ArrayList())
@@ -215,10 +216,10 @@ object TransactionLogger {
 
         val builder = EmbedBuilder()
 
-        val text = if (card in CardData.deactivatedCards) {
-            "Deactivated"
-        } else {
+        val text = if (card.activated) {
             "Activated"
+        } else {
+            "Deactivated"
         }
 
         builder.setTitle("Card $text")

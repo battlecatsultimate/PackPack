@@ -4,9 +4,9 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
-import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
@@ -49,7 +49,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
     private val selectedCard = ArrayList<Card>()
 
     private var page = 0
-    private var banner = intArrayOf(-1, -1)
+    private var banner = Banner.NONE
 
     init {
         filterCards()
@@ -144,12 +144,11 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
                 val value = event.values[0]
 
-                banner = if (value == "all") {
-                    intArrayOf(-1, -1)
-                } else {
-                    val data = value.split("-")
-
-                    intArrayOf(data[1].toInt(), data[2].toInt())
+                banner = when(value) {
+                    "all" -> Banner.NONE
+                    "seasonal" -> Banner.SEASONAL
+                    "collab" -> Banner.COLLABORATION
+                    else -> CardData.banners[value.toInt()]
                 }
 
                 filterCards()
@@ -300,21 +299,21 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
     private fun filterCards() {
         cards.clear()
 
-        if (banner[0] == -1) {
+        if (banner === Banner.NONE) {
             cards.addAll(
                 inventory.cards.keys.filter { c -> c.tier == tier && c.id !in CardData.bannedT3 }
                     .filter { c ->
                         when (salvageMode) {
-                            CardData.SalvageMode.T2 -> c.isRegularUncommon()
-                            CardData.SalvageMode.SEASONAL -> c.isSeasonalUncommon()
-                            CardData.SalvageMode.COLLAB -> c.isCollaborationUncommon()
+                            CardData.SalvageMode.T2 -> c.cardType == Card.CardType.NORMAL
+                            CardData.SalvageMode.SEASONAL -> c.cardType == Card.CardType.SEASONAL
+                            CardData.SalvageMode.COLLAB -> c.cardType == Card.CardType.COLLABORATION
                             else -> true
                         }
                     }
                     .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.id == c.id}.size > 0 }
             )
         } else {
-            cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] }.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.id == c.id}.size > 0 })
+            cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.banner === banner }.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.id == c.id}.size > 0 })
         }
 
         cards.sortWith(CardComparator())
@@ -354,30 +353,25 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
         if (salvageMode != CardData.SalvageMode.SEASONAL && salvageMode != CardData.SalvageMode.COLLAB && salvageMode != CardData.SalvageMode.T4) {
             val bannerCategoryElements = ArrayList<SelectOption>()
 
-            bannerCategoryElements.add(SelectOption.of("All", "all"))
+            bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(banner === Banner.NONE))
+            bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal").withDefault(banner === Banner.SEASONAL))
+            bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
 
-            if (tier != CardData.Tier.UNCOMMON) {
-                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
-                }
+            val bannerList = if (tier != CardData.Tier.NONE) {
+                CardData.banners.filter { b -> b.category && CardData.cards.any { c -> c.banner === b && c.tier == tier } }
             } else {
-                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                    if (i < 2) {
-                        bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
-                    }
-                }
+                CardData.banners.filter { b -> b.category }
             }
 
-            val bannerCategory = StringSelectMenu.create("category")
-                .addOptions(bannerCategoryElements)
-                .setPlaceholder("Filter Cards by Banners")
+            bannerCategoryElements.addAll(bannerList.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()).withDefault(it === banner) })
 
-            val option = bannerCategoryElements.find { e -> e.value == "category-${tier.ordinal}-${banner[1]}" }
+            if (bannerCategoryElements.size > 1) {
+                val bannerCategory = StringSelectMenu.create("category")
+                    .addOptions(bannerCategoryElements)
+                    .setPlaceholder("Filter Cards by Banners")
 
-            if (option != null)
-                bannerCategory.setDefaultOptions(option)
-
-            rows.add(ActionRow.of(bannerCategory.build()))
+                rows.add(ActionRow.of(bannerCategory.build()))
+            }
         }
 
         val dataSize = cards.size
@@ -405,12 +399,12 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
         rows.add(ActionRow.of(cardCategory))
 
-        var totPage = getTotalPage(dataSize, PAGE_CHUNK)
+        val totalPage = getTotalPage(dataSize, PAGE_CHUNK)
 
         if (dataSize > PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 if(page - 10 < 0) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
                 } else {
@@ -424,14 +418,14 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
             }
 
-            if(page + 1 >= totPage) {
+            if(page + 1 >= totalPage) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
             } else {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
             }
 
-            if(totPage > 10) {
-                if(page + 10 >= totPage) {
+            if(totalPage > 10) {
+                if(page + 10 >= totalPage) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
                 } else {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
@@ -448,9 +442,9 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
         val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.id !in CardData.bannedT3 }
             .filter { c ->
                 when (salvageMode) {
-                    CardData.SalvageMode.T2 -> c.id in BannerFilter.Banner.TheAlmighties.getBannerData() || c.id in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
-                    CardData.SalvageMode.SEASONAL -> c.id in BannerFilter.Banner.Seasonal.getBannerData()
-                    CardData.SalvageMode.COLLAB -> c.id in BannerFilter.Banner.Collaboration.getBannerData()
+                    CardData.SalvageMode.T2 -> c.isRegularUncommon
+                    CardData.SalvageMode.SEASONAL -> c.isSeasonalUncommon
+                    CardData.SalvageMode.COLLAB -> c.isCollaborationUncommon
                     else -> true
                 }
             }

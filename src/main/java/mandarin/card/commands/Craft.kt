@@ -4,7 +4,7 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.filter.BannerFilter
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.holder.CardCraftModeHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
@@ -69,7 +69,7 @@ class Craft : Command(CommonStatic.Lang.Locale.EN, false) {
                 .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T2))
         )
 
-        val seasonalCards = CardData.cards.filter { c -> c.id in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
+        val seasonalCards = CardData.cards.filter { c -> c.cardType == Card.CardType.SEASONAL }.filter { c -> c.banner in CardData.activatedBanners }
 
         if (seasonalCards.isNotEmpty()) {
             options.add(
@@ -79,7 +79,7 @@ class Craft : Command(CommonStatic.Lang.Locale.EN, false) {
             )
         }
 
-        val collaborationCards = CardData.cards.filter { c -> c.id in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
+        val collaborationCards = CardData.cards.filter { c -> c.cardType == Card.CardType.COLLABORATION }.filter { c -> c.banner in CardData.activatedBanners }
 
         if (collaborationCards.isNotEmpty()) {
             options.add(

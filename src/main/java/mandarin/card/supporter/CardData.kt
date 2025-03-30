@@ -72,158 +72,17 @@ object CardData {
         rgb(218,232,240)
     )
 
-    //Stored as uber ID
-    val bannerData = arrayOf(
-        //Tier 0
-        arrayOf(
-            arrayOf()
-        ),
-        //Tier 1
-        arrayOf(
-            //Dark Heroes
-            arrayOf(194, 195, 196, 212, 226, 261, 431, 533, 634, 698, 774),
-            //Dragon Emperors
-            arrayOf(83, 84, 85, 86, 87, 177, 396, 505, 620, 660, 760),
-            //Dynamites
-            arrayOf(42, 43, 44, 57, 59, 143, 427, 519, 617, 668, 763),
-            //Elemental Pixies
-            arrayOf(359, 360, 361, 401, 569, 631, 655, 719),
-            //Galaxy Gals
-            arrayOf(75, 76, 105, 106, 107, 159, 351, 502, 619, 647, 733),
-            //Iron Legion
-            arrayOf(304, 305, 306, 355, 417, 594, 632, 674, 715),
-            //Sengoku Wargods
-            arrayOf(71, 72, 73, 124, 125, 158, 338, 496, 618, 649, 754),
-            //The Nekoluga Family
-            arrayOf(34, 168, 169, 170, 171, 240, 436, 546, 625, 712),
-            //Ultra Souls
-            arrayOf(134, 135, 136, 137, 138, 203, 322, 525, 633, 692, 769),
-            //???
-            arrayOf(-1000)
-        ),
-        //Tier 2
-        arrayOf(
-            //Girls and Monsters
-            arrayOf(334, 335, 336, 357, 358, 607, 682, 725),
-            //The Almighties
-            arrayOf(257, 258, 259, 271, 272, 316, 439, 534, 642, 723),
-
-            //Seasonal Total
-            arrayOf(
-                587, 588, 644, 648, 693, 330, 331, 595, 699, 661, 711, 274, 275, 354, 438, 494, 563,
-                564, 614, 666, 714, 229, 230, 302, 570, 683, 241, 242, 243, 310, 526, 584, 687, 736,
-                737, 756, 759, 772, 777
-            ),
-
-            //Collaboration Total
-            arrayOf(
-                222, 223, 224, 225, 467, 468, 469, 470, 471, 555, 326, 362, 363, 364, 365, 366, 367, 368, 456, 535, 536,
-                537, 560, 582, 583, 590, 119, 185, 186, 187, 188, 345, 346, 506, 412, 413, 414, 415,
-                416, 487, 488, 547, 548, 549, 550, 551, 709, 710, 393, 394, 395, 596, 597, 598, 599,
-                600, 671, 624, 721, 180, 270, 341, 482, 511, 512, 513, 514, 515, 516, 517, 571, 572,
-                573, 574, 680, 681, 174, 222, 223, 224, 225, 66, 161, 337, 485, 530, 722, 727, 741,
-                746, 747, 748, 749, 288, 289, 290, 291, 292, 440, 778
-            ),
-
-            //Season
-
-            //Valentine
-            arrayOf(587, 588, 644),
-            //Whiteday
-            arrayOf(648, 693, 736),
-            //Easter
-            arrayOf(330, 331, 595, 699, 737),
-            //June Bride
-            arrayOf(661, 711, 756),
-            //Summer Gals
-            arrayOf(274, 275, 354, 438, 494, 563, 564, 614, 666, 714, 759),
-            //Halloweens
-            arrayOf(229, 230, 302, 570, 683, 772),
-            //X-Mas
-            arrayOf(241, 242, 243, 310, 526, 584, 687, 777),
-
-            //Collaboration
-
-            //Bikkuriman
-            arrayOf(467, 468, 469, 470, 471, 555),
-            //Crash Fever
-            arrayOf(326),
-            //Fate
-            arrayOf(362, 363, 364, 365, 366, 367, 368, 456),
-            //Miku
-            arrayOf(535, 536, 537, 560, 582, 583, 590, 722),
-            //Merc
-            arrayOf(119, 185, 186, 187, 188, 345, 346, 506),
-            //Evangelion
-            arrayOf(412, 413, 414, 415, 416, 487, 488, 547, 548, 549, 550, 551, 709, 710),
-            //Power Pro
-            arrayOf(393, 394, 395),
-            //Ranma
-            arrayOf(596, 597, 598, 599, 600, 671),
-            //River City
-            arrayOf(624, 721),
-            //Shoumetsu
-            arrayOf(180, 270, 341, 482),
-            //SF
-            arrayOf(511, 512, 513, 514, 515, 516, 517, 571, 572, 573, 574, 680, 681),
-            //Mola
-            arrayOf(174),
-            //Metal
-            arrayOf(222, 223, 224, 225, 727),
-            //Princess Punt
-            arrayOf(66, 161, 337, 485, 530),
-            //Tower of Savior
-            arrayOf(741),
-            //Rurouni Kenshin
-            arrayOf(746, 747, 748, 749),
-            //PMMM
-            arrayOf(288, 289, 290, 291, 292, 440, 778),
-            //???
-            arrayOf(-1001)
-        ),
-        //Tier 3
-        arrayOf(
-            //Epicfest Exclusives
-            arrayOf(333, 378, 441, 543, 609, 657, 705),
-            //Uberfest Exclusives
-            arrayOf(269, 318, 380, 529, 585, 641, 690, 779),
-            //Other Exclusives
-            arrayOf(283, 286, 397, 559, 612, 686, 758),
-            //LilValk
-            arrayOf(435),
-            //Dark Lil valk
-            arrayOf(484),
-            //Trixi
-            arrayOf(758),
-            //???
-            arrayOf(-1002)
-        ),
-        //Tier 4
-        arrayOf(
-            //Collab LR
-
-            //Bikkuriman
-            arrayOf(466),
-            //SF
-            arrayOf(510),
-            //???
-            arrayOf(-1003)
-        )
-    )
-
     val bannedT3 = arrayOf(435, 484, 758)
 
     val busters = arrayOf(283, 286, 397, 559, 612, 686)
 
     val regularLegend = arrayOf(481, 450, 455, 478, 449, 463, 448, 461, 451, 544, 493)
 
-    val deactivatedCards = HashSet<Card>()
-
     var inventories = HashMap<Long, Inventory>()
 
     val taxedCatFoods = PositiveMap<Long, Long>()
 
-    val activatedBanners = ArrayList<Activator>()
+    val activatedBanners = ArrayList<Banner>()
 
     val cooldown = HashMap<Long, HashMap<String, Long>>()
     val slotCooldown = HashMap<Long, HashMap<String, Long>>()
@@ -430,38 +289,6 @@ object CardData {
         val roleList = member.roles.map { r -> r.id }
 
         return organizer in roleList
-    }
-
-    fun appendUncommon(): List<Card> {
-        val result = ArrayList(uncommon)
-
-        activatedBanners.filter { b -> b.tier == Tier.UNCOMMON }.forEach { b ->
-            result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == b.tier } })
-        }
-
-        return result
-    }
-
-    fun appendUltra(): List<Card> {
-        val result = ArrayList(ultraRare)
-
-        activatedBanners.filter { b -> b.tier == Tier.ULTRA }.forEach { b ->
-            result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == b.tier } })
-        }
-
-        return result
-    }
-
-    fun appendLR(): List<Card> {
-        val result = ArrayList(legendRare)
-
-        if (Activator.Bikkuriman in activatedBanners) {
-            result.addAll(bannerData[Tier.LEGEND.ordinal][0].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == Tier.LEGEND } })
-        } else if (Activator.StreetFighters in activatedBanners) {
-            result.addAll(bannerData[Tier.LEGEND.ordinal][1].mapNotNull { i -> cards.find { c -> c.id == i && c.tier == Tier.LEGEND } })
-        }
-
-        return result
     }
 
     fun getUnixEpochTime() : Long {

@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder.moderation
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
@@ -25,7 +26,7 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
 
     private var page = 0
     private var tier = CardData.Tier.NONE
-    private var banner = intArrayOf(-1, -1)
+    private var banner = Banner.NONE
 
     init {
         registerAutoExpiration(FIVE_MIN)
@@ -42,12 +43,11 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
 
                 val value = event.values[0]
 
-                banner = if (value == "all") {
-                    intArrayOf(-1, -1)
-                } else {
-                    val data = value.split("-")
-
-                    intArrayOf(data[1].toInt(), data[2].toInt())
+                banner = when(value) {
+                    "all" -> Banner.NONE
+                    "seasonal" -> Banner.SEASONAL
+                    "collab" -> Banner.COLLABORATION
+                    else -> CardData.banners[value.toInt()]
                 }
 
                 page = 0
@@ -71,9 +71,7 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
                     CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
-                banner[0] = -1
-                banner[1] = -1
-
+                banner = Banner.NONE
                 page = 0
 
                 filterCards()
@@ -140,20 +138,16 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
     private fun filterCards() {
         cards.clear()
 
-        val tempCards = CardData.cards
+        cards.addAll(CardData.cards)
+
+        val collectedCards = banner.collectCards()
+
+        if (banner !== Banner.NONE) {
+            cards.removeIf { c -> c !in collectedCards }
+        }
 
         if (tier != CardData.Tier.NONE) {
-            if (banner[0] == -1) {
-                cards.addAll(tempCards.filter { c -> c.tier == tier })
-            } else {
-                cards.addAll(tempCards.filter { c -> c.tier == tier && c.id in CardData.bannerData[tier.ordinal][banner[1]] })
-            }
-        } else {
-            if (banner[0] == -1) {
-                cards.addAll(tempCards)
-            } else {
-                cards.addAll(tempCards.filter { c -> c.id in CardData.bannerData[banner[0]][banner[1]] })
-            }
+            cards.removeIf { c -> c.tier != tier }
         }
 
         cards.sortWith(CardComparator())
@@ -204,36 +198,25 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
 
         val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+        bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(banner === Banner.NONE))
+        bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal").withDefault(banner === Banner.SEASONAL))
+        bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
 
-        if (tier == CardData.Tier.NONE) {
-            CardData.bannerCategoryText.forEachIndexed { index, array ->
-                array.forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
-                }
-            }
+        val bannerList = if (tier != CardData.Tier.NONE) {
+            CardData.banners.filter { b -> b.category && CardData.cards.any { c -> c.banner === b && c.tier == tier } }
         } else {
-            CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
-            }
+            CardData.banners.filter { b -> b.category }
         }
 
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
+        bannerCategoryElements.addAll(bannerList.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()).withDefault(it === banner) })
 
-        val id = if (tier == CardData.Tier.NONE) {
-            "category-${banner[0]}-${banner[1]}"
-        } else {
-            "category-${tier.ordinal}-${banner[1]}"
+        if (bannerCategoryElements.size > 1) {
+            val bannerCategory = StringSelectMenu.create("category")
+                .addOptions(bannerCategoryElements)
+                .setPlaceholder("Filter Cards by Banners")
+
+            rows.add(ActionRow.of(bannerCategory.build()))
         }
-
-        val option = bannerCategoryElements.find { e -> e.value == id }
-
-        if (option != null)
-            bannerCategory.setDefaultOptions(option)
-
-        rows.add(ActionRow.of(bannerCategory.build()))
 
         val dataSize = cards.size
 
@@ -260,8 +243,7 @@ class CardRankingSelectHolder(author: Message, userID: String, channelID: String
 
         rows.add(ActionRow.of(cardCategory))
 
-
-        var totalPage = getTotalPage(dataSize)
+        val totalPage = getTotalPage(dataSize)
 
         if (dataSize > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()

@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
 
@@ -32,7 +33,7 @@ class BannerManageHolder(author: Message, userID: String, channelID: String, mes
         }
 
     init {
-        registerAutoExpiration(FIVE_MIN)
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {

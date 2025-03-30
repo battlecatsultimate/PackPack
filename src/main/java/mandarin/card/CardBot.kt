@@ -922,11 +922,15 @@ object CardBot : ListenerAdapter() {
         }
 
         if (obj.has("activatedBanners")) {
-            CardData.activatedBanners.addAll(
-                obj.getAsJsonArray("activatedBanners").map {
-                    Activator.valueOf(it.asString)
+            obj.getAsJsonArray("activatedBanners").filterIsInstance<JsonObject>().forEach { o ->
+                val banner = Banner.fromJson(o)
+
+                if (banner === Banner.NONE) {
+                    return@forEach
                 }
-            )
+
+                CardData.activatedBanners.add(banner)
+            }
         }
 
         if (obj.has("notifierGroup")) {
@@ -1154,14 +1158,6 @@ object CardBot : ListenerAdapter() {
         if (obj.has("purchaseNotifier")) {
             obj.getAsJsonArray("purchaseNotifier").forEach { e ->
                 CardData.purchaseNotifier.add(e.asLong)
-            }
-        }
-
-        if (obj.has("deactivatedCards")) {
-            obj.getAsJsonArray("deactivatedCards").forEach { e ->
-                val card = CardData.cards.find { c -> c.id == e.asInt } ?: return@forEach
-
-                CardData.deactivatedCards.add(card)
             }
         }
 
@@ -1431,14 +1427,6 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("purchaseNotifier", purchaseNotifier)
-
-        val deactivatedCards = JsonArray()
-
-        CardData.deactivatedCards.forEach { card ->
-            deactivatedCards.add(card.id)
-        }
-
-        obj.add("deactivatedCards", deactivatedCards)
 
         val cards = JsonArray()
 

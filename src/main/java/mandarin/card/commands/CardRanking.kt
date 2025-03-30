@@ -86,19 +86,19 @@ class CardRanking : Command(CommonStatic.Lang.Locale.EN, false) {
 
         val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+        bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(true))
+        bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal"))
+        bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab"))
 
-        CardData.bannerCategoryText.forEachIndexed { index, array ->
-            array.forEachIndexed { i, a ->
-                bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
-            }
+        bannerCategoryElements.addAll(CardData.banners.filter { b -> b.category }.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()) })
+
+        if (bannerCategoryElements.size > 1) {
+            val bannerCategory = StringSelectMenu.create("category")
+                .addOptions(bannerCategoryElements)
+                .setPlaceholder("Filter Cards by Banners")
+
+            rows.add(ActionRow.of(bannerCategory.build()))
         }
-
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
-
-        rows.add(ActionRow.of(bannerCategory.build()))
 
         val cards = CardData.cards.sortedWith(CardComparator())
         val dataSize = cards.size

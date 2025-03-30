@@ -6,7 +6,6 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
-import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.CraftAmountHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
@@ -212,9 +211,9 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
         CardData.activatedBanners
 
         val cards = when(craftMode) {
-            CardData.CraftMode.T2 -> CardData.cards.filter { c -> c.id > 0 && c.id in BannerFilter.Banner.TheAlmighties.getBannerData() || c.id in BannerFilter.Banner.GirlsAndMonsters.getBannerData() }
-            CardData.CraftMode.SEASONAL -> CardData.cards.filter { c -> c.id > 0 && c.id in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
-            CardData.CraftMode.COLLAB -> CardData.cards.filter { c -> c.id > 0 && c.id in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.id in CardData.bannerData[a.tier.ordinal][a.banner] } }
+            CardData.CraftMode.T2 -> CardData.cards.filter { c -> c.isRegularUncommon }
+            CardData.CraftMode.SEASONAL -> CardData.cards.filter { c -> c.isSeasonalUncommon }
+            CardData.CraftMode.COLLAB -> CardData.cards.filter { c -> c.isCollaborationUncommon }
             CardData.CraftMode.T3 -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA && c.id > 0 && c.id !in CardData.bannedT3 }
             CardData.CraftMode.T4 -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND && c.id > 0 }
         }
@@ -236,24 +235,24 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
 
         val builder = StringBuilder("### Craft Result [${result.size} $card in total]\n\n")
 
-        for (card in result) {
+        for (c in result) {
             builder.append("- ")
 
-            if (card.tier == CardData.Tier.ULTRA) {
+            if (c.tier == CardData.Tier.ULTRA) {
                 builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-            } else if (card.tier == CardData.Tier.LEGEND) {
+            } else if (c.tier == CardData.Tier.LEGEND) {
                 builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
             }
 
-            builder.append(card.cardInfo())
+            builder.append(c.cardInfo())
 
-            if (!inventory.cards.containsKey(card)) {
+            if (!inventory.cards.containsKey(c)) {
                 builder.append(" {**NEW**}")
             }
 
-            if (card.tier == CardData.Tier.ULTRA) {
+            if (c.tier == CardData.Tier.ULTRA) {
                 builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-            } else if (card.tier == CardData.Tier.LEGEND) {
+            } else if (c.tier == CardData.Tier.LEGEND) {
                 builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
             }
 
@@ -271,11 +270,11 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
             val links = ArrayList<String>()
             val files = ArrayList<FileUpload>()
 
-            newCards.forEachIndexed { index, card ->
-                val skin = inventory.equippedSkins[card]
+            newCards.forEachIndexed { index, c ->
+                val skin = inventory.equippedSkins[c]
 
                 if (skin == null) {
-                    files.add(FileUpload.fromData(card.cardImage, "card$index.png"))
+                    files.add(FileUpload.fromData(c.cardImage, "card$index.png"))
                     links.add("attachment://card$index.png")
                 } else {
                     skin.cache(event.jda, true)

@@ -6,6 +6,8 @@ import mandarin.card.supporter.CardData
 class Banner(var name: String, var category: Boolean) {
     companion object {
         val NONE = Banner("None", false)
+        val SEASONAL = Banner("Seasonal", false)
+        val COLLABORATION = Banner("Collaboration", false)
 
         fun fromJson(obj: JsonObject) : Banner {
             if (!obj.has("name") || !obj.has("category")) {
@@ -38,5 +40,17 @@ class Banner(var name: String, var category: Boolean) {
         obj.addProperty("category", category)
 
         return obj
+    }
+
+    fun collectCards() : List<Card> {
+        return if (this === NONE) {
+            ArrayList(CardData.cards)
+        } else if (this === SEASONAL) {
+            CardData.cards.filter { c -> c.cardType == Card.CardType.SEASONAL }
+        } else if (this === COLLABORATION) {
+            CardData.cards.filter { c -> c.cardType == Card.CardType.COLLABORATION }
+        } else {
+            CardData.cards.filter { c -> c.banner === this }
+        }
     }
 }

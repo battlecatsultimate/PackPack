@@ -3,7 +3,6 @@ package mandarin.card.supporter.holder.pack
 import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardPack
@@ -25,7 +24,6 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
 import kotlin.math.min
 
 class BannerCostHolder(author: Message, userID: String, channelID: String, message: Message, private val pack: CardPack, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -54,7 +52,7 @@ class BannerCostHolder(author: Message, userID: String, channelID: String, messa
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                val banner = BannerFilter.Banner.valueOf(event.values[0])
+                val banner = CardData.banners[event.values.first().toInt()]
 
                 cardCost.banner = banner
 
@@ -185,12 +183,12 @@ class BannerCostHolder(author: Message, userID: String, channelID: String, messa
 
         val options = ArrayList<SelectOption>()
 
-        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, BannerFilter.pureBanners.size)
+        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, CardData.banners.size)
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            val bannerName = BannerFilter.getBannerName(BannerFilter.pureBanners[i])
+            val bannerName = CardData.banners[i].name
 
-            options.add(SelectOption.of(bannerName, BannerFilter.pureBanners[i].name))
+            options.add(SelectOption.of(bannerName, i.toString()))
         }
 
         result.add(
@@ -202,7 +200,7 @@ class BannerCostHolder(author: Message, userID: String, channelID: String, messa
             )
         )
 
-        val totalPage = ceil(BannerFilter.pureBanners.size * 1.0 / SearchHolder.PAGE_CHUNK)
+        val totalPage = getTotalPage(CardData.banners.size)
 
         val buttons = ArrayList<Button>()
 
@@ -246,12 +244,12 @@ class BannerCostHolder(author: Message, userID: String, channelID: String, messa
             .append(cardCost.amount)
             .append("\n\n")
 
-        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, BannerFilter.pureBanners.size)
+        val size = min((page + 1) * SearchHolder.PAGE_CHUNK, CardData.banners.size)
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            val bannerName = BannerFilter.getBannerName(BannerFilter.pureBanners[i])
+            val bannerName = CardData.banners[i].name
 
-            val checkSymbol = if (BannerFilter.pureBanners[i] == cardCost.banner) {
+            val checkSymbol = if (CardData.banners[i] === cardCost.banner) {
                 EmojiStore.SWITCHON.formatted
             } else {
                 EmojiStore.SWITCHOFF.formatted

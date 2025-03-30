@@ -71,17 +71,17 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
             retriever.get() ?: return
         }
 
-        val member = member ?: m
+        val finalMember = member ?: m
 
-        if (m.id != member.id && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL && !CardData.isOrganizer(m)) {
+        if (m.id != finalMember.id && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL && !CardData.isOrganizer(m)) {
             replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", loader.message) { a -> a }
 
             return
         }
 
-        val inventory = Inventory.getInventory(member.idLong)
+        val inventory = Inventory.getInventory(finalMember.idLong)
 
-        replyToMessageSafely(ch, getText(member, inventory), author, { a ->
+        replyToMessageSafely(ch, getText(finalMember, inventory), author, { a ->
             val rows = ArrayList<ActionRow>()
 
             val tierCategoryElements = ArrayList<SelectOption>()
@@ -111,19 +111,19 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             val bannerCategoryElements = ArrayList<SelectOption>()
 
-            bannerCategoryElements.add(SelectOption.of("All", "all"))
+            bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(true))
+            bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal"))
+            bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab"))
 
-            CardData.bannerCategoryText.forEachIndexed { index, array ->
-                array.forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
-                }
+            bannerCategoryElements.addAll(CardData.banners.filter { b -> b.category }.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()) })
+
+            if (bannerCategoryElements.size > 1) {
+                val bannerCategory = StringSelectMenu.create("category")
+                    .addOptions(bannerCategoryElements)
+                    .setPlaceholder("Filter Cards by Banners")
+
+                rows.add(ActionRow.of(bannerCategory.build()))
             }
-
-            val bannerCategory = StringSelectMenu.create("category")
-                .addOptions(bannerCategoryElements)
-                .setPlaceholder("Filter Cards by Banners")
-
-            rows.add(ActionRow.of(bannerCategory.build()))
 
             val cards = inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
             val dataSize = cards.size
@@ -183,7 +183,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             return@replyToMessageSafely a.setComponents(rows)
         }, { msg ->
-            StaticStore.putHolder(m.id, CardInventoryHolder(author, m.id, ch.id, msg, inventory, member))
+            StaticStore.putHolder(m.id, CardInventoryHolder(author, m.id, ch.id, msg, inventory, finalMember))
         })
     }
 

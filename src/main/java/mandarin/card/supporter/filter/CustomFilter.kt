@@ -3,6 +3,7 @@ package mandarin.card.supporter.filter
 import common.pack.UserProfile
 import common.util.Data
 import common.util.Data.Proc.WAVEI
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import java.util.function.Function
 
@@ -26,7 +27,9 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
 
                 val u = UserProfile.getBCData().units[c.id] ?: return@CustomFilter false
 
-                if (c.id in BannerFilter.Banner.TheNekolugaFamily.getBannerData()) {
+                val nekoLuga = Banner.fromName("The Nekoluga Family")
+
+                if (c.banner === nekoLuga) {
                     u.forms.any { f -> f.fid != 0 && !f.du.isRange }
                 } else {
                     u.forms.any { f -> !f.du.isRange }

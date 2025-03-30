@@ -3,6 +3,8 @@ package mandarin.card.supporter
 import common.pack.UserProfile
 import common.util.Data
 import common.util.unit.Trait
+import mandarin.card.supporter.card.Banner
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.filter.*
 
 class Product(val requiredFilter: Int, vararg filters: Filter) {
@@ -66,22 +68,34 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         )
 
         val seasonal = Product(1,
-            BannerFilter(BannerFilter.Banner.Seasonal, 3, "3 Seasonal Units")
+            CustomFilter(3, "3 Seasonal Units") { c ->
+                return@CustomFilter c.cardType == Card.CardType.SEASONAL && c.tier == CardData.Tier.UNCOMMON
+            }
         )
 
         val ramiel = Product(1,
-            BannerFilter(BannerFilter.Banner.Collaboration, 3, "3 Collaboration Units")
+            CustomFilter(3, "3 Seasonal Units") { c ->
+                return@CustomFilter c.cardType == Card.CardType.COLLABORATION && c.tier == CardData.Tier.UNCOMMON
+            }
         )
 
         @Suppress("unused")
         val customEmoji = Product(1,
-            BannerFilter(BannerFilter.Banner.UberfestExclusives, 5, "5 Uberfest Exclusive Units"),
-            BannerFilter(BannerFilter.Banner.EpicfestExclusives, 5, "5 Epicfest Exclusive Units"),
-            BannerFilter(BannerFilter.Banner.BusterExclusives, 5, "5 Buster Exclusive Units")
+            CustomFilter(5, "5 Uberfest Exclusive Units") { c ->
+                c.banner === Banner.fromName("Uberfest Exclusive")
+            },
+            CustomFilter(5, "5 Epicfest Exclusive Units") { c ->
+                c.banner === Banner.fromName("Epicfest Exclusive")
+            },
+            CustomFilter(5, "5 Buster Exclusive Units") { c ->
+                c.banner === Banner.fromName("Buster Exclusive")
+            }
         )
 
         val customRole = Product(1,
-            BannerFilter(BannerFilter.Banner.LegendRare, 10, "10 Legend Rare Units")
+            CustomFilter(10, "10 Legend Rare Units") { c ->
+                return@CustomFilter c.tier == CardData.Tier.LEGEND
+            }
         )
 
         private fun getTrait(trait: Byte) : Trait {

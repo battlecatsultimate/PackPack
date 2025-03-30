@@ -2,6 +2,7 @@ package mandarin.card.commands
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.moderation.CardActivateHolder
@@ -22,7 +23,7 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
     private val cards = ArrayList<Card>(CardData.cards.sortedWith(CardComparator()))
 
     private var tier = CardData.Tier.NONE
-    private var banner = intArrayOf(-1, -1)
+    private var banner = Banner.NONE
 
     override fun doSomething(loader: CommandLoader) {
         if (loader.member.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member))
@@ -69,36 +70,25 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+        bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(banner === Banner.NONE))
+        bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal").withDefault(banner === Banner.SEASONAL))
+        bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
 
-        if (tier == CardData.Tier.NONE) {
-            CardData.bannerCategoryText.forEachIndexed { index, array ->
-                array.forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
-                }
-            }
+        val bannerList = if (tier != CardData.Tier.NONE) {
+            CardData.banners.filter { b -> b.category && CardData.cards.any { c -> c.banner === b && c.tier == tier } }
         } else {
-            CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
-            }
+            CardData.banners.filter { b -> b.category }
         }
 
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
+        bannerCategoryElements.addAll(bannerList.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()).withDefault(it === banner) })
 
-        val id = if (tier == CardData.Tier.NONE) {
-            "category-${banner[0]}-${banner[1]}"
-        } else {
-            "category-${tier.ordinal}-${banner[1]}"
+        if (bannerCategoryElements.size > 1) {
+            val bannerCategory = StringSelectMenu.create("category")
+                .addOptions(bannerCategoryElements)
+                .setPlaceholder("Filter Cards by Banners")
+
+            rows.add(ActionRow.of(bannerCategory.build()))
         }
-
-        val option = bannerCategoryElements.find { e -> e.value == id }
-
-        if (option != null)
-            bannerCategory.setDefaultOptions(option)
-
-        rows.add(ActionRow.of(bannerCategory.build()))
 
         val dataSize = cards.size
 
@@ -134,14 +124,14 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
             val buttons = ArrayList<Button>()
 
             if(totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS))
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
 
             rows.add(ActionRow.of(buttons))
         }
@@ -168,10 +158,10 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
             for (i in 0 until min(CardActivateHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
-                if (cards[i] in CardData.deactivatedCards)
-                    builder.append(" ").append(deactivate)
-                else
+                if (cards[i].activated)
                     builder.append(" ").append(activate)
+                else
+                    builder.append(" ").append(deactivate)
 
                 builder.append("\n")
             }

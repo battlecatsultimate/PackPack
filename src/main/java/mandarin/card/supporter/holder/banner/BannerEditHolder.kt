@@ -20,10 +20,11 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.util.concurrent.TimeUnit
 
 class BannerEditHolder(author: Message, userID: String, channelID: String, message: Message, private val banner: Banner, private val createMode: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
-        registerAutoExpiration(FIVE_MIN)
+        registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -136,7 +137,7 @@ class BannerEditHolder(author: Message, userID: String, channelID: String, messa
             EmojiStore.SWITCHOFF
 
         result.add(ActionRow.of(
-            Button.secondary("category", "Include into Category").withEmoji(category).withDisabled(!banner.category && CardData.banners.count { b -> b.category } >= SelectMenu.OPTIONS_MAX_AMOUNT)
+            Button.secondary("category", "Include into Category").withEmoji(category).withDisabled(!banner.category && CardData.banners.count { b -> b.category } >= SelectMenu.OPTIONS_MAX_AMOUNT - 3)
         ))
 
         if (createMode) {
