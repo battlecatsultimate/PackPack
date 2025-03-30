@@ -41,7 +41,7 @@ switch (OperatingSystem.current()) {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:5.3.0'
+    implementation 'net.dv8tion:JDA:5.3.1'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.json:json:20240303'
     implementation 'org.jetbrains:annotations:26.0.1'
