@@ -43,11 +43,15 @@ class CardIDHolder(author: Message, userID: String, channelID: String, message: 
                 .setContent("There's already a card with ID of ${-abs(id)}!")
                 .setEphemeral(true)
                 .queue()
-        } else if (card.tier != CardData.Tier.SPECIAL && CardData.cards.filter { c -> c !== card && c.tier != CardData.Tier.SPECIAL }.any { c -> c.id == card.id }) {
+
+            return
+        } else if (card.tier != CardData.Tier.SPECIAL && CardData.cards.filter { c -> c !== card && c.tier != CardData.Tier.SPECIAL }.any { c -> c.id == id }) {
             event.deferReply()
                 .setContent("There's already a card with ID of $id!")
                 .setEphemeral(true)
                 .queue()
+
+            return
         }
 
         val previousID = card.id
