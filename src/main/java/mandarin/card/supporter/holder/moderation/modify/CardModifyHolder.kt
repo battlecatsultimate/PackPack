@@ -375,6 +375,29 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
             rows.add(ActionRow.of(bannerCategory.build()))
         }
 
+        val cardCategoryElements = ArrayList<SelectOption>()
+
+        if (cards.isEmpty()) {
+            cardCategoryElements.add(SelectOption.of("a", "-1"))
+        } else {
+            for(i in page * SearchHolder.PAGE_CHUNK until min(cards.size, (page + 1 ) * SearchHolder.PAGE_CHUNK)) {
+                cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
+            }
+        }
+
+        val cardCategory = StringSelectMenu.create("card")
+            .addOptions(cardCategoryElements)
+            .setPlaceholder(
+                if (cards.isEmpty())
+                    "No Cards To Select"
+                else
+                    "Select Card"
+            )
+            .setDisabled(cards.isEmpty())
+            .build()
+
+        rows.add(ActionRow.of(cardCategory))
+
         val totalPage = Holder.getTotalPage(cards.size)
 
         if (cards.size > SearchHolder.PAGE_CHUNK) {
