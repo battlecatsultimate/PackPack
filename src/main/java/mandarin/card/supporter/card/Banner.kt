@@ -53,4 +53,8 @@ class Banner(var name: String, var category: Boolean) {
             CardData.cards.filter { c -> c.banner === this }
         }
     }
+
+    override fun toString(): String {
+        return "Banner [$name <$category>]"
+    }
 }
