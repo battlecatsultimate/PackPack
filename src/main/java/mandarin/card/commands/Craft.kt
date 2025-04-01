@@ -69,7 +69,7 @@ class Craft : Command(CommonStatic.Lang.Locale.EN, false) {
                 .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T2))
         )
 
-        val seasonalCards = CardData.cards.filter { c -> c.cardType == Card.CardType.SEASONAL }.filter { c -> c.banner in CardData.activatedBanners }
+        val seasonalCards = CardData.cards.filter { c -> c.cardType == Card.CardType.SEASONAL }.filter { c -> c.banner.any { b -> b in CardData.activatedBanners } }
 
         if (seasonalCards.isNotEmpty()) {
             options.add(
@@ -79,7 +79,7 @@ class Craft : Command(CommonStatic.Lang.Locale.EN, false) {
             )
         }
 
-        val collaborationCards = CardData.cards.filter { c -> c.cardType == Card.CardType.COLLABORATION }.filter { c -> c.banner in CardData.activatedBanners }
+        val collaborationCards = CardData.cards.filter { c -> c.cardType == Card.CardType.COLLABORATION }.filter { c -> c.banner.any { b -> b in CardData.activatedBanners } }
 
         if (collaborationCards.isNotEmpty()) {
             options.add(

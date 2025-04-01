@@ -62,7 +62,7 @@ class BannerEditHolder(author: Message, userID: String, channelID: String, messa
                 connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     CardData.banners.remove(banner)
 
-                    CardData.cards.filter { c -> c.banner === banner }.forEach { c -> c.banner = Banner.NONE }
+                    CardData.cards.filter { c -> banner in c.banner }.forEach { c -> c.banner.isEmpty() }
 
                     CardBot.saveCardData()
 

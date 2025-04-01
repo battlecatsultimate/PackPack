@@ -16,9 +16,9 @@ class Pool(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.E
 
         val pool = when(tier) {
             CardData.Tier.COMMON -> CardData.common
-            CardData.Tier.UNCOMMON -> CardData.cards.filter { c -> c.tier == CardData.Tier.UNCOMMON }.filter { c -> c.activated || c.banner in CardData.activatedBanners }
-            CardData.Tier.ULTRA -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA }.filter { c -> c.activated || c.banner in CardData.activatedBanners }
-            CardData.Tier.LEGEND -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND }.filter { c -> c.activated || c.banner in CardData.activatedBanners }
+            CardData.Tier.UNCOMMON -> CardData.cards.filter { c -> c.tier == CardData.Tier.UNCOMMON }.filter { c -> c.activated || c.banner.any { b -> b in CardData.activatedBanners } }
+            CardData.Tier.ULTRA -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA }.filter { c -> c.activated || c.banner.any { b -> b in CardData.activatedBanners } }
+            CardData.Tier.LEGEND -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND }.filter { c -> c.activated || c.banner.any { b -> b in CardData.activatedBanners } }
             else -> return
         }
 

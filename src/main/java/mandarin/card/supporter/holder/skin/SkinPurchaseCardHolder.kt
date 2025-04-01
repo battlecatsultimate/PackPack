@@ -251,7 +251,7 @@ class SkinPurchaseCardHolder(author: Message, userID: String, channelID: String,
         bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
 
         val bannerList = if (tier != CardData.Tier.NONE) {
-            CardData.banners.filter { b -> b.category && CardData.cards.any { c -> c.banner === b && c.tier == tier } }
+            CardData.banners.filter { b -> b.category && CardData.cards.any { c -> b in c.banner && c.tier == tier } }
         } else {
             CardData.banners.filter { b -> b.category }
         }

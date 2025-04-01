@@ -82,13 +82,13 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         @Suppress("unused")
         val customEmoji = Product(1,
             CustomFilter(5, "5 Uberfest Exclusive Units") { c ->
-                c.banner === Banner.fromName("Uberfest Exclusive")
+                Banner.fromName("Uberfest Exclusive") in c.banner
             },
             CustomFilter(5, "5 Epicfest Exclusive Units") { c ->
-                c.banner === Banner.fromName("Epicfest Exclusive")
+                Banner.fromName("Epicfest Exclusive") in c.banner
             },
             CustomFilter(5, "5 Buster Exclusive Units") { c ->
-                c.banner === Banner.fromName("Buster Exclusive")
+                Banner.fromName("Buster Exclusive") in c.banner
             }
         )
 

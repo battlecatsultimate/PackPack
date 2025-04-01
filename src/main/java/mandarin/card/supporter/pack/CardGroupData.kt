@@ -51,12 +51,12 @@ class CardGroupData(
             )
         }
 
-        result.removeIf { c -> !c.activated && c.banner !in CardData.activatedBanners }
+        result.removeIf { c -> !c.activated && !c.banner.any { b -> b in CardData.activatedBanners } }
 
         result.removeIf { c -> c.id < 0 }
 
         for (banner in extra) {
-            result.addAll(CardData.cards.filter { c -> c.banner === banner })
+            result.addAll(CardData.cards.filter { c -> banner in c.banner })
         }
 
         return result.toSet().toList()

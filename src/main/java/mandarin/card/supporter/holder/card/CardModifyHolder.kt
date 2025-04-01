@@ -349,10 +349,10 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
             Card.CardType.APRIL_FOOL -> "April Fools"
         }
 
-        val bannerName = if (card.banner === Banner.NONE) {
+        val bannerName = if (card.banner.isEmpty()) {
             "None"
         } else {
-            card.banner.name
+            card.banner.joinToString { b -> b.name }
         }
 
         val bcCard = if (card.bcCard) {

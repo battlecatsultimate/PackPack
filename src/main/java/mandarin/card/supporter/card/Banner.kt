@@ -50,7 +50,7 @@ class Banner(var name: String, var category: Boolean) {
         } else if (this === COLLABORATION) {
             CardData.cards.filter { c -> c.cardType == Card.CardType.COLLABORATION }
         } else {
-            CardData.cards.filter { c -> c.banner === this }
+            CardData.cards.filter { c -> this in c.banner }
         }
     }
 

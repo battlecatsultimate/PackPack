@@ -29,7 +29,7 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
 
                 val nekoLuga = Banner.fromName("The Nekoluga Family")
 
-                if (c.banner === nekoLuga) {
+                if (nekoLuga in c.banner) {
                     u.forms.any { f -> f.fid != 0 && !f.du.isRange }
                 } else {
                     u.forms.any { f -> !f.du.isRange }

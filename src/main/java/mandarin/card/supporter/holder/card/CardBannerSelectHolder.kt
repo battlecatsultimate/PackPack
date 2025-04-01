@@ -2,7 +2,6 @@ package mandarin.card.supporter.holder.card
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -54,7 +53,7 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
                 applyResult(event)
             }
             "none" -> {
-                card.banner = Banner.NONE
+                card.banner.clear()
 
                 event.deferReply()
                     .setContent("Successfully set the banner to none!")
@@ -70,7 +69,13 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
 
                 val index = event.values.first().toInt()
 
-                card.banner = CardData.banners[index]
+                val banner = CardData.banners[index]
+
+                if (banner in card.banner) {
+                    card.banner.remove(banner)
+                } else {
+                    card.banner.add(banner)
+                }
 
                 event.deferReply()
                     .setContent("Successfully set the banner to `${card.banner}`!")
@@ -108,16 +113,22 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
     }
 
     private fun getContents() : String {
-        val builder = StringBuilder("Select the banner that you want to assign to\nAdditionally, click `None` button for no banner\n\n```md\n")
+        val builder = StringBuilder("Select the banner that you want to assign to\nAdditionally, click `None` button for no banner\n\n")
 
         if (CardData.banners.isEmpty()) {
-            builder.append("No banner\n```")
+            builder.append("- No banner")
         } else {
             for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.banners.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-                builder.append(i + 1).append(". ").append(CardData.banners[i].name).append("\n")
-            }
+                val banner = CardData.banners[i]
 
-            builder.append("```")
+                val switch = if (banner in card.banner) {
+                    EmojiStore.SWITCHON.formatted
+                } else {
+                    EmojiStore.SWITCHOFF.formatted
+                }
+
+                builder.append(i + 1).append(". ").append(banner.name).append(" ").append(switch).append("\n")
+            }
         }
 
         return builder.toString()
@@ -126,13 +137,21 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(Button.secondary("none", "None").withEmoji(EmojiStore.CROSS).withDisabled(card.banner === Banner.NONE)))
+        result.add(ActionRow.of(Button.secondary("none", "None").withEmoji(EmojiStore.CROSS).withDisabled(card.banner.isEmpty())))
 
         val options = ArrayList<SelectOption>()
 
         if (CardData.banners.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.banners.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-                options.add(SelectOption.of(CardData.banners[i].name, i.toString()).withDefault(card.banner == CardData.banners[i]))
+                val banner = CardData.banners[i]
+
+                val switch = if (banner in card.banner) {
+                    EmojiStore.SWITCHON
+                } else {
+                    EmojiStore.SWITCHOFF
+                }
+
+                options.add(SelectOption.of(banner.name, i.toString()).withEmoji(switch))
             }
 
             result.add(ActionRow.of(StringSelectMenu.create("banner").addOptions(options).setPlaceholder("Select banner to assign").build()))

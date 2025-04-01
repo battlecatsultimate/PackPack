@@ -20,7 +20,7 @@ class BannerCardCost(var banner: Banner, amount: Long) : CardCost(CostType.BANNE
     }
 
     override fun filter(c: Card): Boolean {
-        return c.banner === banner
+        return banner in c.banner
     }
 
     override fun getCostName(): String {

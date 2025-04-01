@@ -9,7 +9,7 @@ class CardPayContainer(val cost: CardCost) {
     fun paid() : Boolean {
         when(cost) {
             is BannerCardCost -> {
-                return pickedCards.filter { c -> c.banner === cost.banner }.size.toLong() == cost.amount
+                return pickedCards.filter { c -> cost.banner in c.banner }.size.toLong() == cost.amount
             }
             is TierCardCost -> {
                 return pickedCards.filter { c ->

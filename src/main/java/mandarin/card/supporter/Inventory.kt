@@ -264,7 +264,7 @@ class Inventory(private val id: Long) {
         val cardsTotal = cards.keys.union(favorites.keys)
 
         CardData.banners.filter { b -> b.legendCollector }.forEach { b ->
-            CardData.cards.filter { c -> c.banner === b }.forEach { c ->
+            CardData.cards.filter { c -> b in c.banner }.forEach { c ->
                 if (c !in cardsTotal) {
                     return false
                 }
@@ -287,7 +287,7 @@ class Inventory(private val id: Long) {
         val cardsTotal = this.cards.keys.union(favorites.keys)
 
         CardData.banners.filter { b -> b.legendCollector }.forEach { b ->
-            CardData.cards.filter { c -> c.banner === b }.forEach { c ->
+            CardData.cards.filter { c -> b in c.banner }.forEach { c ->
                 if (c !in cardsTotal) {
                     missingCards.add(c)
                 }

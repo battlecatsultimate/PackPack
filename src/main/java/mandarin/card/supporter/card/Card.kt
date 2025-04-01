@@ -1,7 +1,9 @@
 package mandarin.card.supporter.card
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import common.util.Data
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.CardData.Tier
@@ -54,18 +56,16 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
                 CardType.NORMAL
             }
 
-            card.banner = if (obj.has("banner")) {
-                val banner = obj.get("banner")
+            if (obj.has("banner")) {
+                val element = obj.get("banner")
 
-                if (banner is JsonNull) {
-                    Banner.NONE
-                } else {
-                    val bannerName = banner.asString
-
-                    CardData.banners.find { b -> b.name == bannerName } ?: Banner.NONE
+                if (element is JsonPrimitive) {
+                    card.banner.add(Banner.fromName(element.asString))
+                } else if (element is JsonArray) {
+                    element.asJsonArray.forEach { e ->
+                        card.banner.add(Banner.fromName(e.asString))
+                    }
                 }
-            } else {
-                Banner.NONE
             }
             
             card.tradable = obj.has("tradable") && obj.get("tradable").asBoolean
@@ -78,7 +78,7 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
     var bcCard = false
     var tradable = true
     var cardType = CardType.NORMAL
-    var banner = Banner.NONE
+    val banner = ArrayList<Banner>()
 
     val isRegularUncommon: Boolean
         get() = tier == Tier.UNCOMMON && cardType == CardType.NORMAL
@@ -121,11 +121,13 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
         obj.addProperty("tradable", tradable)
         obj.addProperty("cardType", cardType.name)
 
-        if (banner === Banner.NONE) {
-            obj.add("banner", null)
-        } else {
-            obj.addProperty("banner", banner.name)
+        val banners = JsonArray()
+
+        banner.forEach { b ->
+            banners.add(b.name)
         }
+
+        obj.add("banner", banners)
 
         return obj
     }
