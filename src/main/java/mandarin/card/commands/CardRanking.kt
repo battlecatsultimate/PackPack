@@ -87,9 +87,6 @@ class CardRanking : Command(CommonStatic.Lang.Locale.EN, false) {
         val bannerCategoryElements = ArrayList<SelectOption>()
 
         bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(true))
-        bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal"))
-        bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab"))
-
         bannerCategoryElements.addAll(CardData.banners.filter { b -> b.category }.map { SelectOption.of(it.name, CardData.banners.indexOf(it).toString()) })
 
         if (bannerCategoryElements.size > 1) {

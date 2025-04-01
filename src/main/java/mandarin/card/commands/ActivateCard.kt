@@ -71,9 +71,6 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
         val bannerCategoryElements = ArrayList<SelectOption>()
 
         bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(banner === Banner.NONE))
-        bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal").withDefault(banner === Banner.SEASONAL))
-        bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
-
         val bannerList = if (tier != CardData.Tier.NONE) {
             CardData.banners.filter { b -> b.category && CardData.cards.any { c -> b in c.banner && c.tier == tier } }
         } else {

@@ -1,11 +1,9 @@
 package mandarin.card.supporter.card
 
 import com.google.gson.JsonArray
-import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import common.util.Data
-import mandarin.card.supporter.CardData
 import mandarin.card.supporter.CardData.Tier
 import mandarin.packpack.supporter.StaticStore
 import java.io.File
@@ -78,7 +76,7 @@ class Card(var id: Int, var tier: Tier, var name: String, var cardImage: File) {
     var bcCard = false
     var tradable = true
     var cardType = CardType.NORMAL
-    val banner = ArrayList<Banner>()
+    val banner = HashSet<Banner>()
 
     val isRegularUncommon: Boolean
         get() = tier == Tier.UNCOMMON && cardType == CardType.NORMAL

@@ -111,11 +111,10 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
 
                 val value = event.values[0]
 
-                banner = when(value) {
-                    "all" -> Banner.NONE
-                    "seasonal" -> Banner.SEASONAL
-                    "collab" -> Banner.COLLABORATION
-                    else -> CardData.banners[value.toInt()]
+                banner = if (value == "all") {
+                    Banner.NONE
+                } else {
+                    CardData.banners[value.toInt()]
                 }
 
                 page = 0
@@ -247,9 +246,6 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
         val bannerCategoryElements = ArrayList<SelectOption>()
 
         bannerCategoryElements.add(SelectOption.of("All", "all").withDefault(banner === Banner.NONE))
-        bannerCategoryElements.add(SelectOption.of("Seasonal Cards", "seasonal").withDefault(banner === Banner.SEASONAL))
-        bannerCategoryElements.add(SelectOption.of("Collaboration Cards", "collab").withDefault(banner === Banner.COLLABORATION))
-
         val bannerList = if (tier != CardData.Tier.NONE) {
             CardData.banners.filter { b -> b.category && CardData.cards.any { c -> b in c.banner && c.tier == tier } }
         } else {

@@ -843,6 +843,14 @@ object CardBot : ListenerAdapter() {
             }
         }
 
+        CardData.cards.forEach { c ->
+            if (c.cardType == Card.CardType.SEASONAL) {
+                c.banner.add(Banner.fromName("Seasonal Cards"))
+            } else if (c.cardType == Card.CardType.COLLABORATION) {
+                c.banner.add(Banner.fromName("Collaboration Cards"))
+            }
+        }
+
         val serverElement: JsonElement? = StaticStore.getJsonFile(if (test) "testserverinfo" else "serverinfo")
 
         if (serverElement != null && serverElement.isJsonObject) {

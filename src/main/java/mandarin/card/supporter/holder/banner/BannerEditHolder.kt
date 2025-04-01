@@ -137,7 +137,7 @@ class BannerEditHolder(author: Message, userID: String, channelID: String, messa
             EmojiStore.SWITCHOFF
 
         result.add(ActionRow.of(
-            Button.secondary("category", "Include into Category").withEmoji(category).withDisabled(!banner.category && CardData.banners.count { b -> b.category } >= SelectMenu.OPTIONS_MAX_AMOUNT - 3)
+            Button.secondary("category", "Include into Category").withEmoji(category).withDisabled(!banner.category && CardData.banners.count { b -> b.category } >= SelectMenu.OPTIONS_MAX_AMOUNT - 1)
         ))
 
         if (createMode) {
