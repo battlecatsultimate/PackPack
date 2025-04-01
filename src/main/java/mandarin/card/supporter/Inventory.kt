@@ -271,9 +271,9 @@ class Inventory(private val id: Long) {
             }
         }
 
-        val epicFest = cardsTotal.any { c -> c.banner == Banner.fromName("Epicfest Exclusives") }
-        val uberFest = cardsTotal.any { c -> c.banner == Banner.fromName("Uberfest Exclusives") }
-        val busters = cardsTotal.any { c -> c.banner == Banner.fromName("Other Exclusives") }
+        val epicFest = cardsTotal.any { c -> Banner.fromName("Epicfest Exclusives") in c.banner }
+        val uberFest = cardsTotal.any { c -> Banner.fromName("Uberfest Exclusives") in c.banner }
+        val busters = cardsTotal.any { c -> Banner.fromName("Other Exclusives") in c.banner }
         val legends = cardsTotal.any { c -> c.tier == CardData.Tier.LEGEND }
 
         return uberFest && epicFest && busters && legends
@@ -294,9 +294,9 @@ class Inventory(private val id: Long) {
             }
         }
 
-        val epicFest = cardsTotal.any { c -> c.banner == Banner.fromName("Epicfest Exclusives") }
-        val uberFest = cardsTotal.any { c -> c.banner == Banner.fromName("Uberfest Exclusives") }
-        val busters = cardsTotal.any { c -> c.banner == Banner.fromName("Other Exclusives") }
+        val epicFest = cardsTotal.any { c -> Banner.fromName("Epicfest Exclusives") in c.banner }
+        val uberFest = cardsTotal.any { c -> Banner.fromName("Uberfest Exclusives") in c.banner }
+        val busters = cardsTotal.any { c -> Banner.fromName("Other Exclusives") in c.banner }
         val legends = cardsTotal.any { c -> c.tier == CardData.Tier.LEGEND }
 
         if (missingCards.isNotEmpty()) {
