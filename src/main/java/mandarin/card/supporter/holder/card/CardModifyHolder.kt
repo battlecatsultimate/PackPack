@@ -3,7 +3,6 @@ package mandarin.card.supporter.holder.card
 import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.holder.modal.CardIDHolder
 import mandarin.card.supporter.holder.modal.CardNameHolder
