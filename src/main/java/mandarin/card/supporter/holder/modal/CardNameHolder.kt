@@ -57,6 +57,8 @@ class CardNameHolder(author: Message, userID: String, channelID: String, message
 
                 return
             }
+
+            card.cardImage = newPlace
         }
 
         event.deferReply()
