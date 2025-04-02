@@ -120,6 +120,8 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
 
                         return
                     }
+
+                    card.cardImage = newPlace
                 }
 
                 applyResult(event)
