@@ -843,6 +843,12 @@ object CardBot : ListenerAdapter() {
             }
         }
 
+        CardData.cards.map { c -> c.id }.forEach { id ->
+            if (CardData.cards.count { c -> c.id == id } > 1) {
+                throw IllegalStateException("E/CardBot::readCardData - Duplicated card ID $id found")
+            }
+        }
+
         CardData.cards.forEach { c ->
             if (c.cardType == Card.CardType.SEASONAL) {
                 c.banner.add(Banner.fromName("Seasonal Cards"))
