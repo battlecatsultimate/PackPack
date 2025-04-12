@@ -7,7 +7,6 @@ import mandarin.card.supporter.Inventory
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import net.dv8tion.jda.api.entities.UserSnowflake
 
 class Test : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
