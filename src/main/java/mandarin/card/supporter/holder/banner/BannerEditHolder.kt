@@ -136,8 +136,14 @@ class BannerEditHolder(author: Message, userID: String, channelID: String, messa
         else
             EmojiStore.SWITCHOFF
 
+        val legend = if (banner.legendCollector)
+            EmojiStore.SWITCHON
+        else
+            EmojiStore.SWITCHOFF
+
         result.add(ActionRow.of(
-            Button.secondary("category", "Include into Category").withEmoji(category).withDisabled(!banner.category && CardData.banners.count { b -> b.category } >= SelectMenu.OPTIONS_MAX_AMOUNT - 1)
+            Button.secondary("category", "Include into Category").withEmoji(category).withDisabled(!banner.category && CardData.banners.count { b -> b.category } >= SelectMenu.OPTIONS_MAX_AMOUNT - 1),
+            Button.secondary("legend", "Required by Legend Collector").withEmoji(legend)
         ))
 
         if (createMode) {

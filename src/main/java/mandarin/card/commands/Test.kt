@@ -1,7 +1,9 @@
 package mandarin.card.commands
 
+import com.google.gson.JsonPrimitive
 import common.CommonStatic
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
@@ -14,21 +16,35 @@ class Test : Command(CommonStatic.Lang.Locale.EN, true) {
         if (m.id != StaticStore.MANDARIN_SMELL)
             return
 
-        val segments = loader.content.split(" ")
+        val obj = StaticStore.getJsonFile("cardSave")
 
-        if (segments.size < 2)
-            return
+        if (obj.has("inventory")) {
+            val arr = obj.getAsJsonArray("inventory")
 
-        val id = segments[1].replace("<@", "").replace(">", "").toLong()
+            for (i in 0 until arr.size()) {
+                val pair = arr[i].asJsonObject
 
-        val role = loader.guild.roles.find { r -> r.id == CardData.Role.LEGEND.id }
+                if (!pair.has("key") || !pair.has("val"))
+                    continue
 
-        if (role == null) {
-            replyToMessageSafely(loader.channel, "Quack?", loader.message) { a -> a }
+                val keyData = pair["key"]
 
-            return
+                if (keyData !is JsonPrimitive)
+                    continue
+
+                val key = if (keyData.isString) {
+                    keyData.asString.toLong()
+                } else {
+                    keyData.asLong
+                }
+
+                val value = Inventory.readInventory(key, pair["val"].asJsonObject)
+                
+                val actualInventory = Inventory.getInventory(key)
+                val axel = CardData.cards.find { c -> c.id == 774 } ?: return
+
+                actualInventory.cards[axel] = value.cards[axel] ?: 0
+            }
         }
-
-        loader.guild.removeRoleFromMember(UserSnowflake.fromId(id), role).queue()
     }
 }
