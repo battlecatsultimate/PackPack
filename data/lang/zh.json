@@ -1501,7 +1501,9 @@
         "5" : "Deploy Limit",
         "6" : "Cooldown Limit",
         "7" : "EX Cost/Cooldown Buff",
-        "8" : "UR Deploy Duplication"
+        "8" : "UR Deploy Duplication",
+        "9" : "Rarity Deploy Limit",
+        "10" : "Cannon Multiplier Buff"
       }
     },
     "section" : {
