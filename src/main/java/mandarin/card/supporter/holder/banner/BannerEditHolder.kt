@@ -45,6 +45,11 @@ class BannerEditHolder(author: Message, userID: String, channelID: String, messa
 
                 applyResult(event)
             }
+            "legend" -> {
+                banner.legendCollector = !banner.legendCollector
+
+                applyResult(event)
+            }
             "create" -> {
                 CardData.banners.add(banner)
 
