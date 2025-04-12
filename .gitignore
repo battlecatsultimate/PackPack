@@ -25,6 +25,8 @@ hs_err_pid*
 .gradle
 .gradle/*
 /.gradle/
+/.kotlin/
+/.kotlin/*
 /pack/
 /data/assets/
 /data/serverinfo.json
