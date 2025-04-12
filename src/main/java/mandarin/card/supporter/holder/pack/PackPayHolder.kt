@@ -106,11 +106,10 @@ class PackPayHolder(
                         .mentionRepliedUser(false)
                         .queue({ _ ->
                             countdown.countDown()
-                        }) { e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/PackPayHolder::onEvent - Failed to edit message")
+                        }) { e -> StaticStore.logger.uploadErrorLog(e, "E/PackPayHolder::onEvent - Failed to edit message")
 
                             countdown.countDown()
-                        }}
+                        }
 
                     countdown.await()
                 } catch (e: Exception) {

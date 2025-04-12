@@ -287,8 +287,10 @@ class CardCostPayHolder(
                 cards.removeIf { c -> c.tier != tier }
             }
 
-            if (banner != Banner.NONE) {
-                cards.removeIf { c -> banner in c.banner }
+            val collectedCards = banner.collectCards()
+
+            if (banner !== Banner.NONE) {
+                cards.removeIf { c -> c !in collectedCards }
             }
 
             cards.removeIf { c -> !container.cost.filter(c) }
