@@ -1848,7 +1848,7 @@ public class DataToString extends Data {
     }
 
     public static String getRewards(Stage s, CommonStatic.Lang.Locale lang) {
-        if(s == null || !(s.info instanceof DefStageInfo info) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
+        if(s == null || !(s.info instanceof DefStageInfo info) || info.drop == null || info.drop.length == 0)
             return null;
 
         ArrayList<String> chances = getDropData(s);
@@ -1901,7 +1901,7 @@ public class DataToString extends Data {
     }
 
     public static List<String[]> getRewards(Stage s, CustomStageMap map, CommonStatic.Lang.Locale lang) {
-        if(s == null || !(s.info instanceof DefStageInfo info) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
+        if(s == null || !(s.info instanceof DefStageInfo info) || info.drop == null || info.drop.length == 0)
             return null;
 
         ArrayList<String> chances = getDropData(s);
@@ -2093,7 +2093,7 @@ public class DataToString extends Data {
     }
 
     public static String getScoreDrops(Stage st, CommonStatic.Lang.Locale lang) {
-        if(st == null || !(st.info instanceof DefStageInfo info) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
+        if(st == null || !(st.info instanceof DefStageInfo info) || info.time == null || info.time.length == 0)
             return null;
 
         StringBuilder builder = new StringBuilder();
@@ -2116,7 +2116,7 @@ public class DataToString extends Data {
     }
 
     public static List<String[]> getScoreDrops(Stage st, CustomStageMap map, CommonStatic.Lang.Locale lang) {
-        if(st == null || !(st.info instanceof DefStageInfo info) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
+        if(st == null || !(st.info instanceof DefStageInfo info) || info.time == null || info.time.length == 0)
             return null;
 
         List<String[]> result = new ArrayList<>();
@@ -2473,7 +2473,7 @@ public class DataToString extends Data {
     }
 
     public static String getEXStage(Stage st, CommonStatic.Lang.Locale lang) {
-        if(!(st.info instanceof DefStageInfo info) || (!((DefStageInfo) st.info).exConnection && ((DefStageInfo) st.info).exStages == null)) {
+        if(!(st.info instanceof DefStageInfo info) || (!info.exConnection && info.exStages == null)) {
             return null;
         }
 
