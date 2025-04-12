@@ -1300,6 +1300,8 @@
       "847" : "限定復活プレミアムセール",
       "848" : "1億DL記念チケットセットセール",
       "849" : "チョコサプネコCセール",
+      "850" : "プラチナチケットダブル販売1回目",
+      "851" : "プラチナチケットダブル販売2回目",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1409,6 +1411,7 @@
       "35022" : "New Year Event Stamp",
       "35023" : "Event Stamp",
       "35024" : "1億ダウンロード記念ンスタンプ",
+      "35025" : "Baki Collab Stamp",
       "rankingDojo" : "ランキングの間 _"
     },
     "permanentSchedule" : {

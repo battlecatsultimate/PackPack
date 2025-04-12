@@ -1300,6 +1300,8 @@
       "847" : "Second Chance Platinum Ticket Sale",
       "848" : "100M Download Anniversary Ticket Sale",
       "849" : "Chocosurp Cat C Sale",
+      "850" : "Double Platinum Ticket Sale [1st]",
+      "851" : "Double Platinum Ticket Sale [2nd]",
       "900" : "Mushroom Garden Stamp",
       "901" : "Comeback Bonus Stamp",
       "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1409,6 +1411,7 @@
       "35022" : "New Year Event Stamp",
       "35023" : "Event Stamp",
       "35024" : "100M Download Celebrating Stamp",
+      "35025" : "Baki Collab Stamp",
       "rankingDojo" : "Ranking Dojo _"
     },
     "permanentSchedule" : {
