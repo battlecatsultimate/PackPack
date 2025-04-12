@@ -1520,7 +1520,13 @@ public class DataToString extends Data {
                                     duplication.toString().trim()
                     );
                 }
+            }
 
+            if (l.stageLimit.cannonMultiplier != 100) {
+                res.add(
+                        LangID.getStringByID("data.stage.limit.cannonMultiplier.title", lang) + "\n" +
+                                LangID.getStringByID("data.stage.limit.cannonMultiplier.description", lang).formatted(df.format(l.stageLimit.cannonMultiplier / 100.0))
+                );
             }
         }
 

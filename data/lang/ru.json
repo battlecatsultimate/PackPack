@@ -800,6 +800,10 @@
         "rarity" : "**Редкость**",
         "title" : "Ограничения",
         "unit" : "Юнит",
+        "cannonMultiplier" : {
+          "description" : "Cannon damage multiplier %sx",
+          "title" : "- **Cannon Damage Multiplier**"
+        },
         "characterGroup" : {
           "allow" : "Только _ доступны",
           "disallow" : "Нельзя использовать _",

@@ -800,6 +800,10 @@
         "rarity" : "**레어도**",
         "title" : "제한",
         "unit" : "유닛",
+        "cannonMultiplier" : {
+          "description" : "냥코 대포 공격력 %s배",
+          "title" : "- **냥코 대포 공격력 배율**"
+        },
         "characterGroup" : {
           "allow" : "_ 만 사용 가능",
           "disallow" : "_ 사용 불가능",

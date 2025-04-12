@@ -800,6 +800,10 @@
         "rarity" : "**稀有度限制**",
         "title" : "關卡限制",
         "unit" : "角色",
+        "cannonMultiplier" : {
+          "description" : "Cannon damage multiplier %sx",
+          "title" : "- **Cannon Damage Multiplier**"
+        },
         "characterGroup" : {
           "allow" : "只可使用_",
           "disallow" : "無法使用_",
