@@ -77,12 +77,7 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
                     card.banner.add(banner)
                 }
 
-                event.deferReply()
-                    .setContent("Successfully set the banner to `${card.banner}`!")
-                    .setEphemeral(true)
-                    .queue()
-
-                goBack()
+                applyResult(event)
             }
             "back" -> {
                 goBack(event)
