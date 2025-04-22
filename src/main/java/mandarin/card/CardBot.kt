@@ -949,8 +949,8 @@ object CardBot : ListenerAdapter() {
         }
 
         if (obj.has("activatedBanners")) {
-            obj.getAsJsonArray("activatedBanners").filterIsInstance<JsonObject>().forEach { o ->
-                val banner = Banner.fromJson(o)
+            obj.getAsJsonArray("activatedBanners").filterIsInstance<JsonPrimitive>().forEach { s ->
+                val banner = Banner.fromName(s.asString)
 
                 if (banner === Banner.NONE) {
                     return@forEach
