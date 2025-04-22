@@ -399,205 +399,218 @@ object CardBot : ListenerAdapter() {
             segments[0]
 
         if (CardData.canPerformGlobalCommand(m, ch)) {
-            when(firstSegment) {
+            val command = when(firstSegment) {
                 "${globalPrefix}catfood",
                 "${globalPrefix}cf" -> {
-                    CatFood().execute(event)
-
-                    return
+                    CatFood()
                 }
                 "${globalPrefix}transfercatfood",
                 "${globalPrefix}tcf" -> {
-                    TransferCatFood().execute(event)
-
-                    return
+                    TransferCatFood()
                 }
                 "${globalPrefix}rank" -> {
-                    Rank().execute(event)
-
-                    return
+                    Rank()
                 }
                 "${globalPrefix}shardrank",
                 "${globalPrefix}sr" -> {
-                    ShardRank().execute(event)
-
-                    return
+                    ShardRank()
                 }
                 "${globalPrefix}platinumshard",
                 "${globalPrefix}ps" -> {
-                    PlatinumShard().execute(event)
-
-                    return
+                    PlatinumShard()
                 }
+                else -> null
+            }
+
+            if (command != null && command.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
+                return
+            }
+
+            if (command != null) {
+                command.execute(event)
+
+                return
             }
         }
 
         if (u.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
             return
 
-        when(firstSegment) {
-            "${globalPrefix}save" -> Save().execute(event)
+        val command = when(firstSegment) {
+            "${globalPrefix}save" -> Save()
             "${globalPrefix}rollmanual",
-            "${globalPrefix}rm" -> RollManual().execute(event)
+            "${globalPrefix}rm" -> RollManual()
             "${globalPrefix}trade",
-            "${globalPrefix}tr" -> Trade().execute(event)
+            "${globalPrefix}tr" -> Trade()
             "${globalPrefix}trademanual",
-            "${globalPrefix}tm" -> TradeManual().execute(event)
+            "${globalPrefix}tm" -> TradeManual()
             "${globalPrefix}cards",
-            "${globalPrefix}card" -> Cards().execute(event)
+            "${globalPrefix}card" -> Cards()
             "${globalPrefix}purchase",
-            "${globalPrefix}buy" -> Buy().execute(event)
-            "${globalPrefix}roll" -> Roll().execute(event)
+            "${globalPrefix}buy" -> Buy()
+            "${globalPrefix}roll" -> Roll()
             "${globalPrefix}moidfyinventory",
             "${globalPrefix}modify",
-            "${globalPrefix}mi"-> ModifyInventory().execute(event)
-            "${globalPrefix}activate" -> Activate().execute(event)
-            "${globalPrefix}equip" -> Equip().execute(event)
+            "${globalPrefix}mi"-> ModifyInventory()
+            "${globalPrefix}activate" -> Activate()
+            "${globalPrefix}equip" -> Equip()
             "${globalPrefix}checkt0",
-            "${globalPrefix}t0" -> Check(CardData.Tier.SPECIAL).execute(event)
+            "${globalPrefix}t0" -> Check(CardData.Tier.SPECIAL)
             "${globalPrefix}checkt1",
-            "${globalPrefix}t1" -> Check(CardData.Tier.COMMON).execute(event)
+            "${globalPrefix}t1" -> Check(CardData.Tier.COMMON)
             "${globalPrefix}checkt2",
-            "${globalPrefix}t2" -> Check(CardData.Tier.UNCOMMON).execute(event)
+            "${globalPrefix}t2" -> Check(CardData.Tier.UNCOMMON)
             "${globalPrefix}checkt3",
-            "${globalPrefix}t3" -> Check(CardData.Tier.ULTRA).execute(event)
+            "${globalPrefix}t3" -> Check(CardData.Tier.ULTRA)
             "${globalPrefix}checkt4",
-            "${globalPrefix}t4" -> Check(CardData.Tier.LEGEND).execute(event)
-            "${globalPrefix}approve" -> Approve().execute(event)
+            "${globalPrefix}t4" -> Check(CardData.Tier.LEGEND)
+            "${globalPrefix}approve" -> Approve()
             "${globalPrefix}notice",
             "${globalPrefix}notify",
-            "${globalPrefix}notification" -> Notice().execute(event)
+            "${globalPrefix}notification" -> Notice()
             "${globalPrefix}poolt1",
-            "${globalPrefix}p1" -> Pool(CardData.Tier.COMMON).execute(event)
+            "${globalPrefix}p1" -> Pool(CardData.Tier.COMMON)
             "${globalPrefix}poolt2",
-            "${globalPrefix}p2" -> Pool(CardData.Tier.UNCOMMON).execute(event)
+            "${globalPrefix}p2" -> Pool(CardData.Tier.UNCOMMON)
             "${globalPrefix}poolt3",
-            "${globalPrefix}p3" -> Pool(CardData.Tier.ULTRA).execute(event)
+            "${globalPrefix}p3" -> Pool(CardData.Tier.ULTRA)
             "${globalPrefix}poolt4",
-            "${globalPrefix}p4" -> Pool(CardData.Tier.LEGEND).execute(event)
+            "${globalPrefix}p4" -> Pool(CardData.Tier.LEGEND)
             "${globalPrefix}salvage",
-            "${globalPrefix}sv" -> Salvage().execute(event)
-            "${globalPrefix}lock" -> Lock().execute(event)
-            "${globalPrefix}unlock" -> Unlock().execute(event)
+            "${globalPrefix}sv" -> Salvage()
+            "${globalPrefix}lock" -> Lock()
+            "${globalPrefix}unlock" -> Unlock()
             "${globalPrefix}craft",
-            "${globalPrefix}cr" -> Craft().execute(event)
-            "${globalPrefix}report" -> Report().execute(event)
-            "${globalPrefix}savedata" -> SaveData().execute(event)
-            "${globalPrefix}replacesave" -> ReplaceSave().execute(event)
+            "${globalPrefix}cr" -> Craft()
+            "${globalPrefix}report" -> Report()
+            "${globalPrefix}savedata" -> SaveData()
+            "${globalPrefix}replacesave" -> ReplaceSave()
             "${globalPrefix}catfoodrate",
-            "${globalPrefix}cfr" -> CatFoodRate().execute(event)
+            "${globalPrefix}cfr" -> CatFoodRate()
             "${globalPrefix}excludechannel",
-            "${globalPrefix}ec" -> ExcludeChannel().execute(event)
+            "${globalPrefix}ec" -> ExcludeChannel()
             "${globalPrefix}catfood",
-            "${globalPrefix}cf" -> CatFood().execute(event)
+            "${globalPrefix}cf" -> CatFood()
             "${globalPrefix}transfercatfood",
-            "${globalPrefix}tcf" -> TransferCatFood().execute(event)
+            "${globalPrefix}tcf" -> TransferCatFood()
             "${globalPrefix}masscatfood",
-            "${globalPrefix}mcf" -> MassCatFood().execute(event)
+            "${globalPrefix}mcf" -> MassCatFood()
             "${globalPrefix}massshard",
-            "${globalPrefix}mps" -> MassShard().execute(event)
+            "${globalPrefix}mps" -> MassShard()
             "${globalPrefix}salvagecost",
-            "${globalPrefix}sc" -> SalvageCost().execute(event)
+            "${globalPrefix}sc" -> SalvageCost()
             "${globalPrefix}craftcost",
-            "${globalPrefix}cc" -> CraftCost().execute(event)
+            "${globalPrefix}cc" -> CraftCost()
             "${globalPrefix}hack" -> {
                 if (test) {
-                    Hack().execute(event)
+                    Hack()
+                } else {
+                    return
                 }
             }
             "${globalPrefix}managepack",
-            "${globalPrefix}mp" -> ManagePack().execute(event)
+            "${globalPrefix}mp" -> ManagePack()
             "${globalPrefix}logout",
-            "${globalPrefix}lo" -> LogOut().execute(event)
+            "${globalPrefix}lo" -> LogOut()
             "${globalPrefix}resetcooldown",
-            "${globalPrefix}rc" -> ResetCooldown().execute(event)
+            "${globalPrefix}rc" -> ResetCooldown()
             "${globalPrefix}auctionplace",
-            "${globalPrefix}ap" -> AuctionPlace().execute(event)
+            "${globalPrefix}ap" -> AuctionPlace()
             "${globalPrefix}createauction",
-            "${globalPrefix}cra" -> CreateAuction().execute(event)
+            "${globalPrefix}cra" -> CreateAuction()
             "${globalPrefix}addauctionplace",
-            "${globalPrefix}aap" -> AddAuctionPlace().execute(event)
+            "${globalPrefix}aap" -> AddAuctionPlace()
             "${globalPrefix}removeauctionplace",
-            "${globalPrefix}rap" -> RemoveAuctionPlace().execute(event)
+            "${globalPrefix}rap" -> RemoveAuctionPlace()
             "${globalPrefix}approveauction",
-            "${globalPrefix}apa" -> ApproveAuction().execute(event)
+            "${globalPrefix}apa" -> ApproveAuction()
             "${globalPrefix}cancelauction",
-            "${globalPrefix}caa" -> CancelAuction().execute(event)
+            "${globalPrefix}caa" -> CancelAuction()
             "${globalPrefix}closeauction",
-            "${globalPrefix}cla" -> CloseAuction().execute(event)
+            "${globalPrefix}cla" -> CloseAuction()
             "${globalPrefix}changeauctiontime",
-            "${globalPrefix}cat" -> ChangeAuctionTime().execute(event)
-            "${globalPrefix}bid" -> Bid().execute(event)
+            "${globalPrefix}cat" -> ChangeAuctionTime()
+            "${globalPrefix}bid" -> Bid()
             "${globalPrefix}cancelbid",
-            "${globalPrefix}cb" -> CancelBid().execute(event)
+            "${globalPrefix}cb" -> CancelBid()
             "${globalPrefix}forcecancelbid",
-            "${globalPrefix}fcb" -> ForceCancelBid().execute(event)
-            "${globalPrefix}test" -> Test().execute(event)
+            "${globalPrefix}fcb" -> ForceCancelBid()
+            "${globalPrefix}test" -> Test()
             "${globalPrefix}pauseinvite",
-            "${globalPrefix}pi" -> PauseInvite().execute(event)
+            "${globalPrefix}pi" -> PauseInvite()
             "${globalPrefix}manageslot",
-            "${globalPrefix}ms" -> ManageSlot().execute(event)
+            "${globalPrefix}ms" -> ManageSlot()
             "${globalPrefix}registeremojiserver",
-            "${globalPrefix}res" -> RegisterEmojiServer().execute(event)
+            "${globalPrefix}res" -> RegisterEmojiServer()
             "${globalPrefix}unregisteremojiserver",
-            "${globalPrefix}ues" -> UnregisterEmojiServer().execute(event)
+            "${globalPrefix}ues" -> UnregisterEmojiServer()
             "${globalPrefix}slotmachine",
             "${globalPrefix}slot",
             "${globalPrefix}slots",
-            "${globalPrefix}sl" -> Slot().execute(event)
+            "${globalPrefix}sl" -> Slot()
             "${globalPrefix}transferinventory",
-            "${globalPrefix}ti" -> TransferInventory().execute(event)
+            "${globalPrefix}ti" -> TransferInventory()
             "${globalPrefix}listguild",
-            "${globalPrefix}lig" -> ListGuild().execute(event)
+            "${globalPrefix}lig" -> ListGuild()
             "${globalPrefix}leaveguild",
-            "${globalPrefix}leg" -> LeaveGuild().execute(event)
+            "${globalPrefix}leg" -> LeaveGuild()
             "${globalPrefix}banuser",
-            "${globalPrefix}bu" -> BanUser().execute(event)
+            "${globalPrefix}bu" -> BanUser()
             "${globalPrefix}managecardskin",
-            "${globalPrefix}mcs" -> ManageCardSkin().execute(event)
+            "${globalPrefix}mcs" -> ManageCardSkin()
             "${globalPrefix}buyskin",
-            "${globalPrefix}bs" -> BuySkin().execute(event)
-            "${globalPrefix}optout" -> OptOut().execute(event)
+            "${globalPrefix}bs" -> BuySkin()
+            "${globalPrefix}optout" -> OptOut()
             "${globalPrefix}wipeinventory",
-            "${globalPrefix}wi" -> WipeInventory().execute(event)
+            "${globalPrefix}wi" -> WipeInventory()
             "${globalPrefix}injectinventory",
-            "${globalPrefix}ii" -> InjectInventory().execute(event)
+            "${globalPrefix}ii" -> InjectInventory()
             "${globalPrefix}ejectinventory",
-            "${globalPrefix}ei" -> EjectInventory().execute(event)
+            "${globalPrefix}ei" -> EjectInventory()
             "${globalPrefix}memory",
-            "${globalPrefix}mm" -> Memory().execute(event)
+            "${globalPrefix}mm" -> Memory()
             "${globalPrefix}extractjson",
-            "${globalPrefix}ej" -> ExtractJson().execute(event)
-            "${globalPrefix}tax" -> Tax().execute(event)
-            "${globalPrefix}untax" -> Untax().execute(event)
+            "${globalPrefix}ej" -> ExtractJson()
+            "${globalPrefix}tax" -> Tax()
+            "${globalPrefix}untax" -> Untax()
             "${globalPrefix}slotmanual",
-            "${globalPrefix}sm" -> SlotMachineManual().execute(event)
+            "${globalPrefix}sm" -> SlotMachineManual()
             "${globalPrefix}activatecard",
-            "${globalPrefix}ac" -> ActivateCard().execute(event)
+            "${globalPrefix}ac" -> ActivateCard()
             "${globalPrefix}cardranking",
-            "${globalPrefix}car" -> CardRanking().execute(event)
+            "${globalPrefix}car" -> CardRanking()
             "${globalPrefix}balance",
             "${globalPrefix}bal",
             "${globalPrefix}currency",
-            "${globalPrefix}cur" -> Balance().execute(event)
+            "${globalPrefix}cur" -> Balance()
             "${globalPrefix}managecard",
-            "${globalPrefix}mc" -> ManageCard().execute(event)
+            "${globalPrefix}mc" -> ManageCard()
             "${globalPrefix}managebanner",
-            "${globalPrefix}mb" -> ManageBanner().execute(event)
+            "${globalPrefix}mb" -> ManageBanner()
+            "${globalPrefix}lockcommand",
+            "${globalPrefix}lc" -> LockCommand()
+            else -> {
+                val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
+
+                if (session != null) {
+                    when(firstSegment) {
+                        "${globalPrefix}suggest",
+                        "${globalPrefix}su" -> Suggest(session)
+                        "${globalPrefix}confirm" -> Confirm(session)
+                        "${globalPrefix}cancel" -> Cancel(session)
+                        else -> return
+                    }
+                } else {
+                    return
+                }
+            }
         }
 
-        val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
-
-        if (session != null) {
-            when(firstSegment) {
-                "${globalPrefix}suggest",
-                "${globalPrefix}su" -> Suggest(session).execute(event)
-                "${globalPrefix}confirm" -> Confirm(session).execute(event)
-                "${globalPrefix}cancel" -> Cancel(session).execute(event)
-            }
-
+        if (command.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
             return
         }
+
+        command.execute(event)
     }
 
     override fun onMessageDelete(event: MessageDeleteEvent) {
@@ -1180,6 +1193,16 @@ object CardBot : ListenerAdapter() {
                 BannerHolder.fromJson(StaticStore.bannerHolder, it)
             }
         }
+        
+        if (obj.has("lockedCommands")) {
+            obj.getAsJsonArray("lockedCommands").filterIsInstance<JsonPrimitive>().forEach { e ->
+                val className = e.asString
+                
+                val cls = Class.forName(className) ?: return@forEach
+                
+                CardData.lockedCommands.add(cls)
+            }
+        }
     }
 
     @Synchronized
@@ -1457,6 +1480,14 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("banners", banners)
+
+        val lockedCommands = JsonArray()
+
+        CardData.lockedCommands.forEach { c ->
+            lockedCommands.add(c.name)
+        }
+
+        obj.add("lockedCommands", lockedCommands)
 
         try {
             val folder = File("./data/")

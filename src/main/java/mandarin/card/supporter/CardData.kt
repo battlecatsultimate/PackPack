@@ -18,6 +18,7 @@ import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Suppress("unused")
 object CardData {
@@ -252,6 +253,14 @@ object CardData {
         arrayOf("Epicfest Exclusives", "Uberfest Exclusives", "Other Exclusives"),
         arrayOf()
     )
+
+    /*
+    -------------------------------------------------------
+    |                        Rests                        |
+    -------------------------------------------------------
+     */
+
+    val lockedCommands = ArrayList<Class<*>>()
 
     /*
     -------------------------------------------------------
