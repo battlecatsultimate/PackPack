@@ -155,6 +155,10 @@ class CardPackAdjustHolder(
         applyResult(event)
     }
 
+    override fun onConnected(parent: Holder?) {
+        applyResult()
+    }
+
     override fun onBack(child: Holder) {
         applyResult()
     }
