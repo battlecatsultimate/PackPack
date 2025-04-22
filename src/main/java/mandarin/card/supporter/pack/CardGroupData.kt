@@ -40,18 +40,16 @@ class CardGroupData(
         for (type in types) {
             result.addAll(
                 when (type) {
-                    CardPack.CardType.T1 -> CardData.cards.filter { c -> c.tier == CardData.Tier.COMMON }
-                    CardPack.CardType.T2 -> CardData.cards.filter { c -> c.tier == CardData.Tier.UNCOMMON }
+                    CardPack.CardType.T1 -> CardData.cards.filter { c -> c.tier == CardData.Tier.COMMON }.filter { c -> c.activated || c.banner.any { b -> b in CardData.activatedBanners } }
+                    CardPack.CardType.T2 -> CardData.cards.filter { c -> c.tier == CardData.Tier.UNCOMMON }.filter { c -> c.activated || c.banner.any { b -> b in CardData.activatedBanners } }
                     CardPack.CardType.REGULAR -> CardData.cards.filter { c -> c.isRegularUncommon }
                     CardPack.CardType.SEASONAL -> CardData.cards.filter { c -> c.isSeasonalUncommon }
                     CardPack.CardType.COLLABORATION -> CardData.cards.filter { c -> c.isCollaborationUncommon }
-                    CardPack.CardType.T3 -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA }
-                    CardPack.CardType.T4 -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND }
+                    CardPack.CardType.T3 -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA }.filter { c -> c.activated || c.banner.any { b -> b in CardData.activatedBanners } }
+                    CardPack.CardType.T4 -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND }.filter { c -> c.activated || c.banner.any { b -> b in CardData.activatedBanners } }
                 }
             )
         }
-
-        result.removeIf { c -> !c.activated && !c.banner.any { b -> b in CardData.activatedBanners } }
 
         result.removeIf { c -> c.id < 0 }
 
