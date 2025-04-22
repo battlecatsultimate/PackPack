@@ -89,6 +89,7 @@
     "pinned" : "メッセージのピン留めが完了しました : %s",
     "unpinned" : "メッセージのピン解除が完了しました : %s",
     "failed" : {
+      "maxPin" : "This channel already has reached max number of pins (50 pins). Please unpin some messages before pinning!",
       "noID" : "メッセージID、メッセージリンクか返信のいずれかを使用してメッセージを指定して下さい",
       "noPermission" : "メッセージをピン留めする権限がありません!",
       "noPinAllowed" : "このチャンネルにメッセージをピン留めすることは出来ません!",

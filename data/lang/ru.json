@@ -89,6 +89,7 @@
     "pinned" : "Сообщение успешно закреплено : %s",
     "unpinned" : "Сообщение успешно откреплено : %s",
     "failed" : {
+      "maxPin" : "This channel already has reached max number of pins (50 pins). Please unpin some messages before pinning!",
       "noID" : "Укажите сообщение, указав его ID, ссылку или ответьте на него, что бы закрепить/открепить сообщение",
       "noPermission" : "У вас нет разрешения на прикрепление сообщения!",
       "noPinAllowed" : "В этом канале нельзя закреплять сообщения!",

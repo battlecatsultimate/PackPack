@@ -89,6 +89,7 @@
     "pinned" : "成功釘選訊息\"%s\"",
     "unpinned" : "成功從釘選訊息裡移除\"%s\"",
     "failed" : {
+      "maxPin" : "This channel already has reached max number of pins (50 pins). Please unpin some messages before pinning!",
       "noID" : "請使用訊息ID，連結，或回覆要釘選/移除釘選的訊息",
       "noPermission" : "你沒有權限釘選訊息",
       "noPinAllowed" : "無法在此頻道釘選訊息",

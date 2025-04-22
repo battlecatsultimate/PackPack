@@ -89,6 +89,7 @@
     "pinned" : "Successfully pinned the message : %s",
     "unpinned" : "Successfully unpinned the message : %s",
     "failed" : {
+      "maxPin" : "This channel already has reached max number of pins (50 pins). Please unpin some messages before pinning!",
       "noID" : "Please specify the message via either ID of it, link to the message, or reply to the message that will be pinned/unpinned",
       "noPermission" : "You don't have permission to pin the message!",
       "noPinAllowed" : "You can't pin messages in this channel!",

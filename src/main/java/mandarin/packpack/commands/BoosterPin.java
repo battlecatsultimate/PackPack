@@ -9,11 +9,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class BoosterPin extends ConstraintCommand {
     public BoosterPin(ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder id) {
@@ -90,6 +93,28 @@ public class BoosterPin extends ConstraintCommand {
 
     private void pinMessage(CommandLoader loader, Message msg) {
         MessageChannel ch = loader.getChannel();
+
+        AtomicReference<Integer> pinNumber = new AtomicReference<>(0);
+
+        try {
+            CountDownLatch countdown = new CountDownLatch(1);
+
+            ch.retrievePinnedMessages().queue(list -> {
+                pinNumber.set(list.size());
+
+                countdown.countDown();
+            },  e -> countdown.countDown());
+
+            countdown.await();
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/BoosterPin::pinMessage - Failed to perform waiter");
+        }
+
+        if (pinNumber.get() >= 50) {
+            replyToMessageSafely(ch, LangID.getStringByID("boosterPin.failed.maxPin", lang), loader.getMessage(), a -> a);
+
+            return;
+        }
 
         if(msg == null) {
             replyToMessageSafely(ch, LangID.getStringByID("boosterPin.failed.noTargetMessage", lang), loader.getMessage(), a -> a);
