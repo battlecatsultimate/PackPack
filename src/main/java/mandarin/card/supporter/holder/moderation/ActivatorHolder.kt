@@ -2,18 +2,19 @@ package mandarin.card.supporter.holder.moderation
 
 import common.CommonStatic
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
 class ActivatorHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -69,24 +70,17 @@ class ActivatorHolder(author: Message, userID: String, channelID: String, messag
 
                 end(true)
             }
-            else -> {
-                if (event !is ButtonInteractionEvent)
+            "banner" -> {
+                if (event !is StringSelectInteractionEvent)
                     return
 
-                if (!StaticStore.isNumeric(event.componentId))
-                    return
-
-                val index = event.componentId.toInt()
+                val index = event.values.first().toInt()
 
                 if (banners[index] in CardData.activatedBanners) {
                     CardData.activatedBanners.remove(banners[index])
                 } else {
                     CardData.activatedBanners.add(banners[index])
                 }
-
-                val m = event.member ?: return
-
-                TransactionLogger.logBannerActivate(banners[index], m, banners[index] in CardData.activatedBanners)
 
                 applyResult(event)
             }
@@ -105,46 +99,35 @@ class ActivatorHolder(author: Message, userID: String, channelID: String, messag
     private fun getComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
+        val banners = CardData.banners
+
         val dataSize = banners.size
 
-        for (i in page * 3 until min(dataSize, 3 * (page + 1))) {
-            rows.add(ActionRow.of(Button.secondary(i.toString(), banners[i].name).withEmoji(if (banners[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)))
+        val bannerOptions = ArrayList<SelectOption>()
+
+        for (i in SearchHolder.PAGE_CHUNK * page until min(dataSize, SearchHolder.PAGE_CHUNK * (page + 1))) {
+            bannerOptions.add(SelectOption.of(banners[i].name, i.toString()).withEmoji(if (banners[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF))
         }
 
-        var totPage = dataSize / 3
+        rows.add(ActionRow.of(
+            StringSelectMenu.create("banner").addOptions(bannerOptions).setPlaceholder("Select banner to activate/deactivate").build()
+        ))
 
-        if (dataSize % 3 != 0)
-            totPage++
+        val totalPage = SearchHolder.getTotalPage(dataSize)
 
-        if (dataSize > 3) {
+        if (dataSize > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
-            if(totPage > 10) {
-                if(page - 10 < 0) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS))
-                }
+            if (totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
             }
 
-            if(page - 1 < 0) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
-            }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).withDisabled(page - 1 < 0))
 
-            if(page + 1 >= totPage) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
-            }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).withDisabled(page + 1 >= totalPage))
 
-            if(totPage > 10) {
-                if(page + 10 >= totPage) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
-                }
+            if (totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage))
             }
 
             rows.add(ActionRow.of(buttons))
@@ -162,7 +145,9 @@ class ActivatorHolder(author: Message, userID: String, channelID: String, messag
     private fun getText() : String {
         val builder = StringBuilder("Select banners to activate/deactivate\n\n")
 
-        for (i in page * 3 until min((page + 1) * 3, banners.size)) {
+        val banners = CardData.banners
+
+        for (i in SearchHolder.PAGE_CHUNK * page until min(SearchHolder.PAGE_CHUNK * (page + 1), CardData.banners.size)) {
             builder.append("**")
                 .append(banners[i].name)
                 .append("** : ")

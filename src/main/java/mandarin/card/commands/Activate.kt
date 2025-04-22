@@ -7,10 +7,13 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
 class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
@@ -33,19 +36,22 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val dataSize = banners.size
 
-        for (i in 0 until min(dataSize, 3)) {
-            rows.add(ActionRow.of(Button.secondary(i.toString(), banners[i].name).withEmoji(if (banners[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)))
+        val bannerOptions = ArrayList<SelectOption>()
+
+        for (i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+            bannerOptions.add(SelectOption.of(banners[i].name, i.toString()).withEmoji(if (banners[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF))
         }
 
-        var totPage = dataSize / 3
+        rows.add(ActionRow.of(
+            StringSelectMenu.create("banner").addOptions(bannerOptions).setPlaceholder("Select banner to activate/deactivate").build()
+        ))
 
-        if (dataSize % 3 != 0)
-            totPage++
+        val totalPage = SearchHolder.getTotalPage(dataSize)
 
-        if (dataSize > 3) {
+        if (dataSize > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 
@@ -53,7 +59,7 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
             }
 
@@ -74,7 +80,7 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val banners = CardData.banners
 
-        for (i in 0 until min(3, banners.size)) {
+        for (i in 0 until min(SearchHolder.PAGE_CHUNK, CardData.banners.size)) {
             builder.append("**")
                 .append(banners[i].name)
                 .append("** : ")
