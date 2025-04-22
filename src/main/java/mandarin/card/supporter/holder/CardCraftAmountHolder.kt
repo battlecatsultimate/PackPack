@@ -216,7 +216,9 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
             CardData.CraftMode.COLLAB -> CardData.cards.filter { c -> c.isCollaborationUncommon }
             CardData.CraftMode.T3 -> CardData.cards.filter { c -> c.tier == CardData.Tier.ULTRA && c.id > 0 && c.id !in CardData.bannedT3 }
             CardData.CraftMode.T4 -> CardData.cards.filter { c -> c.tier == CardData.Tier.LEGEND && c.id > 0 }
-        }
+        }.toMutableList()
+
+        cards.removeIf { c -> !c.activated && !c.banner.any { b -> b in CardData.activatedBanners } }
 
         val result = ArrayList<Card>()
 
