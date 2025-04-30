@@ -146,6 +146,10 @@ public class GachaSchedule extends EventFactor implements Schedule {
                         section.additional.add(GachaSection.ADDITIONAL.SHARD);
                     }
 
+                    if((section.additionalMask & 32768) > 0) {
+                        section.additional.add(GachaSection.ADDITIONAL.CAPSULE_5);
+                    }
+
                     if(GachaSet.gachaSet.containsKey(gachaID)) {
                         GachaSet set = GachaSet.gachaSet.get(gachaID);
 
@@ -645,7 +649,8 @@ public class GachaSchedule extends EventFactor implements Schedule {
             case LUCKY -> LangID.getStringByID("event.gachaCode.luckyTicket.code", lang);
             case SHARD -> LangID.getStringByID("event.gachaCode.platinumShard.code", lang);
             case NENEKO -> LangID.getStringByID("event.gachaCode.nenekoGang.code", lang);
-            default -> LangID.getStringByID("event.gachaCode.reinforcement.code", lang);
+            case REINFORCE -> LangID.getStringByID("event.gachaCode.reinforcement.code", lang);
+            case CAPSULE_5 -> LangID.getStringByID("event.gachaCode.5capsules.code", lang);
         };
     }
 

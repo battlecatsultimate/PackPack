@@ -11,7 +11,8 @@ public class GachaSection {
         NENEKO,
         LUCKY,
         REINFORCE,
-        STEP
+        STEP,
+        CAPSULE_5
     }
 
     public GachaSchedule.TYPE gachaType;

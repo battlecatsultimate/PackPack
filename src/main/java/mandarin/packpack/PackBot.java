@@ -583,35 +583,7 @@ public class PackBot {
                                     }
 
                                     if(result.isEmpty() && j == EventFactor.GATYA) {
-                                        builder.append("\n")
-                                                .append(LangID.getStringByID("event.gachaCode.guaranteed.code", holder.config.lang))
-                                                .append(" : ")
-                                                .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", holder.config.lang))
-                                                .append(" | ")
-                                                .append(LangID.getStringByID("event.gachaCode.stepUp.code", holder.config.lang))
-                                                .append(" : ")
-                                                .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", holder.config.lang))
-                                                .append(" | ")
-                                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", holder.config.lang))
-                                                .append(" : ")
-                                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", holder.config.lang))
-                                                .append(" | ")
-                                                .append(LangID.getStringByID("event.gachaCode.platinumShard.code", holder.config.lang))
-                                                .append(" : ")
-                                                .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", holder.config.lang))
-                                                .append(" | ")
-                                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", holder.config.lang))
-                                                .append(" : ")
-                                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", holder.config.lang))
-                                                .append(" | ")
-                                                .append(LangID.getStringByID("event.gachaCode.grandon.code", holder.config.lang))
-                                                .append(" : ")
-                                                .append(LangID.getStringByID("event.gachaCode.grandon.fullName", holder.config.lang))
-                                                .append(" | ")
-                                                .append(LangID.getStringByID("event.gachaCode.reinforcement.code", holder.config.lang))
-                                                .append(" : ")
-                                                .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", holder.config.lang))
-                                                .append("\n```");
+                                        builder.append("\n").append(EventFactor.getGachaCodeExplanation(holder.config.lang)).append("\n```");
                                     } else {
                                         builder.append("```");
                                     }

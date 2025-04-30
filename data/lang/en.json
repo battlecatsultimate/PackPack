@@ -1196,6 +1196,10 @@
       "xp" : "_NNN_ _III_"
     },
     "gachaCode" : {
+      "5capsules" : {
+        "code" : "5",
+        "fullName" : "5 Capsules"
+      },
       "grandon" : {
         "code" : "GR",
         "fullName" : "Grandon"

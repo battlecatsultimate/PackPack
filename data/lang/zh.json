@@ -1196,6 +1196,10 @@
       "xp" : "_NNN_ _III_"
     },
     "gachaCode" : {
+      "5capsules" : {
+        "code" : "5",
+        "fullName" : "5 Capsules"
+      },
       "grandon" : {
         "code" : "土龍鑽",
         "fullName" : "土龍鑽部隊(地底戰隊・地殼鑽, 地底戰隊・木樁釘, 地底戰隊・大力鉗, 地底戰隊・貓怪手, 地底戰隊・電鋸手)"

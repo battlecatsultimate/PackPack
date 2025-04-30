@@ -204,35 +204,7 @@ public class PrintEvent extends ConstraintCommand {
                     }
 
                     if(result.isEmpty() && j == EventFactor.GATYA) {
-                        builder.append("\n")
-                                .append(LangID.getStringByID("event.gachaCode.guaranteed.code", l))
-                                .append(" : ")
-                                .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", l))
-                                .append(" | ")
-                                .append(LangID.getStringByID("event.gachaCode.stepUp.code", l))
-                                .append(" : ")
-                                .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", l))
-                                .append(" | ")
-                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", l))
-                                .append(" : ")
-                                .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", l))
-                                .append(" | ")
-                                .append(LangID.getStringByID("event.gachaCode.platinumShard.code", l))
-                                .append(" : ")
-                                .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", l))
-                                .append(" | ")
-                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", l))
-                                .append(" : ")
-                                .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", l))
-                                .append(" | ")
-                                .append(LangID.getStringByID("event.gachaCode.grandon.code", l))
-                                .append(" : ")
-                                .append(LangID.getStringByID("event.gachaCode.grandon.fullName", l))
-                                .append(" | ")
-                                .append(LangID.getStringByID("event.gachaCode.reinforcement.code", l))
-                                .append(" : ")
-                                .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", l))
-                                .append("\n```");
+                        builder.append("\n").append(EventFactor.getGachaCodeExplanation(l)).append("\n```");
                     } else {
                         builder.append("```");
                     }

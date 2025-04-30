@@ -1196,6 +1196,10 @@
       "xp" : "_NNN_ _III_"
     },
     "gachaCode" : {
+      "5capsules" : {
+        "code" : "5",
+        "fullName" : "5회 연속 뽑기"
+      },
       "grandon" : {
         "code" : "그",
         "fullName" : "그란돈 부대"

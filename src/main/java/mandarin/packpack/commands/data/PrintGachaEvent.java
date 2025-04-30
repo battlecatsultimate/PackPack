@@ -92,35 +92,7 @@ public class PrintGachaEvent extends ConstraintCommand {
             }
 
             if(result.isEmpty()) {
-                builder.append("\n")
-                        .append(LangID.getStringByID("event.gachaCode.guaranteed.code", lang))
-                        .append(" : ")
-                        .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", lang))
-                        .append(" | ")
-                        .append(LangID.getStringByID("event.gachaCode.stepUp.code", lang))
-                        .append(" : ")
-                        .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", lang))
-                        .append(" | ")
-                        .append(LangID.getStringByID("event.gachaCode.luckyTicket.code", lang))
-                        .append(" : ")
-                        .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", lang))
-                        .append(" | ")
-                        .append(LangID.getStringByID("event.gachaCode.platinumShard.code", lang))
-                        .append(" : ")
-                        .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", lang))
-                        .append(" | ")
-                        .append(LangID.getStringByID("event.gachaCode.nenekoGang.code", lang))
-                        .append(" : ")
-                        .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", lang))
-                        .append(" | ")
-                        .append(LangID.getStringByID("event.gachaCode.grandon.code", lang))
-                        .append(" : ")
-                        .append(LangID.getStringByID("event.gachaCode.grandon.fullName", lang))
-                        .append(" | ")
-                        .append(LangID.getStringByID("event.gachaCode.reinforcement.code", lang))
-                        .append(" : ")
-                        .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", lang))
-                        .append("\n```");
+                builder.append("\n").append(EventFactor.getGachaCodeExplanation(lang)).append("\n```");
             } else {
                 builder.append("```");
             }

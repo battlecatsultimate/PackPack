@@ -481,4 +481,57 @@ public class EventFactor {
             return item + "s";
         }
     }
+
+    public static String getGachaCodeExplanation(CommonStatic.Lang.Locale lang) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(LangID.getStringByID("event.gachaCode.guaranteed.code", lang))
+                .append(" : ")
+                .append(LangID.getStringByID("event.gachaCode.guaranteed.fullName", lang));
+
+        GachaSection.ADDITIONAL[] additionalList = Arrays.stream(GachaSection.ADDITIONAL.values()).sorted((a0, a1) -> {
+            if (a0 == null && a1 == null)
+                return 0;
+
+            if (a0 == null)
+                return -1;
+
+            if (a1 == null)
+                return 1;
+
+            return a0.name().compareTo(a1.name());
+        }).toArray(GachaSection.ADDITIONAL[]::new);
+
+        for (int i = 0; i < additionalList.length; i++) {
+            builder.append(" | ");
+
+            GachaSection.ADDITIONAL additional = additionalList[i];
+
+            switch (additional) {
+                case SHARD -> builder.append(LangID.getStringByID("event.gachaCode.platinumShard.code", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("event.gachaCode.platinumShard.fullName", lang));
+                case GRANDON -> builder.append(LangID.getStringByID("event.gachaCode.grandon.code", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("event.gachaCode.grandon.fullName", lang));
+                case NENEKO -> builder.append(LangID.getStringByID("event.gachaCode.nenekoGang.code", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("event.gachaCode.nenekoGang.fullName", lang));
+                case LUCKY -> builder.append(LangID.getStringByID("event.gachaCode.luckyTicket.code", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("event.gachaCode.luckyTicket.fullName", lang));
+                case REINFORCE -> builder.append(LangID.getStringByID("event.gachaCode.reinforcement.code", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("event.gachaCode.reinforcement.fullName", lang));
+                case STEP -> builder.append(LangID.getStringByID("event.gachaCode.stepUp.code", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("event.gachaCode.stepUp.fullName", lang));
+                case CAPSULE_5 -> builder.append(LangID.getStringByID("event.gachaCode.5capsules.code", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("event.gachaCode.5capsules.fullName", lang));
+            }
+        }
+
+        return builder.toString();
+    }
 }
