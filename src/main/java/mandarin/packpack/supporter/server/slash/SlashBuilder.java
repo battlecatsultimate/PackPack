@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.slash;
 
 import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
@@ -162,7 +163,7 @@ public class SlashBuilder {
             }
         }
 
-        action = action.setGuildOnly(true);
+        action = action.setContexts(InteractionContextType.GUILD);
 
         requests.add(action);
     }
