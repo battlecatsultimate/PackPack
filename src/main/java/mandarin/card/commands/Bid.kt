@@ -30,7 +30,7 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
 
         if (ch is PrivateChannel) {
             if (segments.size < 3) {
-                if (CardData.auctionSessions.filter { s -> s.opened}.isEmpty()) {
+                if (CardData.auctionSessions.none { s -> s.opened }) {
                     replyToMessageSafely(ch, "Currently there's no auction going on!", loader.message) { a -> a }
 
                     return
@@ -70,6 +70,12 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
 
                 if ((auctionSession.bidData[u.idLong] ?: 0) == -1L) {
                     replyToMessageSafely(ch, "It seems that you have left the server while participating this auction. So you aren't allowed to bid this auction", loader.message) { a -> a }
+
+                    return
+                }
+
+                if (auctionSession.bidData.containsKey(u.idLong) && auctionSession.currentBid == (auctionSession.bidData[u.idLong] ?: 0)) {
+                    replyToMessageSafely(ch, "You can't bid again while no one has bid! Wait for other user's bid", loader.message) { a -> a }
 
                     return
                 }
