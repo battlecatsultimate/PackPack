@@ -154,6 +154,12 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
                 return
             }
 
+            if (auctionSession.bidData.containsKey(u.idLong) && auctionSession.currentBid == (auctionSession.bidData[u.idLong] ?: 0)) {
+                replyToMessageSafely(ch, "You can't bid again while no one has bid! Wait for other user's bid", loader.message) { a -> a }
+
+                return
+            }
+
             if (segments.size < 2) {
                 replyToMessageSafely(ch, "Please provide how much cat food ${EmojiStore.ABILITY["CF"]?.formatted} you will bid! Format is `${CardBot.globalPrefix}bid [Cat Food]`", loader.message) { a -> a }
 

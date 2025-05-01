@@ -4,6 +4,7 @@ import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.auction.AuctionBidHolder
+import mandarin.packpack.commands.Command.replyToMessageSafely
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -46,6 +47,16 @@ class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: Strin
                 if ((auctionSession.bidData[event.user.idLong] ?: 0) == -1L) {
                     event.deferReply()
                         .setContent("It seems that you have left the server while participating this auction. So you aren't allowed to bid this auction")
+                        .setEphemeral(true)
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    return
+                }
+
+                if (auctionSession.bidData.containsKey(event.user.idLong) && auctionSession.currentBid == (auctionSession.bidData[event.user.idLong] ?: 0)) {
+                    event.deferReply()
+                        .setContent("You can't bid again while no one has bid! Wait for other user's bid")
                         .setEphemeral(true)
                         .mentionRepliedUser(false)
                         .queue()
