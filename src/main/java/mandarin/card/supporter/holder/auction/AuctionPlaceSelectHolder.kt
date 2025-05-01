@@ -4,7 +4,6 @@ import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.auction.AuctionBidHolder
-import mandarin.packpack.commands.Command.replyToMessageSafely
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
