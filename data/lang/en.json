@@ -127,7 +127,9 @@
     },
     "denied" : {
       "reason" : {
+        "banned" : "You are banned from using any commands in this server",
         "cooldown" : "You have to wait for _sec more to use this command!",
+        "channel" : "You don't have permission to use commands in this channel!",
         "noPermission" : {
           "developer" : "This command can be only run by <@%s>!",
           "member" : "You have to have <@&%s> role to use this command!",

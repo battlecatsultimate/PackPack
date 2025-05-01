@@ -127,7 +127,9 @@
     },
     "denied" : {
       "reason" : {
+        "banned" : "You are banned from using any commands in this server",
         "cooldown" : "You have to wait for _sec more to use this command!",
+        "channel" : "You don't have permission to use commands in this channel!",
         "noPermission" : {
           "developer" : "這個指令只有<@%s>（機器人創始者）可以使用",
           "member" : "這個指令只有<@&%s>可以使用",

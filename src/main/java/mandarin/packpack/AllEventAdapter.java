@@ -850,13 +850,43 @@ public class AllEventAdapter extends ListenerAdapter {
                     }
 
                     Guild g = event.getGuild();
+                    MessageChannel mc = event.getMessageChannel();
 
                     IDHolder idh;
+                    boolean mandarin = u.getId().equals(StaticStore.MANDARIN_SMELL);
 
                     if (g == null) {
                         idh = null;
                     } else {
                         idh = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+                    }
+
+                    boolean channelPermitted = false;
+
+                    if (idh == null) {
+                        channelPermitted = true;
+                    } else {
+                        Member m = event.getMember();
+
+                        if (m != null) {
+                            ArrayList<String> channels = idh.getAllAllowedChannels(m);
+
+                            if(channels == null)
+                                channelPermitted = true;
+                            else if(!channels.isEmpty()) {
+                                if (mc instanceof ThreadChannel tc) {
+                                    IThreadContainerUnion parent = tc.getParentChannel();
+
+                                    channelPermitted = channels.contains(tc.getId());
+
+                                    if (parent instanceof ForumChannel) {
+                                        channelPermitted |= channels.contains(parent.getId());
+                                    }
+                                } else {
+                                    channelPermitted = channels.contains(mc.getId());
+                                }
+                            }
+                        }
                     }
 
                     ConfigHolder c = StaticStore.config.get(event.getUser().getId());
@@ -871,6 +901,24 @@ public class AllEventAdapter extends ListenerAdapter {
                         }
                     } else {
                         lang = c.lang;
+                    }
+
+                    if (!mandarin && !channelPermitted) {
+                        i.deferReply()
+                                .setContent(LangID.getStringByID("bot.denied.reason.channel", lang))
+                                .setEphemeral(true)
+                                .queue();
+
+                        return;
+                    }
+
+                    if (!mandarin && idh != null && idh.banned.contains(u.getId())) {
+                        i.deferReply()
+                                .setContent(LangID.getStringByID("bot.denied.reason.banned", lang))
+                                .setEphemeral(true)
+                                .queue();
+
+                        return;
                     }
 
                     performCommand(event, i.getName(), lang, idh, c);
