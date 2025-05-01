@@ -190,7 +190,7 @@ object CardData {
     const val TRADE_TRIAL_COOLDOWN = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
     const val TRADE_EXPIRATION_TIME = 5 * 24 * 60 * 60 * 1000 // 5 days
 
-    private val allowedChannel = ServerData.getArray("allowedChannel")
+    val allowedChannel = ArrayList<Long>()
 
     val notifierGroup = HashMap<Long, BooleanArray>()
     val purchaseNotifier = ArrayList<Long>()
@@ -335,9 +335,9 @@ object CardData {
 
     fun isAllowed(ch: MessageChannel) : Boolean {
         return when(ch) {
-            is ThreadChannel -> ch.parentChannel.id in allowedChannel
+            is ThreadChannel -> ch.parentChannel.idLong in allowedChannel
             is PrivateChannel -> true
-            else -> ch.id in allowedChannel
+            else -> ch.idLong in allowedChannel
         }
     }
 

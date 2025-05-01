@@ -18,14 +18,15 @@ object ServerData {
         return JSON.get(key).asString
     }
 
-    fun getArray(key: String) : Array<String> {
+    fun getArray(key: String) : ArrayList<String> {
         if (!JSON.has(key) || !JSON.get(key).isJsonArray)
-            return arrayOf()
+            return arrayListOf()
 
         val arr = JSON.getAsJsonArray(key)
+        val result = ArrayList<String>()
 
-        return Array(arr.size()) {
-            arr[it].asString
-        }
+        result.addAll(arr.map { e -> e.asString })
+
+        return result
     }
 }

@@ -591,6 +591,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}lc" -> LockCommand()
             "${globalPrefix}temprestore",
             "${globalPrefix}ter" -> TempRestore()
+            "${globalPrefix}allowchannel",
+            "${globalPrefix}alc" -> AllowChannel()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 
@@ -808,6 +810,8 @@ object CardBot : ListenerAdapter() {
                 ch.sendMessage("There was technical issue, or unknown problem that made bot go offline. ${event.jda.selfUser.asMention} is online now").queue()
             }
         }
+
+        CardData.allowedChannel.removeIf { id -> g.getGuildChannelById(id) == null }
 
         saveCardData()
     }
@@ -1205,6 +1209,14 @@ object CardBot : ListenerAdapter() {
                 CardData.lockedCommands.add(cls)
             }
         }
+
+        if (obj.has("allowedChannel")) {
+            obj.getAsJsonArray("allowedChannel").filterIsInstance<JsonPrimitive>().forEach { e ->
+                CardData.allowedChannel.add(e.asLong)
+            }
+        } else {
+            CardData.allowedChannel.addAll(ServerData.getArray("allowedChannel").map { id -> id.toLong() })
+        }
     }
 
     @Synchronized
@@ -1490,6 +1502,12 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("lockedCommands", lockedCommands)
+
+        val allowedChannel = JsonArray()
+
+        CardData.allowedChannel.forEach { c -> allowedChannel.add(c) }
+
+        obj.add("allowedChannel", allowedChannel)
 
         try {
             val folder = File("./data/")
