@@ -189,9 +189,15 @@ public class AllEventAdapter extends ListenerAdapter {
             for(CommonStatic.Lang.Locale key : idh.eventData.keySet()) {
                 EventDataConfigHolder config = idh.eventData.get(key);
 
-                if(config != null && config.channelID == ch.getIdLong()) {
-                    config.channelID = -1L;
-                } else if (config == null) {
+                if(config != null) {
+                    if (config.channelID == ch.getIdLong()) {
+                        config.channelID = -1L;
+                    }
+
+                    if (config.newVersionChannelID == ch.getIdLong()) {
+                        config.newVersionChannelID = -1L;
+                    }
+                } else {
                     idh.eventData.remove(key);
                 }
             }

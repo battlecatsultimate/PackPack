@@ -178,8 +178,9 @@ public class IDHolder implements Cloneable {
                     continue;
                 }
 
-                EventDataConfigHolder data = new EventDataConfigHolder(StaticStore.safeParseLong(value));
+                EventDataConfigHolder data = new EventDataConfigHolder();
 
+                data.channelID = StaticStore.safeParseLong(value);
                 data.eventMessage = eventMessage.getOrDefault(entry.getKey(), "");
 
                 id.eventData.put(entry.getKey(), data);

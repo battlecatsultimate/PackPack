@@ -658,10 +658,10 @@ public class PackBot {
 
                 EventDataConfigHolder config = holder.eventData.get(locale);
 
-                if (config == null || config.channelID == -1L || !config.notifyNewVersion)
+                if (config == null || config.newVersionChannelID == -1L)
                     continue;
 
-                GuildChannel gc = g.getGuildChannelById(config.channelID);
+                GuildChannel gc = g.getGuildChannelById(config.newVersionChannelID);
 
                 if (!(gc instanceof GuildMessageChannel ch))
                     continue;

@@ -32,7 +32,7 @@ public class PrintEvent extends ConstraintCommand {
         CommonStatic.Lang.Locale loc = getLocale(loader.getContent());
         CommonStatic.Lang.Locale l = followServerLocale(loader.getContent()) ? holder.config.lang : lang;
 
-        EventDataConfigHolder config = holder.eventData.getOrDefault(loc, new EventDataConfigHolder(-1L));
+        EventDataConfigHolder config = holder.eventData.getOrDefault(loc, new EventDataConfigHolder());
 
         boolean full = isFull(loader.getContent());
         boolean raw = isRaw(loader.getContent());

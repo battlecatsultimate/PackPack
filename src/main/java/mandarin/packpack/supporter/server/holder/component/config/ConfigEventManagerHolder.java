@@ -46,7 +46,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     return;
 
                 if (e.getValues().isEmpty()) {
-                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder(-1L)).channelID = -1L;
+                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).channelID = -1L;
 
                     applyResult(event);
                 } else {
@@ -72,17 +72,46 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                         return;
                     }
 
-                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder(channel.getIdLong())).channelID = channel.getIdLong();
+                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).channelID = channel.getIdLong();
 
                     applyResult(event);
                 }
             }
-            case "newVersion" -> {
-                EventDataConfigHolder config = holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder(-1L));
+            case "newVersionChannel" -> {
+                if (!(event instanceof EntitySelectInteractionEvent e))
+                    return;
 
-                config.notifyNewVersion = !config.notifyNewVersion;
+                if (e.getValues().isEmpty()) {
+                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).newVersionChannelID = -1L;
 
-                applyResult(event);
+                    applyResult(event);
+                } else {
+                    String id = e.getValues().getFirst().getId();
+
+                    Guild g = event.getGuild();
+
+                    if (g == null)
+                        return;
+
+                    TextChannel channel = g.getTextChannelById(id);
+
+                    if (channel == null)
+                        return;
+
+                    if (!channel.canTalk()) {
+                        event.deferReply()
+                                .setContent(LangID.getStringByID("serverConfig.eventData.cantTalk", lang))
+                                .setAllowedMentions(new ArrayList<>())
+                                .setEphemeral(true)
+                                .queue();
+
+                        return;
+                    }
+
+                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).newVersionChannelID = channel.getIdLong();
+
+                    applyResult(event);
+                }
             }
             case "newAdditional", "additional" -> {
                 boolean forEventData = event.getComponentId().equals("additional");
@@ -99,10 +128,10 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), userID, channelID, message, holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder(-1L)), lang, forEventData));
+                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), userID, channelID, message, holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder()), lang, forEventData));
             }
             case "sort" -> {
-                EventDataConfigHolder config = holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder(-1L));
+                EventDataConfigHolder config = holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder());
 
                 config.eventRaw = !config.eventRaw;
 
@@ -163,7 +192,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
     }
 
     private String getContents() {
-        EventDataConfigHolder config = holder.eventData.getOrDefault(locale, new EventDataConfigHolder(-1L));
+        EventDataConfigHolder config = holder.eventData.getOrDefault(locale, new EventDataConfigHolder());
 
         Emoji emoji;
         String bcVersion;
@@ -206,10 +235,10 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
         String newVersion;
 
-        if (config.notifyNewVersion) {
-            newVersion = LangID.getStringByID("data.true", lang);
+        if (config.newVersionChannelID != -1L) {
+            newVersion = "<#" + config.newVersionChannelID + ">";
         } else {
-            newVersion = LangID.getStringByID("data.false", lang);
+            newVersion = LangID.getStringByID("data.none", lang);
         }
 
         String additional;
@@ -235,8 +264,8 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 .append(LangID.getStringByID("serverConfig.eventData.description", lang)).append("\n\n")
                 .append(LangID.getStringByID("serverConfig.eventData.info.version", lang).formatted(emoji.getFormatted(), bcVersion)).append("\n")
                 .append(LangID.getStringByID("serverConfig.eventData.info.sortMethod", lang).formatted(sort)).append("\n")
-                .append(LangID.getStringByID("serverConfig.eventData.info.channel", lang).formatted(channel)).append("\n")
-                .append(LangID.getStringByID("serverConfig.eventData.info.newVersion", lang).formatted(newVersion)).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.channel.event", lang).formatted(channel)).append("\n")
+                .append(LangID.getStringByID("serverConfig.eventData.info.channel.newVersion", lang).formatted(newVersion)).append("\n")
                 .append(LangID.getStringByID("serverConfig.eventData.info.additionalMessage.eventData", lang).formatted(additional)).append("\n")
                 .append(LangID.getStringByID("serverConfig.eventData.info.additionalMessage.newVersion", lang).formatted(newAdditional));
 
@@ -270,12 +299,21 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
     }
 
     private List<LayoutComponent> getComponents() {
-        EventDataConfigHolder config = holder.eventData.getOrDefault(locale, new EventDataConfigHolder(-1L));
+        EventDataConfigHolder config = holder.eventData.getOrDefault(locale, new EventDataConfigHolder());
 
         List<LayoutComponent> result = new ArrayList<>();
 
+        EntitySelectMenu.Builder newVersionChannelBuilder = EntitySelectMenu.create("newVersionChannel", EntitySelectMenu.SelectTarget.CHANNEL)
+                .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
+                .setPlaceholder(LangID.getStringByID("serverConfig.eventData.info.select.newVersion", lang));
+
+        if (config.newVersionChannelID != -1L) {
+            newVersionChannelBuilder = newVersionChannelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(String.valueOf(config.newVersionChannelID))).setRequiredRange(0, 1);
+        }
+
         EntitySelectMenu.Builder channelBuilder = EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
-                .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
+                .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
+                .setPlaceholder(LangID.getStringByID("serverConfig.eventData.info.select.event", lang));
 
         if (config.channelID != -1L) {
             channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(String.valueOf(config.channelID))).setRequiredRange(0, 1);
@@ -290,21 +328,14 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         }
 
         result.add(ActionRow.of(channelBuilder.build()));
+        result.add(ActionRow.of(newVersionChannelBuilder.build()));
+
         result.add(ActionRow.of(
                 Button.secondary("additional", LangID.getStringByID("serverConfig.eventData.setAdditional.eventData", lang)).withEmoji(Emoji.fromUnicode("💬")),
                 Button.secondary("newAdditional", LangID.getStringByID("serverConfig.eventData.setAdditional.newVersion", lang)).withEmoji(Emoji.fromUnicode("💬"))
         ));
+
         result.add(ActionRow.of(Button.secondary("sort", LangID.getStringByID("serverConfig.eventData.setSort", lang).formatted(sortButton)).withEmoji(Emoji.fromUnicode("⚖️"))));
-
-        Emoji newVersionSwitch;
-
-        if (config.notifyNewVersion) {
-            newVersionSwitch = EmojiStore.SWITCHON;
-        } else {
-            newVersionSwitch = EmojiStore.SWITCHOFF;
-        }
-
-        result.add(ActionRow.of(Button.secondary("newVersion", LangID.getStringByID("serverConfig.eventData.newVersion", lang)).withEmoji(newVersionSwitch)));
 
         result.add(
                 ActionRow.of(
