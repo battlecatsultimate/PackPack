@@ -589,6 +589,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}mb" -> ManageBanner()
             "${globalPrefix}lockcommand",
             "${globalPrefix}lc" -> LockCommand()
+            "${globalPrefix}temprestore",
+            "${globalPrefix}ter" -> TempRestore()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 

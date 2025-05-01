@@ -49,6 +49,7 @@ hs_err_pid*
 /data/cardLog/
 /data/lwjgl/
 /data/testCardSave.json
+/data/oldCardSave.json
 /data/testCardLog/
 /build/
 /build/*
