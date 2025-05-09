@@ -138,6 +138,10 @@
                         "noRole" : "У вас должно быть либо разрешение на управление сервером, либо разрешение администратора! Если на этом сервере нет ролей, то эту команду может использовать только владелец сервера!",
                         "withRole" : "Чтобы использовать эту команду, которая доступна только модератору, вам необходима роль <@&%s>!"
                     }
+                },
+                "prefixBanned" : {
+                    "all" : "This message is from server **%s**. Currently, this server doesn't allow users to use their custom prefix. Please use bot's default prefix `%s`!",
+                    "specific" : "This message is from server **%s**. Currently, your prefix `%s` is disallowed to be used in this server. Please use bot's default prefix `%s`, or change your custom prefix to other via `%sprefix` command!"
                 }
             }
         },
@@ -2674,7 +2678,8 @@
             "button" : {
                 "channelPermission" : "Поменять Права Канала",
                 "commandBan" : "Поменять Заблокированных Пользователей Бота",
-                "permissionPan" : "Поменять Права Пользователей Канала"
+                "permissionBan" : "Поменять Права Пользователей Канала",
+                "prefixBan" : "Manage Disallowed Prefix"
             },
             "documentation" : {
                 "title" : "## Настройка Прав",
@@ -2689,6 +2694,10 @@
                 "permissionBan" : {
                     "description" : "Аналогично предыдущему сценарию, если модераторы не хотят полностью запрещать использование команд, они могут временно отключить разрешение канала, предотвращая использование команд участником в определенных каналах",
                     "title" : "### %s Поменять Права Канала Для Пользователей"
+                },
+                "prefixBan" : {
+                    "description" : "If moderators want to disable bot's custom prefix feature for this server, moderators can either completely disallow users from using their custom prefix, or assign specific prefix that will be banned from being used",
+                    "title" : "### %s Manage Disallowed Prefix"
                 }
             }
         },
@@ -2710,6 +2719,23 @@
                     "activated" : "Активирована",
                     "deactivated" : "Деактивирована"
                 }
+            }
+        },
+        "prefixBan" : {
+            "assign" : "Click Here To Disallow Prefix",
+            "description" : "This bot allows users to assign their own custom prefix that will make bot recognize users. However, since there are a lot of bots in Discord platform, sometimes there can be situation where user's custom prefix and other bots' prefix are same. This will result in conflicts. User can trigger this bot and another bot at the same time, and they may abuse this, leading to spamming problem. Moderators can disable custom prefix for this feature by clicking the switch button below. Or, if disabling as whole sounds too harsh, moderators can assign prefix that will be ignored only in this server. Users will be notified via DM if user had disallowed prefix as their custom prefix",
+            "disallow" : "Disallow All Custom Prefix",
+            "noPrefix" : "No Prefix To Allow",
+            "remove" : "Select prefix to allow it back",
+            "modal" : {
+                "description" : "Type prefix that will be disallowed here",
+                "field" : "Prefix",
+                "title" : "Prefix Disallow"
+            },
+            "prefixList" : {
+                "all" : "All custom prefix are disallowed",
+                "list" : "### List of disallowed prefix",
+                "no" : "No custom prefix are disallowed"
             }
         },
         "status" : {

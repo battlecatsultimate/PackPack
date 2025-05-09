@@ -28,8 +28,9 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
     public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "channel" -> connectTo(event, new ConfigChannelRoleSelectHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
-            case "scamDetector.action.ban" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "command" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
             case "manage" -> connectTo(event, new ConfigPermissionUserSelectHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "prefix" -> connectTo(event, new ConfigPrefixBanHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
@@ -91,15 +92,18 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
                 LangID.getStringByID("serverConfig.permission.documentation.commandBan.title", lang).formatted(Emoji.fromUnicode("🔨")) + "\n" +
                 LangID.getStringByID("serverConfig.permission.documentation.commandBan.description", lang) + "\n" +
                 LangID.getStringByID("serverConfig.permission.documentation.permissionBan.title", lang).formatted(Emoji.fromUnicode("🔧")) + "\n" +
-                LangID.getStringByID("serverConfig.permission.documentation.permissionBan.description", lang);
+                LangID.getStringByID("serverConfig.permission.documentation.permissionBan.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.prefixBan.title", lang).formatted(Emoji.fromUnicode("📋")) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.prefixBan.description", lang);
     }
 
     private List<LayoutComponent> getComponents() {
         List<LayoutComponent> result = new ArrayList<>();
 
         result.add(ActionRow.of(Button.secondary("channel", LangID.getStringByID("serverConfig.permission.button.channelPermission", lang)).withEmoji(Emoji.fromUnicode("📜"))));
-        result.add(ActionRow.of(Button.secondary("scamDetector.action.ban", LangID.getStringByID("serverConfig.permission.button.commandBan", lang)).withEmoji(Emoji.fromUnicode("🔨"))));
-        result.add(ActionRow.of(Button.secondary("manage", LangID.getStringByID("serverConfig.permission.button.permissionPan", lang)).withEmoji(Emoji.fromUnicode("🔧"))));
+        result.add(ActionRow.of(Button.secondary("command", LangID.getStringByID("serverConfig.permission.button.commandBan", lang)).withEmoji(Emoji.fromUnicode("🔨"))));
+        result.add(ActionRow.of(Button.secondary("manage", LangID.getStringByID("serverConfig.permission.button.permissionBan", lang)).withEmoji(Emoji.fromUnicode("🔧"))));
+        result.add(ActionRow.of(Button.secondary("prefix", LangID.getStringByID("serverConfig.permission.button.prefixBan", lang)).withEmoji(Emoji.fromUnicode("📋"))));
 
         result.add(
                 ActionRow.of(

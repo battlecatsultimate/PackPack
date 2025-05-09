@@ -76,7 +76,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new ServerPrefixModalHolder(getAuthorMessage(), userID, channelID, message, holder.config, lang));
+                connectTo(new ServerPrefixModalHolder(getAuthorMessage(), userID, channelID, message, holder, lang));
             }
             case "role" -> connectTo(event, new ConfigRoleRegistrationHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
             case "confirm" -> {

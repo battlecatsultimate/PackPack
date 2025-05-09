@@ -214,6 +214,16 @@ public class IDHolder implements Cloneable {
             id.boosterPinChannel = id.jsonObjectToListString(obj.getAsJsonArray("boosterPinChannel"));
         }
 
+        if (obj.has("bannedPrefix")) {
+            id.bannedPrefix = id.jsonObjectToListString(obj.getAsJsonArray("bannedPrefix"));
+
+            id.bannedPrefix.removeIf(prefix -> prefix.toLowerCase(Locale.ENGLISH).equals(StaticStore.globalPrefix));
+        }
+
+        if (obj.has("disableCustomPrefix")) {
+            id.disableCustomPrefix = obj.get("disableCustomPrefix").getAsBoolean();
+        }
+
         if(id.config.lang == null)
             id.config.lang = CommonStatic.Lang.Locale.EN;
 
@@ -313,6 +323,15 @@ public class IDHolder implements Cloneable {
     public Map<String, List<String>> channelException = new HashMap<>();
 
     /**
+     * Prefix that will be ignored in this server
+     */
+    public List<String> bannedPrefix = new ArrayList<>();
+    /**
+     * Prevent users from using their custom prefix as whole
+     */
+    public boolean disableCustomPrefix = false;
+
+    /**
      * Additional message that will be sent together whenever bot posts announcements
      */
     @Nonnull
@@ -382,6 +401,8 @@ public class IDHolder implements Cloneable {
         announceMessage = holder.announceMessage;
         boosterPin = holder.boosterPin;
         boosterPinChannel = holder.boosterPinChannel;
+        bannedPrefix = holder.bannedPrefix;
+        disableCustomPrefix = holder.disableCustomPrefix;
     }
 
     /**
@@ -411,6 +432,8 @@ public class IDHolder implements Cloneable {
         obj.addProperty("boosterPin", boosterPin);
         obj.addProperty("boosterAll", boosterAll);
         obj.add("boosterPinChannel", listStringToJsonObject(boosterPinChannel));
+        obj.add("bannedPrefix", StaticStore.listToJsonString(bannedPrefix));
+        obj.addProperty("disableCustomPrefix", disableCustomPrefix);
 
         return obj;
     }
@@ -509,7 +532,7 @@ public class IDHolder implements Cloneable {
             return arr;
         }
 
-        return null;
+        return new ArrayList<>();
     }
 
     private Map<CommonStatic.Lang.Locale, String> jsonObjectToMapLocaleString(JsonElement obj) {
@@ -666,6 +689,9 @@ public class IDHolder implements Cloneable {
 
             id.ID = new HashMap<>(ID);
             id.eventData = new HashMap<>();
+
+            id.bannedPrefix = new ArrayList<>(bannedPrefix);
+            id.disableCustomPrefix = disableCustomPrefix;
 
             for(String key : channel.keySet()) {
                 id.channel.put(key, new ArrayList<>(channel.get(key)));

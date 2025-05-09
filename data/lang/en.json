@@ -138,6 +138,10 @@
                         "noRole" : "You have to have either server manage permission or administrator permission! If this server doesn't have any roles in the server, then only owner of the server can use this command!",
                         "withRole" : "You have to have <@&%s> role to use this moderator-only command!"
                     }
+                },
+                "prefixBanned" : {
+                    "all" : "This message is from server **%s**. Currently, this server doesn't allow users to use their custom prefix. Please use bot's default prefix `%s`!",
+                    "specific" : "This message is from server **%s**. Currently, your prefix `%s` is disallowed to be used in this server. Please use bot's default prefix `%s`, or change your custom prefix to other via `%sprefix` command!"
                 }
             }
         },
@@ -2591,9 +2595,13 @@
         },
         "general" : {
             "languageSet" : "Successfully changed language to %s!",
+            "noGlobalPrefix" : "You can't disallow bot's default prefix (%s)!",
             "noURL" : "To prevent abuse, URL format is forbidden!",
+            "noServerPrefix" : "You can't disallow server's prefix (%s)!",
             "noWhiteSpace" : "Whitespaces-only or blank texts aren't allowed!",
             "prefix" : "Prefix",
+            "prefixContain" : "This prefix is already disallowed!",
+            "prefixDisallowed" : "Successfully added prefix into disallow list!",
             "prefixSet" : "Click Here To Set Prefix",
             "prefixSuccess" : "Successfully set prefix to %s!",
             "selectLanguage" : "Please select language",
@@ -2674,7 +2682,8 @@
             "button" : {
                 "channelPermission" : "Manage Channel Permission",
                 "commandBan" : "Manage Banning User From Bot",
-                "permissionPan" : "Manage User's Channel Permission"
+                "permissionBan" : "Manage User's Channel Permission",
+                "prefixBan" : "Manage Disallowed Prefix"
             },
             "documentation" : {
                 "title" : "## Permission Setting",
@@ -2689,6 +2698,10 @@
                 "permissionBan" : {
                     "description" : "Similar like scenario above, but if moderators don't want complete ban from using commands, they can temporarily disable channel permission, preventing member from using commands in some channels",
                     "title" : "### %s Manage Channel Permission For User"
+                },
+                "prefixBan" : {
+                    "description" : "If moderators want to disable bot's custom prefix feature for this server, moderators can either completely disallow users from using their custom prefix, or assign specific prefix that will be banned from being used",
+                    "title" : "### %s Manage Disallowed Prefix"
                 }
             }
         },
@@ -2710,6 +2723,23 @@
                     "activated" : "Activated",
                     "deactivated" : "Deactivated"
                 }
+            }
+        },
+        "prefixBan" : {
+            "assign" : "Click Here To Disallow Prefix",
+            "description" : "This bot allows users to assign their own custom prefix that will make bot recognize users. However, since there are a lot of bots in Discord platform, sometimes there can be situation where user's custom prefix and other bots' prefix are same. This will result in conflicts. User can trigger this bot and another bot at the same time, and they may abuse this, leading to spamming problem. Moderators can disable custom prefix for this feature by clicking the switch button below. Or, if disabling as whole sounds too harsh, moderators can assign prefix that will be ignored only in this server. Users will be notified via DM if user had disallowed prefix as their custom prefix",
+            "disallow" : "Disallow All Custom Prefix",
+            "noPrefix" : "No Prefix To Allow",
+            "remove" : "Select prefix to allow it back",
+            "modal" : {
+                "description" : "Type prefix that will be disallowed here",
+                "field" : "Prefix",
+                "title" : "Prefix Disallow"
+            },
+            "prefixList" : {
+                "all" : "All custom prefix are disallowed",
+                "list" : "### List of disallowed prefix",
+                "no" : "No custom prefix are disallowed"
             }
         },
         "status" : {

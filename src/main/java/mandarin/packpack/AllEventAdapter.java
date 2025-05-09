@@ -369,6 +369,29 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 IDHolder idh = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
 
+                if (idh.disableCustomPrefix && !prefix.equals(StaticStore.globalPrefix)) {
+                    final CommonStatic.Lang.Locale finalLocale = lang;
+
+                    m.getUser().openPrivateChannel().queue(pc ->
+                            pc.sendMessage(LangID.getStringByID("bot.denied.reason.prefixBanned.all", finalLocale).formatted(g.getName(), StaticStore.globalPrefix)).queue(null, e ->
+                                    StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Failed to send prefix banned DM to user")
+                            ), e -> {}
+                    );
+
+                    return;
+                } else if (idh.bannedPrefix.contains(prefix.toLowerCase(java.util.Locale.ENGLISH))) {
+                    final CommonStatic.Lang.Locale finalLocale = lang;
+                    final String finalPrefix = prefix;
+
+                    m.getUser().openPrivateChannel().queue(pc ->
+                            pc.sendMessage(LangID.getStringByID("bot.denied.reason.prefixBanned.specific", finalLocale).formatted(g.getName(), finalPrefix, StaticStore.globalPrefix, StaticStore.globalPrefix)).queue(null, e ->
+                                    StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Failed to send prefix banned DM to user")
+                            ), e -> {}
+                    );
+
+                    return;
+                }
+
                 boolean isMod;
 
                 String moderatorID = idh.moderator;
