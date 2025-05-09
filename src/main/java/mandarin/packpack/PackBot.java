@@ -389,16 +389,10 @@ public class PackBot {
     public static void notifyEvent(ShardManager client, boolean[][] r) {
         List<Guild> guilds = client.getGuilds();
 
-        System.out.println(Arrays.deepToString(r));
-
         boolean sent = false;
 
         for(Guild g : guilds) {
-            System.out.println("------");
-
             String gID = g.getId();
-
-            System.out.println(gID);
 
             IDHolder holder = StaticStore.idHolder.computeIfAbsent(gID, k -> new IDHolder(g));
 
