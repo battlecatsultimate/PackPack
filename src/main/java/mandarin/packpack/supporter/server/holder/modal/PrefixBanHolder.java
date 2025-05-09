@@ -71,7 +71,7 @@ public class PrefixBanHolder extends ModalHolder {
             return;
         }
 
-        holder.bannedPrefix.add(value);
+        holder.bannedPrefix.add(value.toLowerCase(Locale.ENGLISH));
 
         event.deferReply()
                 .setContent(LangID.getStringByID("serverConfig.general.prefixDisallowed", lang))
