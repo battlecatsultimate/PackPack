@@ -369,7 +369,9 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 IDHolder idh = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
 
-                if (idh.disableCustomPrefix && !prefix.equals(StaticStore.globalPrefix)) {
+                String userPrefix = StaticStore.getPrefix(u.getId()).toLowerCase(java.util.Locale.ENGLISH);
+
+                if (idh.disableCustomPrefix && !prefix.equals(StaticStore.globalPrefix) && userPrefix.equals(prefix.toLowerCase(java.util.Locale.ENGLISH))) {
                     final CommonStatic.Lang.Locale finalLocale = lang;
 
                     m.getUser().openPrivateChannel().queue(pc ->
@@ -379,7 +381,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     );
 
                     return;
-                } else if (idh.bannedPrefix.contains(prefix.toLowerCase(java.util.Locale.ENGLISH))) {
+                } else if (idh.bannedPrefix.contains(prefix.toLowerCase(java.util.Locale.ENGLISH)) && userPrefix.equals(prefix.toLowerCase(java.util.Locale.ENGLISH))) {
                     final CommonStatic.Lang.Locale finalLocale = lang;
                     final String finalPrefix = prefix;
 
