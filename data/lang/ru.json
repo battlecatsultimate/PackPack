@@ -2595,9 +2595,13 @@
         },
         "general" : {
             "languageSet" : "Язык успешно сменен на %s!",
+            "noGlobalPrefix" : "You can't disallow bot's default prefix (%s)!",
             "noURL" : "Во избежание злоупотреблений формат URL запрещен!",
+            "noServerPrefix" : "You can't disallow server's prefix (%s)!",
             "noWhiteSpace" : "Не допускается использование пробелов без других символов или пустых текстов!",
             "prefix" : "Префикс",
+            "prefixContain" : "This prefix is already disallowed!",
+            "prefixDisallowed" : "Successfully added prefix into disallow list!",
             "prefixSet" : "Нажми Сюда, чтобы Выбрать Префикс",
             "prefixSuccess" : "Префикс %s успешно установлен!",
             "selectLanguage" : "Пожалуйста, выберите язык",

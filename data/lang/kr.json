@@ -2597,9 +2597,13 @@
         },
         "general" : {
             "languageSet" : "언어가 성공적으로 %s로 변경되었습니다!",
+            "noGlobalPrefix" : "봇의 기본 접두사 (%s)는 금지할 수 없습니다!",
             "noURL" : "악용을 방지하기 위해 URL 형식은 금지되어있습니다!",
+            "noServerPrefix" : "서버 접두사 (%s)는 금지할 수 없습니다!",
             "noWhiteSpace" : "공백 문자나 비어있는 글자는 금지되어있습니다!",
             "prefix" : "접두사",
+            "prefixContain" : "해당 접두사는 이미 금지되어있습니다!",
+            "prefixDisallowed" : "성공적으로 금지 리스트에 등록했습니다!",
             "prefixSet" : "접두사 설정",
             "prefixSuccess" : "성공적으로 접두사를 %s 접두사로 설정하였습니다!",
             "selectLanguage" : "언어를 설정해 주세요",

@@ -2592,9 +2592,13 @@
         },
         "general" : {
             "languageSet" : "Successfully changed language to %s!",
+            "noGlobalPrefix" : "You can't disallow bot's default prefix (%s)!",
             "noURL" : "To prevent abuse, URL format is forbidden!",
+            "noServerPrefix" : "You can't disallow server's prefix (%s)!",
             "noWhiteSpace" : "Whitespaces-only or blank texts aren't allowed!",
             "prefix" : "Prefix",
+            "prefixContain" : "This prefix is already disallowed!",
+            "prefixDisallowed" : "Successfully added prefix into disallow list!",
             "prefixSet" : "Click Here To Set Prefix",
             "prefixSuccess" : "Successfully set prefix to %s!",
             "selectLanguage" : "Please select language",
