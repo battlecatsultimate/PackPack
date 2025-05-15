@@ -887,6 +887,14 @@
                         "plural" : "%s : %d Units",
                         "singular" : "%s : %d Unit"
                     }
+                },
+                "speed" : {
+                    "title" : "- **Speed Adjustment Limit**",
+                    "description" : {
+                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
+                        "enemy" : "Enemies' speed set to %d",
+                        "unit" : "Units' speed set to %d"
+                    }
                 }
             },
             "material" : {
@@ -1425,6 +1433,7 @@
             "35023" : "Event Stamp",
             "35024" : "100M Download Celebrating Stamp",
             "35025" : "Baki Collab Stamp",
+            "35028" : "Sonic the Hedgehog Collab Stamp",
             "rankingDojo" : "排行賽會場：_"
         },
         "permanentSchedule" : {
@@ -1517,7 +1526,9 @@
                 "7" : "EX Cost/Cooldown Buff",
                 "8" : "UR Deploy Duplication",
                 "9" : "Rarity Deploy Limit",
-                "10" : "Cannon Multiplier Buff"
+                "10" : "Cannon Multiplier Buff",
+                "11" : "EX Deploy Duplication",
+                "12" : "Identical Unit/Enemy Speed"
             }
         },
         "section" : {

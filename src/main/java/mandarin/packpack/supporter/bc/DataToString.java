@@ -1528,6 +1528,23 @@ public class DataToString extends Data {
                                 LangID.getStringByID("data.stage.limit.cannonMultiplier.description", lang).formatted(df.format(l.stageLimit.cannonMultiplier / 100.0))
                 );
             }
+
+            if (l.stageLimit.unitSpeedLimit != -1 && l.stageLimit.enemySpeedLimit != -1) {
+                res.add(
+                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
+                                LangID.getStringByID("data.stage.limit.speed.description.both", lang).formatted(l.stageLimit.unitSpeedLimit, l.stageLimit.enemySpeedLimit)
+                );
+            } else if (l.stageLimit.unitSpeedLimit != -1) {
+                res.add(
+                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
+                                LangID.getStringByID("data.stage.limit.speed.description.unit", lang).formatted(l.stageLimit.unitSpeedLimit)
+                );
+            } else if (l.stageLimit.enemySpeedLimit != -1) {
+                res.add(
+                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
+                                LangID.getStringByID("data.stage.limit.speed.description.enemy", lang).formatted(l.stageLimit.enemySpeedLimit)
+                );
+            }
         }
 
         return res;

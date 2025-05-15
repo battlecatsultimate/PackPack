@@ -887,6 +887,14 @@
                         "plural" : "%s : %d Юнитов",
                         "singular" : "%s : %d Юнитов"
                     }
+                },
+                "speed" : {
+                    "title" : "- **Speed Adjustment Limit**",
+                    "description" : {
+                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
+                        "enemy" : "Enemies' speed set to %d",
+                        "unit" : "Units' speed set to %d"
+                    }
                 }
             },
             "material" : {
@@ -1423,6 +1431,7 @@
             "35023" : "Подарки в честь События",
             "35024" : "Подарки: в честь Достижения Загрузок",
             "35025" : "Baki Collab Stamp",
+            "35028" : "Sonic the Hedgehog Collab Stamp",
             "rankingDojo" : "Ранговый Додзё _"
         },
         "permanentSchedule" : {
@@ -1515,7 +1524,9 @@
                 "7" : "Цена/Перезарядка Специальных Лучше",
                 "8" : "Убер Редкие Спавнятся с Двойниками",
                 "9" : "Ограниченное Размещение Редкостей",
-                "10" : "Cannon Multiplier Buff"
+                "10" : "Cannon Multiplier Buff",
+                "11" : "EX Deploy Duplication",
+                "12" : "Identical Unit/Enemy Speed"
             }
         },
         "section" : {

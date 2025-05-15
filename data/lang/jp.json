@@ -887,6 +887,14 @@
                         "plural" : "%s : %d Units",
                         "singular" : "%s : %d Unit"
                     }
+                },
+                "speed" : {
+                    "title" : "- **Speed Adjustment Limit**",
+                    "description" : {
+                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
+                        "enemy" : "Enemies' speed set to %d",
+                        "unit" : "Units' speed set to %d"
+                    }
                 }
             },
             "material" : {
@@ -1423,6 +1431,7 @@
             "35023" : "Event Stamp",
             "35024" : "1億ダウンロード記念ンスタンプ",
             "35025" : "Baki Collab Stamp",
+            "35028" : "Sonic the Hedgehog Collab Stamp",
             "rankingDojo" : "ランキングの間 _"
         },
         "permanentSchedule" : {
@@ -1515,7 +1524,9 @@
                 "7" : "超特売セール　EX",
                 "8" : "プラスワン 超激レア",
                 "9" : "レア度代表戦",
-                "10" : "にゃんこ砲超強化"
+                "10" : "にゃんこ砲超強化",
+                "11" : "プラスワン EX",
+                "12" : "等速直線運動"
             }
         },
         "section" : {
