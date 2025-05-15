@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -139,6 +140,11 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
 
     @Override
     public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
+        applyResult(event);
+    }
+
+    @Override
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
         applyResult(event);
     }
 

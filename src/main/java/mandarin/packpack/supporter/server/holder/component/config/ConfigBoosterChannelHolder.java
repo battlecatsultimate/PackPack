@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -156,6 +157,11 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
 
     @Override
     public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
+        applyResult(event);
+    }
+
+    @Override
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
         applyResult(event);
     }
 

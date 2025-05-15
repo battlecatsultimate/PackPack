@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -135,6 +136,11 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
     @Override
     public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
+        applyResult(event);
+    }
+
+    @Override
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
         applyResult(event);
     }
 
