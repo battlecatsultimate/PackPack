@@ -1527,8 +1527,8 @@
                 "8" : "UR Deploy Duplication",
                 "9" : "Rarity Deploy Limit",
                 "10" : "Cannon Multiplier Buff",
-                "11" : "EX Deploy Duplication",
-                "12" : "Identical Unit/Enemy Speed"
+                "11" : "Identical Unit/Enemy Speed",
+                "12" : "EX Deploy Duplication"
             }
         },
         "section" : {
