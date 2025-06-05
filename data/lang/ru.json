@@ -89,7 +89,7 @@
         "pinned" : "Сообщение успешно закреплено : %s",
         "unpinned" : "Сообщение успешно откреплено : %s",
         "failed" : {
-            "maxPin" : "This channel already has reached max number of pins (50 pins). Please unpin some messages before pinning!",
+            "maxPin" : "Этот канал уже достиг максимального количества закреплённых сообщений (50). Пожалуйста, открепите некоторые сообщения перед тем, как закрепить новые!",
             "noID" : "Укажите сообщение, указав его ID, ссылку или ответьте на него, что бы закрепить/открепить сообщение",
             "noPermission" : "У вас нет разрешения на прикрепление сообщения!",
             "noPinAllowed" : "В этом канале нельзя закреплять сообщения!",
@@ -127,9 +127,9 @@
         },
         "denied" : {
             "reason" : {
-                "banned" : "You are banned from using any commands in this server",
+                "banned" : "Вам запретили использовать какие-либо команды на этом сервере!",
                 "cooldown" : "Вам нужно подождать еще _ сек, чтобы использовать эту команду!",
-                "channel" : "You don't have permission to use commands in this channel!",
+                "channel" : "У вас нет разрешения на использование команд в этом канале!",
                 "noPermission" : {
                     "developer" : "Эту команду может выполнить только <@%s>!",
                     "member" : "Эту команду может выполнять только <@&%s>!",
@@ -140,8 +140,8 @@
                     }
                 },
                 "prefixBanned" : {
-                    "all" : "This message is from server **%s**. Currently, this server doesn't allow users to use their custom prefix. Please use bot's default prefix `%s`!",
-                    "specific" : "This message is from server **%s**. Currently, your prefix `%s` is disallowed to be used in this server. Please use bot's default prefix `%s`, or change your custom prefix to other via `%sprefix` command!"
+                    "all" : "Это сообщение с сервера **%s**. В настоящее время на этом сервере использование пользовательского префикса запрещено. Пожалуйста, используйте стандартный префикс бота: `%s`!",
+                    "specific" : "Это сообщение с сервера **%s**. В настоящее время ваш префикс `%s` запрещён для использования на этом сервере. Пожалуйста, используйте стандартный префикс бота `%s` или измените свой пользовательский префикс с помощью команды `%sprefix`!"
                 }
             }
         },
@@ -168,7 +168,7 @@
             "manageMessage" : "Управление сообщениями (удаление и т. д.)",
             "manageRole" : "Управление ролями (добавление, удаление и т. д.)",
             "useExternalEmoji" : "Использование внешних эмодзи",
-            "addEmbed" : "Adding Embed"
+            "addEmbed" : "Добавление Embed-сообщений"
         },
         "scamHandler" : {
             "noChannel" : "Бот обнаружил пользователя, отправляющего мошенническую ссылку. Однако бот не смог найти канал для публикации информации о скомпрометированном пользователе"
@@ -808,8 +808,8 @@
                 "title" : "Ограничения",
                 "unit" : "Юнит",
                 "cannonMultiplier" : {
-                    "description" : "Cannon damage multiplier %sx",
-                    "title" : "- **Cannon Damage Multiplier**"
+                    "description" : "Умножение урона пушки на %sx",
+                    "title" : "- **Умножение Урона Пушки**"
                 },
                 "characterGroup" : {
                     "allow" : "Только _ доступны",
@@ -889,11 +889,11 @@
                     }
                 },
                 "speed" : {
-                    "title" : "- **Speed Adjustment Limit**",
+                    "title" : "- **Ограничение Скорости**",
                     "description" : {
-                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
-                        "enemy" : "Enemies' speed set to %d",
-                        "unit" : "Units' speed set to %d"
+                        "both" : "Скорость юнитов - %d, скорость врагов - %d",
+                        "enemy" : "Скорость врагов - %d",
+                        "unit" : "Скорость юнитов - %d"
                     }
                 }
             },
@@ -1212,7 +1212,7 @@
         "gachaCode" : {
             "5capsules" : {
                 "code" : "5",
-                "fullName" : "5 Capsules"
+                "fullName" : "5 Капсул"
             },
             "grandon" : {
                 "code" : "ГМ",
@@ -1319,8 +1319,8 @@
             "847" : "Акция: Второй Шанс Для Платинового Билета",
             "848" : "Распродажа: Юбилейный Билет 100M Загрузок",
             "849" : "Распродажа: Chocosurp Cat C",
-            "850" : "Double Platinum Ticket Sale [1st]",
-            "851" : "Double Platinum Ticket Sale [2nd]",
+            "850" : "Распродажа: Двойные Платиновые Билеты [1st]",
+            "851" : "Распродажа: Двойные Платиновые Билеты [2nd]",
             "900" : "Подарки: Грибовый Сад",
             "901" : "Подарки: Бонус Возвращения",
             "902" : "Подарки: Бонус Возвращения Золотого Билета",
@@ -1430,8 +1430,8 @@
             "35022" : "Подарки: Новый Год",
             "35023" : "Подарки в честь События",
             "35024" : "Подарки: в честь Достижения Загрузок",
-            "35025" : "Baki Collab Stamp",
-            "35028" : "Sonic the Hedgehog Collab Stamp",
+            "35025" : "Подарки: Baki Коллаб",
+            "35028" : "Подарки: Sonic the Hedgehog Коллаб",
             "rankingDojo" : "Ранговый Додзё _"
         },
         "permanentSchedule" : {
@@ -1524,9 +1524,9 @@
                 "7" : "Цена/Перезарядка Специальных Лучше",
                 "8" : "Убер Редкие Спавнятся с Двойниками",
                 "9" : "Ограниченное Размещение Редкостей",
-                "10" : "Cannon Multiplier Buff",
-                "11" : "EX Deploy Duplication",
-                "12" : "Identical Unit/Enemy Speed"
+                "10" : "Умноженные Силы Пушки",
+                "11" : "Специальные Спавнятся с Двойниками",
+                "12" : "Фикс. Скорость Юнитов/Врагов"
             }
         },
         "section" : {
@@ -2581,8 +2581,8 @@
                     }
                 },
                 "select" : {
-                    "event" : "Select Event Data Post Channel",
-                    "newVersion" : "Select New Version Detection Channel"
+                    "event" : "Выберите Канал Для Публикации Событий",
+                    "newVersion" : "Выберите Канал Для Обнаружения Новых Версий"
                 }
             },
             "setAdditional" : {
@@ -2606,13 +2606,13 @@
         },
         "general" : {
             "languageSet" : "Язык успешно сменен на %s!",
-            "noGlobalPrefix" : "You can't disallow bot's default prefix (%s)!",
+            "noGlobalPrefix" : "Вы не можете отключить стандартный префикс бота (%s)!",
             "noURL" : "Во избежание злоупотреблений формат URL запрещен!",
-            "noServerPrefix" : "You can't disallow server's prefix (%s)!",
+            "noServerPrefix" : "Вы не можете отключить префикс сервера для бота (%s)!",
             "noWhiteSpace" : "Не допускается использование пробелов без других символов или пустых текстов!",
             "prefix" : "Префикс",
-            "prefixContain" : "This prefix is already disallowed!",
-            "prefixDisallowed" : "Successfully added prefix into disallow list!",
+            "prefixContain" : "Этот префикс уже запрещён!",
+            "prefixDisallowed" : "Префикс успешно добавлен в список запрещенных!",
             "prefixSet" : "Нажми Сюда, чтобы Выбрать Префикс",
             "prefixSuccess" : "Префикс %s успешно установлен!",
             "selectLanguage" : "Пожалуйста, выберите язык",
@@ -2694,7 +2694,7 @@
                 "channelPermission" : "Поменять Права Канала",
                 "commandBan" : "Поменять Заблокированных Пользователей Бота",
                 "permissionBan" : "Поменять Права Пользователей Канала",
-                "prefixBan" : "Manage Disallowed Prefix"
+                "prefixBan" : "Управление Запрещенными Префиксами"
             },
             "documentation" : {
                 "title" : "## Настройка Прав",
@@ -2711,8 +2711,8 @@
                     "title" : "### %s Поменять Права Канала Для Пользователей"
                 },
                 "prefixBan" : {
-                    "description" : "If moderators want to disable bot's custom prefix feature for this server, moderators can either completely disallow users from using their custom prefix, or assign specific prefix that will be banned from being used",
-                    "title" : "### %s Manage Disallowed Prefix"
+                    "description" : "Если модераторы хотят отключить возможность использования пользовательского префикса бота на этом сервере, они могут либо полностью запретить пользователям использовать собственные префиксы, либо указать конкретный префикс, который будет запрещён к использованию",
+                    "title" : "### %s Управление Запрещенными Префиксами"
                 }
             }
         },
@@ -2737,20 +2737,20 @@
             }
         },
         "prefixBan" : {
-            "assign" : "Click Here To Disallow Prefix",
-            "description" : "This bot allows users to assign their own custom prefix that will make bot recognize users. However, since there are a lot of bots in Discord platform, sometimes there can be situation where user's custom prefix and other bots' prefix are same. This will result in conflicts. User can trigger this bot and another bot at the same time, and they may abuse this, leading to spamming problem. Moderators can disable custom prefix for this feature by clicking the switch button below. Or, if disabling as whole sounds too harsh, moderators can assign prefix that will be ignored only in this server. Users will be notified via DM if user had disallowed prefix as their custom prefix",
-            "disallow" : "Disallow All Custom Prefix",
-            "noPrefix" : "No Prefix To Allow",
-            "remove" : "Select prefix to allow it back",
+            "assign" : "Нажмите Здесь Чтобы Запретить Префикс",
+            "description" : "Этот бот позволяет пользователям назначать собственный пользовательский префикс, по которому бот будет их распознавать. Однако, поскольку в Discord используется множество ботов, иногда может возникнуть ситуация, когда пользовательский префикс совпадает с префиксом другого бота. Это может привести к конфликтам: один и тот же префикс будет запускать команды сразу у нескольких ботов. Пользователи могут злоупотреблять этим, вызывая спам. Модераторы могут отключить использование пользовательских префиксов для этой функции, нажав на переключатель ниже. Если полное отключение кажется слишком строгим, можно задать конкретный префикс, который будет игнорироваться только на этом сервере. Если пользователь попытается установить запрещённый префикс, он получит уведомление в личные сообщения",
+            "disallow" : "Запретить Все Польз. Префиксы",
+            "noPrefix" : "Нет Префиксов Для Их Разрешения",
+            "remove" : "Выберите префикс чтобы разрешить его обратно",
             "modal" : {
-                "description" : "Type prefix that will be disallowed here",
-                "field" : "Prefix",
-                "title" : "Prefix Disallow"
+                "description" : "Введите префикс который здесь будет запрещен",
+                "field" : "Префикс",
+                "title" : "Запрещение Префикса"
             },
             "prefixList" : {
-                "all" : "All custom prefix are disallowed",
-                "list" : "### List of disallowed prefix",
-                "no" : "No custom prefix are disallowed"
+                "all" : "Все пользовательские префиксы запрещены",
+                "list" : "### Список запрещенных префиксов",
+                "no" : "Нету запрещенных префиксов"
             }
         },
         "status" : {
@@ -2925,7 +2925,7 @@
             "noImage" : "Не удалось создать изображение таланта..."
         },
         "npCost" : {
-            "level" : "Стоимость в NP => Total Cost",
+            "level" : "Стоимость в NP => Общая стоимость",
             "single" : "Стоимость в NP: %dNP"
         }
     },
