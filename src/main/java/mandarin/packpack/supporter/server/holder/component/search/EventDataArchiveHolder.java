@@ -47,9 +47,17 @@ public class EventDataArchiveHolder extends SearchHolder {
 
         File f = files.get(id);
 
+        String uploadFileName;
+
+        if (id == 0) {
+            uploadFileName = "current_" + fileName + ".txt";
+        } else {
+            uploadFileName = f.getName().replace(".txt", "").replaceAll(";", "-") + "_" + fileName + ".txt";
+        }
+
         ch.sendMessage(LangID.getStringByID("eventArchive.success", lang))
                 .setAllowedMentions(new ArrayList<>())
-                .addFiles(FileUpload.fromData(f, f.getName().replace(".txt", "").replaceAll(";", "-") + "_" + fileName + ".txt"))
+                .addFiles(FileUpload.fromData(f, uploadFileName))
                 .queue();
 
         message.delete().queue();
