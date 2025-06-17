@@ -85,6 +85,8 @@ public class Solve extends TimedConstraintCommand {
 
         List<BigDecimal[]> targetRanges = new ArrayList<>();
 
+        BigDecimal segment = range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context);
+
         for(int i = 0; i < numberOfElements; i++) {
             BigDecimal s = range[0].add(range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i)));
             BigDecimal e = range[0].add(range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i + 1)));
@@ -93,6 +95,7 @@ public class Solve extends TimedConstraintCommand {
 
             if(!Equation.error.isEmpty() || sy == null) {
                 Equation.error.clear();
+                f.element.reset();
 
                 continue;
             }
@@ -101,6 +104,7 @@ public class Solve extends TimedConstraintCommand {
 
             if(!Equation.error.isEmpty() || ey == null) {
                 Equation.error.clear();
+                f.element.reset();
 
                 i++;
 
@@ -141,7 +145,7 @@ public class Solve extends TimedConstraintCommand {
                 NumericalResult result = f.solveByError(targetRanges.get(i)[0], targetRanges.get(i)[1], error, ROOT, lang);
 
                 if(result != null) {
-                    if (result.value.compareTo(targetRanges.get(i)[0]) < 0 || result.value.compareTo(targetRanges.get(i)[1]) > 0) {
+                    if (result.value.compareTo(targetRanges.get(i)[0].subtract(segment)) < 0 || result.value.compareTo(targetRanges.get(i)[1].add(segment)) > 0) {
                         fakeResults.add(i);
 
                         continue;
@@ -175,7 +179,7 @@ public class Solve extends TimedConstraintCommand {
                 NumericalResult result = f.solveByIteration(targetRanges.get(i)[0], targetRanges.get(i)[1], iteration, ROOT, lang);
 
                 if(result != null) {
-                    if (result.value.compareTo(targetRanges.get(i)[0]) < 0 || result.value.compareTo(targetRanges.get(i)[1]) > 0) {
+                    if (result.value.compareTo(targetRanges.get(i)[0].subtract(segment)) < 0 || result.value.compareTo(targetRanges.get(i)[1].add(segment)) > 0) {
                         fakeResults.add(i);
 
                         continue;
