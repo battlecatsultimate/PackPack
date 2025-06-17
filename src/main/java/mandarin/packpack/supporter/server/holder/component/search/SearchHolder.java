@@ -23,6 +23,7 @@ public abstract class SearchHolder extends ComponentHolder {
     public static final int PAGE_CHUNK = 20;
 
     protected int page = 0;
+    protected int chunk = PAGE_CHUNK;
 
     public SearchHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
@@ -67,7 +68,7 @@ public abstract class SearchHolder extends ComponentHolder {
             }
         }
 
-        page = Math.max(0, Math.min(getTotalPage(getDataSize()) - 1, page));
+        page = Math.max(0, Math.min(getTotalPage(getDataSize(), chunk) - 1, page));
 
         apply(event);
     }
@@ -107,16 +108,16 @@ public abstract class SearchHolder extends ComponentHolder {
         List<String> data = accumulateListData(true);
 
         for(int i = 0; i < data.size(); i++) {
-            sb.append(i + PAGE_CHUNK * page + 1)
+            sb.append(i + chunk * page + 1)
                     .append(". ")
                     .append(data.get(i))
                     .append("\n");
         }
 
-        if(getDataSize() > PAGE_CHUNK) {
-            int totalPage = getDataSize() / PAGE_CHUNK;
+        if(getDataSize() > chunk) {
+            int totalPage = getDataSize() / chunk;
 
-            if(getDataSize() % PAGE_CHUNK != 0)
+            if(getDataSize() % chunk != 0)
                 totalPage++;
 
             sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
@@ -128,14 +129,14 @@ public abstract class SearchHolder extends ComponentHolder {
     }
 
     public List<ActionRow> getComponents() {
-        int totalPage = getDataSize() / PAGE_CHUNK;
+        int totalPage = getDataSize() / chunk;
 
-        if(getDataSize() % PAGE_CHUNK != 0)
+        if(getDataSize() % chunk != 0)
             totalPage++;
 
         List<ActionRow> rows = new ArrayList<>();
 
-        if(getDataSize() > PAGE_CHUNK) {
+        if(getDataSize() > chunk) {
             List<Button> buttons = new ArrayList<>();
 
             if(totalPage > 10) {
@@ -180,12 +181,12 @@ public abstract class SearchHolder extends ComponentHolder {
 
             if(elements.length == 2) {
                 if(elements[0].matches("<:\\S+?:\\d+>")) {
-                    options.add(SelectOption.of(elements[1], String.valueOf(page * PAGE_CHUNK + i)).withEmoji(Emoji.fromFormatted(elements[0])));
+                    options.add(SelectOption.of(elements[1], String.valueOf(page * chunk + i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
-                    options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));
+                    options.add(SelectOption.of(element, String.valueOf(page * chunk + i)));
                 }
             } else {
-                options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));
+                options.add(SelectOption.of(element, String.valueOf(page * chunk + i)));
             }
         }
 
