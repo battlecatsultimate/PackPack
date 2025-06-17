@@ -91,6 +91,7 @@ public class Plot extends TimedConstraintCommand {
                     c[1] = null;
 
                     Equation.error.clear();
+                    formula.element.reset();
                 } else if(yRangeUpdate) {
                     if(i == 0) {
                         yRange[0] = c[1];
