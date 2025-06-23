@@ -37,10 +37,6 @@ public class ConfigHolder implements Cloneable {
             holder.useFrame = obj.get("useFrame").getAsBoolean();
         }
 
-        if(obj.has("extra")) {
-            holder.extra = obj.get("extra").getAsBoolean();
-        }
-
         if(obj.has("compact")) {
             holder.compact = obj.get("compact").getAsBoolean();
         }
@@ -53,6 +49,38 @@ public class ConfigHolder implements Cloneable {
             holder.treasure = obj.get("treasure").getAsBoolean();
         }
 
+        if (obj.has("showUnitDescription")) {
+            holder.showUnitDescription = obj.get("showUnitDescription").getAsBoolean();
+        }
+
+        if (obj.has("showEvolveImage")) {
+            holder.showEvolveImage = obj.get("showEvolveImage").getAsBoolean();
+        }
+
+        if (obj.has("showEvolveDescription")) {
+            holder.showEvolveDescription = obj.get("showEvolveDescription").getAsBoolean();
+        }
+
+        if (obj.has("showEnemyDescription")) {
+            holder.showEnemyDescription = obj.get("showEnemyDescription").getAsBoolean();
+        }
+
+        if (obj.has("showMiscellaneous")) {
+            holder.showMiscellaneous = obj.get("showMiscellaneous").getAsBoolean();
+        }
+
+        if (obj.has("showMaterialDrop")) {
+            holder.showMaterialDrop = obj.get("showMaterialDrop").getAsBoolean();
+        }
+
+        if (obj.has("showExtraStage")) {
+            holder.showExtraStage = obj.get("showExtraStage").getAsBoolean();
+        }
+
+        if (obj.has("showDropInfo")) {
+            holder.showDropInfo = obj.get("showDropInfo").getAsBoolean();
+        }
+
         return holder;
     }
 
@@ -60,7 +88,21 @@ public class ConfigHolder implements Cloneable {
     @Nullable
     public CommonStatic.Lang.Locale lang = null;
     public int defLevel = 30;
-    public boolean useFrame = true, extra = false, compact = false, trueForm = false, treasure = false;
+    public boolean useFrame = true, compact = false, trueForm = false, treasure = false;
+
+    // Unit Command Config
+    public boolean showUnitDescription = false;
+    public boolean showEvolveImage = false;
+    public boolean showEvolveDescription = false;
+
+    //Enemy Command Config
+    public boolean showEnemyDescription = false;
+
+    //Stage Command Config
+    public boolean showMiscellaneous = false;
+    public boolean showMaterialDrop = false;
+    public boolean showExtraStage = false;
+    public boolean showDropInfo = false;
 
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
@@ -69,10 +111,17 @@ public class ConfigHolder implements Cloneable {
         obj.addProperty("lang", lang == null ? "" : lang.name());
         obj.addProperty("defLevel", defLevel);
         obj.addProperty("useFrame", useFrame);
-        obj.addProperty("extra", extra);
         obj.addProperty("compact", compact);
         obj.addProperty("trueForm", trueForm);
         obj.addProperty("treasure", treasure);
+        obj.addProperty("showUnitDescription", showUnitDescription);
+        obj.addProperty("showEvolveImage", showEvolveImage);
+        obj.addProperty("showEvolveDescription", showEvolveDescription);
+        obj.addProperty("showEnemyDescription", showEnemyDescription);
+        obj.addProperty("showMiscellaneous", showMiscellaneous);
+        obj.addProperty("showMaterialDrop", showMaterialDrop);
+        obj.addProperty("showExtraStage", showExtraStage);
+        obj.addProperty("showDropInfo", showDropInfo);
 
         return obj;
     }
@@ -82,10 +131,16 @@ public class ConfigHolder implements Cloneable {
         lang = clone.lang;
         defLevel = clone.defLevel;
         useFrame = clone.useFrame;
-        extra = clone.extra;
         compact = clone.compact;
         trueForm = clone.trueForm;
         treasure = clone.treasure;
+        showUnitDescription = clone.showUnitDescription;
+        showEvolveImage = clone.showEvolveImage;
+        showEnemyDescription = clone.showEnemyDescription;
+        showMiscellaneous = clone.showMiscellaneous;
+        showMaterialDrop = clone.showMaterialDrop;
+        showExtraStage = clone.showExtraStage;
+        showDropInfo = clone.showDropInfo;
     }
 
     @Override
@@ -104,10 +159,17 @@ public class ConfigHolder implements Cloneable {
         c.lang = lang;
         c.defLevel = defLevel;
         c.useFrame = useFrame;
-        c.extra = extra;
         c.compact = compact;
         c.trueForm = trueForm;
         c.treasure = treasure;
+        c.showUnitDescription = showUnitDescription;
+        c.showEvolveImage = showEvolveImage;
+        c.showEvolveDescription = showEvolveDescription;
+        c.showEnemyDescription = showEnemyDescription;
+        c.showMiscellaneous = showMiscellaneous;
+        c.showMaterialDrop = showMaterialDrop;
+        c.showExtraStage = showExtraStage;
+        c.showDropInfo = showDropInfo;
 
         return c;
     }
