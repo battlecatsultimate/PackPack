@@ -1119,7 +1119,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.stage.limit.title", lang), sb.toString(), false);
         }
 
-        if(configData.isExtra) {
+        if(configData.showMiscellaneous) {
             List<String> misc = DataToString.getMiscellaneous(st, lang);
 
             if(!misc.isEmpty()) {
@@ -1135,13 +1135,17 @@ public class EntityHandler {
 
                 spec.addField(LangID.getStringByID("data.stage.misc.title", lang), stringBuilder.toString(), false);
             }
+        }
 
+        if (configData.showExtraStage) {
             String exData = DataToString.getEXStage(st, lang);
 
             if(exData != null) {
                 spec.addField(LangID.getStringByID("data.stage.misc.exStage", lang), exData, false);
             }
+        }
 
+        if (configData.showMaterialDrop) {
             String materials = DataToString.getMaterialDrop(st, sta, lang);
 
             if(materials != null) {
@@ -1149,27 +1153,29 @@ public class EntityHandler {
             }
         }
 
-        String drops = DataToString.getRewards(st, lang);
+        if (configData.showDropInfo) {
+            String drops = DataToString.getRewards(st, lang);
 
-        if(drops != null) {
-            if(drops.endsWith("!!number!!")) {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
-            } else if(drops.endsWith("!!noFail!!")) {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!noFail!!", ""), false);
-            } else {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
+            if(drops != null) {
+                if(drops.endsWith("!!number!!")) {
+                    spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
+                } else if(drops.endsWith("!!noFail!!")) {
+                    spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!noFail!!", ""), false);
+                } else {
+                    spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
+                }
             }
-        }
 
-        String score = DataToString.getScoreDrops(st, lang);
+            String score = DataToString.getScoreDrops(st, lang);
 
-        if(score != null) {
-            spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
-        }
+            if(score != null) {
+                spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
+            }
 
-        if(img != null) {
-            spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
-            spec.setImage("attachment://scheme.png");
+            if(img != null) {
+                spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
+                spec.setImage("attachment://scheme.png");
+            }
         }
 
         List<LayoutComponent> components = new ArrayList<>();

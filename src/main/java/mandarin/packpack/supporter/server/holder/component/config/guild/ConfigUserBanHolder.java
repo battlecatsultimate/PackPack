@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component.config;
+package mandarin.packpack.supporter.server.holder.component.config.guild;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;

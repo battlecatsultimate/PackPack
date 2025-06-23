@@ -176,6 +176,9 @@ public class StaticStore {
     public final static String UNITARCHIVE = "1327548891847069728";
     public final static String ENEMYARCHIVE = "1327548910465581057";
     public final static String MISCARCHIVE = "964536641526067310";
+    public final static String ASSETARCHIVE = "1386599052291997766";
+
+    public static Map<String, String> assetCache = new HashMap<>();
 
     public final static String SUPPORT_SERVER = "964054872649515048";
 
@@ -696,6 +699,7 @@ public class StaticStore {
         obj.add("eventNewWay", mapToJsonLocaleBoolean(EventFileGrabber.newWay));
         obj.add("backgroundStageLength", mapToJsonBackgroundInteger(backgroundStageLength));
         obj.add("bannerHolder", bannerHolder.toJson());
+        obj.add("assetCache", mapToJsonString(assetCache));
 
         if (EventFileGrabber.accountCode != null && EventFileGrabber.password != null && EventFileGrabber.passwordRefreshToken != null) {
             obj.addProperty("accountCode", EventFileGrabber.accountCode);
@@ -924,6 +928,10 @@ public class StaticStore {
 
             if (obj.has("bannerHolder")) {
                 BannerHolder.fromJson(bannerHolder, obj.getAsJsonObject("bannerHolder"));
+            }
+
+            if (obj.has("assetCache")) {
+                assetCache = jsonToMapString(obj.getAsJsonArray("assetCache"));
             }
 
             // If any of these are null, bot can't check event data properly, resetting

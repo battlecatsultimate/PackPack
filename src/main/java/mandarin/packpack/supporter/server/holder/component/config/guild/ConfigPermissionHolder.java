@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component.config;
+package mandarin.packpack.supporter.server.holder.component.config.guild;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
@@ -6,58 +6,32 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
-    public ConfigPermissionUserSelectHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+public class ConfigPermissionHolder extends ServerConfigHolder {
+    public ConfigPermissionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 
     @Override
     public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "user" -> {
-                if (!(event instanceof EntitySelectInteractionEvent e))
-                    return;
-
-                Guild g = event.getGuild();
-
-                if (g == null)
-                    return;
-
-                String id = e.getValues().getFirst().getId();
-
-                if (id.equals(userID)) {
-                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("serverConfig.permissionBan.user.cantBan.reason.self", lang)).queue();
-
-                    return;
-                }
-
-                User u = e.getMentions().getUsers().getFirst();
-
-                if (u.isBot()) {
-                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("serverConfig.permissionBan.user.cantBan.reason.bot", lang)).queue();
-
-                    return;
-                }
-
-                connectTo(event, new ConfigPermissionUserPermissionHolder(getAuthorMessage(), userID, channelID, message, holder, backup, g, lang));
-            }
+            case "channel" -> connectTo(event, new ConfigChannelRoleSelectHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "command" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "manage" -> connectTo(event, new ConfigPermissionUserSelectHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "prefix" -> connectTo(event, new ConfigPrefixBanHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
+            case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("serverConfig.applied", lang))
@@ -84,7 +58,6 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
                     end(true);
                 }, lang));
             }
-            case "back" -> goBack(event);
         }
     }
 
@@ -114,19 +87,23 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
 
     private String getContents() {
         return LangID.getStringByID("serverConfig.permission.documentation.title", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.channelPermission.title", lang).formatted(Emoji.fromUnicode("📜")) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.channelPermission.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.commandBan.title", lang).formatted(Emoji.fromUnicode("🔨")) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.commandBan.description", lang) + "\n" +
                 LangID.getStringByID("serverConfig.permission.documentation.permissionBan.title", lang).formatted(Emoji.fromUnicode("🔧")) + "\n" +
-                LangID.getStringByID("serverConfig.permissionBan.description", lang);
+                LangID.getStringByID("serverConfig.permission.documentation.permissionBan.description", lang) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.prefixBan.title", lang).formatted(Emoji.fromUnicode("📋")) + "\n" +
+                LangID.getStringByID("serverConfig.permission.documentation.prefixBan.description", lang);
     }
 
     private List<LayoutComponent> getComponents() {
         List<LayoutComponent> result = new ArrayList<>();
 
-        result.add(ActionRow.of(
-                EntitySelectMenu.create("user", EntitySelectMenu.SelectTarget.USER)
-                        .setPlaceholder(LangID.getStringByID("serverConfig.permissionBan.selectUser", lang))
-                        .setRequiredRange(1, 1)
-                        .build()
-        ));
+        result.add(ActionRow.of(Button.secondary("channel", LangID.getStringByID("serverConfig.permission.button.channelPermission", lang)).withEmoji(Emoji.fromUnicode("📜"))));
+        result.add(ActionRow.of(Button.secondary("command", LangID.getStringByID("serverConfig.permission.button.commandBan", lang)).withEmoji(Emoji.fromUnicode("🔨"))));
+        result.add(ActionRow.of(Button.secondary("manage", LangID.getStringByID("serverConfig.permission.button.permissionBan", lang)).withEmoji(Emoji.fromUnicode("🔧"))));
+        result.add(ActionRow.of(Button.secondary("prefix", LangID.getStringByID("serverConfig.permission.button.prefixBan", lang)).withEmoji(Emoji.fromUnicode("📋"))));
 
         result.add(
                 ActionRow.of(
