@@ -687,7 +687,7 @@ public class EntityHandler {
 
         spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
-        if(configData.isExtra) {
+        if(configData.showEnemyDescription) {
             String explanation = DataToString.getDescription(e, lang);
 
             if(explanation != null) {
