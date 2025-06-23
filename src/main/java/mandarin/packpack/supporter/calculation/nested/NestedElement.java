@@ -119,6 +119,13 @@ public abstract class NestedElement {
         children.add(element);
     }
 
+    public void reset() {
+        critical = false;
+        aborted = false;
+
+        children.forEach(NestedElement::reset);
+    }
+
     protected boolean check() {
         if (critical) {
             broken();

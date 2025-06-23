@@ -85,6 +85,8 @@ public class Solve extends TimedConstraintCommand {
 
         List<BigDecimal[]> targetRanges = new ArrayList<>();
 
+        BigDecimal segment = range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context);
+
         for(int i = 0; i < numberOfElements; i++) {
             BigDecimal s = range[0].add(range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i)));
             BigDecimal e = range[0].add(range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i + 1)));
@@ -93,6 +95,7 @@ public class Solve extends TimedConstraintCommand {
 
             if(!Equation.error.isEmpty() || sy == null) {
                 Equation.error.clear();
+                f.element.reset();
 
                 continue;
             }
@@ -101,6 +104,7 @@ public class Solve extends TimedConstraintCommand {
 
             if(!Equation.error.isEmpty() || ey == null) {
                 Equation.error.clear();
+                f.element.reset();
 
                 i++;
 
@@ -134,11 +138,19 @@ public class Solve extends TimedConstraintCommand {
         List<NumericalResult> solutions = new ArrayList<>();
         String summary;
 
+        List<Integer> fakeResults = new ArrayList<>();
+
         if(error.compareTo(BigDecimal.ONE.negate()) != 0) {
             for(int i = 0; i < targetRanges.size(); i++) {
                 NumericalResult result = f.solveByError(targetRanges.get(i)[0], targetRanges.get(i)[1], error, ROOT, lang);
 
                 if(result != null) {
+                    if (result.value.compareTo(targetRanges.get(i)[0].subtract(segment)) < 0 || result.value.compareTo(targetRanges.get(i)[1].add(segment)) > 0) {
+                        fakeResults.add(i);
+
+                        continue;
+                    }
+
                     solutions.add(result);
 
                     success++;
@@ -149,6 +161,17 @@ public class Solve extends TimedConstraintCommand {
                     fail++;
                 }
             }
+
+            List<BigDecimal[]> actualResults = new ArrayList<>();
+
+            for (int i = 0; i < targetRanges.size(); i++) {
+                if (!fakeResults.contains(i)) {
+                    actualResults.add(targetRanges.get(i));
+                }
+            }
+
+            targetRanges.clear();
+            targetRanges.addAll(actualResults);
 
             summary = String.format(LangID.getStringByID("solve.success.error", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, Equation.formatNumber(error), getAlgorithmName(ROOT));
         } else {
@@ -156,6 +179,12 @@ public class Solve extends TimedConstraintCommand {
                 NumericalResult result = f.solveByIteration(targetRanges.get(i)[0], targetRanges.get(i)[1], iteration, ROOT, lang);
 
                 if(result != null) {
+                    if (result.value.compareTo(targetRanges.get(i)[0].subtract(segment)) < 0 || result.value.compareTo(targetRanges.get(i)[1].add(segment)) > 0) {
+                        fakeResults.add(i);
+
+                        continue;
+                    }
+
                     solutions.add(result);
 
                     success++;
@@ -166,6 +195,17 @@ public class Solve extends TimedConstraintCommand {
                     fail++;
                 }
             }
+
+            List<BigDecimal[]> actualResults = new ArrayList<>();
+
+            for (int i = 0; i < targetRanges.size(); i++) {
+                if (!fakeResults.contains(i)) {
+                    actualResults.add(targetRanges.get(i));
+                }
+            }
+
+            targetRanges.clear();
+            targetRanges.addAll(actualResults);
 
             summary = String.format(LangID.getStringByID("solve.success.iteration", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, iteration, getAlgorithmName(ROOT));
         }

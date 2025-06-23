@@ -28,13 +28,15 @@ public class SolutionHolder extends SearchHolder {
         this.summary = summary;
         this.targetRanges = targetRanges;
         this.solutions = solutions;
+
+        chunk = 5;
     }
 
     @Override
     public List<String> accumulateListData(boolean onText) {
         List<String> result = new ArrayList<>();
 
-        for(int i = 5 * page; i < 5 * (page + 1); i++) {
+        for(int i = chunk * page; i < chunk * (page + 1); i++) {
             if(i >= solutions.size())
                 break;
 
@@ -68,11 +70,8 @@ public class SolutionHolder extends SearchHolder {
                 sb.append("\n");
         }
 
-        if(getDataSize() > 5) {
-            int totalPage = getDataSize() / 5;
-
-            if(getDataSize() % 5 != 0)
-                totalPage++;
+        if(getDataSize() > chunk) {
+            int totalPage = getTotalPage(solutions.size(), chunk);
 
             sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
         }
@@ -93,42 +92,23 @@ public class SolutionHolder extends SearchHolder {
 
     @Override
     public List<ActionRow> getComponents() {
-        int totalPage = getDataSize() / 5;
-
-        if(getDataSize() % 5 != 0)
-            totalPage++;
+        int totalPage = getTotalPage(solutions.size(), chunk);
 
         List<ActionRow> rows = new ArrayList<>();
 
-        if(getDataSize() > 5) {
+        if(getDataSize() > chunk) {
             List<Button> buttons = new ArrayList<>();
 
             if(totalPage > 10) {
-                if(page - 10 < 0) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS));
-                }
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0));
             }
 
-            if(page - 1 < 0) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS));
-            }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).withDisabled(page - 1 < 0));
 
-            if(page + 1 >= totalPage) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).asDisabled());
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
-            }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).withDisabled(page + 1 >= totalPage));
 
             if(totalPage > 10) {
-                if(page + 10 >= totalPage) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).asDisabled());
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
-                }
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage));
             }
 
             rows.add(ActionRow.of(buttons));
