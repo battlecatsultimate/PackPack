@@ -1845,7 +1845,7 @@
             "alias" : "`es`",
             "description" : "Try to search enemy with specified name, and display info of it",
             "example" : "`p!es -s Doge -m 200`\n`p!es 024 -m 200, 100 -e`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-m`\nCustomize this enemy's magnification, can handle both hp, atk magnification. With order of `HP magnification, atk magnification`\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-m`\nCustomize this enemy's magnification, can handle both hp, atk magnification. With order of `HP magnification, atk magnification`\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
             "usage" : "`%senemystat [Name]`"
         },
         "enemyStatAnalyzer" : {
@@ -1867,14 +1867,14 @@
             "alias" : "`freward`, `findr`, `fr`",
             "description" : "Try to search stage with specified reward name, and upload info of it if exists",
             "example" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
-            "parameter" : "- `-ch` or `-chance`\nFilter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n- `-a` or `-amount`\nFind reward whose amount is higher or same than specified value\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
+            "parameter" : "- `-ch` or `-chance`\nFilter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n- `-a` or `-amount`\nFind reward whose amount is higher or same than specified value\n\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
             "usage" : "`%sfindreward [Reward Name]`"
         },
         "findStage" : {
             "alias" : "`findst`, `fstage`, `fst`",
             "description" : "Try to search stage with specified filter data, and upload info of it",
             "example" : "`p!fst -s Relic Bun-Bun`\n`p!fst -s -lv 4 098`\n`p!fst -o -bg 0 -m 0 doge / snache`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv`\nApply level (new name of star) data\n- `-e` or `-extra`\nShow extra information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-o` or `-or`\nActivate `OR` operation\n- `-a` or `-and`\nActivate `AND` operation\n- `-bg` or `-background`\nSet background ID to filter with\n- `-cs` or `-castle`\nSet castle ID to filter with\n- `-ms` or `-music`\nSet music ID to filter with\n- `-b` or `-boss`\nFind the stage which contains boss\n- `-m` or `-monthly`\nActivate monthly mission filter mode",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv`\nApply level (new name of star) data\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-o` or `-or`\nActivate `OR` operation\n- `-a` or `-and`\nActivate `AND` operation\n- `-bg` or `-background`\nSet background ID to filter with\n- `-cs` or `-castle`\nSet castle ID to filter with\n- `-ms` or `-music`\nSet music ID to filter with\n- `-b` or `-boss`\nFind the stage which contains boss\n- `-m` or `-monthly`\nActivate monthly mission filter mode",
             "tip" : "You can provide multiple enemies to filter with. To perform this, provide enemy names, separated with `/` separator. For example, if you want to provide 2 names; `Doge` and `Snache`, then what you will have to write is `Doge/Snache`. **You can provide only up to 5 enemies**\n\n`Or` or `And` operation decides how bot will filter stage with provided enemy combinations. For example, if `Or` operation is activated, then bot will filter stage which contains this enemy **OR** that enemy. If it's `And` operation, then bot will filter stage which contains this enemy **AND** that enemy. `And` operation is turned on as default, and if you provide both `-o` and `-a` parameters, `-a` will have higher priority\n\n",
             "tip2" : "Crystal modifier can adjust status of crystal treasure. For example, you may have beaten only up to ItF Ch.2, so aliens in Ch.3 may have different magnification than full treasure. In this case, you can adjust crystal modifier by passing number of chapter that you finished\n\nFor example, if you are beating Itf Ch.1, then you can pass `-i0` parameter. If you are beating CotC Ch.3, then you can pass `-c2`, and so on",
             "usage" : "`%sfindstage [Filter Data]`"
@@ -1913,7 +1913,7 @@
             "alias" : "`catstat`, `unitstat`, `fs`, `cs`, `us`",
             "description" : "Try to search unit with specified name, and display info of it",
             "example" : "`p!fs -s -t Cat -lv 30`\n`p!fs -t -e 071002 -lv 50, 1, 1, 1, 1, 1`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 5 level`\n- `-e` or `-extra`\nShow extra information such as description, catfruit evolve information\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 5 level`\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
             "usage" : "`%sformstat [Name]`"
         },
         "format" : {
@@ -2113,7 +2113,7 @@
             "alias" : "`si`",
             "description" : "Try to search stage with specified name, and display info of it",
             "example" : "`p!si -s -lv 3 DNA & DHA`\n`p!si -s Eldritch -mc Extra Stages`\n`p!si Jamaica -stm Itf ch.1 zombie`\n`p!si -e -lv 3 2-128-2`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv` or `-lvl`\nApply level (new name of star) data\n- `-stm`\nSpecify stage map name to be filtered. Must be used after specifying stage name first\n- `-mc`\nSpecify map collection name to be filtered. Must be used after specifying stage name first\n- `-e` or `-extra`\nShow extra stage information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv` or `-lvl`\nApply level (new name of star) data\n- `-stm`\nSpecify stage map name to be filtered. Must be used after specifying stage name first\n- `-mc`\nSpecify map collection name to be filtered. Must be used after specifying stage name first\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
             "usage" : "`%sstageinfo [Stage Name]`"
         },
         "stageMapImage" : {

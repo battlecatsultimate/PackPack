@@ -103,10 +103,6 @@ public class StageInfo extends TimedConstraintCommand {
                 configData.isFrame = config.useFrame;
 
             configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-            configData.showDropInfo = config.showDropInfo;
-            configData.showExtraStage = config.showExtraStage;
-            configData.showMaterialDrop = config.showMaterialDrop;
-            configData.showMiscellaneous = config.showMiscellaneous;
         } else {
             SlashOptionMap optionMap = loader.getOptions();
 
@@ -120,11 +116,12 @@ public class StageInfo extends TimedConstraintCommand {
 
             configData.isFrame = optionMap.getOption("frame", config.useFrame);
             configData.isCompact = optionMap.getOption("compact", ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact));
-            configData.showDropInfo = config.showDropInfo;
-            configData.showExtraStage = config.showExtraStage;
-            configData.showMaterialDrop = config.showMaterialDrop;
-            configData.showMiscellaneous = config.showMiscellaneous;
         }
+
+        configData.showDropInfo = config.showDropInfo;
+        configData.showExtraStage = config.showExtraStage;
+        configData.showMaterialDrop = config.showMaterialDrop;
+        configData.showMiscellaneous = config.showMiscellaneous;
 
         if(allNull(names)) {
             if (loader.fromMessage) {

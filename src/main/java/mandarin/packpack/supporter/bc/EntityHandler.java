@@ -139,7 +139,7 @@ public class EntityHandler {
 
         File cf;
 
-        if(configData.extra)
+        if(configData.showEvolveImage)
             cf = generateCatfruit(f, lang);
         else
             cf = null;
@@ -305,17 +305,21 @@ public class EntityHandler {
 
         spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
-        if(configData.extra) {
+        if(configData.showUnitDescription) {
             String explanation = DataToString.getDescription(f, lang);
 
             if(explanation != null)
                 spec.addField(LangID.getStringByID("data.unit.description", lang), explanation, false);
+        }
 
+        if (configData.showEvolveDescription) {
             String catfruit = DataToString.getCatFruitEvolve(f, lang);
 
             if(catfruit != null)
                 spec.addField(LangID.getStringByID("data.unit.evolve", lang), catfruit, false);
+        }
 
+        if (configData.showEvolveImage) {
             spec.setImage("attachment://cf.png");
         }
 
