@@ -81,6 +81,19 @@ public class ConfigHolder implements Cloneable {
             holder.showDropInfo = obj.get("showDropInfo").getAsBoolean();
         }
 
+        if (obj.has("extra")) {
+            holder.showUnitDescription = true;
+            holder.showEvolveDescription = true;
+            holder.showEvolveImage = true;
+
+            holder.showEnemyDescription = true;
+
+            holder.showMiscellaneous = true;
+            holder.showMaterialDrop = true;
+            holder.showExtraStage = true;
+            holder.showDropInfo = true;
+        }
+
         return holder;
     }
 
