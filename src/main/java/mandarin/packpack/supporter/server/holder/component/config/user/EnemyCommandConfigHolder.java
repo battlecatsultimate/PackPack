@@ -136,7 +136,7 @@ public class EnemyCommandConfigHolder extends ComponentHolder {
 
             builder.addField(LangID.getStringByID("data.compact.attackTimings", lang), attackTimings, false);
             builder.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", LangID.getStringByID("data.attackTypes.area", lang)), damageDPS, false);
-            builder.addField(LangID.getStringByID("data.trait", lang), LangID.getStringByID("command.config.embed.unit.trait", lang), false);
+            builder.addField(LangID.getStringByID("data.trait", lang), LangID.getStringByID("config.command.embed.unit.trait", lang), false);
         } else {
             builder.setTitle(LangID.getStringByID("config.command.embed.enemy.title", lang));
 
