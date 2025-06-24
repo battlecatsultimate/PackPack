@@ -152,8 +152,10 @@ public class EntityHandler {
             c = StaticStore.rainbow[4];
         else if(f.fid == 1)
             c = StaticStore.rainbow[3];
-        else
+        else if(f.fid == 2)
             c = StaticStore.rainbow[2];
+        else
+            c = StaticStore.rainbow[0];
 
         String desc = "";
 
