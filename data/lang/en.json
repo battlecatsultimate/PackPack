@@ -316,6 +316,72 @@
         "applied" : "Config change applied!",
         "canceled" : "Config change canceled",
         "expired" : "Config change canceled due to time out",
+        "command" : {
+            "button" : {
+                "enemy" : {
+                    "description" : "Show Enemy Description"
+                },
+                "stage" : {
+                    "drop" : "Show Reward/Score Drop Information",
+                    "extra" : "Show Extra Stage Information",
+                    "material" : "Show Material Drop Information",
+                    "miscellaneous" : "Show Miscellaneous Information"
+                },
+                "unit" : {
+                    "description" : "Show Unit Description",
+                    "evolve" : "Show Evolve Description",
+                    "image" : "Show Evolve Cost Image"
+                }
+            },
+            "check" : {
+                "enemy" : "Check enemy embed below to see how config would affect the embed",
+                "stage" : "Check stage embed below to see how each configs would effect the embed",
+                "unit" : "Check unit embed below to see how each configs would effect the embed"
+            },
+            "embed" : {
+                "enemy" : {
+                    "description" : "Enemy Description 1\nEnemy Description 2\nEnemy Description 3\nEnemy Description 4",
+                    "title" : "Example Enemy Name"
+                },
+                "stage" : {
+                    "drop" : "20% | Reward 1 %s | 1\n50% | Reward 2 | 10",
+                    "extra" : "10% | Extra Stage 1\n20% | Extra Stage 2",
+                    "limit" : "- **Limit Example 1**\n- **Limit Example 2**",
+                    "material" : "Material 1 : 50%\nMaterial 2 : 50%\n\nNumber of materials that can be dropped : 2 as max",
+                    "miscellaneous" : "- **Miscellaneous Info 1**\n- **Miscellaneous Info 2**",
+                    "score" : "8500 | Reward 1 | 1\n5000 | Reward 2 | 2",
+                    "title" : "Example Stage Name"
+                },
+                "unit" : {
+                    "description" : "Unit Description 1\nUnit Description 2\nUnit Description 3",
+                    "evolve" : "- **True Form**\nEvolve Description 1\nEvolve Description 2\nEvolve Description 3\n\n- **Ultra Form**\nEvolve Description 1\nEvolve Description 2\nEvolve Description 3",
+                    "abilities" : "- Ability Description 1\n- Ability Description 2\n- Ability Description 3",
+                    "title" : "Uber Rare - Example Unit Name",
+                    "trait" : "Example Trait"
+                }
+            }
+        },
+        "commandList" : {
+            "button" : "Advanced Embed Config",
+            "title" : "## Advanced Embed Config",
+            "description" : "This section allows user to dynamically adjust how embed will be displayed depending on user's preference. Please choose embed type below to adjust appearance of it",
+            "list" : {
+                "placeholder" : "Select an option to adjust embed",
+                "title" : "### List of Embed Type",
+                "type" : {
+                    "menu" : {
+                        "enemy" : "%d. Enemy",
+                        "stage" : "%d. Stage",
+                        "unit" : "%d. Unit"
+                    },
+                    "text" : {
+                        "enemy" : "**Enemy** [`p!es`]",
+                        "stage" : "**Stage** [`p!si`, `p!fst`, `p!fr`]",
+                        "unit" : "**Unit** [`p!fs`]"
+                    }
+                }
+            }
+        },
         "compactEmbed" : {
             "title" : "Use compact embed : _",
             "description" : {
@@ -2491,6 +2557,7 @@
                 "compactEmbed" : "Compacted Embed Mode : %s",
                 "defaultLevel" : "Default Level : %d",
                 "defaultUnit" : "Display Unit : %s",
+                "embed" : "Advanced Embed Setting",
                 "extra" : "Show Extra Information",
                 "forceCompact" : "Force Compacted Mode",
                 "forceTreasure" : "Force Full Treasure",
@@ -2514,6 +2581,10 @@
                         "frame" : "30f, 7f",
                         "second" : "2.3s, 15s"
                     }
+                },
+                "embed" : {
+                    "description" : "Advanced embed setting allows server managers to dynamically decide which extra information will be displayed altogether with essential stat information for unit/enemy/stage",
+                    "title" : "### %s Advanced Embed Setting"
                 },
                 "extra" : {
                     "description" : "Some information such as unit's true form cost, additional information about stage is hidden until member passes `-e` parameter to the command. This is because such information is minor and rather only takes place in the embed. However, if moderators want rich information regardless, you can make bot always show extra information",

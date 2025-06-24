@@ -316,6 +316,72 @@
         "applied" : "설정 변경이 적용되었습니다!",
         "canceled" : "설정 변경이 취소됐습니다",
         "expired" : "설정 변경이 시간 초과로 취소됐습니다",
+        "command" : {
+            "button" : {
+                "enemy" : {
+                    "description" : "적 설명 보이기"
+                },
+                "stage" : {
+                    "drop" : "보상/스코어 드랍 정보 보이기",
+                    "extra" : "EX 스테이지 정보 보이기",
+                    "material" : "재료 드랍 정보 보이기",
+                    "miscellaneous" : "기타 정보 보이기"
+                },
+                "unit" : {
+                    "description" : "유닛 설명 보이기",
+                    "evolve" : "진화 설명 보이기",
+                    "image" : "진화 코스트 이미지 보이기"
+                }
+            },
+            "check" : {
+                "enemy" : "아래의 적 임베디드를 통해 설정이 어떻게 작용하는지 확인해주세요",
+                "stage" : "아래의 스테이지 임베디드를 통해 각 설정이 어떻게 작용하는지 확인해주세요",
+                "unit" : "아래의 유닛 임베디드를 통해 각 설정이 어떻게 작용하는지 확인해주세요"
+            },
+            "embed" : {
+                "enemy" : {
+                    "description" : "적 설명 1\n적 설명 2\n적 설명 3\n적 설명 4",
+                    "title" : "예시 적 이름"
+                },
+                "stage" : {
+                    "drop" : "20% | 보상 1 %s | 1\n50% | 보상 2 | 10",
+                    "extra" : "10% | EX 스테이지 1\n20% | EX 스테이지 2",
+                    "limit" : "- **스테이지 제한 예시 1**\n- **스테이지 제한 예시 2**",
+                    "material" : "재료 1 : 50%\n재료 2 : 50%\n\n드롭될 수 있는 재료 개수 : 최대 2개",
+                    "miscellaneous" : "- **기타 정보 1**\n- **기타 정보 2**",
+                    "score" : "8500 | 보상 1 | 1\n5000 | 보상 2 | 2",
+                    "title" : "예시 스테이지 이름"
+                },
+                "unit" : {
+                    "description" : "유닛 설명 1\n유닛 설명 2\n유닛 설명 3",
+                    "evolve" : "- **3단 진화**\n진화 설명 1\n진화 설명 2\n진화 설명 3\n\n- **4단 진화**\n진화 설명 1\n진화 설명 2\n진화 설명 3",
+                    "abilities" : "- 능력 설명 1\n- 능력 설명 2\n- 능력 설명 3",
+                    "title" : "울슈레 - 예시 유닛 이름",
+                    "trait" : "예시 속성"
+                }
+            }
+        },
+        "commandList" : {
+            "button" : "Advanced Embed Config",
+            "title" : "## Advanced Embed Config",
+            "description" : "This section allows user to dynamically adjust how embed will be displayed depending on user's preference. Please choose embed type below to adjust appearance of it",
+            "list" : {
+                "placeholder" : "Select an option to adjust embed",
+                "title" : "### List of Embed Type",
+                "type" : {
+                    "menu" : {
+                        "enemy" : "%d. Enemy",
+                        "stage" : "%d. Stage",
+                        "unit" : "%d. Unit"
+                    },
+                    "text" : {
+                        "enemy" : "**Enemy** [`p!es`]",
+                        "stage" : "**Stage** [`p!si`, `p!fst`, `p!fr`]",
+                        "unit" : "**Unit** [`p!fs`]"
+                    }
+                }
+            }
+        },
         "compactEmbed" : {
             "title" : "스탯 임베드 압축 : _",
             "description" : {

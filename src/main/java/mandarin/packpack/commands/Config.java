@@ -57,9 +57,14 @@ public class Config extends ConstraintCommand {
             };
         }
 
+        String compactTitle = LangID.getStringByID(config.compact ? "data.true" : "data.false", lang);
+        String compactDescription = LangID.getStringByID(config.compact ? "config.compactEmbed.description.true" : "config.compactEmbed.description.false", lang);
+
         String message = "**" + LangID.getStringByID("config.defaultLevel.title", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
                 LangID.getStringByID("config.defaultLevel.description", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
-                "**" + LangID.getStringByID("config.locale.title", lang).replace("_", locale) + "**";
+                "**" + LangID.getStringByID("config.locale.title", lang).replace("_", locale) + "**" + "\n\n" +
+                "**" + LangID.getStringByID("config.compactEmbed.title", lang).replace("_", compactTitle) + "**" + "\n\n" +
+                compactDescription;
 
         List<SelectOption> languages = new ArrayList<>();
 
@@ -81,9 +86,18 @@ public class Config extends ConstraintCommand {
         pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
         pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
 
+        Button compact;
+
+        if(config.compact) {
+            compact = Button.secondary("compact", LangID.getStringByID("config.compactEmbed.title", lang).replace("_", LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON);
+        } else {
+            compact = Button.secondary("compact", LangID.getStringByID("config.compactEmbed.title", lang).replace("_", LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF);
+        }
+
         replyToMessageSafely(ch, message, loader.getMessage(), a -> a.setComponents(
                 ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config.defaultLevel.set.title", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
                 ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
+                ActionRow.of(compact),
                 ActionRow.of(pages),
                 ActionRow.of(components)
         ), msg -> {

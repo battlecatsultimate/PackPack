@@ -6,12 +6,14 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import mandarin.packpack.supporter.server.holder.modal.LevelModalHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -20,6 +22,8 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -110,6 +114,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                 performResult(event);
             }
+            case "embed" -> connectTo(event, new CommandListHolder(getAuthorMessage(), userID, channelID, message, config, backup, config.lang == null ? holder.config.lang : config.lang));
             case "next" -> {
                 page++;
                 performResult(event);
@@ -161,13 +166,18 @@ public class ConfigButtonHolder extends ComponentHolder {
             StaticStore.config.put(userID, backup);
         }
 
-        message.editMessage(LangID.getStringByID("config.expired", config.lang))
+        message.editMessage(LangID.getStringByID("config.expired", config.lang == null ? holder.config.lang : config.lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();
     }
 
-    private void performResult(GenericComponentInteractionCreateEvent event) {
+    @Override
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) {
+        performResult(event);
+    }
+
+    private void performResult(IMessageEditCallback event) {
         event.deferEdit()
                 .setContent(parseMessage())
                 .setComponents(parseComponents())
@@ -237,6 +247,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                         m.add(ActionRow.of(Button.secondary("treasure", String.format(LangID.getStringByID("config.treasure.title", lang), LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                     }
                 }
+                case 6 -> m.add(ActionRow.of(Button.secondary("embed",LangID.getStringByID("config.commandList.button", lang)).withEmoji(Emoji.fromUnicode("🎛️"))));
             }
         }
 
