@@ -2557,6 +2557,7 @@
                 "compactEmbed" : "Компактный Режим : %s",
                 "defaultLevel" : "Стандартный Уровень : %d",
                 "defaultUnit" : "Отоюражение Юнита : %s",
+                "embed" : "Advanced Embed Setting",
                 "extra" : "Показывать Специальную Информацию",
                 "forceCompact" : "Принудителный Компактный Режим",
                 "forceTreasure" : "Принудительно Полные Сокровища",
@@ -2580,6 +2581,10 @@
                         "frame" : "30f, 7f",
                         "second" : "2.3s, 15s"
                     }
+                },
+                "embed" : {
+                    "description" : "Advanced embed setting allows server managers to dynamically decide which extra information will be displayed altogether with essential stat information for unit/enemy/stage",
+                    "title" : "### %s Advanced Embed Setting"
                 },
                 "extra" : {
                     "description" : "Некоторая информация, такая как стоимость истинной формы юнита, дополнительная информация о этапах, скрыта до тех пор, пока пользователь не добавит аргумент -e в команду. Это потому, что такая информация является второстепенной и лишь занимает место в встроенном сообщении. Однако, если модераторам нужна полная информация в любом случае, вы можете настроить бота так, чтобы он всегда показывал дополнительную информацию",

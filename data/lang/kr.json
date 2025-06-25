@@ -306,7 +306,7 @@
         }
     },
     "comboAnalyzer" : {
-        "dummyTitle" : "Cat Combo %s",
+        "dummyTitle" : "냥콤보 %s",
         "failed" : {
             "noCombo" : "냥콤보 이미지 생성에 실패했거나, 새로운 냥톰보 데이터를 봇이 찾지 못했습니다",
             "unknown" : "냥콤보 이미지 생성에 실패했거나, 해당 냥콤보 ID를 갖고 있는 데이터를 발견하지 못했습니다"
@@ -334,9 +334,9 @@
                 }
             },
             "check" : {
-                "enemy" : "아래의 적 임베디드를 통해 설정이 어떻게 작용하는지 확인해주세요",
-                "stage" : "아래의 스테이지 임베디드를 통해 각 설정이 어떻게 작용하는지 확인해주세요",
-                "unit" : "아래의 유닛 임베디드를 통해 각 설정이 어떻게 작용하는지 확인해주세요"
+                "enemy" : "아래의 적 임베디드를 통해 설정이 어떻게 적용되는지 확인해주세요",
+                "stage" : "아래의 스테이지 임베디드를 통해 각 설정이 어떻게 적용되는지 확인해주세요",
+                "unit" : "아래의 유닛 임베디드를 통해 각 설정이 어떻게 적용되는지 확인해주세요"
             },
             "embed" : {
                 "enemy" : {
@@ -362,22 +362,22 @@
             }
         },
         "commandList" : {
-            "button" : "Advanced Embed Config",
-            "title" : "## Advanced Embed Config",
-            "description" : "This section allows user to dynamically adjust how embed will be displayed depending on user's preference. Please choose embed type below to adjust appearance of it",
+            "button" : "임베디드 세부 설정",
+            "title" : "## 임베디드 세부 설정",
+            "description" : "이 설정은 임베디드가 어떻게 표시될건지 유동적으로 유저들이 조정할 수 있도록 해줍니다. 외관을 조정할 임베디드 타입을 선택해 주세요",
             "list" : {
-                "placeholder" : "Select an option to adjust embed",
-                "title" : "### List of Embed Type",
+                "placeholder" : "조정할 임베디드 타입 선택",
+                "title" : "### 임베디드 타입 목록",
                 "type" : {
                     "menu" : {
-                        "enemy" : "%d. Enemy",
-                        "stage" : "%d. Stage",
-                        "unit" : "%d. Unit"
+                        "enemy" : "%d. 적",
+                        "stage" : "%d. 스테이지",
+                        "unit" : "%d. 유닛"
                     },
                     "text" : {
-                        "enemy" : "**Enemy** [`p!es`]",
-                        "stage" : "**Stage** [`p!si`, `p!fst`, `p!fr`]",
-                        "unit" : "**Unit** [`p!fs`]"
+                        "enemy" : "**적** [`p!es`]",
+                        "stage" : "**스테이지** [`p!si`, `p!fst`, `p!fr`]",
+                        "unit" : "**유닛** [`p!fs`]"
                     }
                 }
             }
@@ -2559,6 +2559,7 @@
                 "compactEmbed" : "임베디드 압축 모드 : %s",
                 "defaultLevel" : "기본 레벨 : %d",
                 "defaultUnit" : "시간 단위 표시 : %s",
+                "embed" : "임베디드 세부 설정",
                 "extra" : "추가 정보 표시",
                 "forceCompact" : "임베디드 압축 모드 강제 사용",
                 "forceTreasure" : "100% 보물 강제 사용",
@@ -2582,6 +2583,10 @@
                         "frame" : "30f, 7f",
                         "second" : "2.3s, 15s"
                     }
+                },
+                "embed" : {
+                    "description" : "임베디드 세부 설정은 유닛/적/스테이지의 기본적인 스텟을 제외한 추가정보에 대하여 어떤 부분을 표시할지 유동적으로 결정할 수 있게 해줍니다",
+                    "title" : "### %s 임베디드 세부 설정"
                 },
                 "extra" : {
                     "description" : "유닛 진화 정보나 스테이지 추가 정보같은 부가적인 정보들은 맴버들이 명령어에 `-e` 인자를 사용하지 않으면 자동으로 숨겨집니다. 하지만 만약 서버 관리자들이 이러한 정보들을 항상 표시되도록 만들고 싶다면 이 설정을 활성화하면 됩니다",

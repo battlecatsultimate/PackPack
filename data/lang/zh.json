@@ -2554,6 +2554,7 @@
                 "compactEmbed" : "Compacted Embed Mode : %s",
                 "defaultLevel" : "Default Level : %d",
                 "defaultUnit" : "Display Unit : %s",
+                "embed" : "Advanced Embed Setting",
                 "extra" : "Show Extra Information",
                 "forceCompact" : "Force Compacted Mode",
                 "forceTreasure" : "Force Full Treasure",
@@ -2577,6 +2578,10 @@
                         "frame" : "30f, 7f",
                         "second" : "2.3s, 15s"
                     }
+                },
+                "embed" : {
+                    "description" : "Advanced embed setting allows server managers to dynamically decide which extra information will be displayed altogether with essential stat information for unit/enemy/stage",
+                    "title" : "### %s Advanced Embed Setting"
                 },
                 "extra" : {
                     "description" : "Some information such as unit's true form cost, additional information about stage is hidden until member passes `-e` parameter to the command. This is because such information is minor and rather only takes place in the embed. However, if moderators want rich information regardless, you can make bot always show extra information",
