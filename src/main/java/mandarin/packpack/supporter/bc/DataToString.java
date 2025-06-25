@@ -1912,7 +1912,7 @@ public class DataToString extends Data {
         if(chances.isEmpty())
             builder.append("!!number!!");
         else if(info.rand == -4)
-            builder.append("!!nofail!!");
+            builder.append("!!noFail!!");
 
         return builder.toString();
     }

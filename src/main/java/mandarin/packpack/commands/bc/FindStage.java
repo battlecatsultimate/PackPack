@@ -63,13 +63,12 @@ public class FindStage extends TimedConstraintCommand {
     }
 
     private static final int PARAM_SECOND = 2;
-    private static final int PARAM_EXTRA = 4;
-    private static final int PARAM_COMPACT = 8;
-    private static final int PARAM_OR = 16;
-    private static final int PARAM_AND = 32;
-    private static final int PARAM_BOSS = 64;
-    private static final int PARAM_MONTHLY = 128;
-    private static final int PARAM_FRAME = 256;
+    private static final int PARAM_COMPACT = 4;
+    private static final int PARAM_OR = 8;
+    private static final int PARAM_AND = 16;
+    private static final int PARAM_BOSS = 32;
+    private static final int PARAM_MONTHLY = 64;
+    private static final int PARAM_FRAME = 128;
 
     private final ConfigHolder config;
 
@@ -126,8 +125,11 @@ public class FindStage extends TimedConstraintCommand {
         else
             configData.isFrame = config.useFrame;
 
-        configData.isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
         configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        configData.showDropInfo = config.showDropInfo;
+        configData.showExtraStage = config.showExtraStage;
+        configData.showMaterialDrop = config.showMaterialDrop;
+        configData.showMiscellaneous = config.showMiscellaneous;
 
         boolean orOperate = (param & PARAM_OR) > 0 && (param & PARAM_AND) == 0;
         boolean hasBoss = (param & PARAM_BOSS) > 0;
@@ -381,12 +383,6 @@ public class FindStage extends TimedConstraintCommand {
                     case "-s" -> {
                         if ((result & PARAM_SECOND) == 0) {
                             result |= PARAM_SECOND;
-                        } else
-                            break label;
-                    }
-                    case "-e", "-extra" -> {
-                        if ((result & PARAM_EXTRA) == 0) {
-                            result |= PARAM_EXTRA;
                         } else
                             break label;
                     }

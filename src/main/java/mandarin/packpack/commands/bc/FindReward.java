@@ -30,8 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FindReward extends TimedConstraintCommand {
-    private static final int PARAM_EXTRA = 2;
-    private static final int PARAM_COMPACT = 4;
+    private static final int PARAM_COMPACT = 2;
 
     private final ConfigHolder config;
 
@@ -58,9 +57,12 @@ public class FindReward extends TimedConstraintCommand {
 
         int param = checkParameters(loader.getContent());
 
-        configData.isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
         configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
         configData.isFrame = holder == null || holder.config.useFrame;
+        configData.showDropInfo = config.showDropInfo;
+        configData.showExtraStage = config.showExtraStage;
+        configData.showMaterialDrop = config.showMaterialDrop;
+        configData.showMiscellaneous = config.showMiscellaneous;
 
         double chance = getChance(loader.getContent());
         int amount = getAmount(loader.getContent());
@@ -223,12 +225,6 @@ public class FindReward extends TimedConstraintCommand {
             label:
             for(String str : pureMessage) {
                 switch (str) {
-                    case "-e", "-extra" -> {
-                        if ((result & PARAM_EXTRA) == 0) {
-                            result |= PARAM_EXTRA;
-                        } else
-                            break label;
-                    }
                     case "-c", "-compact" -> {
                         if ((result & PARAM_COMPACT) == 0) {
                             result |= PARAM_COMPACT;

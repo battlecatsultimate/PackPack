@@ -28,16 +28,15 @@ import java.util.List;
 public class EnemyStat extends ConstraintCommand {
     public static class EnemyStatConfig {
         public boolean isFrame;
-        public boolean isExtra;
         public boolean isCompact;
+        public boolean showEnemyDescription;
 
         public int[] magnification;
     }
 
     private static final int PARAM_SECOND = 2;
-    private static final int PARAM_EXTRA = 4;
-    private static final int PARAM_COMPACT = 8;
-    private static final int PARAM_FRAME = 16;
+    private static final int PARAM_COMPACT = 4;
+    private static final int PARAM_FRAME = 8;
 
     private final ConfigHolder config;
 
@@ -93,8 +92,8 @@ public class EnemyStat extends ConstraintCommand {
             else
                 configData.isFrame = config.useFrame;
 
-            configData.isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
             configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+            configData.showEnemyDescription = config.showEnemyDescription;
         } else {
             SlashOptionMap optionMap = loader.getOptions();
 
@@ -106,8 +105,8 @@ public class EnemyStat extends ConstraintCommand {
             };
 
             configData.isFrame = optionMap.getOption("frame", config.useFrame);
-            configData.isExtra = optionMap.getOption("extra", config.extra);
             configData.isCompact = optionMap.getOption("compact", ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact));
+            configData.showEnemyDescription = config.showEnemyDescription;
         }
 
         if (name.isBlank()) {
@@ -282,13 +281,6 @@ public class EnemyStat extends ConstraintCommand {
                             result |= PARAM_SECOND;
                         } else
                             break label;
-                    }
-                    case "-e", "-extra" -> {
-                        if ((result & PARAM_EXTRA) == 0) {
-                            result |= PARAM_EXTRA;
-                        } else {
-                            break label;
-                        }
                     }
                     case "-c", "-compact" -> {
                         if ((result & PARAM_COMPACT) == 0) {

@@ -316,6 +316,72 @@
         "applied" : "Config change applied!",
         "canceled" : "Config change canceled",
         "expired" : "Config change canceled due to time out",
+        "command" : {
+            "button" : {
+                "enemy" : {
+                    "description" : "Show Enemy Description"
+                },
+                "stage" : {
+                    "drop" : "Show Reward/Score Drop Information",
+                    "extra" : "Show Extra Stage Information",
+                    "material" : "Show Material Drop Information",
+                    "miscellaneous" : "Show Miscellaneous Information"
+                },
+                "unit" : {
+                    "description" : "Show Unit Description",
+                    "evolve" : "Show Evolve Description",
+                    "image" : "Show Evolve Cost Image"
+                }
+            },
+            "check" : {
+                "enemy" : "Check enemy embed below to see how config would affect the embed",
+                "stage" : "Check stage embed below to see how each configs would effect the embed",
+                "unit" : "Check unit embed below to see how each configs would effect the embed"
+            },
+            "embed" : {
+                "enemy" : {
+                    "description" : "Enemy Description 1\nEnemy Description 2\nEnemy Description 3\nEnemy Description 4",
+                    "title" : "Example Enemy Name"
+                },
+                "stage" : {
+                    "drop" : "20% | Reward 1 %s | 1\n50% | Reward 2 | 10",
+                    "extra" : "10% | Extra Stage 1\n20% | Extra Stage 2",
+                    "limit" : "- **Limit Example 1**\n- **Limit Example 2**",
+                    "material" : "Material 1 : 50%\nMaterial 2 : 50%\n\nNumber of materials that can be dropped : 2 as max",
+                    "miscellaneous" : "- **Miscellaneous Info 1**\n- **Miscellaneous Info 2**",
+                    "score" : "8500 | Reward 1 | 1\n5000 | Reward 2 | 2",
+                    "title" : "Example Stage Name"
+                },
+                "unit" : {
+                    "description" : "Unit Description 1\nUnit Description 2\nUnit Description 3",
+                    "evolve" : "- **True Form**\nEvolve Description 1\nEvolve Description 2\nEvolve Description 3\n\n- **Ultra Form**\nEvolve Description 1\nEvolve Description 2\nEvolve Description 3",
+                    "abilities" : "- Ability Description 1\n- Ability Description 2\n- Ability Description 3",
+                    "title" : "Uber Rare - Example Unit Name",
+                    "trait" : "Example Trait"
+                }
+            }
+        },
+        "commandList" : {
+            "button" : "Advanced Embed Config",
+            "title" : "## Advanced Embed Config",
+            "description" : "This section allows user to dynamically adjust how embed will be displayed depending on user's preference. Please choose embed type below to adjust appearance of it",
+            "list" : {
+                "placeholder" : "Select an option to adjust embed",
+                "title" : "### List of Embed Type",
+                "type" : {
+                    "menu" : {
+                        "enemy" : "%d. Enemy",
+                        "stage" : "%d. Stage",
+                        "unit" : "%d. Unit"
+                    },
+                    "text" : {
+                        "enemy" : "**Enemy** [`p!es`]",
+                        "stage" : "**Stage** [`p!si`, `p!fst`, `p!fr`]",
+                        "unit" : "**Unit** [`p!fs`]"
+                    }
+                }
+            }
+        },
         "compactEmbed" : {
             "title" : "Use compact embed : _",
             "description" : {
@@ -1845,7 +1911,7 @@
             "alias" : "`es`",
             "description" : "Try to search enemy with specified name, and display info of it",
             "example" : "`p!es -s Doge -m 200`\n`p!es 024 -m 200, 100 -e`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-m`\nCustomize this enemy's magnification, can handle both hp, atk magnification. With order of `HP magnification, atk magnification`\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-m`\nCustomize this enemy's magnification, can handle both hp, atk magnification. With order of `HP magnification, atk magnification`\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
             "usage" : "`%senemystat [Name]`"
         },
         "enemyStatAnalyzer" : {
@@ -1867,14 +1933,14 @@
             "alias" : "`freward`, `findr`, `fr`",
             "description" : "Try to search stage with specified reward name, and upload info of it if exists",
             "example" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
-            "parameter" : "- `-ch` or `-chance`\nFilter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n- `-a` or `-amount`\nFind reward whose amount is higher or same than specified value\n- `-e` or `-extra`\nShow extra information such as description\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
+            "parameter" : "- `-ch` or `-chance`\nFilter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n- `-a` or `-amount`\nFind reward whose amount is higher or same than specified value\n\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
             "usage" : "`%sfindreward [Reward Name]`"
         },
         "findStage" : {
             "alias" : "`findst`, `fstage`, `fst`",
             "description" : "Try to search stage with specified filter data, and upload info of it",
             "example" : "`p!fst -s Relic Bun-Bun`\n`p!fst -s -lv 4 098`\n`p!fst -o -bg 0 -m 0 doge / snache`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv`\nApply level (new name of star) data\n- `-e` or `-extra`\nShow extra information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-o` or `-or`\nActivate `OR` operation\n- `-a` or `-and`\nActivate `AND` operation\n- `-bg` or `-background`\nSet background ID to filter with\n- `-cs` or `-castle`\nSet castle ID to filter with\n- `-ms` or `-music`\nSet music ID to filter with\n- `-b` or `-boss`\nFind the stage which contains boss\n- `-m` or `-monthly`\nActivate monthly mission filter mode",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv`\nApply level (new name of star) data\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-o` or `-or`\nActivate `OR` operation\n- `-a` or `-and`\nActivate `AND` operation\n- `-bg` or `-background`\nSet background ID to filter with\n- `-cs` or `-castle`\nSet castle ID to filter with\n- `-ms` or `-music`\nSet music ID to filter with\n- `-b` or `-boss`\nFind the stage which contains boss\n- `-m` or `-monthly`\nActivate monthly mission filter mode",
             "tip" : "You can provide multiple enemies to filter with. To perform this, provide enemy names, separated with `/` separator. For example, if you want to provide 2 names; `Doge` and `Snache`, then what you will have to write is `Doge/Snache`. **You can provide only up to 5 enemies**\n\n`Or` or `And` operation decides how bot will filter stage with provided enemy combinations. For example, if `Or` operation is activated, then bot will filter stage which contains this enemy **OR** that enemy. If it's `And` operation, then bot will filter stage which contains this enemy **AND** that enemy. `And` operation is turned on as default, and if you provide both `-o` and `-a` parameters, `-a` will have higher priority\n\n",
             "tip2" : "Crystal modifier can adjust status of crystal treasure. For example, you may have beaten only up to ItF Ch.2, so aliens in Ch.3 may have different magnification than full treasure. In this case, you can adjust crystal modifier by passing number of chapter that you finished\n\nFor example, if you are beating Itf Ch.1, then you can pass `-i0` parameter. If you are beating CotC Ch.3, then you can pass `-c2`, and so on",
             "usage" : "`%sfindstage [Filter Data]`"
@@ -1913,7 +1979,7 @@
             "alias" : "`catstat`, `unitstat`, `fs`, `cs`, `us`",
             "description" : "Try to search unit with specified name, and display info of it",
             "example" : "`p!fs -s -t Cat -lv 30`\n`p!fs -t -e 071002 -lv 50, 1, 1, 1, 1, 1`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 5 level`\n- `-e` or `-extra`\nShow extra information such as description, catfruit evolve information\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 5 level`\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
             "usage" : "`%sformstat [Name]`"
         },
         "format" : {
@@ -2113,7 +2179,7 @@
             "alias" : "`si`",
             "description" : "Try to search stage with specified name, and display info of it",
             "example" : "`p!si -s -lv 3 DNA & DHA`\n`p!si -s Eldritch -mc Extra Stages`\n`p!si Jamaica -stm Itf ch.1 zombie`\n`p!si -e -lv 3 2-128-2`",
-            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv` or `-lvl`\nApply level (new name of star) data\n- `-stm`\nSpecify stage map name to be filtered. Must be used after specifying stage name first\n- `-mc`\nSpecify map collection name to be filtered. Must be used after specifying stage name first\n- `-e` or `-extra`\nShow extra stage information such as EX stage data, etc.\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
+            "parameter" : "- `-s`\nDisplay info with seconds instead of frames\n- `-f` or `-fr`\nDisplay info with frames instead of seconds\n- `-lv` or `-lvl`\nApply level (new name of star) data\n- `-stm`\nSpecify stage map name to be filtered. Must be used after specifying stage name first\n- `-mc`\nSpecify map collection name to be filtered. Must be used after specifying stage name first\n- `-c` or `-compact`\nCompress multiple fields into one field so that mobile users can see stat without flooding the chat",
             "usage" : "`%sstageinfo [Stage Name]`"
         },
         "stageMapImage" : {
@@ -2491,6 +2557,7 @@
                 "compactEmbed" : "Compacted Embed Mode : %s",
                 "defaultLevel" : "Default Level : %d",
                 "defaultUnit" : "Display Unit : %s",
+                "embed" : "Advanced Embed Setting",
                 "extra" : "Show Extra Information",
                 "forceCompact" : "Force Compacted Mode",
                 "forceTreasure" : "Force Full Treasure",
@@ -2514,6 +2581,10 @@
                         "frame" : "30f, 7f",
                         "second" : "2.3s, 15s"
                     }
+                },
+                "embed" : {
+                    "description" : "Advanced embed setting allows server managers to dynamically decide which extra information will be displayed altogether with essential stat information for unit/enemy/stage",
+                    "title" : "### %s Advanced Embed Setting"
                 },
                 "extra" : {
                     "description" : "Some information such as unit's true form cost, additional information about stage is hidden until member passes `-e` parameter to the command. This is because such information is minor and rather only takes place in the embed. However, if moderators want rich information regardless, you can make bot always show extra information",

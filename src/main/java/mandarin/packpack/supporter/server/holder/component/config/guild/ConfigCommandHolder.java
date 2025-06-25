@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component.config;
+package mandarin.packpack.supporter.server.holder.component.config.guild;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
@@ -59,11 +59,6 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
                 applyResult(event);
             }
-            case "extra" -> {
-                holder.config.extra = !holder.config.extra;
-
-                applyResult(event);
-            }
             case "compact" -> {
                 holder.config.compact = !holder.config.compact;
 
@@ -89,6 +84,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
                 applyResult(event);
             }
+            case "embed" -> connectTo(event, new ConfigEmbedListHolder(getAuthorMessage(), userID, channelID, message, holder, backup, lang));
             case "prev" -> {
                 page--;
 
@@ -179,21 +175,11 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     unitEmoji = Emoji.fromUnicode("⏱️");
                 }
 
-                String extra;
-
-                if (holder.config.extra) {
-                    extra = LangID.getStringByID("data.true", lang);
-                } else {
-                    extra = LangID.getStringByID("data.false", lang);
-                }
-
                 return LangID.getStringByID("serverConfig.command.documentation.title", lang) + "\n" +
                         LangID.getStringByID("serverConfig.command.documentation.defaultLevel.title", lang).formatted(EmojiStore.LEVEL, holder.config.defLevel) + "\n" +
                         LangID.getStringByID("serverConfig.command.documentation.defaultLevel.description", lang).formatted(holder.config.defLevel, holder.config.defLevel) + "\n" +
                         LangID.getStringByID("serverConfig.command.documentation.defaultUnit.title", lang).formatted(unitEmoji, unit) + "\n" +
-                        LangID.getStringByID("serverConfig.command.documentation.defaultUnit.description", lang).formatted(unit, unitExample) + "\n" +
-                        LangID.getStringByID("serverConfig.command.documentation.extra.title", lang).formatted(EmojiStore.INFORMATION, extra) + "\n" +
-                        LangID.getStringByID("serverConfig.command.documentation.extra.description", lang);
+                        LangID.getStringByID("serverConfig.command.documentation.defaultUnit.description", lang).formatted(unit, unitExample);
             }
             case 1 -> {
                 String compacted;
@@ -255,7 +241,9 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                         LangID.getStringByID("serverConfig.command.documentation.treasure.title", lang).formatted(EmojiStore.TREASURE_RADAR, treasure) + "\n" +
                         LangID.getStringByID("serverConfig.command.documentation.treasure.description", lang) + "\n" +
                         LangID.getStringByID("serverConfig.command.documentation.forceTreasure.title", lang).formatted(forceTreasureSwitch, forceTreasure) + "\n" +
-                        LangID.getStringByID("serverConfig.command.documentation.forceTreasure.description", lang);
+                        LangID.getStringByID("serverConfig.command.documentation.forceTreasure.description", lang) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.embed.title", lang).formatted(Emoji.fromUnicode("🎛️").getFormatted()) + "\n" +
+                        LangID.getStringByID("serverConfig.command.documentation.embed.description", lang);
             }
         }
 
@@ -278,18 +266,8 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                     unitEmoji = Emoji.fromUnicode("⏱️");
                 }
 
-                Emoji extra;
-
-                if (holder.config.extra) {
-                    extra = EmojiStore.SWITCHON;
-                } else {
-                    extra = EmojiStore.SWITCHOFF;
-                }
-
                 result.add(ActionRow.of(Button.secondary("level", LangID.getStringByID("serverConfig.command.button.defaultLevel", lang).formatted(holder.config.defLevel)).withEmoji(EmojiStore.LEVEL)));
                 result.add(ActionRow.of(Button.secondary("unit", LangID.getStringByID("serverConfig.command.button.defaultUnit", lang).formatted(unit)).withEmoji(unitEmoji)));
-                result.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("serverConfig.command.button.extra", lang)).withEmoji(extra)));
-
             }
             case 1 -> {
                 Emoji compacted;
@@ -342,6 +320,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
                 result.add(ActionRow.of(Button.secondary("treasure", LangID.getStringByID("serverConfig.command.button.treasure", lang)).withEmoji(treasureSwitch)));
                 result.add(ActionRow.of(Button.secondary("forceTreasure", LangID.getStringByID("serverConfig.command.button.forceTreasure", lang)).withEmoji(forceTreasureSwitch)));
+                result.add(ActionRow.of(Button.secondary("embed",LangID.getStringByID("serverConfig.command.button.embed", lang)).withEmoji(Emoji.fromUnicode("🎛️"))));
             }
         }
 

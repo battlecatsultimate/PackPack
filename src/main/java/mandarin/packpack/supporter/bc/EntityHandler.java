@@ -101,7 +101,7 @@ public class EntityHandler {
 
     public static void showUnitEmb(Form f, Object sender, @Nullable Message reference, ConfigHolder config, boolean trueFormPossible, TreasureHolder holder, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang, boolean addEmoji, boolean editMode, Consumer<Message> onSuccess) throws Exception {
         int level = configData.lv.getLv();
-        int levelp = configData.lv.getPlusLv();
+        int plusLevel = configData.lv.getPlusLv();
 
         if(level <= 0) {
             if(f.unit.rarity == 0)
@@ -115,31 +115,31 @@ public class EntityHandler {
         }
 
         if(level > f.unit.max) {
-            levelp = level - f.unit.max;
+            plusLevel = level - f.unit.max;
             level = f.unit.max;
 
-            if(levelp > f.unit.maxp)
-                levelp = f.unit.maxp;
+            if(plusLevel > f.unit.maxp)
+                plusLevel = f.unit.maxp;
 
-            if(levelp < 0)
-                levelp = 0;
+            if(plusLevel < 0)
+                plusLevel = 0;
         }
 
         configData.lv.setLevel(level);
-        configData.lv.setPlusLevel(levelp);
+        configData.lv.setPlusLevel(plusLevel);
 
         String l;
 
-        if(levelp == 0)
+        if(plusLevel == 0)
             l = String.valueOf(level);
         else
-            l = level + " + " + levelp;
+            l = level + " + " + plusLevel;
 
         File img = generateIcon(f);
 
         File cf;
 
-        if(configData.extra)
+        if(configData.showEvolveImage)
             cf = generateCatfruit(f, lang);
         else
             cf = null;
@@ -152,8 +152,10 @@ public class EntityHandler {
             c = StaticStore.rainbow[4];
         else if(f.fid == 1)
             c = StaticStore.rainbow[3];
-        else
+        else if(f.fid == 2)
             c = StaticStore.rainbow[2];
+        else
+            c = StaticStore.rainbow[0];
 
         String desc = "";
 
@@ -263,20 +265,20 @@ public class EntityHandler {
         else
             du = f.du;
 
-        List<String> abis = Interpret.getAbi(du, true, lang, configData.treasure ? du.getTraits() : null, holder);
-        abis.addAll(Interpret.getProc(du, !configData.isFrame, true, lang, 1.0, 1.0, configData.treasure, du.getTraits(), holder::getAbilityMultiplier));
+        List<String> abilities = Interpret.getAbi(du, true, lang, configData.treasure ? du.getTraits() : null, holder);
+        abilities.addAll(Interpret.getProc(du, !configData.isFrame, true, lang, 1.0, 1.0, configData.treasure, du.getTraits(), holder::getAbilityMultiplier));
 
         if(configData.compact) {
-            abis = mergeImmune(abis, lang);
+            abilities = mergeImmune(abilities, lang);
         }
 
         StringBuilder sb = new StringBuilder();
 
-        for(int i = 0; i < abis.size(); i++) {
-            if(i == abis.size() - 1)
-                sb.append("- ").append(abis.get(i));
+        for(int i = 0; i < abilities.size(); i++) {
+            if(i == abilities.size() - 1)
+                sb.append("- ").append(abilities.get(i));
             else
-                sb.append("- ").append(abis.get(i)).append("\n");
+                sb.append("- ").append(abilities.get(i)).append("\n");
         }
 
         String res = sb.toString();
@@ -284,20 +286,20 @@ public class EntityHandler {
         if(res.isBlank())
             res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
-            abis = Interpret.getAbi(du, false, lang, configData.treasure ? du.getTraits() : null, holder);
-            abis.addAll(Interpret.getProc(du, !configData.isFrame, false, lang, 1.0, 1.0, configData.treasure, du.getTraits(), holder::getAbilityMultiplier));
+            abilities = Interpret.getAbi(du, false, lang, configData.treasure ? du.getTraits() : null, holder);
+            abilities.addAll(Interpret.getProc(du, !configData.isFrame, false, lang, 1.0, 1.0, configData.treasure, du.getTraits(), holder::getAbilityMultiplier));
 
             if(configData.compact) {
-                abis = mergeImmune(abis, lang);
+                abilities = mergeImmune(abilities, lang);
             }
 
             sb = new StringBuilder();
 
-            for(int i = 0; i < abis.size(); i++) {
-                if(i == abis.size() - 1)
-                    sb.append("- ").append(abis.get(i));
+            for(int i = 0; i < abilities.size(); i++) {
+                if(i == abilities.size() - 1)
+                    sb.append("- ").append(abilities.get(i));
                 else
-                    sb.append("- ").append(abis.get(i)).append("\n");
+                    sb.append("- ").append(abilities.get(i)).append("\n");
             }
 
             res = sb.toString();
@@ -305,17 +307,21 @@ public class EntityHandler {
 
         spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
-        if(configData.extra) {
+        if(configData.showUnitDescription) {
             String explanation = DataToString.getDescription(f, lang);
 
             if(explanation != null)
                 spec.addField(LangID.getStringByID("data.unit.description", lang), explanation, false);
+        }
 
+        if (configData.showEvolveDescription) {
             String catfruit = DataToString.getCatFruitEvolve(f, lang);
 
             if(catfruit != null)
                 spec.addField(LangID.getStringByID("data.unit.evolve", lang), catfruit, false);
+        }
 
+        if (configData.showEvolveImage) {
             spec.setImage("attachment://cf.png");
         }
 
@@ -641,20 +647,20 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), true);
         }
 
-        List<String> abis = Interpret.getAbi(e.de, true, lang, null, null);
-        abis.addAll(Interpret.getProc(e.de, !configData.isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
+        List<String> abilities = Interpret.getAbi(e.de, true, lang, null, null);
+        abilities.addAll(Interpret.getProc(e.de, !configData.isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
         if(configData.isCompact) {
-            abis = mergeImmune(abis, lang);
+            abilities = mergeImmune(abilities, lang);
         }
 
         StringBuilder sb = new StringBuilder();
 
-        for(int i = 0; i < abis.size(); i++) {
-            if(i == abis.size() - 1)
-                sb.append(abis.get(i));
+        for(int i = 0; i < abilities.size(); i++) {
+            if(i == abilities.size() - 1)
+                sb.append(abilities.get(i));
             else
-                sb.append(abis.get(i)).append("\n");
+                sb.append(abilities.get(i)).append("\n");
         }
 
         String res = sb.toString();
@@ -662,20 +668,20 @@ public class EntityHandler {
         if(res.isBlank())
             res = LangID.getStringByID("data.none", lang);
         else if(res.length() > 1024) {
-            abis = Interpret.getAbi(e.de, false, lang, null, null);
-            abis.addAll(Interpret.getProc(e.de, !configData.isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
+            abilities = Interpret.getAbi(e.de, false, lang, null, null);
+            abilities.addAll(Interpret.getProc(e.de, !configData.isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
             if(configData.isCompact) {
-                abis = mergeImmune(abis, lang);
+                abilities = mergeImmune(abilities, lang);
             }
 
             sb = new StringBuilder();
 
-            for(int i = 0; i < abis.size(); i++) {
-                if(i == abis.size() - 1)
-                    sb.append(abis.get(i));
+            for(int i = 0; i < abilities.size(); i++) {
+                if(i == abilities.size() - 1)
+                    sb.append(abilities.get(i));
                 else
-                    sb.append(abis.get(i)).append("\n");
+                    sb.append(abilities.get(i)).append("\n");
             }
 
             res = sb.toString();
@@ -683,7 +689,7 @@ public class EntityHandler {
 
         spec.addField(LangID.getStringByID("data.ability", lang), res, false);
 
-        if(configData.isExtra) {
+        if(configData.showEnemyDescription) {
             String explanation = DataToString.getDescription(e, lang);
 
             if(explanation != null) {
@@ -771,14 +777,14 @@ public class EntityHandler {
             connector.queue(g -> {
                 g.drawImage(image, 0f, 0f);
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> img, () -> {
             waiter.countDown();
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
 
         waiter.await();
@@ -819,14 +825,14 @@ public class EntityHandler {
             connector.queue(g -> {
                 g.drawImage(image, 0f, 0f);
                 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
             
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> img, () -> {
             waiter.countDown();
             
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
         
         waiter.await();
@@ -969,14 +975,14 @@ public class EntityHandler {
                     }
                 }
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> img, () -> {
             waiter.countDown();
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
 
         waiter.await();
@@ -1119,7 +1125,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data.stage.limit.title", lang), sb.toString(), false);
         }
 
-        if(configData.isExtra) {
+        if(configData.showMiscellaneous) {
             List<String> misc = DataToString.getMiscellaneous(st, lang);
 
             if(!misc.isEmpty()) {
@@ -1135,13 +1141,17 @@ public class EntityHandler {
 
                 spec.addField(LangID.getStringByID("data.stage.misc.title", lang), stringBuilder.toString(), false);
             }
+        }
 
+        if (configData.showExtraStage) {
             String exData = DataToString.getEXStage(st, lang);
 
             if(exData != null) {
                 spec.addField(LangID.getStringByID("data.stage.misc.exStage", lang), exData, false);
             }
+        }
 
+        if (configData.showMaterialDrop) {
             String materials = DataToString.getMaterialDrop(st, sta, lang);
 
             if(materials != null) {
@@ -1149,27 +1159,29 @@ public class EntityHandler {
             }
         }
 
-        String drops = DataToString.getRewards(st, lang);
+        if (configData.showDropInfo) {
+            String drops = DataToString.getRewards(st, lang);
 
-        if(drops != null) {
-            if(drops.endsWith("!!number!!")) {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
-            } else if(drops.endsWith("!!nofail!!")) {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!nofail!!", ""), false);
-            } else {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
+            if(drops != null) {
+                if(drops.endsWith("!!number!!")) {
+                    spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
+                } else if(drops.endsWith("!!noFail!!")) {
+                    spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!noFail!!", ""), false);
+                } else {
+                    spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
+                }
             }
-        }
 
-        String score = DataToString.getScoreDrops(st, lang);
+            String score = DataToString.getScoreDrops(st, lang);
 
-        if(score != null) {
-            spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
-        }
+            if(score != null) {
+                spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
+            }
 
-        if(img != null) {
-            spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
-            spec.setImage("attachment://scheme.png");
+            if(img != null) {
+                spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
+                spec.setImage("attachment://scheme.png");
+            }
         }
 
         List<LayoutComponent> components = new ArrayList<>();
@@ -1453,7 +1465,7 @@ public class EntityHandler {
 
         ArrayList<String> enemies = new ArrayList<>();
         ArrayList<String> numbers = new ArrayList<>();
-        ArrayList<String> magnifs = new ArrayList<>();
+        ArrayList<String> magnifications = new ArrayList<>();
         ArrayList<String> isBoss = new ArrayList<>();
         ArrayList<String> baseHealth = new ArrayList<>();
         ArrayList<String> startRespawn = new ArrayList<>();
@@ -1519,9 +1531,9 @@ public class EntityHandler {
                 magnification = new int[] {hp, atk};
             }
 
-            String magnif = DataToString.getMagnification(magnification, star);
+            String mag = DataToString.getMagnification(magnification, star);
 
-            magnifs.add(magnif);
+            magnifications.add(mag);
 
             String start;
 
@@ -1630,7 +1642,7 @@ public class EntityHandler {
 
             nMax = Math.max(nMax, font.textWidth(numbers.get(i)));
 
-            mMax = Math.max(mMax, font.textWidth(magnifs.get(i)));
+            mMax = Math.max(mMax, font.textWidth(magnifications.get(i)));
 
             bMax = Math.max(bMax, font.textWidth(baseHealth.get(i)));
 
@@ -1841,7 +1853,7 @@ public class EntityHandler {
 
                     px += (int) finalBMax;
 
-                    g.drawText(magnifs.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+                    g.drawText(magnifications.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
 
                     px += (int) finalMMax;
 
@@ -1870,14 +1882,14 @@ public class EntityHandler {
                     }
                 }
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> img, () -> {
             waiter.countDown();
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
 
         waiter.await();
@@ -2774,7 +2786,7 @@ public class EntityHandler {
                     try {
                         link = StaticStore.imgur.uploadFile(img);
                     } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "EntityHandler::generateAnim - Failed to upload aimation to imgur");
+                        StaticStore.logger.uploadErrorLog(e, "EntityHandler::generateAnim - Failed to upload animation to imgur");
 
                         return;
                     }
@@ -2958,7 +2970,7 @@ public class EntityHandler {
                     img = ImageDrawing.drawAnimGif(anim, msg, 1f, false, debug, limit, lang);
                 }
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to generate soul animaiton");
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to generate soul animation");
 
                 return;
             }
@@ -3199,14 +3211,14 @@ public class EntityHandler {
             connector.queue(g -> {
                 g.drawImage(result, 0f, 0f);
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
 
         waiter.await();
@@ -3265,14 +3277,14 @@ public class EntityHandler {
             connector.queue(g -> {
                 g.drawImage(img, 0f, 0f);
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
 
         waiter.await();
@@ -3324,14 +3336,14 @@ public class EntityHandler {
             connector.queue(g -> {
                 g.drawImage(img, 0f, 0f);
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
 
         waiter.await();
@@ -3383,14 +3395,14 @@ public class EntityHandler {
                 connector.queue(g -> {
                     g.drawImage(img, 0f, 0f);
 
-                    return null;
+                    return kotlin.Unit.INSTANCE;
                 });
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             }, progress -> image, () -> {
                 waiter.countDown();
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
             waiter.await();
@@ -3450,7 +3462,7 @@ public class EntityHandler {
 
     public static void showFormDPS(Object sender, Message authorMessage, Form f, TreasureHolder treasureSetting, Level lv, ConfigHolder config, boolean talent, boolean treasure, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
         int level = lv.getLv();
-        int levelp = lv.getPlusLv();
+        int plusLevel = lv.getPlusLv();
 
         if(level <= 0) {
             if(f.unit.rarity == 0)
@@ -3464,18 +3476,18 @@ public class EntityHandler {
         }
 
         if(level > f.unit.max) {
-            levelp = level - f.unit.max;
+            plusLevel = level - f.unit.max;
             level = f.unit.max;
 
-            if(levelp > f.unit.maxp)
-                levelp = f.unit.maxp;
+            if(plusLevel > f.unit.maxp)
+                plusLevel = f.unit.maxp;
 
-            if(levelp < 0)
-                levelp = 0;
+            if(plusLevel < 0)
+                plusLevel = 0;
         }
 
         lv.setLevel(level);
-        lv.setPlusLevel(levelp);
+        lv.setPlusLevel(plusLevel);
 
         int[] t;
 
@@ -3520,12 +3532,14 @@ public class EntityHandler {
                 int shortPoint = attack.getShortPoint();
                 int width = attack.getLongPoint() - attack.getShortPoint();
 
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false)));
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(Math.max(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
+                BigDecimal minShortPoint = BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width));
+
+                dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false)));
+                dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
 
                 if (treasure) {
-                    treasureNodes.add(new DPSNode(BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true)));
-                    treasureNodes.add(new DPSNode(BigDecimal.valueOf(Math.max(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
+                    treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true)));
+                    treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
                 }
             }
         }
@@ -3592,7 +3606,7 @@ public class EntityHandler {
                 dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
                 dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
             } else {
-                BigDecimal slope = surgeDamage.divide(minimumPierce.min(maximumInner).subtract(minimumRange), Equation.context);
+                BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
 
                 dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                 dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -3611,7 +3625,7 @@ public class EntityHandler {
                     treasureNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
                     treasureNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
                 } else {
-                    BigDecimal slope = surgeDamage.divide(minimumPierce.min(maximumInner).subtract(minimumRange), Equation.context);
+                    BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
 
                     treasureNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                     treasureNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -3745,7 +3759,7 @@ public class EntityHandler {
                     dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
                     dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
                 } else {
-                    BigDecimal slope = blastDamage.divide(minimumPierce.min(maximumInner).subtract(minimumRange), Equation.context);
+                    BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
 
                     dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                     dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -3763,7 +3777,7 @@ public class EntityHandler {
                         treasureNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
                         treasureNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
                     } else {
-                        BigDecimal slope = blastDamage.divide(minimumPierce.min(maximumInner).subtract(minimumRange), Equation.context);
+                        BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
 
                         treasureNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                         treasureNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -4214,7 +4228,7 @@ public class EntityHandler {
                 dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
                 dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
             } else {
-                BigDecimal slope = surgeDamage.divide(minimumPierce.min(maximumInner).subtract(minimumRange), Equation.context);
+                BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
 
                 dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                 dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -4332,7 +4346,7 @@ public class EntityHandler {
                     dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
                     dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
                 } else {
-                    BigDecimal slope = blastDamage.divide(minimumPierce.min(maximumInner).subtract(minimumRange), Equation.context);
+                    BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
 
                     dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                     dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -4657,11 +4671,11 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, CommonStatic.Lang.Locale lang) throws Exception {
         List<List<CellDrawer>> cellGroup = new ArrayList<>();
 
         for(int i = 0; i < units.length; i++) {
-            cellGroup.add(addCell(data, procData, abilData, traitData, units[i], lang, lv, isFrame));
+            cellGroup.add(addCell(data, procData, abilityData, traitData, units[i], lang, lv, isFrame));
         }
 
         String type = DataToString.getRarity(units[0].rarity, lang);
@@ -4687,8 +4701,8 @@ public class EntityHandler {
         }
     }
 
-    public static void generateEnemyStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy enemy, String name, File container, int m, boolean isFrame, int eid, CommonStatic.Lang.Locale lang) throws Exception {
-        List<CellDrawer> cellGroup = getEnemyCell(data, procData, abilData, traitData, enemy, lang, m, isFrame);
+    public static void generateEnemyStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskEnemy enemy, String name, File container, int m, boolean isFrame, int eid, CommonStatic.Lang.Locale lang) throws Exception {
+        List<CellDrawer> cellGroup = getEnemyCell(data, procData, abilityData, traitData, enemy, lang, m, isFrame);
 
         File result = ImageDrawing.drawEnemyStatImage(cellGroup, LangID.getStringByID("statAnalyzer.magnification", lang).replace("_", String.valueOf(m)), name, container, eid);
 
@@ -4823,7 +4837,7 @@ public class EntityHandler {
         }
     }
 
-    private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, CommonStatic.Lang.Locale lang, int lv, boolean isFrame) {
+    private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskUnit u, CommonStatic.Lang.Locale lang, int lv, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
         Level lvs = new Level(0);
@@ -4926,42 +4940,42 @@ public class EntityHandler {
             cells.add(new NormalCellDrawer(names, contents));
         }
 
-        List<String> abil = Interpret.getAbi(u, false, lang, null, null);
+        List<String> abilities = Interpret.getAbi(u, false, lang, null, null);
 
-        for(int i = 0; i < abilData.size(); i++) {
-            String a = abilData.get(i).dataToString(u.data);
+        for(int i = 0; i < abilityData.size(); i++) {
+            String a = abilityData.get(i).dataToString(u.data);
 
             if(!a.isBlank()) {
-                abil.add(a);
+                abilities.add(a);
             }
         }
 
-        abil.addAll(Interpret.getProc(u, !isFrame, false, lang, 1.0, 1.0, false, null, null));
+        abilities.addAll(Interpret.getProc(u, !isFrame, false, lang, 1.0, 1.0, false, null, null));
 
         for(int i = 0; i < procData.size(); i++) {
             String p = procData.get(i).beautify(u.data, isFrame);
 
             if(!p.isBlank()) {
-                abil.add(p);
+                abilities.add(p);
             }
         }
 
-        if(abil.isEmpty()) {
+        if(abilities.isEmpty()) {
             cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), new String[] {LangID.getStringByID("data.none", lang)}));
         } else {
-            List<String> finalAbil = new ArrayList<>();
+            List<String> finalAbilities = new ArrayList<>();
 
-            for(int i = 0; i < abil.size(); i++) {
-                finalAbil.add(" · " + abil.get(i));
+            for(int i = 0; i < abilities.size(); i++) {
+                finalAbilities.add(" · " + abilities.get(i));
             }
 
-            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), finalAbil.toArray(new String[0])));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), finalAbilities.toArray(new String[0])));
         }
 
         return cells;
     }
 
-    private static List<CellDrawer> getEnemyCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy e, CommonStatic.Lang.Locale lang, int m, boolean isFrame) {
+    private static List<CellDrawer> getEnemyCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskEnemy e, CommonStatic.Lang.Locale lang, int m, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
         cells.add(new NormalCellDrawer(
@@ -5060,36 +5074,36 @@ public class EntityHandler {
             cells.add(new NormalCellDrawer(names, contents));
         }
 
-        List<String> abil = Interpret.getAbi(e, false, lang, null, null);
+        List<String> abilities = Interpret.getAbi(e, false, lang, null, null);
 
-        for(int i = 0; i < abilData.size(); i++) {
-            String a = abilData.get(i).dataToString(e.data);
+        for(int i = 0; i < abilityData.size(); i++) {
+            String a = abilityData.get(i).dataToString(e.data);
 
             if(!a.isBlank()) {
-                abil.add(a);
+                abilities.add(a);
             }
         }
 
-        abil.addAll(Interpret.getProc(e, !isFrame, false, lang, 1.0, 1.0, false, null, null));
+        abilities.addAll(Interpret.getProc(e, !isFrame, false, lang, 1.0, 1.0, false, null, null));
 
         for(int i = 0; i < procData.size(); i++) {
             String p = procData.get(i).beautify(e.data, isFrame);
 
             if(!p.isBlank()) {
-                abil.add(p);
+                abilities.add(p);
             }
         }
 
-        if(abil.isEmpty()) {
+        if(abilities.isEmpty()) {
             cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), new String[] {LangID.getStringByID("data.none", lang)}));
         } else {
-            List<String> finalAbil = new ArrayList<>();
+            List<String> finalAbilities = new ArrayList<>();
 
-            for(int i = 0; i < abil.size(); i++) {
-                finalAbil.add(" · " + abil.get(i));
+            for(int i = 0; i < abilities.size(); i++) {
+                finalAbilities.add(" · " + abilities.get(i));
             }
 
-            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), finalAbil.toArray(new String[0])));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data.ability", lang), finalAbilities.toArray(new String[0])));
         }
 
         return cells;
@@ -5195,14 +5209,14 @@ public class EntityHandler {
                     f.anim.unload();
                 }
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return kotlin.Unit.INSTANCE;
         });
 
         waiter.await();
@@ -5317,7 +5331,7 @@ public class EntityHandler {
 
     private static List<String> mergeImmune(List<String> abilities, CommonStatic.Lang.Locale lang) {
         List<String> result = new ArrayList<>();
-        List<String> immunes = new ArrayList<>();
+        List<String> immunities = new ArrayList<>();
 
         for(int i = 0; i < abilities.size(); i++) {
             String actualName = abilities.get(i).replaceAll("<:.+:\\d+> ", "");
@@ -5325,14 +5339,14 @@ public class EntityHandler {
             switch (lang) {
                 case KR, JP -> {
                     if (actualName.endsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
-                        immunes.add(actualName);
+                        immunities.add(actualName);
                     } else {
                         result.add(abilities.get(i));
                     }
                 }
                 case EN -> {
                     if (actualName.startsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
-                        immunes.add(actualName);
+                        immunities.add(actualName);
                     } else {
                         result.add(abilities.get(i));
                     }
@@ -5343,17 +5357,17 @@ public class EntityHandler {
             }
         }
 
-        if(immunes.size() < 2)
+        if(immunities.size() < 2)
             return abilities;
 
         StringBuilder sb = new StringBuilder();
 
-        for(int i = 0; i < immunes.size(); i++) {
-            String segment = immunes.get(i).replace(LangID.getStringByID("data.abilities.immuneTo", lang), "");
+        for(int i = 0; i < immunities.size(); i++) {
+            String segment = immunities.get(i).replace(LangID.getStringByID("data.abilities.immuneTo", lang), "");
 
             sb.append(segment);
 
-            if(i < immunes.size() - 1)
+            if(i < immunities.size() - 1)
                 sb.append(LangID.getStringByID("data.comma", lang));
         }
 
@@ -5378,7 +5392,7 @@ public class EntityHandler {
 
         File image = StaticStore.generateTempFile(temp, "level", ".png", false);
 
-        if (image != null && !image.exists())
+        if (image == null || !image.exists())
             return null;
 
         try {
@@ -5401,14 +5415,14 @@ public class EntityHandler {
                         x += crownOn.getWidth() + 10;
                     }
 
-                    return null;
+                    return kotlin.Unit.INSTANCE;
                 });
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             }, progress -> image, () -> {
                 waiter.countDown();
 
-                return null;
+                return kotlin.Unit.INSTANCE;
             });
 
             waiter.await();

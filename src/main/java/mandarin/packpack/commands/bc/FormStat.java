@@ -33,19 +33,20 @@ public class FormStat extends ConstraintCommand {
 
         public boolean isFrame = false;
         public boolean talent = false;
-        public boolean extra = false;
         public boolean compact = false;
         public boolean isTrueForm = false;
         public boolean treasure = false;
+        public boolean showUnitDescription;
+        public boolean showEvolveImage;
+        public boolean showEvolveDescription;
     }
 
     private static final int PARAM_TALENT = 2;
     private static final int PARAM_SECOND = 4;
-    private static final int PARAM_EXTRA = 8;
-    private static final int PARAM_COMPACT = 16;
-    private static final int PARAM_TRUE_FORM = 32;
-    private static final int PARAM_TREASURE = 64;
-    private static final int PARAM_FRAME = 128;
+    private static final int PARAM_COMPACT = 8;
+    private static final int PARAM_TRUE_FORM = 16;
+    private static final int PARAM_TREASURE = 32;
+    private static final int PARAM_FRAME = 64;
 
     private final ConfigHolder config;
 
@@ -101,10 +102,12 @@ public class FormStat extends ConstraintCommand {
                 configData.isFrame = config.useFrame;
 
             configData.talent = (param & PARAM_TALENT) > 0 || configData.lv.getTalents().length > 0;
-            configData.extra = (param & PARAM_EXTRA) > 0 || config.extra;
             configData.compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
             configData.isTrueForm = (param & PARAM_TRUE_FORM) > 0 || config.trueForm;
             configData.treasure = (param & PARAM_TREASURE) > 0 || config.treasure;
+            configData.showUnitDescription = config.showUnitDescription;
+            configData.showEvolveImage = config.showEvolveImage;
+            configData.showEvolveDescription = config.showEvolveDescription;
 
             if (list.length == 1) {
                 name = "";
@@ -118,10 +121,12 @@ public class FormStat extends ConstraintCommand {
 
             configData.isFrame = options.getOption("frame", config.useFrame) || configData.lv.getTalents().length > 0;
             configData.talent = options.getOption("talent", false) || configData.lv.getTalents().length > 0;
-            configData.extra = options.getOption("extra", config.extra);
             configData.compact = options.getOption("compact", config.compact) || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
             configData.isTrueForm = options.getOption("trueForm", config.trueForm);
             configData.treasure = options.getOption("treasure", config.treasure);
+            configData.showUnitDescription = config.showUnitDescription;
+            configData.showEvolveImage = config.showEvolveImage;
+            configData.showEvolveDescription = config.showEvolveDescription;
 
             name = options.getOption("name", "");
         }
@@ -223,12 +228,6 @@ public class FormStat extends ConstraintCommand {
                         } else {
                             break label;
                         }
-                    }
-                    case "-e", "-extra" -> {
-                        if ((result & PARAM_EXTRA) == 0) {
-                            result |= PARAM_EXTRA;
-                        } else
-                            break label;
                     }
                     case "-c", "-compact" -> {
                         if ((result & PARAM_COMPACT) == 0) {

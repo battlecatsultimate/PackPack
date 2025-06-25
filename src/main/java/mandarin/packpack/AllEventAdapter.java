@@ -1365,6 +1365,10 @@ public class AllEventAdapter extends ListenerAdapter {
 
         EmojiStore.initialize(loader);
 
+        System.out.println("Initializing asset manager...");
+
+        StaticStore.assetManager.initialize(loader);
+
         System.out.println("Building slash commands...");
 
         SlashBuilder.build(loader.supportServer.getJDA());
