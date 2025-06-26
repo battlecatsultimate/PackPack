@@ -3583,13 +3583,14 @@ public class EntityHandler {
                     int width = attack.getLongPoint() - attack.getShortPoint();
 
                     BigDecimal minShortPoint = BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width));
+                    BigDecimal maxLongPoint = BigDecimal.valueOf(Math.max(shortPoint, shortPoint + width));
 
                     dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false)));
-                    dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
+                    dpsNodes.add(new DPSNode(maxLongPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
 
                     if (treasure) {
                         treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true)));
-                        treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
+                        treasureNodes.add(new DPSNode(maxLongPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
                     }
                 }
             }
