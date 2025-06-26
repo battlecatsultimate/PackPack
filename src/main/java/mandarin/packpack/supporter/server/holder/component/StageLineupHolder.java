@@ -5,7 +5,6 @@ import common.util.stage.Stage;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import org.jetbrains.annotations.NotNull;
