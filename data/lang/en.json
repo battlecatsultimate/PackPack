@@ -2910,6 +2910,8 @@
             "castle" : "Castle",
             "fixedLineup" : "Fixed Lineup",
             "music" : "Music",
+            "nextStage" : "Next Stage",
+            "previousStage" : "Previous Stage",
             "secondMusic" : "Second Music"
         },
         "fail" : {

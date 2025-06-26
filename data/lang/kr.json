@@ -2912,6 +2912,8 @@
             "castle" : "성",
             "fixedLineup" : "고정된 라인업",
             "music" : "음악",
+            "nextStage" : "다음 스테이지",
+            "previousStage" : "이전 스테이지",
             "secondMusic" : "두번째 음악"
         },
         "fail" : {

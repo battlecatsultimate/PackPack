@@ -2910,6 +2910,8 @@
             "castle" : "Замок",
             "fixedLineup" : "Фиксированная Колода",
             "music" : "Музыка",
+            "nextStage" : "Next Stage",
+            "previousStage" : "Previous Stage",
             "secondMusic" : "Второстепенная Музыка"
         },
         "fail" : {

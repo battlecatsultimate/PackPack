@@ -169,8 +169,8 @@ public class StageInfo extends TimedConstraintCommand {
                     sender = loader.getInteractionEvent();
                 }
 
-                EntityHandler.showStageEmb(stages.getFirst(), sender, loader.getNullableMessage(), additionalContent, treasure, configData, false, lang, result ->
-                    StaticStore.putHolder(loader.getUser().getId(), new StageInfoButtonHolder(finalStages.getFirst(), loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), result, configData.isCompact, lang))
+                EntityHandler.showStageEmb(stages.getFirst(), sender, loader.getNullableMessage(), additionalContent, treasure, configData, false, true, lang, result ->
+                    StaticStore.putHolder(loader.getUser().getId(), new StageInfoButtonHolder(finalStages.getFirst(), loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), result, treasure, configData, true, lang))
                 );
             } else {
                 StringBuilder sb = new StringBuilder(additionalContent)

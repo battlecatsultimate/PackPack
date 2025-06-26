@@ -41,12 +41,14 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -1027,7 +1029,7 @@ public class EntityHandler {
         return cacheLink;
     }
 
-    public static void showStageEmb(Stage st, Object sender, @Nullable Message reference, String additionalContent, TreasureHolder holder, StageInfo.StageInfoConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
+    public static void showStageEmb(Stage st, Object sender, @Nullable Message reference, String additionalContent, TreasureHolder holder, StageInfo.StageInfoConfig configData, boolean editMode, boolean switchable, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1242,6 +1244,25 @@ public class EntityHandler {
 
         components.add(ActionRow.of(buttons));
 
+        if (switchable && st.getCont().list.size() != 1 && st.id != null) {
+            components.add(ActionRow.of(
+                    Button.secondary("prev", LangID.getStringByID("stageInfo.button.previousStage", lang)).withEmoji(EmojiStore.PREVIOUS).withDisabled(st.id.id - 1 < 0),
+                    Button.secondary("next", LangID.getStringByID("stageInfo.button.nextStage", lang)).withEmoji(EmojiStore.NEXT).withDisabled(st.id.id + 1 >= st.getCont().list.size())
+            ));
+
+            List<SelectOption> stageList = new ArrayList<>();
+
+            int startIndex = Math.max(st.id.id - 5, 0);
+
+            for (int i = startIndex; i < Math.min(startIndex + 10, st.getCont().list.size()); i++) {
+                Stage stage = st.getCont().list.get(i);
+
+                stageList.add(SelectOption.of(StaticStore.safeMultiLangGet(stage, lang), String.valueOf(i)).withDescription(DataToString.getStageCode(stage)).withDefault(st.id.id == i));
+            }
+
+            components.add(ActionRow.of(StringSelectMenu.create("stage").addOptions(stageList).build()));
+        }
+
         if (editMode) {
             if (sender instanceof Message msg) {
                 msg.editMessage(additionalContent)
@@ -1270,13 +1291,18 @@ public class EntityHandler {
         }
     }
 
-    public static void showFixedLineupData(Stage st, BattlePreset preset, ButtonInteractionEvent sender, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showFixedLineupData(Stage st, BattlePreset preset, IMessageEditCallback sender, CommonStatic.Lang.Locale lang) throws Exception {
         String lineupLink = ImageDrawing.drawLineupImage(st, preset);
 
         if (lineupLink == null) {
-            sender.deferReply()
+            List<LayoutComponent> components = new ArrayList<>();
+
+            components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+
+            sender.deferEdit()
                     .setContent(LangID.getStringByID("data.stage.battlePreset.failed", lang))
-                    .setEphemeral(true)
+                    .setComponents(components)
+                    .setEmbeds()
                     .mentionRepliedUser(false)
                     .queue();
 
@@ -1433,9 +1459,13 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("data.stage.battlePreset.level", lang).formatted(Emoji.fromUnicode("👑").getFormatted(), preset.level + 1));
 
-        sender.deferReply()
+        List<LayoutComponent> components = new ArrayList<>();
+
+        components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+
+        sender.deferEdit()
                 .setEmbeds(spec.build())
-                .setFiles()
+                .setComponents(components)
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();

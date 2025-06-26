@@ -107,7 +107,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                         .mentionRepliedUser(false)
                         .queue();
             } else if(stages.size() == 1) {
-                EntityHandler.showStageEmb(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
@@ -118,7 +118,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, configData.isCompact, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, treasure, configData, false, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("findStage.several", lang)).append("```md\n");

@@ -2907,6 +2907,8 @@
             "fixedLineup" : "Fixed Lineup",
             "castle" : "城",
             "music" : "音楽",
+            "nextStage" : "Next Stage",
+            "previousStage" : "Previous Stage",
             "secondMusic" : "二つ目の音楽"
         },
         "fail" : {
