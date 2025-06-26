@@ -9,41 +9,55 @@ import common.util.stage.CastleList;
 import common.util.stage.Music;
 import common.util.stage.Stage;
 import mandarin.packpack.commands.bc.Castle;
+import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
 public class StageInfoButtonHolder extends ComponentHolder {
-    private final Stage st;
-    private final boolean compact;
+    private Stage st;
 
-    public StageInfoButtonHolder(Stage st, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, boolean compact, CommonStatic.Lang.Locale lang) {
+    private final TreasureHolder treasure;
+    private final StageInfo.StageInfoConfig configData;
+
+    private final boolean switchable;
+
+    public StageInfoButtonHolder(Stage st, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, TreasureHolder treasure, StageInfo.StageInfoConfig configData, boolean switchable, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.st = st;
-        this.compact = compact;
+
+        this.treasure = treasure;
+        this.configData = configData;
+
+        this.switchable = switchable;
 
         registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
-    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent ev) {
-        disableButtons();
-
-        if(!(ev instanceof ButtonInteractionEvent event)) {
-            return;
-        }
-
+    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "music" -> {
+                disableButtons();
+
+                if (!(event instanceof ButtonInteractionEvent ev))
+                    return;
+
                 if (st.mus0 == null)
                     return;
 
@@ -54,12 +68,19 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 }
 
                 try {
-                    mandarin.packpack.commands.bc.Music.performButton(event, ms);
+                    mandarin.packpack.commands.bc.Music.performButton(ev, ms);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for music");
                 }
+
+                end(true);
             }
             case "music2" -> {
+                disableButtons();
+
+                if (!(event instanceof ButtonInteractionEvent ev))
+                    return;
+
                 if (st.mus1 == null)
                     return;
 
@@ -70,24 +91,38 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 }
 
                 try {
-                    mandarin.packpack.commands.bc.Music.performButton(event, ms);
+                    mandarin.packpack.commands.bc.Music.performButton(ev, ms);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for music");
                 }
+
+                end(true);
             }
             case "bg" -> {
+                disableButtons();
+
+                if (!(event instanceof ButtonInteractionEvent ev))
+                    return;
+
                 Background bg = Identifier.get(st.bg);
 
                 if (bg == null)
                     bg = UserProfile.getBCData().bgs.get(0);
 
                 try {
-                    mandarin.packpack.commands.bc.Background.performButton(event, bg);
+                    mandarin.packpack.commands.bc.Background.performButton(ev, bg);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for bg");
                 }
+
+                end(true);
             }
             case "castle" -> {
+                disableButtons();
+
+                if (!(event instanceof ButtonInteractionEvent ev))
+                    return;
+
                 CastleImg cs = Identifier.get(st.castle);
 
                 if (cs == null) {
@@ -97,21 +132,60 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 }
 
                 try {
-                    Castle.performButton(event, cs);
+                    Castle.performButton(ev, cs);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for castle");
                 }
+
+                end(true);
             }
-            case "lineup" -> {
+            case "lineup" -> connectTo(event, new StageLineupHolder(st, hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, lang));
+            case "stage" -> {
+                if (!(event instanceof StringSelectInteractionEvent ev))
+                    return;
+
+                int index = StaticStore.safeParseInt(ev.getValues().getFirst());
+
+                if (index < 0 || index >= st.getCont().list.size())
+                    return;
+
+                st = st.getCont().list.get(index);
+
                 try {
-                    EntityHandler.showFixedLineupData(st.preset, event, lang);
+                    EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
                 } catch (Exception e) {
-                    StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to show fixed lineup data embed");
+                    StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to switch stage to other stage");
+                }
+            }
+            case "next" -> {
+                int index = st.id.id + 1;
+
+                if (index < 0 || index >= st.getCont().list.size())
+                    return;
+
+                st = st.getCont().list.get(index);
+
+                try {
+                    EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to switch stage to other stage");
+                }
+            }
+            case "prev" -> {
+                int index = st.id.id - 1;
+
+                if (index < 0 || index >= st.getCont().list.size())
+                    return;
+
+                st = st.getCont().list.get(index);
+
+                try {
+                    EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to switch stage to other stage");
                 }
             }
         }
-
-        end(true);
     }
 
     @Override
@@ -125,7 +199,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
     }
 
     private void disableButtons() {
-        if(compact) {
+        if(configData.isCompact) {
             message.editMessageComponents()
                     .mentionRepliedUser(false)
                     .queue();
@@ -140,5 +214,10 @@ public class StageInfoButtonHolder extends ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue();
         }
+    }
+
+    @Override
+    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
+        EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
     }
 }

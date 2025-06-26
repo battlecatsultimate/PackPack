@@ -206,19 +206,19 @@ public abstract class Holder {
                 .queue();
     }
 
-    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) {
+    public void onConnected(@Nonnull IMessageEditCallback event, @Nonnull Holder parent) throws Exception {
         throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
     }
 
-    public void onConnected(Holder parent) {
+    public void onConnected(Holder parent) throws Exception {
         throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
     }
 
-    public void onBack(@Nonnull Holder child) {
+    public void onBack(@Nonnull Holder child) throws Exception {
         throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
     }
 
-    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) {
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) throws Exception {
         throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
     }
 
@@ -272,7 +272,12 @@ public abstract class Holder {
         StaticStore.putHolder(userID, holder);
 
         holder.isRoot = false;
-        holder.onConnected(this);
+
+        try {
+            holder.onConnected(this);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/Holder::connectTo - Failed to perform holder connection");
+        }
     }
 
     public void connectTo(@Nonnull IMessageEditCallback event, Holder holder) {
@@ -290,7 +295,12 @@ public abstract class Holder {
         StaticStore.putHolder(userID, holder);
 
         holder.isRoot = false;
-        holder.onConnected(event, this);
+
+        try {
+            holder.onConnected(event, this);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/Holder::connectTo - Failed to perform holder connection");
+        }
     }
 
     public void goBack() {
@@ -318,7 +328,11 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            Objects.requireNonNull(parent).onBack(this);
+            try {
+                Objects.requireNonNull(parent).onBack(this);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/Holder::goBack - Failed to perform going back to parent holder");
+            }
         }
     }
 
@@ -347,7 +361,11 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            Objects.requireNonNull(parent).onBack(event, this);
+            try {
+                Objects.requireNonNull(parent).onBack(event, this);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/Holder::goBack - Failed to perform going back to parent holder");
+            }
         }
     }
 
@@ -396,7 +414,11 @@ public abstract class Holder {
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
 
-                    parent.onBack(this);
+                    try {
+                        parent.onBack(this);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/Holder::goBack - Failed to perform going back to parent holder");
+                    }
 
                     return;
                 } else {
@@ -467,7 +489,11 @@ public abstract class Holder {
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
 
-                    parent.onBack(event, this);
+                    try {
+                        parent.onBack(event, this);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/Holder::goBack - Failed to perform going back to parent holder");
+                    }
 
                     return;
                 } else {

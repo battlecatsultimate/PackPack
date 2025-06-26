@@ -1149,6 +1149,7 @@
                 "uberRare" : "超激レア"
             },
             "talent" : {
+                "cantTalent" : "This unit can't have talents",
                 "embed" : "この埋め込みメッセージは本能を適用します",
                 "info" : "本能の情報があります",
                 "list" : "本能 : ",
@@ -2906,6 +2907,8 @@
             "fixedLineup" : "Fixed Lineup",
             "castle" : "城",
             "music" : "音楽",
+            "nextStage" : "Next Stage",
+            "previousStage" : "Previous Stage",
             "secondMusic" : "二つ目の音楽"
         },
         "fail" : {

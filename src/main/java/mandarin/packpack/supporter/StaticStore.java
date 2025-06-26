@@ -180,6 +180,27 @@ public class StaticStore {
 
     public static AssetManager assetManager = new AssetManager();
 
+    /** UNIT-ICON-001-002 **/
+    public static final String UNIT_ICON = "UNIT-ICON-%s-%s";
+    /** ENEMY-ICON-000 **/
+    public static final String ENEMY_ICON = "ENEMY-ICON-%s";
+    /** UNIT-EVOLVE-TRUE-050-EN **/
+    public static final String UNIT_EVOLVE_TRUE = "UNIT-EVOLVE-TRUE-%s-%s";
+    /** UNIT-EVOLVE-ULTRA-050-EN **/
+    public static final String UNIT_EVOLVE_ULTRA = "UNIT-EVOLVE-ULTRA-%s-%s";
+    /** UNIT-DPS-GRAPH-000-002-JP-ACD85-TREASURE **/
+    public static final String DPS_GRAPH_UNIT = "UNIT-DPS-GRAPH-%s-%s-%s-%s-%s";
+    /** ENEMY-DPS-GRAPH-000-KR-DE8B5 **/
+    public static final String DPS_GRAPH_ENEMY = "ENEMY-DPS-GRAPH-%s-%s-%s";
+    /** STAGE-SCHEME-NA-000-000-LV3-ZH-AB32C **/
+    public static final String STAGE_SCHEME = "STAGE-SCHEME-%s-%s-%s-LV%d-%s-%s";
+    /** STAGE-LINEUP-SR-000-000-E8FC6 **/
+    public static final String STAGE_LINEUP = "STAGE-LINEUP-%s-%s-%s-%s";
+    /** MEDAL-ICON-018-EN **/
+    public static final String MEDAL_ICON = "MEDAL-ICON-%s-%s";
+    /** UNIT-COMBO-051-ABD4C **/
+    public static final String COMBO_IMAGE = "UNIT-COMBO-%s-%s";
+
     public final static String SUPPORT_SERVER = "964054872649515048";
 
     public static final String[] EMOJI_ARCHIVES = {

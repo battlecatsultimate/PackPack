@@ -112,8 +112,8 @@ public class StageInfoMessageHolder extends SearchHolder {
         }
 
         try {
-            EntityHandler.showStageEmb(stage.get(id), event, hasAuthorMessage() ? getAuthorMessage() : null, additionalContent, treasure, configData, true, lang, msg ->
-                StaticStore.putHolder(userID, new StageInfoButtonHolder(stage.get(id), hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, msg, configData.isCompact, lang))
+            EntityHandler.showStageEmb(stage.get(id), event, hasAuthorMessage() ? getAuthorMessage() : null, additionalContent, treasure, configData, true, true, lang, msg ->
+                StaticStore.putHolder(userID, new StageInfoButtonHolder(stage.get(id), hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, msg, treasure, configData, true, lang))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/StageInfoMessageHolder::onSelected - Failed to upload stage embed");
