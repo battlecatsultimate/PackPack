@@ -59,6 +59,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -1483,7 +1484,7 @@ public class EntityHandler {
                 DataToString.getMapCode(st.getCont().getCont()),
                 Data.trio(st.getCont().id.id),
                 Data.trio(st.id.id),
-                star + 1,
+                star / 100,
                 lang.name(),
                 hash
         );
@@ -4685,6 +4686,26 @@ public class EntityHandler {
 
             if (childCls.isPrimitive() || obj instanceof String || obj instanceof Number || obj instanceof Boolean) {
                 hash += obj.hashCode();
+            } else if (childCls.isArray()) {
+                int length = Array.getLength(obj);
+
+                for (int j = 0; j < length; j++) {
+                    hash += getHashOfVariables(Array.get(obj, j));
+                }
+            } else if (obj instanceof List) {
+                for (int j = 0; j < ((List<?>) obj).size(); j++) {
+                    hash += getHashOfVariables(((List<?>) obj).get(j));
+                }
+            } else if (obj instanceof Map) {
+                for (Object key : ((Map<?, ?>) obj).keySet()) {
+                    hash += getHashOfVariables(key);
+                    Object val = ((Map<?, ?>) obj).get(key);
+
+                    if (val == null)
+                        continue;
+
+                    hash += getHashOfVariables(val);
+                }
             } else {
                 hash += getHashOfVariables(obj);
             }
