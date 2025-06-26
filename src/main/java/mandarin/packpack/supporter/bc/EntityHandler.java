@@ -57,6 +57,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -135,14 +137,15 @@ public class EntityHandler {
         else
             l = level + " + " + plusLevel;
 
-        File img = generateIcon(f);
+        String iconLink = generateIcon(f);
 
-        File cf;
+        String evolveImageLink;
 
-        if(configData.showEvolveImage)
-            cf = generateCatfruit(f, lang);
-        else
-            cf = null;
+        if (configData.showEvolveImage) {
+            evolveImageLink = generateCatfruit(f, lang);
+        } else {
+            evolveImageLink = null;
+        }
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -191,7 +194,7 @@ public class EntityHandler {
         }
 
         spec.setColor(c);
-        spec.setThumbnail("attachment://icon.png");
+        spec.setThumbnail(iconLink);
 
         if(configData.compact) {
             spec.setTitle(DataToString.getCompactTitle(f, lang));
@@ -321,20 +324,12 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data.unit.evolve", lang), catfruit, false);
         }
 
-        if (configData.showEvolveImage) {
-            spec.setImage("attachment://cf.png");
+        if (configData.showEvolveImage && evolveImageLink != null) {
+            spec.setImage(evolveImageLink);
         }
 
         if(t != null && talentExists(t))
             spec.setFooter(DataToString.getTalent(f.du, configData.lv, lang));
-
-        List<FileUpload> files = new ArrayList<>();
-
-        if(img != null)
-            files.add(FileUpload.fromData(img, "icon.png"));
-
-        if(cf != null)
-            files.add(FileUpload.fromData(cf, "cf.png"));
 
         ArrayList<ActionComponent> forms = new ArrayList<>();
         ArrayList<ActionComponent> misc = new ArrayList<>();
@@ -386,14 +381,6 @@ public class EntityHandler {
         }
 
         Consumer<Message> finisher = msg -> {
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-            }
-
-            if(cf != null && cf.exists() && !cf.delete()) {
-                StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
-            }
-
             f.anim.unload();
 
             onSuccess.accept(msg);
@@ -406,7 +393,6 @@ public class EntityHandler {
                         .setComponents(components)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
-                        .setFiles(files)
                         .queue(finisher);
             } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
@@ -415,17 +401,12 @@ public class EntityHandler {
                         .setComponents(components)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
-                        .setFiles(files)
                         .queue(hook -> hook.retrieveOriginal().queue(finisher));
             }
         } else {
             if (sender instanceof MessageChannel ch) {
                 Command.replyToMessageSafely(ch, "", reference, a -> {
                     MessageCreateAction action = a.setEmbeds(spec.build());
-
-                    if (!files.isEmpty()) {
-                        action.setFiles(files);
-                    }
 
                     if (!components.isEmpty()) {
                         action.addComponents(components);
@@ -437,10 +418,6 @@ public class EntityHandler {
                 Command.replyToMessageSafely(event, "", a -> {
                     ReplyCallbackAction action = a.setEmbeds(spec.build());
 
-                    if (!files.isEmpty()) {
-                        action.setFiles(files);
-                    }
-
                     if (!components.isEmpty()) {
                         action.addComponents(components);
                     }
@@ -451,28 +428,28 @@ public class EntityHandler {
         }
     }
 
-    public static void showTalentEmbed(Object sender, Message reference, Form unit, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
-        if(unit.du == null || unit.du.getPCoin() == null)
+    public static void showTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
+        if(form.du == null || form.du.getPCoin() == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
-        Level levels = new Level(unit.du.getPCoin().max.length);
+        Level levels = new Level(form.du.getPCoin().max.length);
 
-        for(int i = 0; i < unit.du.getPCoin().max.length; i++) {
+        for(int i = 0; i < form.du.getPCoin().max.length; i++) {
             levels.getTalents()[i] = 1;
         }
 
-        MaskUnit improved = unit.du.getPCoin().improve(levels.getTalents());
+        MaskUnit improved = form.du.getPCoin().improve(levels.getTalents());
 
         EmbedBuilder spec = new EmbedBuilder();
 
-        PCoin talent = unit.du.getPCoin();
+        PCoin talent = form.du.getPCoin();
 
-        File img = generateIcon(unit);
+        String iconLink = generateIcon(form);
 
-        String unitName = MultiLangCont.get(unit, lang);
+        String unitName = MultiLangCont.get(form, lang);
 
         if(unitName == null)
-            unitName = Data.trio(unit.unit.id.id);
+            unitName = Data.trio(form.unit.id.id);
 
         spec.setTitle(LangID.getStringByID("data.talent.embed.title", lang).replace("_", unitName));
 
@@ -485,8 +462,8 @@ public class EntityHandler {
         }
 
         for(int i = 0; i < talent.info.size(); i++) {
-            String title = DataToString.getTalentTitle(unit.du, i, lang);
-            String desc = DataToString.getTalentExplanation(unit.du, improved, i, isFrame, lang);
+            String title = DataToString.getTalentTitle(form.du, i, lang);
+            String desc = DataToString.getTalentExplanation(form.du, improved, i, isFrame, lang);
 
             if(title.isBlank() || desc.isBlank())
                 continue;
@@ -496,46 +473,33 @@ public class EntityHandler {
 
         spec.setColor(StaticStore.rainbow[2]);
 
-        if(img != null)
-            spec.setThumbnail("attachment://icon.png");
+        if(iconLink != null)
+            spec.setThumbnail(iconLink);
 
-        spec.setFooter(DataToString.accumulateNpCost(unit.du.getPCoin(), lang));
-
-        List<FileUpload> files = new ArrayList<>();
-
-        if(img != null)
-            files.add(FileUpload.fromData(img, "icon.png"));
-
-        Consumer<Message> finisher = msg -> {
-            if (img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("W/EntityHandler::showTalentEmbed - Failed to deleted file : %s".formatted(img.getAbsolutePath()));
-            }
-        };
+        spec.setFooter(DataToString.accumulateNpCost(form.du.getPCoin(), lang));
 
         if (editMode) {
             if (sender instanceof Message msg) {
                 msg.editMessage("")
                         .setEmbeds(spec.build())
                         .setComponents()
-                        .setFiles(files)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
-                        .queue(finisher);
+                        .queue();
             } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
                         .setContent("")
                         .setEmbeds(spec.build())
                         .setComponents()
-                        .setFiles(files)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
-                        .queue(hook -> hook.retrieveOriginal().queue(finisher));
+                        .queue();
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
             }
         }
 
@@ -576,7 +540,7 @@ public class EntityHandler {
     }
 
     public static void showEnemyEmb(Enemy e, Object sender, @Nullable Message reference, TreasureHolder holder, EnemyStat.EnemyStatConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
-        File img = generateIcon(e);
+        String iconLink = generateIcon(e);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -609,7 +573,7 @@ public class EntityHandler {
         }
 
         spec.setColor(c);
-        spec.setThumbnail("attachment://icon.png");
+        spec.setThumbnail(iconLink);
 
         if(holder.differentFromGlobal()) {
             spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
@@ -700,10 +664,6 @@ public class EntityHandler {
         spec.setFooter(LangID.getStringByID("enemyStat.source", lang));
 
         Consumer<Message> finisher = msg -> {
-            if (img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("Failed to delete file : " + img.getAbsolutePath());
-            }
-
             e.anim.unload();
 
             onSuccess.accept(msg);
@@ -713,18 +673,12 @@ public class EntityHandler {
 
         components.add(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
 
-        List<FileUpload> files = new ArrayList<>();
-
-        if (img != null) {
-            files.add(FileUpload.fromData(img, "icon.png"));
-        }
-
         if (editMode) {
             if (sender instanceof Message msg) {
                 msg.editMessage("")
                         .setEmbeds(spec.build())
                         .setComponents(components)
-                        .setFiles(files)
+                        .setFiles()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(finisher);
@@ -733,21 +687,28 @@ public class EntityHandler {
                         .setContent("")
                         .setEmbeds(spec.build())
                         .setComponents(components)
-                        .setFiles(files)
+                        .setFiles()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(hook -> hook.retrieveOriginal().queue(finisher));
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
+                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setComponents(components), finisher);
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
+                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setComponents(components), finisher);
             }
         }
     }
 
-    private static File generateIcon(Enemy e) throws Exception {
+    private static String generateIcon(Enemy e) throws Exception {
+        String cacheID = StaticStore.ENEMY_ICON.formatted(Data.trio(e.id.id));
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
+
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -789,10 +750,33 @@ public class EntityHandler {
 
         waiter.await();
 
-        return img;
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
+
+        StaticStore.deleteFile(img, true);
+
+        return cacheLink;
     }
 
-    private static File generateIcon(Form f) throws Exception {
+    private static String generateIcon(Form f) throws Exception {
+        if(f.unit == null)
+            return null;
+
+        String code = switch (f.fid) {
+            case 0 -> "F";
+            case 1 -> "C";
+            case 2 -> "S";
+            case 3 -> "U";
+            default -> throw new IllegalStateException("E/EntityHandler::generateCatfruit - Invalid form id %d".formatted(f.fid));
+        };
+
+        String cacheID = StaticStore.UNIT_ICON.formatted(Data.trio(f.unit.id.id), code);
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null) {
+            return cacheLink;
+        }
+
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -818,31 +802,45 @@ public class EntityHandler {
             image = f.anim.getEdi().getImg();
         else
             return null;
-        
+
         CountDownLatch waiter = new CountDownLatch(1);
-        
+
         StaticStore.renderManager.createRenderer(image.getWidth(), image.getHeight(), temp, connector -> {
             connector.queue(g -> {
                 g.drawImage(image, 0f, 0f);
-                
+
                 return kotlin.Unit.INSTANCE;
             });
-            
+
             return kotlin.Unit.INSTANCE;
         }, progress -> img, () -> {
             waiter.countDown();
-            
+
             return kotlin.Unit.INSTANCE;
         });
-        
+
         waiter.await();
 
-        return img;
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
+
+        StaticStore.deleteFile(img, true);
+
+        return cacheLink;
     }
 
-    private static File generateCatfruit(Form f, CommonStatic.Lang.Locale lang) throws Exception {
-        if(f.unit == null)
-            return null;
+    private static String generateCatfruit(Form f, CommonStatic.Lang.Locale lang) throws Exception {
+        String cacheID;
+
+        if (f.unit.info.hasZeroForm()) {
+            cacheID = StaticStore.UNIT_EVOLVE_ULTRA.formatted(Data.trio(f.unit.id.id), lang.name());
+        } else {
+            cacheID = StaticStore.UNIT_EVOLVE_TRUE.formatted(Data.trio(f.unit.id.id), lang.name());
+        }
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
 
         if(f.unit.info.evo == null)
             return null;
@@ -853,7 +851,8 @@ public class EntityHandler {
             boolean res = tmp.mkdirs();
 
             if(!res) {
-                System.out.println("Can't create folder : "+tmp.getAbsolutePath());
+                StaticStore.logger.uploadLog("W/EntityHandler::generateCatfruit - Failed to create temp folder");
+
                 return null;
             }
         }
@@ -987,7 +986,11 @@ public class EntityHandler {
 
         waiter.await();
 
-        return img;
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
+
+        StaticStore.deleteFile(img, true);
+
+        return cacheLink;
     }
 
     public static void showStageEmb(Stage st, Object sender, @Nullable Message reference, String additionalContent, TreasureHolder holder, StageInfo.StageInfoConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
@@ -1017,7 +1020,7 @@ public class EntityHandler {
             stmMagnification = stm.stars[sta];
         }
 
-        File img = generateScheme(st, configData.isFrame, lang, stmMagnification, holder);
+        String schemeLink = generateScheme(st, configData.isFrame, lang, stmMagnification, holder);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -1178,9 +1181,9 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
             }
 
-            if(img != null) {
+            if(schemeLink != null) {
                 spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
-                spec.setImage("attachment://scheme.png");
+                spec.setImage(schemeLink);
             }
         }
 
@@ -1205,52 +1208,38 @@ public class EntityHandler {
 
         components.add(ActionRow.of(buttons));
 
-        List<FileUpload> files = new ArrayList<>();
-
-        if (img != null) {
-            files.add(FileUpload.fromData(img, "scheme.png"));
-        }
-
-        Consumer<Message> finisher = msg -> {
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
-            }
-
-            onSuccess.accept(msg);
-        };
-
         if (editMode) {
             if (sender instanceof Message msg) {
                 msg.editMessage(additionalContent)
                         .setEmbeds(spec.build())
                         .setComponents(components)
-                        .setFiles(files)
+                        .setFiles()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
-                        .queue(finisher);
+                        .queue(onSuccess);
             } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
                         .setContent(additionalContent)
                         .setEmbeds(spec.build())
                         .setComponents(components)
-                        .setFiles(files)
+                        .setFiles()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
-                        .queue(hook -> hook.retrieveOriginal().queue(finisher));
+                        .queue(hook -> hook.retrieveOriginal().queue(onSuccess));
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, additionalContent, reference, a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
+                Command.replyToMessageSafely(ch, additionalContent, reference, a -> a.setEmbeds(spec.build()).setComponents(components), onSuccess);
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, additionalContent, a -> a.setEmbeds(spec.build()).setFiles(files).setComponents(components), finisher);
+                Command.replyToMessageSafely(event, additionalContent, a -> a.setEmbeds(spec.build()).setComponents(components), onSuccess);
             }
         }
     }
 
-    public static void showFixedLineupData(BattlePreset preset, ButtonInteractionEvent sender, CommonStatic.Lang.Locale lang) throws Exception {
-        File f = ImageDrawing.drawLineupImage(preset);
+    public static void showFixedLineupData(Stage st, BattlePreset preset, ButtonInteractionEvent sender, CommonStatic.Lang.Locale lang) throws Exception {
+        String lineupLink = ImageDrawing.drawLineupImage(st, preset);
 
-        if (f == null) {
+        if (lineupLink == null) {
             sender.deferReply()
                     .setContent(LangID.getStringByID("data.stage.battlePreset.failed", lang))
                     .setEphemeral(true)
@@ -1406,29 +1395,40 @@ public class EntityHandler {
 
         spec.addField(LangID.getStringByID("data.stage.battlePreset.lineup.title", lang), lineupBuilder.toString(), false);
 
-        spec.setImage("attachment://lineup.png");
+        spec.setImage(lineupLink);
 
         spec.setFooter(LangID.getStringByID("data.stage.battlePreset.level", lang).formatted(Emoji.fromUnicode("👑").getFormatted(), preset.level + 1));
 
         sender.deferReply()
                 .setEmbeds(spec.build())
-                .setFiles(FileUpload.fromData(f, "lineup.png"))
+                .setFiles()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
-                .queue(hook -> hook.retrieveOriginal().queue(m -> {
-                    if (f.exists() && !f.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandler::showFixedLineupData - Failed to delete file : %s".formatted(f.getAbsolutePath()));
-                    }
-                }, e -> {
-                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::showFixedLineupData - Failed to show fixed lineup data embed");
-
-                    if (f.exists() && !f.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandler::showFixedLineupData - Failed to delete file : %s".formatted(f.getAbsolutePath()));
-                    }
-                }));
+                .queue();
     }
 
-    private static File generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int star, TreasureHolder holder) throws Exception {
+    private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int star, TreasureHolder holder) throws Exception {
+        String hash = Long.toHexString(getHashOfVariables(st.data));
+
+        if (hash.length() < 5)
+            hash = "0".repeat(5 - hash.length()) + hash.toUpperCase(Locale.ENGLISH);
+        else
+            hash = hash.substring(0, 5).toUpperCase(Locale.ENGLISH);
+
+        String cacheID = StaticStore.STAGE_SCHEME.formatted(
+                DataToString.getMapCode(st.getCont().getCont()),
+                Data.trio(st.getCont().id.id),
+                Data.trio(st.id.id),
+                star + 1,
+                lang.name(),
+                hash
+        );
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
+
         File temp = new File("./temp/");
 
         if(!temp.exists()) {
@@ -1894,7 +1894,11 @@ public class EntityHandler {
 
         waiter.await();
 
-        return img;
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
+
+        StaticStore.deleteFile(img, true);
+
+        return cacheLink;
     }
 
     public static void generateFormImage(Form f, MessageChannel ch, Message reference, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang) throws Exception {
@@ -3359,19 +3363,6 @@ public class EntityHandler {
     }
 
     public static void showMedalEmbed(int id, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws  Exception {
-        File temp = new File("./temp");
-
-        if(!temp.exists() && !temp.mkdirs()) {
-            StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
-            return;
-        }
-
-        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-        if(image == null) {
-            return;
-        }
-
         String medalName = "./org/page/medal/medal_"+Data.trio(id);
 
         if(id <= 13 && lang != CommonStatic.Lang.Locale.JP) {
@@ -3387,25 +3378,47 @@ public class EntityHandler {
         if(vf == null)
             Command.replyToMessageSafely(ch, LangID.getStringByID("medal.failed.noImage", lang), reference, a -> a);
         else {
-            FakeImage img = vf.getData().getImg();
+            String cacheID = StaticStore.MEDAL_ICON.formatted(Data.trio(id), lang.name());
+            String cacheLink = StaticStore.assetManager.getAsset(cacheID);
 
-            CountDownLatch waiter = new CountDownLatch(1);
+            if (cacheLink == null) {
+                File temp = new File("./temp");
 
-            StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
-                connector.queue(g -> {
-                    g.drawImage(img, 0f, 0f);
+                if(!temp.exists() && !temp.mkdirs()) {
+                    StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
+                    return;
+                }
+
+                File image = StaticStore.generateTempFile(temp, "result", ".png", false);
+
+                if(image == null) {
+                    return;
+                }
+
+                FakeImage img = vf.getData().getImg();
+
+                CountDownLatch waiter = new CountDownLatch(1);
+
+                StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+                    connector.queue(g -> {
+                        g.drawImage(img, 0f, 0f);
+
+                        return kotlin.Unit.INSTANCE;
+                    });
+
+                    return kotlin.Unit.INSTANCE;
+                }, progress -> image, () -> {
+                    waiter.countDown();
 
                     return kotlin.Unit.INSTANCE;
                 });
 
-                return kotlin.Unit.INSTANCE;
-            }, progress -> image, () -> {
-                waiter.countDown();
+                waiter.await();
 
-                return kotlin.Unit.INSTANCE;
-            });
+                cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
 
-            waiter.await();
+                StaticStore.deleteFile(image, true);
+            }
 
             EmbedBuilder e = new EmbedBuilder();
 
@@ -3421,14 +3434,14 @@ public class EntityHandler {
             }
 
             e.addField(name, desc, false);
-            e.setImage("attachment://medal.png");
+            e.setImage(cacheLink);
 
-            Command.sendMessageWithFile(ch, "", e.build(), image, "medal.png", reference);
+            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(e.build()));
         }
     }
 
     public static void showComboEmbed(MessageChannel ch, Message reference, Combo c, CommonStatic.Lang.Locale lang) throws Exception {
-        File icon = generateComboImage(c);
+        String comboLink = generateComboImage(c);
 
         EmbedBuilder e = new EmbedBuilder();
 
@@ -3452,12 +3465,11 @@ public class EntityHandler {
 
         e.addField(DataToString.getComboType(c, lang), DataToString.getComboDescription(c, lang), false);
 
-        if (icon != null) {
-            e.setImage("attachment://combo.png");
-        }
+        if (comboLink != null) {
+            e.setImage(comboLink);
 
-        if (icon != null)
-            Command.sendMessageWithFile(ch, "", e.build(), icon, "combo.png", reference);
+            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(e.build()));
+        }
     }
 
     public static void showFormDPS(Object sender, Message authorMessage, Form f, TreasureHolder treasureSetting, Level lv, ConfigHolder config, boolean talent, boolean treasure, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
@@ -3502,9 +3514,6 @@ public class EntityHandler {
             lv.setTalents(t);
         }
 
-        if (f.du == null)
-            return;
-
         MaskUnit du;
 
         if (talent && f.du.getPCoin() != null) {
@@ -3513,253 +3522,107 @@ public class EntityHandler {
             du = f.du;
         }
 
-        List<DPSNode> dpsNodes = new ArrayList<>();
-        List<DPSNode> treasureNodes = new ArrayList<>();
+        String procHash = getProcHash(du.getProc());
 
-        // Damage Calculation
-        for (int i = 0; i < du.getAtkCount(); i++) {
-            if (!du.isLD() && !du.isOmni()) {
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(-320), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false)));
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(du.getRange()), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
+        String cacheID = StaticStore.DPS_GRAPH_UNIT.formatted(Data.trio(f.unit.id.id), Data.trio(f.fid), lang.name(), procHash, treasure ? "TREASURE" : "NORMAL");
 
-                if (treasure) {
-                    treasureNodes.add(new DPSNode(BigDecimal.valueOf(-320), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true)));
-                    treasureNodes.add(new DPSNode(BigDecimal.valueOf(du.getRange()), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
-                }
-            } else {
-                MaskAtk attack = du.getAtkModel(i);
+        String graphLink = StaticStore.assetManager.getAsset(cacheID);
 
-                int shortPoint = attack.getShortPoint();
-                int width = attack.getLongPoint() - attack.getShortPoint();
+        if (graphLink == null || treasureSetting.differentFromGlobal()) {
+            List<DPSNode> dpsNodes = new ArrayList<>();
+            List<DPSNode> treasureNodes = new ArrayList<>();
 
-                BigDecimal minShortPoint = BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width));
+            // Damage Calculation
+            for (int i = 0; i < du.getAtkCount(); i++) {
+                if (!du.isLD() && !du.isOmni()) {
+                    dpsNodes.add(new DPSNode(BigDecimal.valueOf(-320), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false)));
+                    dpsNodes.add(new DPSNode(BigDecimal.valueOf(du.getRange()), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
 
-                dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false)));
-                dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
-
-                if (treasure) {
-                    treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true)));
-                    treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
-                }
-            }
-        }
-
-        MaskAtk representativeAttack = du.getRepAtk();
-
-        Data.Proc.VOLC surgeAbility = representativeAttack.getProc().VOLC;
-        Data.Proc.MINIVOLC miniSurgeAbility = representativeAttack.getProc().MINIVOLC;
-
-        Data.Proc.WAVE waveAbility = representativeAttack.getProc().WAVE;
-        Data.Proc.MINIWAVE miniWaveAbility = representativeAttack.getProc().MINIWAVE;
-
-        Data.Proc.BLAST blastAbility = representativeAttack.getProc().BLAST;
-
-        // Handling surge
-        if (surgeAbility.exists() || miniSurgeAbility.exists()) {
-            BigDecimal shortSurgeDistance;
-            BigDecimal longSurgeDistance;
-            BigDecimal surgeLevel;
-            BigDecimal surgeChance;
-            BigDecimal surgeMultiplier;
-
-            if (surgeAbility.exists()) {
-                shortSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_0);
-                longSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_1);
-                surgeLevel = BigDecimal.valueOf(surgeAbility.time).divide(BigDecimal.valueOf(Data.VOLC_ITV), Equation.context);
-                surgeChance = BigDecimal.valueOf(surgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                surgeMultiplier = BigDecimal.ONE;
-            } else {
-                shortSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_0);
-                longSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_1);
-                surgeLevel = BigDecimal.valueOf(miniSurgeAbility.time).divide(new BigDecimal("20"), Equation.context);
-                surgeChance = BigDecimal.valueOf(miniSurgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                surgeMultiplier = BigDecimal.valueOf(miniSurgeAbility.mult).divide(new BigDecimal("100"), Equation.context);
-            }
-
-            BigDecimal minimumDistance = shortSurgeDistance.min(longSurgeDistance);
-            BigDecimal maximumDistance = shortSurgeDistance.max(longSurgeDistance);
-
-            BigDecimal minimumRange = minimumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
-            BigDecimal maximumRange = maximumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
-
-            BigDecimal minimumPierce = minimumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
-            BigDecimal maximumInner = maximumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
-
-            BigDecimal hitChance;
-
-            if (minimumPierce.subtract(maximumInner).compareTo(BigDecimal.ZERO) > 0) {
-                hitChance = BigDecimal.ONE;
-            } else {
-                hitChance = BigDecimal.valueOf(Data.W_VOLC_INNER + Data.W_VOLC_PIERCE)
-                        .divide(maximumDistance.subtract(minimumDistance), Equation.context);
-            }
-
-            BigDecimal surgeDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
-                    .multiply(hitChance)
-                    .multiply(surgeChance)
-                    .multiply(surgeLevel)
-                    .multiply(surgeMultiplier);
-
-            BigDecimal valueDifference = minimumPierce.min(maximumInner).subtract(minimumRange);
-
-            if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
-                dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
-                dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
-            } else {
-                BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
-
-                dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
-                dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
-                dpsNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
-                dpsNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
-            }
-
-            if (treasure) {
-                surgeDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
-                        .multiply(hitChance)
-                        .multiply(surgeChance)
-                        .multiply(surgeLevel)
-                        .multiply(surgeMultiplier);
-
-                if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
-                    treasureNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
-                    treasureNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
+                    if (treasure) {
+                        treasureNodes.add(new DPSNode(BigDecimal.valueOf(-320), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true)));
+                        treasureNodes.add(new DPSNode(BigDecimal.valueOf(du.getRange()), BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
+                    }
                 } else {
-                    BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
+                    MaskAtk attack = du.getAtkModel(i);
 
-                    treasureNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
-                    treasureNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
-                    treasureNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
-                    treasureNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
+                    int shortPoint = attack.getShortPoint();
+                    int width = attack.getLongPoint() - attack.getShortPoint();
+
+                    BigDecimal minShortPoint = BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width));
+
+                    dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false)));
+                    dpsNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, false).negate()));
+
+                    if (treasure) {
+                        treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true)));
+                        treasureNodes.add(new DPSNode(minShortPoint, BigDecimal.ZERO, getAttack(i, du, f.unit.lv, lv, treasureSetting, talent, true).negate()));
+                    }
                 }
             }
-        }
 
-        // Handling wave
-        if (waveAbility.exists() || miniWaveAbility.exists()) {
-            BigDecimal waveChance;
-            BigDecimal waveLevel;
-            BigDecimal waveMultiplier;
+            MaskAtk representativeAttack = du.getRepAtk();
 
-            if (waveAbility.exists()) {
-                waveChance = BigDecimal.valueOf(waveAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                waveLevel = BigDecimal.valueOf(waveAbility.lv);
-                waveMultiplier = BigDecimal.ONE;
-            } else {
-                waveChance = BigDecimal.valueOf(miniWaveAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                waveLevel = BigDecimal.valueOf(miniWaveAbility.lv);
-                waveMultiplier = BigDecimal.valueOf(miniWaveAbility.multi).divide(new BigDecimal("100"), Equation.context);
-            }
+            Data.Proc.VOLC surgeAbility = representativeAttack.getProc().VOLC;
+            Data.Proc.MINIVOLC miniSurgeAbility = representativeAttack.getProc().MINIVOLC;
 
-            BigDecimal waveDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
-                    .multiply(waveChance)
-                    .multiply(waveMultiplier);
+            Data.Proc.WAVE waveAbility = representativeAttack.getProc().WAVE;
+            Data.Proc.MINIWAVE miniWaveAbility = representativeAttack.getProc().MINIWAVE;
 
-            //Initial Position
-            BigDecimal width = BigDecimal.valueOf(Data.W_U_WID);
-            BigDecimal offset = BigDecimal.valueOf(Data.W_U_INI);
+            Data.Proc.BLAST blastAbility = representativeAttack.getProc().BLAST;
 
-            BigDecimal halfWidth = width.divide(new BigDecimal("2"), Equation.context);
-            BigDecimal position = BigDecimal.ZERO.add(offset).add(halfWidth);
+            // Handling surge
+            if (surgeAbility.exists() || miniSurgeAbility.exists()) {
+                BigDecimal shortSurgeDistance;
+                BigDecimal longSurgeDistance;
+                BigDecimal surgeLevel;
+                BigDecimal surgeChance;
+                BigDecimal surgeMultiplier;
 
-            dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
-
-            for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
-                position = position.add(BigDecimal.valueOf(Data.W_PROG));
-            }
-
-            dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
-
-            if (treasure) {
-                waveDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
-                        .multiply(waveChance)
-                        .multiply(waveMultiplier);
-
-                position = BigDecimal.ZERO.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
-
-                treasureNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
-
-                for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
-                    position = position.add(BigDecimal.valueOf(Data.W_PROG));
+                if (surgeAbility.exists()) {
+                    shortSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_0);
+                    longSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_1);
+                    surgeLevel = BigDecimal.valueOf(surgeAbility.time).divide(BigDecimal.valueOf(Data.VOLC_ITV), Equation.context);
+                    surgeChance = BigDecimal.valueOf(surgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    surgeMultiplier = BigDecimal.ONE;
+                } else {
+                    shortSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_0);
+                    longSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_1);
+                    surgeLevel = BigDecimal.valueOf(miniSurgeAbility.time).divide(new BigDecimal("20"), Equation.context);
+                    surgeChance = BigDecimal.valueOf(miniSurgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    surgeMultiplier = BigDecimal.valueOf(miniSurgeAbility.mult).divide(new BigDecimal("100"), Equation.context);
                 }
 
-                treasureNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
-            }
-        }
+                BigDecimal minimumDistance = shortSurgeDistance.min(longSurgeDistance);
+                BigDecimal maximumDistance = shortSurgeDistance.max(longSurgeDistance);
 
-        if (blastAbility.exists()) {
-            BigDecimal blastChance = BigDecimal.valueOf(blastAbility.prob).divide(BigDecimal.valueOf(100), Equation.context);
+                BigDecimal minimumRange = minimumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+                BigDecimal maximumRange = maximumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
 
-            for (int i = 0; i < 5; i++) {
-                BigDecimal blastWidth;
-                BigDecimal blastOffset;
-                BigDecimal blastMultiplier;
-
-                switch (i) {
-                    case 0, 4 -> {
-                        blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[2]);
-
-                        if (i == 0) {
-                            blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] - Data.BLAST_RANGE[2] / 2);
-                        } else {
-                            blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] + Data.BLAST_RANGE[2] / 2);
-                        }
-
-                        blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
-                    }
-                    case 1, 3 -> {
-                        blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[1]);
-
-                        if (i == 1) {
-                            blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] / 2);
-                        } else {
-                            blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] / 2);
-                        }
-
-                        blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
-                    }
-                    case 2 -> {
-                        blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[0]);
-                        blastOffset = BigDecimal.ZERO;
-                        blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
-                    }
-                    default -> throw new IllegalStateException("E/EntityHandler::showEnemyDPS - Invalid blast index %d".formatted(i));
-                }
-
-                BigDecimal longBlastDistance = BigDecimal.valueOf(blastAbility.dis_1);
-                BigDecimal shortBlastDistance = BigDecimal.valueOf(blastAbility.dis_0);
-
-                BigDecimal halfWidth = blastWidth.divide(BigDecimal.valueOf(2), Equation.context);
-
-                BigDecimal minimumDistance = shortBlastDistance.min(longBlastDistance).add(blastOffset);
-                BigDecimal maximumDistance = shortBlastDistance.max(longBlastDistance).add(blastOffset);
-
-                BigDecimal minimumRange = minimumDistance.subtract(halfWidth);
-                BigDecimal maximumRange = maximumDistance.add(halfWidth);
-
-                BigDecimal minimumPierce = minimumDistance.add(halfWidth);
-                BigDecimal maximumInner = maximumDistance.subtract(halfWidth);
+                BigDecimal minimumPierce = minimumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+                BigDecimal maximumInner = maximumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
 
                 BigDecimal hitChance;
 
                 if (minimumPierce.subtract(maximumInner).compareTo(BigDecimal.ZERO) > 0) {
                     hitChance = BigDecimal.ONE;
                 } else {
-                    hitChance = blastWidth.divide(maximumDistance.subtract(minimumDistance), Equation.context);
+                    hitChance = BigDecimal.valueOf(Data.W_VOLC_INNER + Data.W_VOLC_PIERCE)
+                            .divide(maximumDistance.subtract(minimumDistance), Equation.context);
                 }
 
-                BigDecimal blastDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
+                BigDecimal surgeDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
                         .multiply(hitChance)
-                        .multiply(blastMultiplier)
-                        .multiply(blastChance);
+                        .multiply(surgeChance)
+                        .multiply(surgeLevel)
+                        .multiply(surgeMultiplier);
 
                 BigDecimal valueDifference = minimumPierce.min(maximumInner).subtract(minimumRange);
 
                 if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
-                    dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
-                    dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
+                    dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
+                    dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
                 } else {
-                    BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
+                    BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
 
                     dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                     dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -3768,16 +3631,17 @@ public class EntityHandler {
                 }
 
                 if (treasure) {
-                    blastDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
+                    surgeDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
                             .multiply(hitChance)
-                            .multiply(blastMultiplier)
-                            .multiply(blastChance);
+                            .multiply(surgeChance)
+                            .multiply(surgeLevel)
+                            .multiply(surgeMultiplier);
 
                     if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
-                        treasureNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
-                        treasureNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
+                        treasureNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
+                        treasureNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
                     } else {
-                        BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
+                        BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
 
                         treasureNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                         treasureNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -3786,167 +3650,283 @@ public class EntityHandler {
                     }
                 }
             }
-        }
 
-        dpsNodes.sort((n0, n1) -> {
-            if (n0 == null && n1 == null) {
-                return 0;
+            // Handling wave
+            if (waveAbility.exists() || miniWaveAbility.exists()) {
+                BigDecimal waveChance;
+                BigDecimal waveLevel;
+                BigDecimal waveMultiplier;
+
+                if (waveAbility.exists()) {
+                    waveChance = BigDecimal.valueOf(waveAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    waveLevel = BigDecimal.valueOf(waveAbility.lv);
+                    waveMultiplier = BigDecimal.ONE;
+                } else {
+                    waveChance = BigDecimal.valueOf(miniWaveAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    waveLevel = BigDecimal.valueOf(miniWaveAbility.lv);
+                    waveMultiplier = BigDecimal.valueOf(miniWaveAbility.multi).divide(new BigDecimal("100"), Equation.context);
+                }
+
+                BigDecimal waveDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
+                        .multiply(waveChance)
+                        .multiply(waveMultiplier);
+
+                //Initial Position
+                BigDecimal width = BigDecimal.valueOf(Data.W_U_WID);
+                BigDecimal offset = BigDecimal.valueOf(Data.W_U_INI);
+
+                BigDecimal halfWidth = width.divide(new BigDecimal("2"), Equation.context);
+                BigDecimal position = BigDecimal.ZERO.add(offset).add(halfWidth);
+
+                dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
+
+                for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
+                    position = position.add(BigDecimal.valueOf(Data.W_PROG));
+                }
+
+                dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
+
+                if (treasure) {
+                    waveDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
+                            .multiply(waveChance)
+                            .multiply(waveMultiplier);
+
+                    position = BigDecimal.ZERO.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
+
+                    treasureNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
+
+                    for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
+                        position = position.add(BigDecimal.valueOf(Data.W_PROG));
+                    }
+
+                    treasureNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
+                }
             }
 
-            if (n0 == null) {
-                return -1;
+            if (blastAbility.exists()) {
+                BigDecimal blastChance = BigDecimal.valueOf(blastAbility.prob).divide(BigDecimal.valueOf(100), Equation.context);
+
+                for (int i = 0; i < 5; i++) {
+                    BigDecimal blastWidth;
+                    BigDecimal blastOffset;
+                    BigDecimal blastMultiplier;
+
+                    switch (i) {
+                        case 0, 4 -> {
+                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[2]);
+
+                            if (i == 0) {
+                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] - Data.BLAST_RANGE[2] / 2);
+                            } else {
+                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] + Data.BLAST_RANGE[2] / 2);
+                            }
+
+                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
+                        }
+                        case 1, 3 -> {
+                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[1]);
+
+                            if (i == 1) {
+                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] / 2);
+                            } else {
+                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] / 2);
+                            }
+
+                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
+                        }
+                        case 2 -> {
+                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[0]);
+                            blastOffset = BigDecimal.ZERO;
+                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
+                        }
+                        default -> throw new IllegalStateException("E/EntityHandler::showEnemyDPS - Invalid blast index %d".formatted(i));
+                    }
+
+                    BigDecimal longBlastDistance = BigDecimal.valueOf(blastAbility.dis_1);
+                    BigDecimal shortBlastDistance = BigDecimal.valueOf(blastAbility.dis_0);
+
+                    BigDecimal halfWidth = blastWidth.divide(BigDecimal.valueOf(2), Equation.context);
+
+                    BigDecimal minimumDistance = shortBlastDistance.min(longBlastDistance).add(blastOffset);
+                    BigDecimal maximumDistance = shortBlastDistance.max(longBlastDistance).add(blastOffset);
+
+                    BigDecimal minimumRange = minimumDistance.subtract(halfWidth);
+                    BigDecimal maximumRange = maximumDistance.add(halfWidth);
+
+                    BigDecimal minimumPierce = minimumDistance.add(halfWidth);
+                    BigDecimal maximumInner = maximumDistance.subtract(halfWidth);
+
+                    BigDecimal hitChance;
+
+                    if (minimumPierce.subtract(maximumInner).compareTo(BigDecimal.ZERO) > 0) {
+                        hitChance = BigDecimal.ONE;
+                    } else {
+                        hitChance = blastWidth.divide(maximumDistance.subtract(minimumDistance), Equation.context);
+                    }
+
+                    BigDecimal blastDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
+                            .multiply(hitChance)
+                            .multiply(blastMultiplier)
+                            .multiply(blastChance);
+
+                    BigDecimal valueDifference = minimumPierce.min(maximumInner).subtract(minimumRange);
+
+                    if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
+                        dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
+                        dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
+                    } else {
+                        BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
+
+                        dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
+                        dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
+                        dpsNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
+                        dpsNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
+                    }
+
+                    if (treasure) {
+                        blastDamage = getTotalAbilityAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
+                                .multiply(hitChance)
+                                .multiply(blastMultiplier)
+                                .multiply(blastChance);
+
+                        if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
+                            treasureNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
+                            treasureNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
+                        } else {
+                            BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
+
+                            treasureNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
+                            treasureNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
+                            treasureNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
+                            treasureNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
+                        }
+                    }
+                }
             }
 
-            if (n1 == null) {
-                return 1;
-            }
+            dpsNodes.sort((n0, n1) -> {
+                if (n0 == null && n1 == null) {
+                    return 0;
+                }
 
-            int xCoordinateCompare = n0.xCoordinate.compareTo(n1.xCoordinate);
-
-            if (xCoordinateCompare == 0) {
-                if (n0.ignoreValue) {
+                if (n0 == null) {
                     return -1;
                 }
 
-                if (n1.ignoreValue) {
+                if (n1 == null) {
                     return 1;
                 }
 
-                return -n0.valueChange.compareTo(n1.valueChange);
-            } else {
-                return xCoordinateCompare;
-            }
-        });
+                int xCoordinateCompare = n0.xCoordinate.compareTo(n1.xCoordinate);
 
-        treasureNodes.sort((n0, n1) -> {
-            if (n0 == null && n1 == null) {
-                return 0;
-            }
+                if (xCoordinateCompare == 0) {
+                    if (n0.ignoreValue) {
+                        return -1;
+                    }
 
-            if (n0 == null) {
-                return -1;
-            }
+                    if (n1.ignoreValue) {
+                        return 1;
+                    }
 
-            if (n1 == null) {
-                return 1;
-            }
+                    return -n0.valueChange.compareTo(n1.valueChange);
+                } else {
+                    return xCoordinateCompare;
+                }
+            });
 
-            int xCoordinateCompare = n0.xCoordinate.compareTo(n1.xCoordinate);
+            treasureNodes.sort((n0, n1) -> {
+                if (n0 == null && n1 == null) {
+                    return 0;
+                }
 
-            if (xCoordinateCompare == 0) {
-                if (n0.ignoreValue) {
+                if (n0 == null) {
                     return -1;
                 }
 
-                if (n1.ignoreValue) {
+                if (n1 == null) {
                     return 1;
                 }
 
-                return -n0.valueChange.compareTo(n1.valueChange);
-            } else {
-                return xCoordinateCompare;
-            }
-        });
+                int xCoordinateCompare = n0.xCoordinate.compareTo(n1.xCoordinate);
 
-        dpsNodes.addFirst(new DPSNode(dpsNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
-        dpsNodes.addLast(new DPSNode(dpsNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
+                if (xCoordinateCompare == 0) {
+                    if (n0.ignoreValue) {
+                        return -1;
+                    }
 
-        if (treasure) {
-            treasureNodes.addFirst(new DPSNode(treasureNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
-            treasureNodes.addLast(new DPSNode(treasureNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
-        }
+                    if (n1.ignoreValue) {
+                        return 1;
+                    }
 
-        // Ignore value must be false if there's only that node on each X point
-        for (int i = 0; i < dpsNodes.size(); i++) {
-            if (i < dpsNodes.size() - 1) {
-                DPSNode currentNode = dpsNodes.get(i);
-                DPSNode nextNode = dpsNodes.get(i + 1);
-
-                if (currentNode.ignoreValue && currentNode.xCoordinate.compareTo(nextNode.xCoordinate) != 0) {
-                    currentNode.ignoreValue = false;
+                    return -n0.valueChange.compareTo(n1.valueChange);
+                } else {
+                    return xCoordinateCompare;
                 }
-            }
-        }
+            });
 
-        if (treasure) {
-            for (int i = 0; i < treasureNodes.size(); i++) {
-                if (i < treasureNodes.size() - 1) {
-                    DPSNode currentNode = treasureNodes.get(i);
-                    DPSNode nextNode = treasureNodes.get(i + 1);
+            dpsNodes.addFirst(new DPSNode(dpsNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
+            dpsNodes.addLast(new DPSNode(dpsNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            if (treasure) {
+                treasureNodes.addFirst(new DPSNode(treasureNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
+                treasureNodes.addLast(new DPSNode(treasureNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
+            }
+
+            // Ignore value must be false if there's only that node on each X point
+            for (int i = 0; i < dpsNodes.size(); i++) {
+                if (i < dpsNodes.size() - 1) {
+                    DPSNode currentNode = dpsNodes.get(i);
+                    DPSNode nextNode = dpsNodes.get(i + 1);
 
                     if (currentNode.ignoreValue && currentNode.xCoordinate.compareTo(nextNode.xCoordinate) != 0) {
                         currentNode.ignoreValue = false;
                     }
                 }
             }
-        }
 
-        List<BigDecimal[]> coordinates = new ArrayList<>();
-        List<BigDecimal[]> withTreasure = new ArrayList<>();
+            if (treasure) {
+                for (int i = 0; i < treasureNodes.size(); i++) {
+                    if (i < treasureNodes.size() - 1) {
+                        DPSNode currentNode = treasureNodes.get(i);
+                        DPSNode nextNode = treasureNodes.get(i + 1);
 
-        BigDecimal currentYValue = BigDecimal.ZERO;
-        BigDecimal currentSlope = BigDecimal.ZERO;
-
-        for (int i = 0; i < dpsNodes.size(); i++) {
-            DPSNode currentNode = dpsNodes.get(i);
-
-            if (i == 0) {
-                coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, BigDecimal.ZERO });
-
-                continue;
-            }
-
-            DPSNode previousNode = dpsNodes.get(i - 1);
-
-            BigDecimal dx = currentNode.xCoordinate.subtract(previousNode.xCoordinate);
-
-            if (dx.compareTo(BigDecimal.ZERO) != 0) {
-                currentYValue = currentYValue.add(dx.multiply(currentSlope));
-
-                coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
-            }
-
-            if (currentNode.valueChange.compareTo(BigDecimal.ZERO) != 0) {
-                currentYValue = currentYValue.add(currentNode.valueChange);
-
-                if (!currentNode.ignoreValue) {
-                    coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
+                        if (currentNode.ignoreValue && currentNode.xCoordinate.compareTo(nextNode.xCoordinate) != 0) {
+                            currentNode.ignoreValue = false;
+                        }
+                    }
                 }
             }
 
-            if (currentNode.slopeChange.compareTo(BigDecimal.ZERO) != 0) {
-                currentSlope = currentSlope.add(currentNode.slopeChange);
-            }
-        }
+            List<BigDecimal[]> coordinates = new ArrayList<>();
+            List<BigDecimal[]> withTreasure = new ArrayList<>();
 
-        if (treasure) {
-            currentYValue = BigDecimal.ZERO;
-            currentSlope = BigDecimal.ZERO;
+            BigDecimal currentYValue = BigDecimal.ZERO;
+            BigDecimal currentSlope = BigDecimal.ZERO;
 
-            for (int i = 0; i < treasureNodes.size(); i++) {
-                DPSNode currentNode = treasureNodes.get(i);
+            for (int i = 0; i < dpsNodes.size(); i++) {
+                DPSNode currentNode = dpsNodes.get(i);
 
                 if (i == 0) {
-                    withTreasure.add(new BigDecimal[]{ currentNode.xCoordinate, BigDecimal.ZERO });
+                    coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, BigDecimal.ZERO });
 
                     continue;
                 }
 
-                DPSNode previousNode = treasureNodes.get(i - 1);
+                DPSNode previousNode = dpsNodes.get(i - 1);
 
                 BigDecimal dx = currentNode.xCoordinate.subtract(previousNode.xCoordinate);
 
                 if (dx.compareTo(BigDecimal.ZERO) != 0) {
                     currentYValue = currentYValue.add(dx.multiply(currentSlope));
 
-                    withTreasure.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
+                    coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
                 }
 
                 if (currentNode.valueChange.compareTo(BigDecimal.ZERO) != 0) {
                     currentYValue = currentYValue.add(currentNode.valueChange);
 
                     if (!currentNode.ignoreValue) {
-                        withTreasure.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
+                        coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
                     }
                 }
 
@@ -3954,53 +3934,94 @@ public class EntityHandler {
                     currentSlope = currentSlope.add(currentNode.slopeChange);
                 }
             }
-        }
 
-        for (int i = 0; i < coordinates.size(); i++) {
-            coordinates.get(i)[1] = coordinates.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
-        }
+            if (treasure) {
+                currentYValue = BigDecimal.ZERO;
+                currentSlope = BigDecimal.ZERO;
 
-        if (treasure) {
-            for (int i = 0; i < withTreasure.size(); i++) {
-                withTreasure.get(i)[1] = withTreasure.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
+                for (int i = 0; i < treasureNodes.size(); i++) {
+                    DPSNode currentNode = treasureNodes.get(i);
+
+                    if (i == 0) {
+                        withTreasure.add(new BigDecimal[]{ currentNode.xCoordinate, BigDecimal.ZERO });
+
+                        continue;
+                    }
+
+                    DPSNode previousNode = treasureNodes.get(i - 1);
+
+                    BigDecimal dx = currentNode.xCoordinate.subtract(previousNode.xCoordinate);
+
+                    if (dx.compareTo(BigDecimal.ZERO) != 0) {
+                        currentYValue = currentYValue.add(dx.multiply(currentSlope));
+
+                        withTreasure.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
+                    }
+
+                    if (currentNode.valueChange.compareTo(BigDecimal.ZERO) != 0) {
+                        currentYValue = currentYValue.add(currentNode.valueChange);
+
+                        if (!currentNode.ignoreValue) {
+                            withTreasure.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
+                        }
+                    }
+
+                    if (currentNode.slopeChange.compareTo(BigDecimal.ZERO) != 0) {
+                        currentSlope = currentSlope.add(currentNode.slopeChange);
+                    }
+                }
+            }
+
+            for (int i = 0; i < coordinates.size(); i++) {
+                coordinates.get(i)[1] = coordinates.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
+            }
+
+            if (treasure) {
+                for (int i = 0; i < withTreasure.size(); i++) {
+                    withTreasure.get(i)[1] = withTreasure.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
+                }
+            }
+
+            BigDecimal maximumDamage = BigDecimal.ZERO;
+            BigDecimal minimumX = new BigDecimal("-320");
+            BigDecimal maximumX = new BigDecimal("-320");
+
+            for (int i = 0; i < coordinates.size(); i++) {
+                maximumDamage = maximumDamage.max(coordinates.get(i)[1]);
+
+                minimumX = minimumX.min(coordinates.get(i)[0]);
+                maximumX = maximumX.max(coordinates.get(i)[0]);
+            }
+
+            if (treasure) {
+                for (int i = 0; i < withTreasure.size(); i++) {
+                    maximumDamage = maximumDamage.max(withTreasure.get(i)[1]);
+
+                    minimumX = minimumX.min(withTreasure.get(i)[0]);
+                    maximumX = maximumX.max(withTreasure.get(i)[0]);
+                }
+            }
+
+            if (maximumDamage.compareTo(BigDecimal.ZERO) == 0) {
+                maximumDamage = BigDecimal.TEN;
+            }
+
+            File result;
+
+            if (treasure) {
+                result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), withTreasure.toArray(new BigDecimal[0][0]), new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
+            } else {
+                result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
+            }
+
+            if (result != null) {
+                graphLink = StaticStore.assetManager.uploadIf(cacheID, result);
+
+                StaticStore.deleteFile(result, true);
             }
         }
 
-        BigDecimal maximumDamage = BigDecimal.ZERO;
-        BigDecimal minimumX = new BigDecimal("-320");
-        BigDecimal maximumX = new BigDecimal("-320");
-
-        for (int i = 0; i < coordinates.size(); i++) {
-            maximumDamage = maximumDamage.max(coordinates.get(i)[1]);
-
-            minimumX = minimumX.min(coordinates.get(i)[0]);
-            maximumX = maximumX.max(coordinates.get(i)[0]);
-        }
-
-        if (treasure) {
-            for (int i = 0; i < withTreasure.size(); i++) {
-                maximumDamage = maximumDamage.max(withTreasure.get(i)[1]);
-
-                minimumX = minimumX.min(withTreasure.get(i)[0]);
-                maximumX = maximumX.max(withTreasure.get(i)[0]);
-            }
-        }
-
-        if (maximumDamage.compareTo(BigDecimal.ZERO) == 0) {
-            maximumDamage = BigDecimal.TEN;
-        }
-
-        File result;
-
-        boolean identical = allCoordinatesSame(coordinates, withTreasure);
-
-        if (treasure && !identical) {
-            result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), withTreasure.toArray(new BigDecimal[0][0]), new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
-        } else {
-            result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
-        }
-
-        if (result == null) {
+        if (graphLink == null) {
             if (editMode) {
                 if (sender instanceof Message msg) {
                     msg.editMessage(LangID.getStringByID("formDPS.failed.unknown", lang))
@@ -4055,7 +4076,7 @@ public class EntityHandler {
                 desc += "\n\n" + LangID.getStringByID("data.unit.talent.embed", lang);
             }
 
-            if (treasure && !identical) {
+            if (treasure) {
                 desc += "\n\n" + String.format(LangID.getStringByID("formDPS.graph.legend", lang), EmojiStore.GREENLINE.getFormatted(), EmojiStore.REDDASHEDLINE.getFormatted());
             }
 
@@ -4068,6 +4089,8 @@ public class EntityHandler {
             else
                 c = StaticStore.rainbow[2];
 
+            String iconLink = generateIcon(f);
+
             spec.setTitle(String.format(LangID.getStringByID("formDPS.graph.title", lang), name));
 
             if (!desc.isBlank()) {
@@ -4076,56 +4099,35 @@ public class EntityHandler {
 
             spec.setColor(c);
 
-            spec.setImage("attachment://graph.png");
-            spec.setThumbnail("attachment://icon.png");
+            spec.setImage(graphLink);
+            spec.setThumbnail(iconLink);
 
             if (talent && f.du.getPCoin() != null) {
                 spec.setFooter(DataToString.getTalent(f.du, lv, lang));
             }
-
-            File icon = generateIcon(f);
-
-            Consumer<Message> finisher = msg -> {
-                if(result.exists() && !result.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
-                }
-
-                if (icon != null && icon.exists() && !icon.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : " + icon.getAbsolutePath());
-                }
-            };
-
-            List<FileUpload> files = new ArrayList<>();
-
-            files.add(FileUpload.fromData(result, "graph.png"));
-
-            if (icon != null)
-                files.add(FileUpload.fromData(icon, "icon.png"));
 
             if (editMode) {
                 if (sender instanceof Message msg) {
                     msg.editMessage("")
                             .setEmbeds(spec.build())
                             .setComponents()
-                            .setFiles(files)
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
-                            .queue(finisher);
+                            .queue();
                 } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                     event.deferEdit()
                             .setContent("")
                             .setEmbeds(spec.build())
                             .setComponents()
-                            .setFiles(files)
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
-                            .queue(hook -> hook.retrieveOriginal().queue(finisher));
+                            .queue();
                 }
             } else {
                 if (sender instanceof MessageChannel ch) {
-                    Command.replyToMessageSafely(ch, "", authorMessage, a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                    Command.replyToMessageSafely(ch, "", authorMessage, a -> a.setEmbeds(spec.build()));
                 } else if (sender instanceof GenericCommandInteractionEvent event) {
-                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
                 }
             }
 
@@ -4150,203 +4152,92 @@ public class EntityHandler {
 
         MaskEnemy de = e.de;
 
-        // Damage Calculation
-        for (int i = 0; i < de.getAtkCount(); i++) {
-            if (!de.isLD() && !de.isOmni()) {
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(-320), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification)));
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(de.getRange()), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification).negate()));
-            } else {
-                MaskAtk attack = de.getAtkModel(i);
+        String procHash = getProcHash(de.getProc());
 
-                int shortPoint = attack.getShortPoint();
-                int width = attack.getLongPoint() - attack.getShortPoint();
+        String cacheID = StaticStore.DPS_GRAPH_ENEMY.formatted(Data.trio(e.id.id), lang.name(), procHash);
 
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification)));
-                dpsNodes.add(new DPSNode(BigDecimal.valueOf(Math.max(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification).negate()));
-            }
-        }
+        String graphLink = StaticStore.assetManager.getAsset(cacheID);
 
-        MaskAtk representativeAttack = de.getRepAtk();
+        if (graphLink == null) {
+            // Damage Calculation
+            for (int i = 0; i < de.getAtkCount(); i++) {
+                if (!de.isLD() && !de.isOmni()) {
+                    dpsNodes.add(new DPSNode(BigDecimal.valueOf(-320), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification)));
+                    dpsNodes.add(new DPSNode(BigDecimal.valueOf(de.getRange()), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification).negate()));
+                } else {
+                    MaskAtk attack = de.getAtkModel(i);
 
-        Data.Proc.VOLC surgeAbility = representativeAttack.getProc().VOLC;
-        Data.Proc.MINIVOLC miniSurgeAbility = representativeAttack.getProc().MINIVOLC;
+                    int shortPoint = attack.getShortPoint();
+                    int width = attack.getLongPoint() - attack.getShortPoint();
 
-        Data.Proc.WAVE waveAbility = representativeAttack.getProc().WAVE;
-        Data.Proc.MINIWAVE miniWaveAbility = representativeAttack.getProc().MINIWAVE;
-
-        Data.Proc.BLAST blastAbility = representativeAttack.getProc().BLAST;
-
-        // Handling surge
-        if (surgeAbility.exists() || miniSurgeAbility.exists()) {
-            BigDecimal shortSurgeDistance;
-            BigDecimal longSurgeDistance;
-            BigDecimal surgeLevel;
-            BigDecimal surgeChance;
-            BigDecimal surgeMultiplier;
-
-            if (surgeAbility.exists()) {
-                shortSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_0);
-                longSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_1);
-                surgeLevel = BigDecimal.valueOf(surgeAbility.time).divide(BigDecimal.valueOf(Data.VOLC_ITV), Equation.context);
-                surgeChance = BigDecimal.valueOf(surgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                surgeMultiplier = BigDecimal.ONE;
-            } else {
-                shortSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_0);
-                longSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_1);
-                surgeLevel = BigDecimal.valueOf(miniSurgeAbility.time).divide(new BigDecimal("20"), Equation.context);
-                surgeChance = BigDecimal.valueOf(miniSurgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                surgeMultiplier = BigDecimal.valueOf(miniSurgeAbility.mult).divide(new BigDecimal("100"), Equation.context);
+                    dpsNodes.add(new DPSNode(BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification)));
+                    dpsNodes.add(new DPSNode(BigDecimal.valueOf(Math.max(shortPoint, shortPoint + width)), BigDecimal.ZERO, getAttack(i, de, adjustedMagnification).negate()));
+                }
             }
 
-            BigDecimal minimumDistance = shortSurgeDistance.min(longSurgeDistance);
-            BigDecimal maximumDistance = shortSurgeDistance.max(longSurgeDistance);
+            MaskAtk representativeAttack = de.getRepAtk();
 
-            BigDecimal minimumRange = minimumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
-            BigDecimal maximumRange = maximumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+            Data.Proc.VOLC surgeAbility = representativeAttack.getProc().VOLC;
+            Data.Proc.MINIVOLC miniSurgeAbility = representativeAttack.getProc().MINIVOLC;
 
-            BigDecimal minimumPierce = minimumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
-            BigDecimal maximumInner = maximumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+            Data.Proc.WAVE waveAbility = representativeAttack.getProc().WAVE;
+            Data.Proc.MINIWAVE miniWaveAbility = representativeAttack.getProc().MINIWAVE;
 
-            BigDecimal hitChance;
+            Data.Proc.BLAST blastAbility = representativeAttack.getProc().BLAST;
 
-            if (minimumPierce.subtract(maximumInner).compareTo(BigDecimal.ZERO) > 0) {
-                hitChance = BigDecimal.ONE;
-            } else {
-                hitChance = BigDecimal.valueOf(Data.W_VOLC_INNER + Data.W_VOLC_PIERCE)
-                        .divide(maximumDistance.subtract(minimumDistance), Equation.context);
-            }
+            // Handling surge
+            if (surgeAbility.exists() || miniSurgeAbility.exists()) {
+                BigDecimal shortSurgeDistance;
+                BigDecimal longSurgeDistance;
+                BigDecimal surgeLevel;
+                BigDecimal surgeChance;
+                BigDecimal surgeMultiplier;
 
-            BigDecimal surgeDamage = getTotalAbilityAttack(de, adjustedMagnification)
-                    .multiply(hitChance)
-                    .multiply(surgeChance)
-                    .multiply(surgeLevel)
-                    .multiply(surgeMultiplier);
-
-            BigDecimal valueDifference = minimumPierce.min(maximumInner).subtract(minimumRange);
-
-            if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
-                dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
-                dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
-            } else {
-                BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
-
-                dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
-                dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
-                dpsNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
-                dpsNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
-            }
-        }
-
-        // Handling wave
-        if (waveAbility.exists() || miniWaveAbility.exists()) {
-            BigDecimal waveChance;
-            BigDecimal waveLevel;
-            BigDecimal waveMultiplier;
-
-            if (waveAbility.exists()) {
-                waveChance = BigDecimal.valueOf(waveAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                waveLevel = BigDecimal.valueOf(waveAbility.lv);
-                waveMultiplier = BigDecimal.ONE;
-            } else {
-                waveChance = BigDecimal.valueOf(miniWaveAbility.prob).divide(new BigDecimal("100"), Equation.context);
-                waveLevel = BigDecimal.valueOf(miniWaveAbility.lv);
-                waveMultiplier = BigDecimal.valueOf(miniWaveAbility.multi).divide(new BigDecimal("100"), Equation.context);
-            }
-
-            BigDecimal waveDamage = getTotalAbilityAttack(de, adjustedMagnification)
-                    .multiply(waveChance)
-                    .multiply(waveMultiplier);
-
-            //Initial Position
-            BigDecimal width = BigDecimal.valueOf(Data.W_E_WID);
-            BigDecimal offset = BigDecimal.valueOf(Data.W_E_INI);
-
-            BigDecimal halfWidth = width.divide(new BigDecimal("2"), Equation.context);
-            BigDecimal position = BigDecimal.ZERO.add(offset).add(halfWidth);
-
-            dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
-
-            for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
-                position = position.add(BigDecimal.valueOf(Data.W_PROG));
-            }
-
-            dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
-        }
-
-        // Handling blast
-        if (blastAbility.exists()) {
-            BigDecimal blastChance = BigDecimal.valueOf(blastAbility.prob).divide(BigDecimal.valueOf(100), Equation.context);
-
-            for (int i = 0; i < 5; i++) {
-                BigDecimal blastWidth;
-                BigDecimal blastOffset;
-                BigDecimal blastMultiplier;
-
-                switch (i) {
-                    case 0, 4 -> {
-                        blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[2]);
-
-                        if (i == 0) {
-                            blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] - Data.BLAST_RANGE[2] / 2);
-                        } else {
-                            blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] + Data.BLAST_RANGE[2] / 2);
-                        }
-
-                        blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
-                    }
-                    case 1, 3 -> {
-                        blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[1]);
-
-                        if (i == 1) {
-                            blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] / 2);
-                        } else {
-                            blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] / 2);
-                        }
-
-                        blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
-                    }
-                    case 2 -> {
-                        blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[0]);
-                        blastOffset = BigDecimal.ZERO;
-                        blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
-                    }
-                    default -> throw new IllegalStateException("E/EntityHandler::showEnemyDPS - Invalid blast index %d".formatted(i));
+                if (surgeAbility.exists()) {
+                    shortSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_0);
+                    longSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_1);
+                    surgeLevel = BigDecimal.valueOf(surgeAbility.time).divide(BigDecimal.valueOf(Data.VOLC_ITV), Equation.context);
+                    surgeChance = BigDecimal.valueOf(surgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    surgeMultiplier = BigDecimal.ONE;
+                } else {
+                    shortSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_0);
+                    longSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_1);
+                    surgeLevel = BigDecimal.valueOf(miniSurgeAbility.time).divide(new BigDecimal("20"), Equation.context);
+                    surgeChance = BigDecimal.valueOf(miniSurgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    surgeMultiplier = BigDecimal.valueOf(miniSurgeAbility.mult).divide(new BigDecimal("100"), Equation.context);
                 }
 
-                BigDecimal longBlastDistance = BigDecimal.valueOf(blastAbility.dis_1);
-                BigDecimal shortBlastDistance = BigDecimal.valueOf(blastAbility.dis_0);
+                BigDecimal minimumDistance = shortSurgeDistance.min(longSurgeDistance);
+                BigDecimal maximumDistance = shortSurgeDistance.max(longSurgeDistance);
 
-                BigDecimal halfWidth = blastWidth.divide(BigDecimal.valueOf(2), Equation.context);
+                BigDecimal minimumRange = minimumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+                BigDecimal maximumRange = maximumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
 
-                BigDecimal minimumDistance = shortBlastDistance.min(longBlastDistance).add(blastOffset);
-                BigDecimal maximumDistance = shortBlastDistance.max(longBlastDistance).add(blastOffset);
-
-                BigDecimal minimumRange = minimumDistance.subtract(halfWidth);
-                BigDecimal maximumRange = maximumDistance.add(halfWidth);
-
-                BigDecimal minimumPierce = minimumDistance.add(halfWidth);
-                BigDecimal maximumInner = maximumDistance.subtract(halfWidth);
+                BigDecimal minimumPierce = minimumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+                BigDecimal maximumInner = maximumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
 
                 BigDecimal hitChance;
 
                 if (minimumPierce.subtract(maximumInner).compareTo(BigDecimal.ZERO) > 0) {
                     hitChance = BigDecimal.ONE;
                 } else {
-                    hitChance = blastWidth.divide(maximumDistance.subtract(minimumDistance), Equation.context);
+                    hitChance = BigDecimal.valueOf(Data.W_VOLC_INNER + Data.W_VOLC_PIERCE)
+                            .divide(maximumDistance.subtract(minimumDistance), Equation.context);
                 }
 
-                BigDecimal blastDamage = getTotalAbilityAttack(de, adjustedMagnification)
+                BigDecimal surgeDamage = getTotalAbilityAttack(de, adjustedMagnification)
                         .multiply(hitChance)
-                        .multiply(blastMultiplier)
-                        .multiply(blastChance);
+                        .multiply(surgeChance)
+                        .multiply(surgeLevel)
+                        .multiply(surgeMultiplier);
 
                 BigDecimal valueDifference = minimumPierce.min(maximumInner).subtract(minimumRange);
 
                 if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
-                    dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
-                    dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
+                    dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, surgeDamage));
+                    dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, surgeDamage.negate(), true));
                 } else {
-                    BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
+                    BigDecimal slope = surgeDamage.divide(valueDifference, Equation.context);
 
                     dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
                     dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
@@ -4354,113 +4245,238 @@ public class EntityHandler {
                     dpsNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
                 }
             }
-        }
 
-        dpsNodes.sort((n0, n1) -> {
-            if (n0 == null && n1 == null) {
-                return 0;
+            // Handling wave
+            if (waveAbility.exists() || miniWaveAbility.exists()) {
+                BigDecimal waveChance;
+                BigDecimal waveLevel;
+                BigDecimal waveMultiplier;
+
+                if (waveAbility.exists()) {
+                    waveChance = BigDecimal.valueOf(waveAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    waveLevel = BigDecimal.valueOf(waveAbility.lv);
+                    waveMultiplier = BigDecimal.ONE;
+                } else {
+                    waveChance = BigDecimal.valueOf(miniWaveAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                    waveLevel = BigDecimal.valueOf(miniWaveAbility.lv);
+                    waveMultiplier = BigDecimal.valueOf(miniWaveAbility.multi).divide(new BigDecimal("100"), Equation.context);
+                }
+
+                BigDecimal waveDamage = getTotalAbilityAttack(de, adjustedMagnification)
+                        .multiply(waveChance)
+                        .multiply(waveMultiplier);
+
+                //Initial Position
+                BigDecimal width = BigDecimal.valueOf(Data.W_E_WID);
+                BigDecimal offset = BigDecimal.valueOf(Data.W_E_INI);
+
+                BigDecimal halfWidth = width.divide(new BigDecimal("2"), Equation.context);
+                BigDecimal position = BigDecimal.ZERO.add(offset).add(halfWidth);
+
+                dpsNodes.add(new DPSNode(position.subtract(halfWidth), BigDecimal.ZERO, waveDamage));
+
+                for (BigDecimal wv = waveLevel; wv.compareTo(BigDecimal.ONE) > 0; wv = wv.subtract(BigDecimal.ONE)) {
+                    position = position.add(BigDecimal.valueOf(Data.W_PROG));
+                }
+
+                dpsNodes.add(new DPSNode(position.add(halfWidth), BigDecimal.ZERO, waveDamage.negate()));
             }
 
-            if (n0 == null) {
-                return -1;
+            // Handling blast
+            if (blastAbility.exists()) {
+                BigDecimal blastChance = BigDecimal.valueOf(blastAbility.prob).divide(BigDecimal.valueOf(100), Equation.context);
+
+                for (int i = 0; i < 5; i++) {
+                    BigDecimal blastWidth;
+                    BigDecimal blastOffset;
+                    BigDecimal blastMultiplier;
+
+                    switch (i) {
+                        case 0, 4 -> {
+                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[2]);
+
+                            if (i == 0) {
+                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] - Data.BLAST_RANGE[2] / 2);
+                            } else {
+                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] + Data.BLAST_RANGE[2] / 2);
+                            }
+
+                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
+                        }
+                        case 1, 3 -> {
+                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[1]);
+
+                            if (i == 1) {
+                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] / 2);
+                            } else {
+                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] / 2);
+                            }
+
+                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
+                        }
+                        case 2 -> {
+                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[0]);
+                            blastOffset = BigDecimal.ZERO;
+                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
+                        }
+                        default -> throw new IllegalStateException("E/EntityHandler::showEnemyDPS - Invalid blast index %d".formatted(i));
+                    }
+
+                    BigDecimal longBlastDistance = BigDecimal.valueOf(blastAbility.dis_1);
+                    BigDecimal shortBlastDistance = BigDecimal.valueOf(blastAbility.dis_0);
+
+                    BigDecimal halfWidth = blastWidth.divide(BigDecimal.valueOf(2), Equation.context);
+
+                    BigDecimal minimumDistance = shortBlastDistance.min(longBlastDistance).add(blastOffset);
+                    BigDecimal maximumDistance = shortBlastDistance.max(longBlastDistance).add(blastOffset);
+
+                    BigDecimal minimumRange = minimumDistance.subtract(halfWidth);
+                    BigDecimal maximumRange = maximumDistance.add(halfWidth);
+
+                    BigDecimal minimumPierce = minimumDistance.add(halfWidth);
+                    BigDecimal maximumInner = maximumDistance.subtract(halfWidth);
+
+                    BigDecimal hitChance;
+
+                    if (minimumPierce.subtract(maximumInner).compareTo(BigDecimal.ZERO) > 0) {
+                        hitChance = BigDecimal.ONE;
+                    } else {
+                        hitChance = blastWidth.divide(maximumDistance.subtract(minimumDistance), Equation.context);
+                    }
+
+                    BigDecimal blastDamage = getTotalAbilityAttack(de, adjustedMagnification)
+                            .multiply(hitChance)
+                            .multiply(blastMultiplier)
+                            .multiply(blastChance);
+
+                    BigDecimal valueDifference = minimumPierce.min(maximumInner).subtract(minimumRange);
+
+                    if (valueDifference.compareTo(BigDecimal.ZERO) == 0) {
+                        dpsNodes.add(new DPSNode(minimumRange, BigDecimal.ZERO, blastDamage));
+                        dpsNodes.add(new DPSNode(maximumRange, BigDecimal.ZERO, blastDamage.negate(), true));
+                    } else {
+                        BigDecimal slope = blastDamage.divide(valueDifference, Equation.context);
+
+                        dpsNodes.add(new DPSNode(minimumRange, slope, BigDecimal.ZERO));
+                        dpsNodes.add(new DPSNode(minimumPierce.min(maximumInner), slope.negate(), BigDecimal.ZERO));
+                        dpsNodes.add(new DPSNode(minimumPierce.max(maximumInner), slope.negate(), BigDecimal.ZERO));
+                        dpsNodes.add(new DPSNode(maximumRange, slope, BigDecimal.ZERO));
+                    }
+                }
             }
 
-            if (n1 == null) {
-                return 1;
-            }
+            dpsNodes.sort((n0, n1) -> {
+                if (n0 == null && n1 == null) {
+                    return 0;
+                }
 
-            int xCoordinateCompare = n0.xCoordinate.compareTo(n1.xCoordinate);
-
-            if (xCoordinateCompare == 0) {
-                if (n0.ignoreValue) {
+                if (n0 == null) {
                     return -1;
                 }
 
-                if (n1.ignoreValue) {
+                if (n1 == null) {
                     return 1;
                 }
 
-                return -n0.valueChange.compareTo(n1.valueChange);
-            } else {
-                return xCoordinateCompare;
-            }
-        });
+                int xCoordinateCompare = n0.xCoordinate.compareTo(n1.xCoordinate);
 
-        dpsNodes.addFirst(new DPSNode(dpsNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
+                if (xCoordinateCompare == 0) {
+                    if (n0.ignoreValue) {
+                        return -1;
+                    }
 
-        dpsNodes.addLast(new DPSNode(dpsNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
+                    if (n1.ignoreValue) {
+                        return 1;
+                    }
 
-        // Ignore value must be false if there's only that node on each X point
-        for (int i = 0; i < dpsNodes.size(); i++) {
-            if (i < dpsNodes.size() - 1) {
-                DPSNode currentNode = dpsNodes.get(i);
-                DPSNode nextNode = dpsNodes.get(i + 1);
+                    return -n0.valueChange.compareTo(n1.valueChange);
+                } else {
+                    return xCoordinateCompare;
+                }
+            });
 
-                if (currentNode.ignoreValue && currentNode.xCoordinate.compareTo(nextNode.xCoordinate) != 0) {
-                    currentNode.ignoreValue = false;
+            dpsNodes.addFirst(new DPSNode(dpsNodes.getFirst().xCoordinate.subtract(BigDecimal.valueOf(100)).min(BigDecimal.valueOf(-320)), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            dpsNodes.addLast(new DPSNode(dpsNodes.getLast().xCoordinate.add(BigDecimal.valueOf(100)), BigDecimal.ZERO, BigDecimal.ZERO));
+
+            // Ignore value must be false if there's only that node on each X point
+            for (int i = 0; i < dpsNodes.size(); i++) {
+                if (i < dpsNodes.size() - 1) {
+                    DPSNode currentNode = dpsNodes.get(i);
+                    DPSNode nextNode = dpsNodes.get(i + 1);
+
+                    if (currentNode.ignoreValue && currentNode.xCoordinate.compareTo(nextNode.xCoordinate) != 0) {
+                        currentNode.ignoreValue = false;
+                    }
                 }
             }
-        }
 
-        List<BigDecimal[]> coordinates = new ArrayList<>();
+            List<BigDecimal[]> coordinates = new ArrayList<>();
 
-        BigDecimal currentYValue = BigDecimal.ZERO;
-        BigDecimal currentSlope = BigDecimal.ZERO;
+            BigDecimal currentYValue = BigDecimal.ZERO;
+            BigDecimal currentSlope = BigDecimal.ZERO;
 
-        for (int i = 0; i < dpsNodes.size(); i++) {
-            DPSNode currentNode = dpsNodes.get(i);
+            for (int i = 0; i < dpsNodes.size(); i++) {
+                DPSNode currentNode = dpsNodes.get(i);
 
-            if (i == 0) {
-                coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, BigDecimal.ZERO });
+                if (i == 0) {
+                    coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, BigDecimal.ZERO });
 
-                continue;
-            }
+                    continue;
+                }
 
-            DPSNode previousNode = dpsNodes.get(i - 1);
+                DPSNode previousNode = dpsNodes.get(i - 1);
 
-            BigDecimal dx = currentNode.xCoordinate.subtract(previousNode.xCoordinate);
+                BigDecimal dx = currentNode.xCoordinate.subtract(previousNode.xCoordinate);
 
-            if (dx.compareTo(BigDecimal.ZERO) != 0) {
-                currentYValue = currentYValue.add(dx.multiply(currentSlope));
+                if (dx.compareTo(BigDecimal.ZERO) != 0) {
+                    currentYValue = currentYValue.add(dx.multiply(currentSlope));
 
-                coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
-            }
-
-            if (currentNode.valueChange.compareTo(BigDecimal.ZERO) != 0) {
-                currentYValue = currentYValue.add(currentNode.valueChange);
-
-                if (!currentNode.ignoreValue) {
                     coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
                 }
+
+                if (currentNode.valueChange.compareTo(BigDecimal.ZERO) != 0) {
+                    currentYValue = currentYValue.add(currentNode.valueChange);
+
+                    if (!currentNode.ignoreValue) {
+                        coordinates.add(new BigDecimal[]{ currentNode.xCoordinate, currentYValue });
+                    }
+                }
+
+                if (currentNode.slopeChange.compareTo(BigDecimal.ZERO) != 0) {
+                    currentSlope = currentSlope.add(currentNode.slopeChange);
+                }
             }
 
-            if (currentNode.slopeChange.compareTo(BigDecimal.ZERO) != 0) {
-                currentSlope = currentSlope.add(currentNode.slopeChange);
+            for (int i = 0; i < coordinates.size(); i++) {
+                coordinates.get(i)[1] = coordinates.get(i)[1].divide(BigDecimal.valueOf(de.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
+            }
+
+            BigDecimal maximumDamage = BigDecimal.ZERO;
+            BigDecimal minimumX = new BigDecimal("-320");
+            BigDecimal maximumX = new BigDecimal("-320");
+
+            for (int i = 0; i < coordinates.size(); i++) {
+                maximumDamage = maximumDamage.max(coordinates.get(i)[1]);
+
+                minimumX = minimumX.min(coordinates.get(i)[0]);
+                maximumX = maximumX.max(coordinates.get(i)[0]);
+            }
+
+            if (maximumDamage.compareTo(BigDecimal.ZERO) == 0) {
+                maximumDamage = BigDecimal.TEN;
+            }
+
+            File result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
+
+            if (result != null) {
+                graphLink = StaticStore.assetManager.uploadIf(cacheID, result);
+
+                StaticStore.deleteFile(result, true);
             }
         }
 
-        for (int i = 0; i < coordinates.size(); i++) {
-            coordinates.get(i)[1] = coordinates.get(i)[1].divide(BigDecimal.valueOf(de.getItv()).divide(BigDecimal.valueOf(30), Equation.context), Equation.context);
-        }
-
-        BigDecimal maximumDamage = BigDecimal.ZERO;
-        BigDecimal minimumX = new BigDecimal("-320");
-        BigDecimal maximumX = new BigDecimal("-320");
-
-        for (int i = 0; i < coordinates.size(); i++) {
-            maximumDamage = maximumDamage.max(coordinates.get(i)[1]);
-
-            minimumX = minimumX.min(coordinates.get(i)[0]);
-            maximumX = maximumX.max(coordinates.get(i)[0]);
-        }
-
-        if (maximumDamage.compareTo(BigDecimal.ZERO) == 0) {
-            maximumDamage = BigDecimal.TEN;
-        }
-
-        File result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
-
-        if (result == null) {
+        if (graphLink == null) {
             if (editMode) {
                 if (sender instanceof Message msg) {
                     msg.editMessage(LangID.getStringByID("formDPS.failed.unknown", lang))
@@ -4503,56 +4519,103 @@ public class EntityHandler {
 
             spec.setColor(StaticStore.rainbow[0]);
 
-            spec.setImage("attachment://graph.png");
-            spec.setThumbnail("attachment://icon.png");
+            String iconLink = generateIcon(e);
 
-            File icon = generateIcon(e);
-
-            List<FileUpload> files = new ArrayList<>();
-
-            files.add(FileUpload.fromData(result, "graph.png"));
-
-            if (icon != null) {
-                files.add(FileUpload.fromData(icon, "icon.png"));
-            }
-
-            Consumer<Message> finisher = msg -> {
-                if(result.exists() && !result.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
-                }
-
-                if (icon != null && icon.exists() && !icon.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : " + icon.getAbsolutePath());
-                }
-            };
+            spec.setImage(graphLink);
+            spec.setThumbnail(iconLink);
 
             if (editMode) {
                 if (sender instanceof Message msg) {
                     msg.editMessage("")
                             .setEmbeds(spec.build())
                             .setComponents()
-                            .setFiles(files)
+                            .setFiles()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
-                            .queue(finisher);
+                            .queue();
                 } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                     event.deferEdit()
                             .setContent("")
                             .setEmbeds(spec.build())
                             .setComponents()
-                            .setFiles(files)
+                            .setFiles()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
-                            .queue(hook -> hook.retrieveOriginal().queue(finisher));
+                            .queue();
                 }
             } else {
                 if (sender instanceof MessageChannel ch) {
-                    Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                    Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
                 } else if (sender instanceof GenericCommandInteractionEvent event) {
-                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setFiles(files), finisher);
+                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
                 }
             }
         }
+    }
+
+    private static String getProcHash(Data.Proc proc) throws Exception {
+        Class<?> cls = proc.getClass();
+
+        Field[] fields = cls.getDeclaredFields();
+
+        long hash = 0L;
+
+        for (int i = 0; i < fields.length; i++) {
+            Field f = fields[i];
+
+            Object obj = f.get(proc);
+
+            if (obj == null)
+                continue;
+
+            hash += getHashOfVariables(obj);
+        }
+
+        String hashCode = Long.toHexString(hash);
+
+        if (hashCode.length() < 5) {
+            return "0".repeat(5 - hashCode.length()) + hashCode.toUpperCase(Locale.ENGLISH);
+        } else {
+            return hashCode.substring(0, 5).toUpperCase(Locale.ENGLISH);
+        }
+    }
+
+    public static long getHashOfVariables(Object object) throws Exception {
+        if (object == null)
+            return 0L;
+
+        Class<?> cls = object.getClass();
+
+        if (cls.isPrimitive()) {
+            return object.hashCode();
+        }
+
+        long hash = 0L;
+
+        Field[] fields = cls.getDeclaredFields();
+
+        for (int i = 0; i < fields.length; i++) {
+            Field f = fields[i];
+
+            if (!Modifier.isPublic(f.getModifiers())) {
+                continue;
+            }
+
+            Object obj = f.get(object);
+
+            if (obj == null)
+                continue;
+
+            Class<?> childCls = obj.getClass();
+
+            if (childCls.isPrimitive() || obj instanceof String || obj instanceof Number || obj instanceof Boolean) {
+                hash += obj.hashCode();
+            } else {
+                hash += getHashOfVariables(obj);
+            }
+        }
+
+        return hash;
     }
 
     private static BigDecimal getTotalAbilityAttack(MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
@@ -4649,26 +4712,6 @@ public class EntityHandler {
         int result = (int) ((attack.getAtk() * data.multi(BasisSet.current()) * magnification / 100.0));
 
         return BigDecimal.valueOf(result).multiply(damageTotalMultiplier);
-    }
-
-    private static boolean allCoordinatesSame(List<BigDecimal[]> normal, List<BigDecimal[]> withTreasure) {
-        if (normal.size() != withTreasure.size())
-            return false;
-
-        for (int i = 0; i < normal.size(); i++) {
-            BigDecimal[] normalCoordinate = normal.get(i);
-            BigDecimal[] withTreasureCoordinate = withTreasure.get(i);
-
-            if (normalCoordinate.length != withTreasureCoordinate.length)
-                return false;
-
-            for (int j = 0; j < normalCoordinate.length; j++) {
-                if (normalCoordinate[j].compareTo(withTreasureCoordinate[j]) != 0)
-                    return false;
-            }
-        }
-
-        return true;
     }
 
     public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, CommonStatic.Lang.Locale lang) throws Exception {
@@ -5156,7 +5199,22 @@ public class EntityHandler {
         return cells;
     }
 
-    private static File generateComboImage(Combo c) throws Exception {
+    private static String generateComboImage(Combo c) throws Exception {
+        String hash = Long.toHexString(getHashOfVariables(c));
+
+        if (hash.length() < 5) {
+            hash = "0".repeat(5 - hash.length()) + hash.toUpperCase(Locale.ENGLISH);
+        } else {
+            hash = hash.substring(0, 5).toUpperCase(Locale.ENGLISH);
+        }
+
+        String cacheID = StaticStore.COMBO_IMAGE.formatted(Data.trio(c.id.id), hash);
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
+
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -5221,7 +5279,11 @@ public class EntityHandler {
 
         waiter.await();
 
-        return image;
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
+
+        StaticStore.deleteFile(image, true);
+
+        return cacheLink;
     }
 
     private static String getIconName(int mode, CommonStatic.Lang.Locale lang) {

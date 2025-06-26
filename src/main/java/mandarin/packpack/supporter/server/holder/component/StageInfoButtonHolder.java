@@ -104,7 +104,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
             }
             case "lineup" -> {
                 try {
-                    EntityHandler.showFixedLineupData(st.preset, event, lang);
+                    EntityHandler.showFixedLineupData(st, st.preset, event, lang);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to show fixed lineup data embed");
                 }

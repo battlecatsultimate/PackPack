@@ -21,6 +21,7 @@ import common.util.unit.AbEnemy;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Level;
+import kotlin.Unit;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.cell.AbilityCellDrawer;
 import mandarin.packpack.supporter.bc.cell.CellDrawer;
@@ -44,6 +45,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -281,10 +283,10 @@ public class ImageDrawing {
                     g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
                 }
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             bg.unload();
 
@@ -293,7 +295,7 @@ public class ImageDrawing {
 
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -455,11 +457,11 @@ public class ImageDrawing {
 
                     eff.update(len, bgHeight, midH);
 
-                    return null;
+                    return Unit.INSTANCE;
                 });
             }
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> new File("./temp/"+folderName+"/", quad(progress)+".png"), () -> {
             try {
                 String content = LangID.getStringByID("data.animation.background.dimension", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
@@ -500,7 +502,7 @@ public class ImageDrawing {
 
             pause.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         pause.await();
@@ -615,14 +617,14 @@ public class ImageDrawing {
                     }
                 }
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> file, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -863,11 +865,11 @@ public class ImageDrawing {
                         anim.draw(g, pos, siz * finalRatio);
                     }
 
-                    return null;
+                    return Unit.INSTANCE;
                 });
             }
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> new File("./temp/"+folderName+"/", quad(progress)+".png"), () -> {
             try {
                 String content = finalBaseContent + "\n\n" + LangID.getStringByID("data.animation.gif.making.png", lang).replace("_", "100")
@@ -910,7 +912,7 @@ public class ImageDrawing {
 
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -1114,11 +1116,11 @@ public class ImageDrawing {
                         anim.draw(g, pos, siz * ratio * 0.5f);
                     }
 
-                    return null;
+                    return Unit.INSTANCE;
                 });
             }
 
-            return null;
+            return Unit.INSTANCE;
         }, null, () -> {
             String content = finalCont + "\n\n"+
                     LangID.getStringByID("data.animation.background.progress", lang)
@@ -1180,7 +1182,7 @@ public class ImageDrawing {
 
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -1423,7 +1425,7 @@ public class ImageDrawing {
 
                                     progress.set(progress.get() + 1);
 
-                                    return null;
+                                    return Unit.INSTANCE;
                                 });
                             }
 
@@ -1462,14 +1464,14 @@ public class ImageDrawing {
 
                                 progress.set(progress.get() + 1);
 
-                                return null;
+                                return Unit.INSTANCE;
                             });
                         }
                     }
                 }
             }
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> new File(folder, quad(progress) + ".png"), () -> {
             try {
                 String editContent = finalContent + "\n\n" +
@@ -1520,7 +1522,7 @@ public class ImageDrawing {
 
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -1708,7 +1710,7 @@ public class ImageDrawing {
                     } catch (IOException e) {
                         StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStatImage - Failed to read icon image");
 
-                        return null;
+                        return Unit.INSTANCE;
                     }
 
                     float[] titleDimension = titleFont.measureDimension(name[i]);
@@ -1811,14 +1813,14 @@ public class ImageDrawing {
                     g.translate(-baseX, -baseY);
                 }
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -1937,7 +1939,7 @@ public class ImageDrawing {
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawEnemyStatImage - Failed to get icon : " + icon.getAbsolutePath());
 
-                    return null;
+                    return Unit.INSTANCE;
                 }
 
                 float[] nRect = titleFont.measureDimension(name);
@@ -1982,14 +1984,14 @@ public class ImageDrawing {
                         y += cellMargin;
                 }
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -2256,7 +2258,7 @@ public class ImageDrawing {
                     } catch (Exception e) {
                         StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStageStatImage - Failed to draw reward table");
 
-                        return null;
+                        return Unit.INSTANCE;
                     }
                 } else {
                     g.setFontModel(contentFont);
@@ -2271,7 +2273,7 @@ public class ImageDrawing {
                     } catch (Exception e) {
                         StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStageStatImage - Failed to draw reward table");
                         
-                        return null;
+                        return Unit.INSTANCE;
                     }
                 } else {
                     g.setFontModel(contentFont);
@@ -2286,14 +2288,14 @@ public class ImageDrawing {
                     StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStageStatImage - Failed to draw enemy scheme table");
                 }
 
-                return null;
+                return Unit.INSTANCE;
             });
             
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
             
-            return null;
+            return Unit.INSTANCE;
         });
         
         waiter.await();
@@ -2585,14 +2587,14 @@ public class ImageDrawing {
                 g.setColor(191, 191, 191, 255);
                 g.drawText(totalCostText, totalWidth - bgMargin - totalCostWidth, totalHeight - bgMargin - totalCostHeight, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
             
-                return null;
+                return Unit.INSTANCE;
             });
             
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
             
-            return null;
+            return Unit.INSTANCE;
         });
         
         waiter.await();
@@ -2699,14 +2701,14 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
                 g.drawText(combo.getDescription(), x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -2714,7 +2716,27 @@ public class ImageDrawing {
         return image;
     }
 
-    public static File drawLineupImage(BattlePreset preset) throws Exception {
+    public static String drawLineupImage(Stage st, BattlePreset preset) throws Exception {
+        String hash = Long.toHexString(EntityHandler.getHashOfVariables(preset));
+
+        if (hash.length() < 5) {
+            hash = "0".repeat(5 - hash.length()) + hash.toUpperCase(Locale.ENGLISH);
+        } else {
+            hash = hash.substring(0, 5).toUpperCase(Locale.ENGLISH);
+        }
+
+        String cacheID = StaticStore.STAGE_LINEUP.formatted(
+                DataToString.getMapCode(st.getCont().getCont()),
+                Data.trio(st.getCont().id.id),
+                Data.trio(st.id.id),
+                hash
+        );
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
+
         File temp = new File("./temp");
 
         if (!temp.exists() && !temp.mkdirs()) {
@@ -2765,19 +2787,23 @@ public class ImageDrawing {
 
                 drawLineupLevel(preset, dummyIcon, g);
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, i -> image, () -> {
             countDown.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         countDown.await();
 
-        return image;
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
+
+        StaticStore.deleteFile(image, true);
+
+        return cacheLink;
     }
 
     public static Object[] plotGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, CommonStatic.Lang.Locale lang) throws Exception {
@@ -2981,14 +3007,14 @@ public class ImageDrawing {
                         Equation.formatNumber(centerY.add(yw.divide(BigDecimal.valueOf(2), Equation.context)))
                 ));
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -3199,14 +3225,14 @@ public class ImageDrawing {
                         Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
                 ));
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -3402,7 +3428,7 @@ public class ImageDrawing {
                         double v0 = substituted.substitute(y0);
 
                         if(formula.element.isCritical()) {
-                            return null;
+                            return Unit.INSTANCE;
                         }
 
                         if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
@@ -3467,7 +3493,7 @@ public class ImageDrawing {
                         double v0 = substituted.substitute(x0);
 
                         if(formula.element.isCritical()) {
-                            return null;
+                            return Unit.INSTANCE;
                         }
 
                         if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
@@ -3524,14 +3550,14 @@ public class ImageDrawing {
                         DataToString.df.format(centerY + yWidth / 2.0)
                 ));
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -3815,7 +3841,7 @@ public class ImageDrawing {
                         double v0 = substituted.substitute(r0);
 
                         if(formula.element.isCritical()) {
-                            return null;
+                            return Unit.INSTANCE;
                         }
 
                         if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
@@ -3896,7 +3922,7 @@ public class ImageDrawing {
                         double v0 = substituted.substitute(t0);
 
                         if(formula.element.isCritical()) {
-                            return null;
+                            return Unit.INSTANCE;
                         }
 
                         if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
@@ -3982,14 +4008,14 @@ public class ImageDrawing {
                         DataToString.df.format(centerY + yWidth / 2.0)
                 ));
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();
@@ -4200,14 +4226,14 @@ public class ImageDrawing {
 
                 g.reset();
 
-                return null;
+                return Unit.INSTANCE;
             });
 
-            return null;
+            return Unit.INSTANCE;
         }, progress -> image, () -> {
             waiter.countDown();
 
-            return null;
+            return Unit.INSTANCE;
         });
 
         waiter.await();

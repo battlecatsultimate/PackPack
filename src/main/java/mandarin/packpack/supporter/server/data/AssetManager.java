@@ -69,6 +69,9 @@ public class AssetManager {
 
     @Nullable
     public String getAsset(@Nonnull String id) {
+        if (!assetCache.containsKey(id))
+            return null;
+
         return assetCache.get(id).getSecond();
     }
 
