@@ -9,13 +9,6 @@ class TestUnit {
         fun getCode() : String {
             return this.hashCode().asHexString.substring(0, 5)
         }
-
-        override fun equals(other: Any?): Boolean {
-            if (other !is Data)
-                return false
-
-            return other.a == a
-        }
     }
 
     companion object {
