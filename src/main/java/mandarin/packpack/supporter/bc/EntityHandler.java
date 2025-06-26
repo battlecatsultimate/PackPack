@@ -178,7 +178,11 @@ public class EntityHandler {
         if(configData.talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
             desc += LangID.getStringByID("data.unit.talent.info", lang) + "\n";
         } else if(configData.talent && f.du.getPCoin() == null) {
-            desc += LangID.getStringByID("data.unit.talent.noTalent", lang) + "\n";
+            if (Arrays.stream(f.unit.forms).anyMatch(form -> form.du.getPCoin() != null)) {
+                desc += LangID.getStringByID("data.unit.talent.cantTalent", lang) + "\n";
+            } else {
+                desc += LangID.getStringByID("data.unit.talent.noTalent", lang) + "\n";
+            }
         }
 
         if(configData.isTrueForm && !trueFormPossible) {
@@ -359,11 +363,11 @@ public class EntityHandler {
                 forms.add(Button.secondary("final", LangID.getStringByID("formStat.button.finalForm", lang)).withEmoji(EmojiStore.THREE_NEXT));
             }
 
-            if(configData.talent && f.du.getPCoin() != null) {
+            if(Arrays.stream(f.unit.forms).anyMatch(form -> form.du.getPCoin() != null)) {
                 misc.add(Button.secondary("talent", LangID.getStringByID("formStat.button.talentInfo", lang)).withEmoji(EmojiStore.NP));
             }
 
-            misc.add(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
+            misc.add(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("📈")));
         }
 
         if(StaticStore.availableUDP.contains(f.unit.id.id)) {
@@ -429,20 +433,35 @@ public class EntityHandler {
     }
 
     public static void showTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
-        if(form.du == null || form.du.getPCoin() == null)
+        if(form.du == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
-        Level levels = new Level(form.du.getPCoin().max.length);
+        Form newForm;
 
-        for(int i = 0; i < form.du.getPCoin().max.length; i++) {
+        if (form.du.getPCoin() == null) {
+            newForm = Arrays.stream(form.unit.forms)
+                    .filter(f -> f.fid >= 2)
+                    .filter(f -> f.du.getPCoin() != null)
+                    .findAny()
+                    .orElse(null);
+
+            if (newForm == null)
+                throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
+        } else {
+            newForm = form;
+        }
+
+        PCoin talent = newForm.du.getPCoin();
+
+        Level levels = new Level(talent.max.length);
+
+        for(int i = 0; i < talent.max.length; i++) {
             levels.getTalents()[i] = 1;
         }
 
-        MaskUnit improved = form.du.getPCoin().improve(levels.getTalents());
+        MaskUnit improved = talent.improve(levels.getTalents());
 
         EmbedBuilder spec = new EmbedBuilder();
-
-        PCoin talent = form.du.getPCoin();
 
         String iconLink = generateIcon(form);
 
@@ -462,8 +481,8 @@ public class EntityHandler {
         }
 
         for(int i = 0; i < talent.info.size(); i++) {
-            String title = DataToString.getTalentTitle(form.du, i, lang);
-            String desc = DataToString.getTalentExplanation(form.du, improved, i, isFrame, lang);
+            String title = DataToString.getTalentTitle(newForm.du, i, lang);
+            String desc = DataToString.getTalentExplanation(newForm.du, improved, i, isFrame, lang);
 
             if(title.isBlank() || desc.isBlank())
                 continue;
@@ -471,18 +490,33 @@ public class EntityHandler {
             spec.addField(title, desc, false);
         }
 
-        spec.setColor(StaticStore.rainbow[2]);
+        int c;
+
+        if(form.fid == 0)
+            c = StaticStore.rainbow[4];
+        else if(form.fid == 1)
+            c = StaticStore.rainbow[3];
+        else if(form.fid == 2)
+            c = StaticStore.rainbow[2];
+        else
+            c = StaticStore.rainbow[0];
+
+        spec.setColor(c);
 
         if(iconLink != null)
             spec.setThumbnail(iconLink);
 
-        spec.setFooter(DataToString.accumulateNpCost(form.du.getPCoin(), lang));
+        spec.setFooter(DataToString.accumulateNpCost(talent, lang));
 
         if (editMode) {
+            List<LayoutComponent> components = new ArrayList<>();
+
+            components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+
             if (sender instanceof Message msg) {
                 msg.editMessage("")
                         .setEmbeds(spec.build())
-                        .setComponents()
+                        .setComponents(components)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
@@ -490,7 +524,7 @@ public class EntityHandler {
                 event.deferEdit()
                         .setContent("")
                         .setEmbeds(spec.build())
-                        .setComponents()
+                        .setComponents(components)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
@@ -671,7 +705,7 @@ public class EntityHandler {
 
         List<LayoutComponent> components = new ArrayList<>();
 
-        components.add(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
+        components.add(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("📈"))));
 
         if (editMode) {
             if (sender instanceof Message msg) {
@@ -4086,8 +4120,10 @@ public class EntityHandler {
                 c = StaticStore.rainbow[4];
             else if(f.fid == 1)
                 c = StaticStore.rainbow[3];
-            else
+            else if (f.fid == 2)
                 c = StaticStore.rainbow[2];
+            else
+                c = StaticStore.rainbow[0];
 
             String iconLink = generateIcon(f);
 
@@ -4107,10 +4143,14 @@ public class EntityHandler {
             }
 
             if (editMode) {
+                List<LayoutComponent> components = new ArrayList<>();
+
+                components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+
                 if (sender instanceof Message msg) {
                     msg.editMessage("")
                             .setEmbeds(spec.build())
-                            .setComponents()
+                            .setComponents(components)
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
@@ -4118,7 +4158,7 @@ public class EntityHandler {
                     event.deferEdit()
                             .setContent("")
                             .setEmbeds(spec.build())
-                            .setComponents()
+                            .setComponents(components)
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();

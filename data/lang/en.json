@@ -1149,6 +1149,7 @@
                 "uberRare" : "Uber Rare"
             },
             "talent" : {
+                "cantTalent" : "This unit can't have talents",
                 "embed" : "This embed applies talents",
                 "info" : "This information applies talent",
                 "list" : "Talent : ",
