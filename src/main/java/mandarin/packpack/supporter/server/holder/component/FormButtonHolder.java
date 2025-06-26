@@ -43,7 +43,7 @@ public class FormButtonHolder extends ComponentHolder {
     public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "talent" -> connectTo(event, new FormTalentHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, f, configData, lang));
-            case "dps" -> connectTo(event, new FormDPSHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, f, t, config, configData, lang));
+            case "dps" -> connectTo(event, new FormDPSButtonHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, f, t, config, configData, lang));
             default -> {
                 int diff = switch (event.getComponentId()) {
                     case "first" -> -3;

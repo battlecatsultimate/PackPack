@@ -18,13 +18,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-public class EnemyButtonHolder extends ComponentHolder {
+public class EnemyDPSButtonHolder extends ComponentHolder {
     private final Enemy e;
 
     private final TreasureHolder t;
     private final EnemyStat.EnemyStatConfig configData;
 
-    public EnemyButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Enemy e, TreasureHolder t, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public EnemyDPSButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Enemy e, TreasureHolder t, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
         this.e = e;
 
@@ -32,13 +32,6 @@ public class EnemyButtonHolder extends ComponentHolder {
         this.configData = configData;
 
         registerAutoExpiration(FIVE_MIN);
-    }
-
-    @Override
-    public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
-        if (event.getComponentId().equals("dps")) {
-            connectTo(event, new EnemyDPSButtonHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, e, t, configData, lang));
-        }
     }
 
     @Override
@@ -66,7 +59,14 @@ public class EnemyButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) throws Exception {
-        EntityHandler.showEnemyEmb(e, event, hasAuthorMessage() ? getAuthorMessage() : null, t, configData, true, lang, msg -> {});
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
+        if (event.getComponentId().equals("back")) {
+            goBack(event);
+        }
+    }
+
+    @Override
+    public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
+        EntityHandler.showEnemyDPS(event, hasAuthorMessage() ? getAuthorMessage() : null, e, t, configData.magnification[1], true, lang);
     }
 }

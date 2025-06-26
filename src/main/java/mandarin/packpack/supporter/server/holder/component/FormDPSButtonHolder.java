@@ -19,13 +19,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-public class FormDPSHolder extends ComponentHolder {
+public class FormDPSButtonHolder extends ComponentHolder {
     private final Form f;
     private final TreasureHolder t;
     private final ConfigHolder config;
     private final FormStat.FormStatConfig configData;
 
-    public FormDPSHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Form f, TreasureHolder t, ConfigHolder config, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public FormDPSButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Form f, TreasureHolder t, ConfigHolder config, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.f = f;

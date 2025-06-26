@@ -4566,10 +4566,14 @@ public class EntityHandler {
             spec.setThumbnail(iconLink);
 
             if (editMode) {
+                List<LayoutComponent> components = new ArrayList<>();
+
+                components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+
                 if (sender instanceof Message msg) {
                     msg.editMessage("")
                             .setEmbeds(spec.build())
-                            .setComponents()
+                            .setComponents(components)
                             .setFiles()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
@@ -4578,7 +4582,7 @@ public class EntityHandler {
                     event.deferEdit()
                             .setContent("")
                             .setEmbeds(spec.build())
-                            .setComponents()
+                            .setComponents(components)
                             .setFiles()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
