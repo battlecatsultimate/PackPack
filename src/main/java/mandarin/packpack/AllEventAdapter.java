@@ -637,6 +637,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "optin", "oi" -> new OptIn(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "addmaintainer", "am" -> new AddMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removemaintainer", "rm" -> new RemoveMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "removeasset", "ra" -> new RemoveAsset(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 
@@ -811,6 +812,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "optin", "oi" -> new OptIn(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "addmaintainer", "am" -> new AddMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removemaintainer", "rm" -> new RemoveMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "removeasset", "ra" -> new RemoveAsset(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 
