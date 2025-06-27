@@ -290,7 +290,6 @@ public class StageInfo extends TimedConstraintCommand {
         boolean level = false;
         boolean stm = false;
         boolean mc = false;
-        boolean extra = false;
         boolean compact = false;
         boolean itf = false;
         boolean cotc = false;
@@ -309,9 +308,7 @@ public class StageInfo extends TimedConstraintCommand {
             } else if(!mc && contents[i].equals("-mc")) {
                 mc = true;
                 mode = COLLECTION;
-            } else if(!extra && contents[i].matches("-e(xtra)?")) {
-                extra = true;
-            } else if(!compact && contents[i].equals("-c(ompact)?")) {
+            } else if(!compact && contents[i].matches("-c(ompact)?")) {
                 compact = true;
             } else if(!itf && contents[i].matches("-i(tf)?\\d")) {
                 itf = true;
@@ -420,17 +417,17 @@ public class StageInfo extends TimedConstraintCommand {
                 name = "";
             }
 
-            String stmn = MultiLangCont.get(stm, lang);
+            String stageMapName = MultiLangCont.get(stm, lang);
 
             if(stm.id != null) {
-                if(stmn == null || stmn.isBlank())
-                    stmn = Data.trio(stm.id.id);
+                if(stageMapName == null || stageMapName.isBlank())
+                    stageMapName = Data.trio(stm.id.id);
             } else {
-                if(stmn == null || stmn.isBlank())
-                    stmn = "Unknown";
+                if(stageMapName == null || stageMapName.isBlank())
+                    stageMapName = "Unknown";
             }
 
-            name += stmn+" - ";
+            name += stageMapName+" - ";
 
             String stn = MultiLangCont.get(st, lang);
 
