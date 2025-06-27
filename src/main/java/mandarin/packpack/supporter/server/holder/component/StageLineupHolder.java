@@ -2,23 +2,33 @@ package mandarin.packpack.supporter.server.holder.component;
 
 import common.CommonStatic;
 import common.util.stage.Stage;
+import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StageLineupHolder extends ComponentHolder {
     private final Stage st;
+    private final StageInfo.StageInfoConfig configData;
 
-    public StageLineupHolder(Stage st, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
+    public StageLineupHolder(Stage st, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.st = st;
+        this.configData = configData;
 
         registerAutoExpiration(FIVE_MIN);
     }
@@ -30,7 +40,34 @@ public class StageLineupHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
+        if(configData.isCompact) {
+            message.editMessageComponents()
+                    .mentionRepliedUser(false)
+                    .queue();
+        } else {
+            ArrayList<LayoutComponent> components = new ArrayList<>();
 
+            for (LayoutComponent layout : message.getComponents()) {
+                if (!(layout instanceof ActionRow row))
+                    continue;
+
+                List<ItemComponent> itemComponents = new ArrayList<>();
+
+                for (ItemComponent i : row.getComponents()) {
+                    if (i instanceof Button button) {
+                        itemComponents.add(button.asDisabled());
+                    } else if (i instanceof SelectMenu selectMenu) {
+                        itemComponents.add(selectMenu.asDisabled());
+                    }
+                }
+
+                components.add(ActionRow.of(itemComponents));
+            }
+
+            message.editMessageComponents(components)
+                    .mentionRepliedUser(false)
+                    .queue();
+        }
     }
 
     @Override

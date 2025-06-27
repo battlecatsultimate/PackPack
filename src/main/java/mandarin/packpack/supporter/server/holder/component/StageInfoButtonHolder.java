@@ -20,13 +20,17 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StageInfoButtonHolder extends ComponentHolder {
     private Stage st;
@@ -139,7 +143,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
 
                 end(true);
             }
-            case "lineup" -> connectTo(event, new StageLineupHolder(st, hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, lang));
+            case "lineup" -> connectTo(event, new StageLineupHolder(st, hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, configData, lang));
             case "stage" -> {
                 if (!(event instanceof StringSelectInteractionEvent ev))
                     return;
@@ -204,13 +208,26 @@ public class StageInfoButtonHolder extends ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue();
         } else {
-            ArrayList<Button> buttons = new ArrayList<>();
+            ArrayList<LayoutComponent> components = new ArrayList<>();
 
-            for(Button b : message.getButtons()) {
-                buttons.add(b.asDisabled());
+            for (LayoutComponent layout : message.getComponents()) {
+                if (!(layout instanceof ActionRow row))
+                    continue;
+
+                List<ItemComponent> itemComponents = new ArrayList<>();
+
+                for (ItemComponent i : row.getComponents()) {
+                    if (i instanceof Button button) {
+                        itemComponents.add(button.asDisabled());
+                    } else if (i instanceof SelectMenu selectMenu) {
+                        itemComponents.add(selectMenu.asDisabled());
+                    }
+                }
+
+                components.add(ActionRow.of(itemComponents));
             }
 
-            message.editMessageComponents(ActionRow.of(buttons))
+            message.editMessageComponents(components)
                     .mentionRepliedUser(false)
                     .queue();
         }
