@@ -93,7 +93,6 @@ public class EnemyStat extends ConstraintCommand {
                 configData.isFrame = config.useFrame;
 
             configData.isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-            configData.showEnemyDescription = config.showEnemyDescription;
         } else {
             SlashOptionMap optionMap = loader.getOptions();
 
@@ -106,8 +105,9 @@ public class EnemyStat extends ConstraintCommand {
 
             configData.isFrame = optionMap.getOption("frame", config.useFrame);
             configData.isCompact = optionMap.getOption("compact", ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact));
-            configData.showEnemyDescription = config.showEnemyDescription;
         }
+
+        configData.showEnemyDescription = config.showEnemyDescription;
 
         if (name.isBlank()) {
             if (loader.fromMessage) {
@@ -190,7 +190,6 @@ public class EnemyStat extends ConstraintCommand {
 
         boolean isSec = false;
         boolean isFrame = false;
-        boolean isExtra = false;
         boolean isLevel = false;
         boolean isCompact = false;
 
@@ -211,14 +210,6 @@ public class EnemyStat extends ConstraintCommand {
                 case "-f", "-fr" -> {
                     if (!isFrame)
                         isFrame = true;
-                    else {
-                        command.append(content[i]);
-                        written = true;
-                    }
-                }
-                case "-e", "-extra" -> {
-                    if (!isExtra)
-                        isExtra = true;
                     else {
                         command.append(content[i]);
                         written = true;
@@ -428,20 +419,20 @@ public class EnemyStat extends ConstraintCommand {
 
             Enemy e = enemies.get(i);
 
-            String ename;
+            String enemyName;
 
             if(e.id != null) {
-                ename = Data.trio(e.id.id)+" ";
+                enemyName = Data.trio(e.id.id)+" ";
             } else {
-                ename = " ";
+                enemyName = " ";
             }
 
             String name = StaticStore.safeMultiLangGet(e, lang);
 
             if(name != null)
-                ename += name;
+                enemyName += name;
 
-            data.add(ename);
+            data.add(enemyName);
         }
 
         return data;

@@ -311,7 +311,6 @@ public class FindStage extends TimedConstraintCommand {
         boolean music = false;
         boolean boss = false;
         boolean monthly = false;
-        boolean extra = false;
         boolean compact = false;
         boolean itf = false;
         boolean cotc = false;
@@ -349,8 +348,6 @@ public class FindStage extends TimedConstraintCommand {
                 boss = true;
             } else if(!monthly && (contents[i].equals("-m") || contents[i].equals("-monthly"))) {
                 monthly = true;
-            } else if (!extra && (contents[i].equals("-e") || contents[i].equals("-extra"))) {
-                extra = true;
             } else if (!compact && (contents[i].equals("-c") || contents[i].equals("-compact"))) {
                 compact = true;
             } else if (!itf && contents[i].matches("^-i(tf)?\\d$")) {
@@ -509,12 +506,12 @@ public class FindStage extends TimedConstraintCommand {
 
             Enemy e = enemies.get(i);
 
-            String ename = e.id == null ? "UNKNOWN " : Data.trio(e.id.id)+" ";
+            String enemyName = e.id == null ? "UNKNOWN " : Data.trio(e.id.id)+" ";
 
             if(MultiLangCont.get(e, lang) != null)
-                ename += MultiLangCont.get(e, lang);
+                enemyName += MultiLangCont.get(e, lang);
 
-            data.add(ename);
+            data.add(enemyName);
         }
         
         return data;
@@ -546,17 +543,17 @@ public class FindStage extends TimedConstraintCommand {
                 }
             }
 
-            String stmn = MultiLangCont.get(stm, lang);
+            String stageMapName = MultiLangCont.get(stm, lang);
 
             if(stm.id != null) {
-                if(stmn == null || stmn.isBlank())
-                    stmn = Data.trio(stm.id.id);
+                if(stageMapName == null || stageMapName.isBlank())
+                    stageMapName = Data.trio(stm.id.id);
             } else {
-                if(stmn == null || stmn.isBlank())
-                    stmn = "Unknown";
+                if(stageMapName == null || stageMapName.isBlank())
+                    stageMapName = "Unknown";
             }
 
-            name += stmn+" - ";
+            name += stageMapName+" - ";
 
             String stn = MultiLangCont.get(st, lang);
 

@@ -261,7 +261,6 @@ public class FormStat extends ConstraintCommand {
         boolean isFrame = false;
         boolean isLevel = false;
         boolean isTalent = false;
-        boolean isExtra = false;
         boolean isCompact = false;
         boolean isTrueForm = false;
         boolean isTreasure = false;
@@ -291,14 +290,6 @@ public class FormStat extends ConstraintCommand {
                 case "-t" -> {
                     if (!isTalent)
                         isTalent = true;
-                    else {
-                        command.append(content[i]);
-                        written = true;
-                    }
-                }
-                case "-e", "-extra" -> {
-                    if (!isExtra)
-                        isExtra = true;
                     else {
                         command.append(content[i]);
                         written = true;
@@ -536,14 +527,14 @@ public class FormStat extends ConstraintCommand {
 
             Form f = forms.get(i);
 
-            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+            String formName = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
             String name = StaticStore.safeMultiLangGet(f, lang);
 
             if(name != null)
-                fname += name;
+                formName += name;
 
-            data.add(fname);
+            data.add(formName);
         }
 
         return data;
