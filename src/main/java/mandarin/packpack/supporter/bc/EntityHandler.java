@@ -1473,7 +1473,7 @@ public class EntityHandler {
     }
 
     private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int star, TreasureHolder holder) throws Exception {
-        String hash = Long.toHexString(getHashOfVariables(st.data));
+        String hash = Long.toHexString(getHashOfVariables(st.data, new ArrayList<>()));
 
         if (hash.length() < 5)
             hash = "0".repeat(5 - hash.length()) + hash.toUpperCase(Locale.ENGLISH);
@@ -4644,7 +4644,7 @@ public class EntityHandler {
             if (obj == null)
                 continue;
 
-            hash += getHashOfVariables(obj);
+            hash += getHashOfVariables(obj, new ArrayList<>());
         }
 
         String hashCode = Long.toHexString(hash);
@@ -4656,7 +4656,7 @@ public class EntityHandler {
         }
     }
 
-    public static long getHashOfVariables(Object object) throws Exception {
+    public static long getHashOfVariables(Object object, List<Object> parents) throws Exception {
         if (object == null)
             return 0L;
 
@@ -4682,7 +4682,14 @@ public class EntityHandler {
             if (obj == null)
                 continue;
 
+            if (parents.contains(obj))
+                continue;
+
             Class<?> childCls = obj.getClass();
+
+            List<Object> tree = new ArrayList<>(parents);
+
+            tree.add(object);
 
             if (childCls.isPrimitive() || obj instanceof String || obj instanceof Number || obj instanceof Boolean) {
                 hash += obj.hashCode();
@@ -4690,24 +4697,24 @@ public class EntityHandler {
                 int length = Array.getLength(obj);
 
                 for (int j = 0; j < length; j++) {
-                    hash += getHashOfVariables(Array.get(obj, j));
+                    hash += getHashOfVariables(Array.get(obj, j), tree);
                 }
             } else if (obj instanceof List) {
                 for (int j = 0; j < ((List<?>) obj).size(); j++) {
-                    hash += getHashOfVariables(((List<?>) obj).get(j));
+                    hash += getHashOfVariables(((List<?>) obj).get(j), tree);
                 }
             } else if (obj instanceof Map) {
                 for (Object key : ((Map<?, ?>) obj).keySet()) {
-                    hash += getHashOfVariables(key);
+                    hash += getHashOfVariables(key, tree);
                     Object val = ((Map<?, ?>) obj).get(key);
 
                     if (val == null)
                         continue;
 
-                    hash += getHashOfVariables(val);
+                    hash += getHashOfVariables(val, tree);
                 }
             } else {
-                hash += getHashOfVariables(obj);
+                hash += getHashOfVariables(obj, tree);
             }
         }
 
@@ -5296,7 +5303,7 @@ public class EntityHandler {
     }
 
     private static String generateComboImage(Combo c) throws Exception {
-        String hash = Long.toHexString(getHashOfVariables(c));
+        String hash = Long.toHexString(getHashOfVariables(c, new ArrayList<>()));
 
         if (hash.length() < 5) {
             hash = "0".repeat(5 - hash.length()) + hash.toUpperCase(Locale.ENGLISH);
