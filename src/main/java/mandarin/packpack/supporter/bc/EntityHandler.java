@@ -1057,7 +1057,7 @@ public class EntityHandler {
             stmMagnification = stm.stars[sta];
         }
 
-        String schemeLink = generateScheme(st, configData.isFrame, lang, stmMagnification, holder);
+        String schemeLink = generateScheme(st, configData.isFrame, lang, configData.star, stmMagnification, holder);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -1478,7 +1478,7 @@ public class EntityHandler {
                 .queue();
     }
 
-    private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int star, TreasureHolder holder) throws Exception {
+    private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int lv, int star, TreasureHolder holder) throws Exception {
         String hash = Long.toHexString(getHashOfVariables(st.data, new ArrayList<>()));
 
         if (hash.length() < 5)
@@ -1490,7 +1490,7 @@ public class EntityHandler {
                 DataToString.getMapCode(st.getCont().getCont()),
                 Data.trio(st.getCont().id.id),
                 Data.trio(st.id.id),
-                star / 100,
+                lv,
                 lang.name(),
                 hash
         );
