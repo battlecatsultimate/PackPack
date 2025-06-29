@@ -50,7 +50,7 @@ public class PackBot {
     public static boolean test = false;
 
     public static int save = Math.max(0, SAVE_TERM - 1);
-    public static int backup = Math.max(0, BACKUP_TERM);
+    public static int backup = Math.max(0, BACKUP_TERM - 1);
     public static int udp = Math.max(0, UDP_FETCH_TERM - 1);
     public static int pfp = Math.max(0, PFP_UPDATE_TERM - 1);
     public static int banner = Math.max(0, BANNER_UPDATE_TERM - 1);
