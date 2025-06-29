@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import org.apache.commons.lang3.ArrayUtils;
@@ -51,7 +50,7 @@ public class PackBot {
     public static boolean test = false;
 
     public static int save = Math.max(0, SAVE_TERM - 1);
-    public static int backup = Math.max(0, BACKUP_TERM - 1);
+    public static int backup = Math.max(0, BACKUP_TERM);
     public static int udp = Math.max(0, UDP_FETCH_TERM - 1);
     public static int pfp = Math.max(0, PFP_UPDATE_TERM - 1);
     public static int banner = Math.max(0, BANNER_UPDATE_TERM - 1);
@@ -128,16 +127,19 @@ public class PackBot {
                     try {
                         System.out.println("Backup save file");
 
-                        if (!test) {
-                            client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
-                                    .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
-                                    .queue()));
+                        if (!test && StaticStore.backup != null) {
+                            String link = StaticStore.backup.uploadBackup();
 
-                            for (int i = 0; i < StaticStore.maintainers.size(); i++) {
-                                client.retrieveUserById(StaticStore.maintainers.get(i)).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
-                                        .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
+                            if (!link.isBlank()) {
+                                client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup : " + link)
                                         .queue()));
+
+                                for (int i = 0; i < StaticStore.maintainers.size(); i++) {
+                                    client.retrieveUserById(StaticStore.maintainers.get(i)).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup : " + link)
+                                            .queue()));
+                                }
                             }
+
                         }
                     } catch (Exception e) {
                         StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to send backup file");

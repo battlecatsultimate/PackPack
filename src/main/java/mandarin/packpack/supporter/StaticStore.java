@@ -86,6 +86,8 @@ public class StaticStore {
 
     public static final ConfigHolder defaultConfig = new ConfigHolder();
 
+    public static BackupHolder backup = null;
+
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, String> musics = new HashMap<>();
     public static final Map<String, Integer> timeZones = new HashMap<>();
@@ -721,6 +723,7 @@ public class StaticStore {
         obj.add("backgroundStageLength", mapToJsonBackgroundInteger(backgroundStageLength));
         obj.add("bannerHolder", bannerHolder.toJson());
         obj.add("assetManager", assetManager.toJson());
+        obj.add("backup", backup.toJson());
 
         if (EventFileGrabber.accountCode != null && EventFileGrabber.password != null && EventFileGrabber.passwordRefreshToken != null) {
             obj.addProperty("accountCode", EventFileGrabber.accountCode);
@@ -953,6 +956,12 @@ public class StaticStore {
 
             if (obj.has("assetManager")) {
                 assetManager = AssetManager.fromJson(obj.getAsJsonArray("assetManager"));
+            }
+
+            if (obj.has("backup")) {
+                backup = BackupHolder.fromJson(obj.getAsJsonArray("backup"));
+            } else {
+                backup = BackupHolder.fromJson(new JsonArray());
             }
 
             // If any of these are null, bot can't check event data properly, resetting
