@@ -1258,7 +1258,13 @@ public class EntityHandler {
             for (int i = startIndex; i < Math.min(startIndex + 10, st.getCont().list.size()); i++) {
                 Stage stage = st.getCont().list.get(i);
 
-                stageList.add(SelectOption.of(StaticStore.safeMultiLangGet(stage, lang), String.valueOf(i)).withDescription(DataToString.getStageCode(stage)).withDefault(st.id.id == i));
+                String stageName = StaticStore.safeMultiLangGet(stage, lang);
+
+                if (stageName == null || stageName.isBlank()) {
+                    stageName = DataToString.getStageCode(stage);
+                }
+
+                stageList.add(SelectOption.of(stageName, String.valueOf(i)).withDescription(DataToString.getStageCode(stage)).withDefault(st.id.id == i));
             }
 
             components.add(ActionRow.of(StringSelectMenu.create("stage").addOptions(stageList).build()));
