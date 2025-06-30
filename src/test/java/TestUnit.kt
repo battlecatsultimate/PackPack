@@ -8,6 +8,7 @@ import com.google.api.services.drive.DriveScopes
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.gson.JsonArray
+import mandarin.packpack.supporter.Logger
 import mandarin.packpack.supporter.server.data.BackupHolder
 import java.io.File
 import java.io.FileInputStream
@@ -20,7 +21,7 @@ class TestUnit {
         fun main(args: Array<String>) {
             val backupHolder = BackupHolder.fromJson(JsonArray())
 
-            backupHolder.uploadBackup()
+            backupHolder.uploadBackup(Logger.BotInstance.PACK_PACK)
         }
 
         fun upload() {

@@ -128,7 +128,7 @@ public class PackBot {
                         System.out.println("Backup save file");
 
                         if (!test && StaticStore.backup != null) {
-                            String link = StaticStore.backup.uploadBackup();
+                            String link = StaticStore.backup.uploadBackup(Logger.BotInstance.PACK_PACK);
 
                             if (!link.isBlank()) {
                                 client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup : " + link)

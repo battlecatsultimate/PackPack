@@ -21,6 +21,7 @@ import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.bc.DataToString
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.data.BackupHolder
 import mandarin.packpack.supporter.server.data.BannerHolder
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
@@ -155,20 +156,20 @@ object CardBot : ListenerAdapter() {
                     if (!test && backup == 360) {
                         backup = 1
 
-                        client.retrieveUserById(StaticStore.MANDARIN_SMELL)
-                            .queue {user ->
-                                user.openPrivateChannel().queue { pv ->
-                                    pv.sendMessage("Sending backup")
-                                        .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
-                                        .queue()
-                                }
-                            }
+                        val link = StaticStore.backup.uploadBackup(Logger.BotInstance.CARD_DEALER)
 
-                        client.retrieveUserById(ServerData.get("gid")).queue { user ->
-                            user.openPrivateChannel().queue {pv ->
-                                pv.sendMessage("Sending backup")
-                                    .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
-                                    .queue()
+                        if (link.isNotBlank()) {
+                            client.retrieveUserById(StaticStore.MANDARIN_SMELL)
+                                .queue {user ->
+                                    user.openPrivateChannel().queue { pv ->
+                                        pv.sendMessage("Sending backup : $link").queue()
+                                    }
+                                }
+
+                            client.retrieveUserById(ServerData.get("gid")).queue { user ->
+                                user.openPrivateChannel().queue {pv ->
+                                    pv.sendMessage("Sending backup : $link").queue()
+                                }
                             }
                         }
                     } else {
@@ -1217,6 +1218,12 @@ object CardBot : ListenerAdapter() {
         } else {
             CardData.allowedChannel.addAll(ServerData.getArray("allowedChannel").map { id -> id.toLong() })
         }
+
+        if (obj.has("backup")) {
+            StaticStore.backup = BackupHolder.fromJson(obj.getAsJsonArray("backup"))
+        } else {
+            StaticStore.backup = BackupHolder.fromJson(JsonArray())
+        }
     }
 
     @Synchronized
@@ -1508,6 +1515,8 @@ object CardBot : ListenerAdapter() {
         CardData.allowedChannel.forEach { c -> allowedChannel.add(c) }
 
         obj.add("allowedChannel", allowedChannel)
+
+        obj.add("backup", StaticStore.backup.toJson())
 
         try {
             val folder = File("./data/")

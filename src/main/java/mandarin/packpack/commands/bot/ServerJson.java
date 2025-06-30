@@ -2,6 +2,7 @@ package mandarin.packpack.commands.bot;
 
 import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
+import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
@@ -23,7 +24,7 @@ public class ServerJson extends ConstraintCommand {
             return;
         }
 
-        String link = StaticStore.backup.uploadBackup();
+        String link = StaticStore.backup.uploadBackup(Logger.BotInstance.PACK_PACK);
 
         if (link.isBlank()) {
             replyToMessageSafely(loader.getChannel(), "Failed to upload backup", loader.getMessage(), a -> a);

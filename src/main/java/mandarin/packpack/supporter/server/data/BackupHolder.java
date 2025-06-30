@@ -10,6 +10,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.StaticStore;
 
 import java.io.File;
@@ -20,7 +21,8 @@ import java.time.Instant;
 import java.util.*;
 
 public class BackupHolder {
-    private static final String BACKUP_FOLDER_ID = "1RR4eUCrqkBBV6TkNADVRzTn-68VLxm9Y";
+    private static final String CARD_DEALER_BACKUP_FOLDER_ID = "1FlXSURFasPuI0NuGqZ8hmneLQGBXezii";
+    private static final String PACKPACK_BACKUP_FOLDER_ID = "1RR4eUCrqkBBV6TkNADVRzTn-68VLxm9Y";
     private static final int MAX_BACKUP = 50;
 
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -78,22 +80,37 @@ public class BackupHolder {
         service = tempService;
     }
 
-    public String uploadBackup() throws Exception {
+    public String uploadBackup(Logger.BotInstance instance) throws Exception {
         if (service == null) {
             StaticStore.logger.uploadLog("W/BackupHolder::uploadBackup - Google drive service hasn't been initialized");
 
             return "";
         }
 
+        String fileName;
+        String parentFolder;
+
+        switch (instance) {
+            case PACK_PACK -> {
+                fileName = "serverinfo.json";
+                parentFolder = PACKPACK_BACKUP_FOLDER_ID;
+            }
+            case CARD_DEALER -> {
+                fileName = "cardSave.json";
+                parentFolder = CARD_DEALER_BACKUP_FOLDER_ID;
+            }
+            default -> throw new IllegalStateException("E/BackupHolder::uploadBackup - Invalid bot instance value");
+        }
+
         com.google.api.services.drive.model.File target = new com.google.api.services.drive.model.File();
-        FileContent content = new FileContent("application/json", new File("./data/serverinfo.json"));
+        FileContent content = new FileContent("application/json", new File("./data/" + fileName));
 
         long unixTime = Instant.now(Clock.systemUTC()).toEpochMilli();
         String date = format.format(new Date(unixTime));
 
-        target.setName(date + " - serverinfo.json");
+        target.setName(date + " - " + fileName);
         target.setMimeType(content.getType());
-        target.setParents(List.of(BACKUP_FOLDER_ID));
+        target.setParents(List.of(parentFolder));
 
         com.google.api.services.drive.model.File result = service.files().create(target, content).execute();
 
