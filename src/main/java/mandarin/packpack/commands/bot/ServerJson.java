@@ -7,10 +7,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.annotation.Nonnull;
-import java.io.File;
 
 public class ServerJson extends ConstraintCommand {
     public ServerJson(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
@@ -18,7 +16,7 @@ public class ServerJson extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@Nonnull CommandLoader loader) {
+    public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && !StaticStore.maintainers.contains(loader.getUser().getId())) {
             loader.getChannel().sendMessage(LangID.getStringByID("bot.denied.reason.noPermission.developer", lang)).queue();
 
