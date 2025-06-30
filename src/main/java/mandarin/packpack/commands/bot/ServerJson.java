@@ -25,16 +25,18 @@ public class ServerJson extends ConstraintCommand {
             return;
         }
 
-        StaticStore.saveServerInfo();
+        String link = StaticStore.backup.uploadBackup();
 
-        File f = new File("./data/serverinfo.json");
+        if (link.isBlank()) {
+            replyToMessageSafely(loader.getChannel(), "Failed to upload backup", loader.getMessage(), a -> a);
 
-        if(f.exists()) {
-            Message msg = loader.getMessage();
-
-            msg.getAuthor().openPrivateChannel()
-                    .flatMap(pc -> pc.sendMessage("Sent serverinfo.json via DM").addFiles(FileUpload.fromData(f, "serverinfo.json")))
-                    .queue();
+            return;
         }
+
+        Message msg = loader.getMessage();
+
+        msg.getAuthor().openPrivateChannel()
+                .flatMap(pc -> pc.sendMessage("Sent serverinfo.json via DM : " + link))
+                .queue();
     }
 }
