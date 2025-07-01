@@ -314,7 +314,7 @@ public class PackBot {
                 if (!test) {
                     if (updateStatus == STATUS_UPDATE_TERM) {
                         try {
-                            BotListPlatformHandler.handleUpdatingBotStatus(client);
+                            BotListPlatformHandler.handleUpdatingBotStatus(client, false);
 
                             Set<String> guilds = new HashSet<>();
 

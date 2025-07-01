@@ -638,6 +638,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "addmaintainer", "am" -> new AddMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removemaintainer", "rm" -> new RemoveMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removeasset", "ra" -> new RemoveAsset(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "updatebotstatus", "ub" -> new UpdateBotStatus(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 
@@ -813,6 +814,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "addmaintainer", "am" -> new AddMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removemaintainer", "rm" -> new RemoveMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removeasset", "ra" -> new RemoveAsset(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "updatebotstatus", "ub" -> new UpdateBotStatus(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 

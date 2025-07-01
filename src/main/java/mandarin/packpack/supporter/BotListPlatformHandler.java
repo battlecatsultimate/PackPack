@@ -66,19 +66,19 @@ public class BotListPlatformHandler {
         }
     }
 
-    public static void handleUpdatingBotStatus(@Nonnull ShardManager manager) {
+    public static void handleUpdatingBotStatus(@Nonnull ShardManager manager, boolean printResponse) {
         String botID = getBotID(manager);
 
         if (botID == null)
             return;
 
-        handleTopGG(manager, botID);
-        handleDiscordBotList(manager, botID);
-        handleKoreanDiscordList(manager, botID);
-        handleDiscordBotGG(manager, botID);
+        handleTopGG(manager, botID, printResponse);
+        handleDiscordBotList(manager, botID, printResponse);
+        handleKoreanDiscordList(manager, botID, printResponse);
+        handleDiscordBotGG(manager, botID, printResponse);
     }
 
-    private static void handleTopGG(@Nonnull ShardManager manager, String botID) {
+    public static void handleTopGG(@Nonnull ShardManager manager, String botID, boolean printResponse) {
         if (topGGToken == null)
             return;
 
@@ -107,7 +107,7 @@ public class BotListPlatformHandler {
                 CloseableHttpClient httpClient = HttpClientBuilder.create().build();
                 ClassicHttpResponse response = httpClient.executeOpen(null, post, null)
         ) {
-            if (response.getCode() != 200) {
+            if (response.getCode() != 200 || printResponse) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
                     StringBuilder result = new StringBuilder();
 
@@ -127,7 +127,7 @@ public class BotListPlatformHandler {
         }
     }
 
-    private static void handleDiscordBotList(@Nonnull ShardManager manager, String botID) {
+    public static void handleDiscordBotList(@Nonnull ShardManager manager, String botID, boolean printResponse) {
         if (discordBotListToken == null)
             return;
 
@@ -152,7 +152,7 @@ public class BotListPlatformHandler {
                 try (
                         ClassicHttpResponse response = httpClient.executeOpen(null, post, null)
                 ) {
-                    if (response.getCode() != 200) {
+                    if (response.getCode() != 200 || printResponse) {
                         try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
                             StringBuilder result = new StringBuilder();
 
@@ -176,7 +176,7 @@ public class BotListPlatformHandler {
         }
     }
 
-    private static void handleKoreanDiscordList(@Nonnull ShardManager manager, String botID) {
+    public static void handleKoreanDiscordList(@Nonnull ShardManager manager, String botID, boolean printResponse) {
         if (koreanDiscordListToken == null)
             return;
 
@@ -198,7 +198,7 @@ public class BotListPlatformHandler {
                 CloseableHttpClient client = HttpClientBuilder.create().build();
                 ClassicHttpResponse response = client.executeOpen(null, post, null)
         ) {
-            if (response.getCode() != 200) {
+            if (response.getCode() != 200 || printResponse) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
                     StringBuilder result = new StringBuilder();
 
@@ -218,7 +218,7 @@ public class BotListPlatformHandler {
         }
     }
 
-    public static void handleDiscordBotGG(ShardManager manager, String botID) {
+    public static void handleDiscordBotGG(ShardManager manager, String botID, boolean printResponse) {
         if (discordBotGGToken == null)
             return;
 
@@ -250,7 +250,7 @@ public class BotListPlatformHandler {
             ) {
                 endTime = System.currentTimeMillis();
 
-                if (response.getCode() != 200) {
+                if (response.getCode() != 200 || printResponse) {
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
                         StringBuilder result = new StringBuilder();
 
