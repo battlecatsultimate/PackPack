@@ -111,7 +111,7 @@ class CardFileHolder(author: Message, userID: String, channelID: String, message
         msg.delete().queue()
 
         if (card == null) {
-            val c = Card(CardData.cards.maxOfOrNull { c -> c.id } ?: 0, CardData.Tier.COMMON, "Card", downloader.target)
+            val c = Card((CardData.cards.maxOfOrNull { c -> c.id } ?: 0) + 1, CardData.Tier.COMMON, "Card", downloader.target)
 
             parent?.connectTo(CardModifyHolder(authorMessage, userID, channelID, message, c, true))
 
