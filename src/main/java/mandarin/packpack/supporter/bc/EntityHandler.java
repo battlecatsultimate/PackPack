@@ -3603,7 +3603,15 @@ public class EntityHandler {
             levelHash = levelHash.substring(0, 5);
         }
 
-        String cacheID = StaticStore.DPS_GRAPH_UNIT.formatted(Data.trio(f.unit.id.id), Data.trio(f.fid), lang.name(), levelHash, procHash, treasure ? "TREASURE" : "NORMAL");
+        String treasureHash = Long.toHexString(getHashOfVariables(treasureSetting, new ArrayList<>()));
+
+        if (treasureHash.length() < 5) {
+            treasureHash = "0".repeat(5 - treasureHash.length()) + treasureHash;
+        } else {
+            treasureHash = treasureHash.substring(0, 5);
+        }
+
+        String cacheID = StaticStore.DPS_GRAPH_UNIT.formatted(Data.trio(f.unit.id.id), Data.trio(f.fid), lang.name(), levelHash, procHash, treasure ? "TREASURE" + treasureHash : "NORMAL");
 
         String graphLink = StaticStore.assetManager.getAsset(cacheID);
 
