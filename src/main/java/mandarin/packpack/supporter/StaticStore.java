@@ -190,12 +190,12 @@ public class StaticStore {
     public static final String UNIT_EVOLVE_TRUE = "UNIT-EVOLVE-TRUE-%s-%s";
     /** UNIT-EVOLVE-ULTRA-050-EN **/
     public static final String UNIT_EVOLVE_ULTRA = "UNIT-EVOLVE-ULTRA-%s-%s";
-    /** UNIT-DPS-GRAPH-000-002-JP-ACD85-TREASURE **/
-    public static final String DPS_GRAPH_UNIT = "UNIT-DPS-GRAPH-%s-%s-%s-%s-%s";
-    /** ENEMY-DPS-GRAPH-000-KR-DE8B5 **/
-    public static final String DPS_GRAPH_ENEMY = "ENEMY-DPS-GRAPH-%s-%s-%s";
-    /** STAGE-SCHEME-NA-000-000-LV3-ZH-AB32C **/
-    public static final String STAGE_SCHEME = "STAGE-SCHEME-%s-%s-%s-LV%d-%s-%s";
+    /** UNIT-DPS-GRAPH-000-002-JP-LVAD90B-ACD85-TREASURE **/
+    public static final String DPS_GRAPH_UNIT = "UNIT-DPS-GRAPH-%s-%s-%s-LV%s-%s-%s";
+    /** ENEMY-DPS-GRAPH-000-KR-M2300-DE8B5 **/
+    public static final String DPS_GRAPH_ENEMY = "ENEMY-DPS-GRAPH-%s-%s-M%d-%s";
+    /** STAGE-SCHEME-NA-000-000-LV3-FRAME-ZH-AB32C **/
+    public static final String STAGE_SCHEME = "STAGE-SCHEME-%s-%s-%s-LV%d-%s-%s-%s";
     /** STAGE-LINEUP-SR-000-000-E8FC6 **/
     public static final String STAGE_LINEUP = "STAGE-LINEUP-%s-%s-%s-%s";
     /** MEDAL-ICON-018-EN **/

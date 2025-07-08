@@ -1491,6 +1491,7 @@ public class EntityHandler {
                 Data.trio(st.getCont().id.id),
                 Data.trio(st.id.id),
                 lv,
+                isFrame ? "FRAME" : "SECOND",
                 lang.name(),
                 hash
         );
@@ -3594,8 +3595,15 @@ public class EntityHandler {
         }
 
         String procHash = getProcHash(du.getProc());
+        String levelHash = Long.toHexString(getHashOfVariables(lv, new ArrayList<>()));
 
-        String cacheID = StaticStore.DPS_GRAPH_UNIT.formatted(Data.trio(f.unit.id.id), Data.trio(f.fid), lang.name(), procHash, treasure ? "TREASURE" : "NORMAL");
+        if (levelHash.length() < 5) {
+            levelHash = "0".repeat(5 - levelHash.length()) + levelHash;
+        } else {
+            levelHash = levelHash.substring(0, 5);
+        }
+
+        String cacheID = StaticStore.DPS_GRAPH_UNIT.formatted(Data.trio(f.unit.id.id), Data.trio(f.fid), lang.name(), levelHash, procHash, treasure ? "TREASURE" : "NORMAL");
 
         String graphLink = StaticStore.assetManager.getAsset(cacheID);
 
@@ -4232,7 +4240,7 @@ public class EntityHandler {
 
         String procHash = getProcHash(de.getProc());
 
-        String cacheID = StaticStore.DPS_GRAPH_ENEMY.formatted(Data.trio(e.id.id), lang.name(), procHash);
+        String cacheID = StaticStore.DPS_GRAPH_ENEMY.formatted(Data.trio(e.id.id), lang.name(), magnification, procHash);
 
         String graphLink = StaticStore.assetManager.getAsset(cacheID);
 
