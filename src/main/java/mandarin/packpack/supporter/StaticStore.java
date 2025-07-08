@@ -178,7 +178,7 @@ public class StaticStore {
     public final static String UNITARCHIVE = "1327548891847069728";
     public final static String ENEMYARCHIVE = "1327548910465581057";
     public final static String MISCARCHIVE = "964536641526067310";
-    public final static String ASSETARCHIVE = "1386599052291997766";
+    public final static String ASSETARCHIVE = "1392002399446503504";
 
     public static AssetManager assetManager = new AssetManager();
 
