@@ -432,12 +432,7 @@ public class EntityFilter {
             filteredCombos = filterData(initialCombos, name, lang, null, true, nameGenerator, idRegexGenerator);
 
         if (f != null)
-            filteredCombos.removeIf(c -> {
-                System.out.println(f);
-                System.out.println(Arrays.stream(c.forms).noneMatch(form -> form.unit.id.id == f.unit.id.id && f.fid >= form.fid));
-
-                return Arrays.stream(c.forms).noneMatch(form -> form.unit.id.id == f.unit.id.id && f.fid >= form.fid);
-            });
+            filteredCombos.removeIf(c -> Arrays.stream(c.forms).noneMatch(form -> form.unit.id.id == f.unit.id.id && f.fid >= form.fid));
 
         return filteredCombos;
     }
