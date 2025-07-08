@@ -168,6 +168,7 @@ class LogSession {
             }
 
             loadUserAmount(obj, "catFoodPack", session.catFoodPack)
+            loadUserAmount(obj, "platinumShardPack", session.platinumShardPack)
 
             loadUserCardMap(obj, "generatedCards", session.generatedCards)
 
@@ -606,6 +607,7 @@ class LogSession {
         obj.add("activeMembers", memberArray)
 
         saveUserAmount(obj, "catFoodPack", catFoodPack)
+        saveUserAmount(obj, "platinumShardPack", platinumShardPack)
 
         saveUserCardMap(obj, "generatedCards", generatedCards)
 
