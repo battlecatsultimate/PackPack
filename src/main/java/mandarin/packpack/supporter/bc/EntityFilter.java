@@ -13,12 +13,14 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
+import kotlin.jvm.functions.Function2;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class EntityFilter {
     private static final int TOLERANCE = 5;
@@ -36,113 +38,51 @@ public class EntityFilter {
     };
 
     private static final String spaceRegex = "[\\-☆]";
+    private static final String apostropheRegex = "‘";
 
     public static ArrayList<Form> findUnitWithName(String name, boolean trueForm, CommonStatic.Lang.Locale lang) {
-        ArrayList<Form> res = new ArrayList<>();
-        ArrayList<Form> clear = new ArrayList<>();
+        ArrayList<Form> initialData = new ArrayList<>();
 
-        for(Unit u : UserProfile.getBCData().units.getList()) {
-            if(u == null)
+        for (Unit u : UserProfile.getBCData().units.getList()) {
+            if (u == null)
                 continue;
 
-            for(Form f : u.forms) {
-                boolean added = false;
-                boolean cleared = false;
+            for (Form f : u.forms) {
+                if (f == null)
+                    continue;
 
-                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                    String[] idFormats = {
-                            Data.trio(u.id.id) + "-" + Data.trio(f.fid),
-                            Data.trio(u.id.id) + " - " + Data.trio(f.fid),
-                            u.id.id + "-" + f.fid,
-                            u.id.id + " - " + f.fid,
-                            Data.trio(u.id.id) + "-" + f.fid,
-                            Data.trio(u.id.id) + " - " + f.fid,
-                            u.id.id + "-" + Data.trio(f.fid),
-                            u.id.id + " - " + Data.trio(f.fid)
-                    };
-
-                    for (int j = 0; j < idFormats.length; j++) {
-                        if (idFormats[j].toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
-                            res.clear();
-
-                            res.add(f);
-
-                            return res;
-                        } else if (idFormats[j].toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                            added = true;
-                        }
-                    }
-
-                    //Special case
-                    if (name.toLowerCase(Locale.ENGLISH).equals(Data.trio(u.id.id) + Data.trio(f.fid))) {
-                        res.clear();
-
-                        res.add(f);
-
-                        return res;
-                    }
-
-                    String formName = null;
-
-                    if(MultiLangCont.get(f, lang) != null) {
-                        formName = StaticStore.safeMultiLangGet(f, locale);
-                    }
-
-                    if (formName == null || formName.isBlank()) {
-                        formName = f.names.toString();
-
-                        if (formName.isBlank())
-                            formName = null;
-                    }
-
-                    if(formName != null && formName.replaceAll(spaceRegex, " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                        added = true;
-                    }
-
-                    ArrayList<String> alias = AliasHolder.FALIAS.getCont(f, lang);
-
-                    if(alias != null && !alias.isEmpty()) {
-                        for(String a : alias) {
-                            if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                                if(a.toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
-                                    cleared = true;
-                                    added = true;
-
-                                    break;
-                                }
-
-                                added = true;
-
-                                break;
-                            }
-                        }
-
-                        if(added)
-                            break;
-                    }
-                }
-
-                if(added) {
-                    res.add(f);
-                }
-
-                if(cleared) {
-                    clear.add(f);
-                }
+                initialData.add(f);
             }
         }
 
-        if(!clear.isEmpty()) {
+        Function<Form, String> idRegexGenerator = f -> "(" + Data.trio(f.unit.id.id) + "|" + f.unit.id.id + ")( *- *)?(" + Data.trio(f.fid) + "|" + f.fid + ")";
+        Function2<Form, CommonStatic.Lang.Locale, String> nameGneerator = (f, locale) -> {
+            String formName = StaticStore.safeMultiLangGet(f, locale);
+
+            if (formName == null || formName.isBlank()) {
+                formName = f.names.toString();
+
+                if (formName.isBlank())
+                    formName = "";
+            }
+
+            return formName;
+        };
+
+        ArrayList<Form> filteredData = filterData(initialData, name, lang, AliasHolder.FALIAS, false, nameGneerator, idRegexGenerator);
+
+        if (!filteredData.isEmpty()) {
             if(trueForm) {
                 ArrayList<Form> filtered = new ArrayList<>();
 
-                for(int i = 0; i < clear.size(); i++) {
-                    Form f = clear.get(i);
+                for(int i = 0; i < filteredData.size(); i++) {
+                    Form f = filteredData.get(i);
+                    int lastIndex = f.unit.forms.length - 1;
 
-                    if(f.fid == 2 && !filtered.contains(f)) {
+                    if(f.fid == lastIndex && !filtered.contains(f)) {
                         filtered.add(f);
-                    } else if(f.fid != 2) {
-                        Form finalForm = f.unit.forms[f.unit.forms.length - 1];
+                    } else if(f.fid != lastIndex) {
+                        Form finalForm = f.unit.forms[lastIndex];
 
                         if(!filtered.contains(finalForm))
                             filtered.add(finalForm);
@@ -152,98 +92,22 @@ public class EntityFilter {
                 return filtered;
             }
 
-            return clear;
+            return filteredData;
         }
 
-        if(res.isEmpty()) {
-            ArrayList<Form> similar = new ArrayList<>();
-            ArrayList<Integer> similarity = new ArrayList<>();
-
-            name = name.toLowerCase(Locale.ENGLISH);
-
-            if(lang == CommonStatic.Lang.Locale.KR)
-                name = KoreanSeparater.separate(name);
-
-            int sMin = 10;
-
-            for(Unit u : UserProfile.getBCData().units.getList()) {
-                if(u == null)
-                    continue;
-
-                for(Form f : u.forms) {
-                    String fname = StaticStore.safeMultiLangGet(f, lang);
-
-                    if(fname == null || fname.isBlank()) {
-                        fname = f.names.toString();
-                    }
-
-                    boolean done = false;
-
-                    if(!fname.isBlank()) {
-                        fname = fname.toLowerCase(Locale.ENGLISH);
-
-                        if(lang == CommonStatic.Lang.Locale.KR)
-                            fname = KoreanSeparater.separate(fname);
-
-                        int s = calculateOptimalDistance(name, fname);
-
-                        if (s <= TOLERANCE) {
-                            similarity.add(s);
-                            similar.add(f);
-
-                            sMin = Math.min(sMin, s);
-
-                            done = true;
-                        }
-                    }
-
-                    if(!done) {
-                        ArrayList<String> alias = AliasHolder.FALIAS.getCont(f, lang);
-
-                        if(alias != null && !alias.isEmpty()) {
-                            for(String a : alias) {
-                                boolean added = false;
-
-                                a = a.toLowerCase(Locale.ENGLISH);
-
-                                if(lang == CommonStatic.Lang.Locale.KR)
-                                    a = KoreanSeparater.separate(a);
-
-                                int s = calculateOptimalDistance(name, a);
-
-                                if (s <= TOLERANCE) {
-                                    similar.add(f);
-                                    similarity.add(s);
-
-                                    sMin = Math.min(sMin, s);
-
-                                    added = true;
-                                }
-
-                                if(added)
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            for(int i = 0; i < similar.size(); i++) {
-                if(similarity.get(i) == sMin)
-                    res.add(similar.get(i));
-            }
-        }
+        ArrayList<Form> dynamicData = filterData(initialData, name, lang, AliasHolder.FALIAS, true, nameGneerator, idRegexGenerator);
 
         if(trueForm) {
             ArrayList<Form> filtered = new ArrayList<>();
 
-            for(int i = 0; i < res.size(); i++) {
-                Form f = res.get(i);
+            for(int i = 0; i < dynamicData.size(); i++) {
+                Form f = dynamicData.get(i);
+                int lastIndex = f.unit.forms.length - 1;
 
-                if(f.fid == 2 && !filtered.contains(f)) {
+                if(f.fid == lastIndex && !filtered.contains(f)) {
                     filtered.add(f);
-                } else if(f.fid != 2) {
-                    Form finalForm = f.unit.forms[f.unit.forms.length - 1];
+                } else if(f.fid != lastIndex) {
+                    Form finalForm = f.unit.forms[lastIndex];
 
                     if(!filtered.contains(finalForm))
                         filtered.add(finalForm);
@@ -253,1318 +117,237 @@ public class EntityFilter {
             return filtered;
         }
 
-        return res;
+        return dynamicData;
     }
 
     public static ArrayList<Enemy> findEnemyWithName(String name, CommonStatic.Lang.Locale lang) {
-        ArrayList<Enemy> res = new ArrayList<>();
-        ArrayList<Enemy> clear = new ArrayList<>();
+        ArrayList<Enemy> initialData = new ArrayList<>(UserProfile.getBCData().enemies.getList());
 
-        for(Enemy e : UserProfile.getBCData().enemies.getList()) {
-            if(e == null)
-                continue;
+        Function<Enemy, String> idRegexGenerator = e -> Data.trio(e.id.id);
+        Function2<Enemy, CommonStatic.Lang.Locale, String> nameGenerator = (e, locale) -> {
+            String enemyName = StaticStore.safeMultiLangGet(e, locale);
 
-            if (name.toLowerCase(Locale.ENGLISH).equals(Data.trio(e.id.id).toLowerCase(Locale.ENGLISH))) {
-                res.clear();
+            if (enemyName == null || enemyName.isBlank()) {
+                enemyName = e.names.toString();
 
-                res.add(e);
-
-                return res;
+                if (enemyName.isBlank())
+                    enemyName = "";
             }
 
-            boolean added = false;
-            boolean cleared = false;
+            return enemyName;
+        };
 
-            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
-                        .append(" ");
+        ArrayList<Enemy> filteredData = filterData(initialData, name, lang, AliasHolder.EALIAS, false, nameGenerator, idRegexGenerator);
 
-                String enemyName = null;
+        if (!filteredData.isEmpty())
+            return filteredData;
 
-                if(MultiLangCont.get(e, lang) != null) {
-                    ename.append(StaticStore.safeMultiLangGet(e, locale));
-
-                    enemyName = StaticStore.safeMultiLangGet(e, locale);
-                }
-
-                if(ename.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                    added = true;
-                }
-
-                if(enemyName != null && enemyName.replaceAll(spaceRegex, " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                    added = true;
-                }
-
-                ArrayList<String> alias = AliasHolder.EALIAS.getCont(e, lang);
-
-                if(alias != null && !alias.isEmpty()) {
-                    for(String a : alias) {
-                        if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                            if(a.toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
-                                added = true;
-                                cleared = true;
-
-                                break;
-                            }
-
-                            added = true;
-
-                            break;
-                        }
-                    }
-
-                    if(added)
-                        break;
-                }
-            }
-
-            if(added) {
-                res.add(e);
-            }
-
-            if(cleared) {
-                clear.add(e);
-            }
-        }
-
-        if(!clear.isEmpty())
-            return clear;
-
-        if(res.isEmpty()) {
-            ArrayList<Enemy> similar = new ArrayList<>();
-            ArrayList<Integer> similarity = new ArrayList<>();
-
-            name = name.toLowerCase(Locale.ENGLISH);
-
-            int sMin = 10;
-
-            if(lang == CommonStatic.Lang.Locale.KR)
-                name = KoreanSeparater.separate(name);
-
-            for(Enemy e : UserProfile.getBCData().enemies.getList()) {
-                if(e == null)
-                    continue;
-
-                String ename = StaticStore.safeMultiLangGet(e, lang);
-
-                if(ename == null || ename.isBlank())
-                    ename = e.names.toString();
-
-                boolean done = false;
-
-                if(!ename.isBlank()) {
-                    ename = ename.toLowerCase(Locale.ENGLISH);
-
-                    if(lang == CommonStatic.Lang.Locale.KR)
-                        ename = KoreanSeparater.separate(ename);
-
-                    int s = calculateOptimalDistance(name, ename);
-
-                    if (s <= TOLERANCE) {
-                        similar.add(e);
-                        similarity.add(s);
-
-                        sMin = Math.min(sMin, s);
-
-                        done = true;
-                    }
-                }
-
-                if(!done) {
-                    ArrayList<String> alias = AliasHolder.EALIAS.getCont(e, lang);
-
-                    if(alias != null && !alias.isEmpty()) {
-                        for(String a : alias) {
-                            boolean added = false;
-
-                            a = a.toLowerCase(Locale.ENGLISH);
-
-                            if(lang == CommonStatic.Lang.Locale.KR)
-                                a = KoreanSeparater.separate(a);
-
-                            int s = calculateOptimalDistance(name, a);
-
-                            if (s <= TOLERANCE) {
-                                similar.add(e);
-                                similarity.add(s);
-
-                                sMin = Math.min(sMin, s);
-
-                                added = true;
-                            }
-
-                            if(added)
-                                break;
-                        }
-                    }
-                }
-            }
-
-            if(similar.isEmpty())
-                return similar;
-
-            ArrayList<Enemy> finalResult = new ArrayList<>();
-
-            for(int i = 0; i < similar.size(); i++) {
-                if(similarity.get(i) == sMin)
-                    finalResult.add(similar.get(i));
-            }
-
-            return finalResult;
-        } else {
-            return res;
-        }
-    }
-
-    @SuppressWarnings("DataFlowIssue")
-    public static ArrayList<Stage> findStageWithName(String[] names, CommonStatic.Lang.Locale lang) {
-        ArrayList<Stage> result = new ArrayList<>();
-        ArrayList<Stage> clear = new ArrayList<>();
-
-        if(searchMapColc(names) && names[0] != null && !names[0].isBlank()) {
-            //Search normally
-            for(MapColc mc : MapColc.values()) {
-                if(mc == null)
-                    continue;
-
-                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                    String mcName = StaticStore.safeMultiLangGet(mc, locale);
-
-                    if(mcName == null || mcName.isBlank())
-                        continue;
-
-                    boolean s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
-
-                    if(!s0) {
-                        mcName = mcName.replace("-", " ");
-
-                        if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                            s0 = true;
-                        }
-                    }
-
-                    if (!s0) {
-                        mcName = mcName.replace("\\.", "");
-
-                        if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                            s0 = true;
-                        }
-                    }
-
-                    if(s0) {
-                        for(StageMap stm : mc.maps.getList()) {
-                            if(stm == null)
-                                continue;
-
-                            for(Stage st : stm.list.getList()) {
-                                if(st == null)
-                                    continue;
-
-                                result.add(st);
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            //Start autocorrect mode if no map colc found
-            if(result.isEmpty()) {
-                ArrayList<Integer> distances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
-
-                int disMin = Integer.MAX_VALUE;
-
-                for(int d : distances) {
-                    if(d != -1) {
-                        disMin = Math.min(d, disMin);
-                    }
-                }
-
-                if(disMin <= 5) {
-                    int i = 0;
-
-                    for(MapColc mc : MapColc.values()) {
-                        if(distances.get(i) == disMin) {
-                            for(StageMap stm : mc.maps.getList()) {
-                                result.addAll(stm.list.getList());
-                            }
-                        }
-
-                        i++;
-                    }
-                }
-            }
-        } else if(searchStageMap(names) && names[1] != null && !names[1].isBlank()) {
-            boolean mcContain;
-
-            if(names[0] != null && !names[0].isBlank())
-                mcContain = needToPerformContainMode(MapColc.values(), names[0], MapColc.class);
-            else
-                mcContain = true;
-
-            boolean stmContain = false;
-
-            for(MapColc mc : MapColc.values()) {
-                if(mc == null)
-                    continue;
-
-                stmContain |= needToPerformContainMode(mc.maps.getList(), names[1], StageMap.class);
-            }
-
-            if(mcContain) {
-                for(MapColc mc : MapColc.values()) {
-                    if(mc == null)
-                        continue;
-
-                    boolean s0 = false;
-
-                    if(names[0] != null && !names[0].isBlank()) {
-                        for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, locale);
-
-                            if(mcName == null || mcName.isBlank())
-                                continue;
-
-                            if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                                s0 = true;
-                                break;
-                            }
-
-                            mcName = mcName.replace("-", " ");
-
-                            if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                                s0 = true;
-                                break;
-                            }
-                        }
-                    } else {
-                        s0 = true;
-                    }
-
-                    if(!s0)
-                        continue;
-
-                    if(stmContain) {
-                        for(StageMap stm : mc.maps.getList()) {
-                            if(stm == null)
-                                continue;
-
-                            boolean s1 = false;
-
-                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                String stmName = StaticStore.safeMultiLangGet(stm, locale);
-
-                                if(stmName == null || stmName.isBlank())
-                                    continue;
-
-                                if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                    s1 = true;
-                                    break;
-                                }
-
-                                stmName = stmName.replace("-", " ");
-
-                                if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                    s1 = true;
-                                    break;
-                                }
-                            }
-
-                            if(s1) {
-                                result.addAll(stm.list.getList());
-                            }
-                        }
-                    } else {
-                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
-
-                        int disMin = Integer.MAX_VALUE;
-
-                        for(int d : stmDistances)
-                            if(d != -1)
-                                disMin = Math.min(d, disMin);
-
-                        if(disMin <= 5) {
-                            int i = 0;
-
-                            for(StageMap stm : mc.maps.getList()) {
-                                if(stmDistances.get(i) == disMin) {
-                                    result.addAll(stm.list.getList());
-                                }
-
-                                i++;
-                            }
-                        }
-                    }
-                }
-            } else {
-                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
-
-                int mcMin = Integer.MAX_VALUE;
-
-                for(int d : mcDistances)
-                    if(d != -1)
-                        mcMin = Math.min(d, mcMin);
-
-                if(mcMin <= 5) {
-                    int i = 0;
-
-                    for(MapColc mc : MapColc.values()) {
-                        if(mcDistances.get(i) == mcMin) {
-                            if(stmContain) {
-                                for(StageMap stm : mc.maps.getList()) {
-                                    if(stm == null)
-                                        continue;
-
-                                    boolean s1 = false;
-
-                                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                        String stmName = StaticStore.safeMultiLangGet(stm, locale);
-
-                                        if(stmName == null || stmName.isBlank())
-                                            continue;
-
-                                        if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                            s1 = true;
-                                            break;
-                                        }
-
-                                        stmName = stmName.replace("-", " ");
-
-                                        if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                            s1 = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if(s1) {
-                                        result.addAll(stm.list.getList());
-                                    }
-                                }
-                            } else {
-                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
-
-                                int stmMin = Integer.MAX_VALUE;
-
-                                for(int d : stmDistances)
-                                    if(d != -1)
-                                        stmMin = Math.min(d, stmMin);
-
-                                if(stmMin <= 3) {
-                                    int j = 0;
-
-                                    for(StageMap stm : mc.maps.getList()) {
-                                        if(stmDistances.get(j) == stmMin) {
-                                            result.addAll(stm.list.getList());
-                                        }
-
-                                        j++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else if(names[2] != null && !names[2].isBlank()) {
-            boolean mcContain;
-
-            if(names[0] != null && !names[0].isBlank()) {
-                mcContain = needToPerformContainMode(MapColc.values(), names[0], MapColc.class);
-            } else {
-                mcContain = true;
-            }
-
-            boolean stmContain = false;
-
-            if(names[1] != null && !names[1].isBlank()) {
-                for(MapColc mc : MapColc.values()) {
-                    if(mc == null)
-                        continue;
-
-                    stmContain |= needToPerformContainMode(mc.maps.getList(), names[1], StageMap.class);
-                }
-            } else {
-                stmContain = true;
-            }
-
-            boolean stContain = false;
-
-            for(MapColc mc : MapColc.values()) {
-                if(mc == null)
-                    continue;
-
-                for(StageMap stm : mc.maps.getList()) {
-                    if(stm == null)
-                        continue;
-
-                    stContain |= needToPerformContainMode(stm.list.getList(), names[2], Stage.class);
-                }
-            }
-
-            if(mcContain) {
-                for(MapColc mc : MapColc.values()) {
-                    if(mc == null)
-                        continue;
-
-                    boolean s0 = false;
-
-                    if(names[0] != null && !names[0].isBlank()) {
-                        for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, locale);
-
-                            if(mcName == null || mcName.isBlank())
-                                continue;
-
-                            if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                                s0 = true;
-                                break;
-                            }
-
-                            mcName = mcName.replace("-", " ");
-
-                            if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                                s0 = true;
-                                break;
-                            }
-                        }
-                    } else {
-                        s0 = true;
-                    }
-
-                    if(!s0)
-                        continue;
-
-                    if(stmContain) {
-                        for(StageMap stm : mc.maps.getList()) {
-                            if(stm == null)
-                                continue;
-
-                            boolean s1 = false;
-
-                            if(names[1] != null && !names[1].isBlank()) {
-                                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                    String stmName = StaticStore.safeMultiLangGet(stm, locale);
-
-                                    if(stmName == null || stmName.isBlank())
-                                        continue;
-
-                                    if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                        s1 = true;
-                                        break;
-                                    }
-
-                                    stmName = stmName.replace("-", " ");
-
-                                    if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                        s1 = true;
-                                        break;
-                                    }
-                                }
-                            } else {
-                                s1 = true;
-                            }
-
-                            if(!s1)
-                                continue;
-
-                            if(stContain) {
-                                for(Stage st : stm.list.getList()) {
-                                    if(st == null)
-                                        continue;
-
-                                    boolean s2 = false;
-                                    boolean cleared = false;
-
-                                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                        String stName = StaticStore.safeMultiLangGet(st, locale);
-
-                                        if(stName != null && !stName.isBlank()) {
-                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                s2 = true;
-                                            }
-
-                                            stName = stName.replace("-", " ");
-
-                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                s2 = true;
-                                            }
-                                        }
-
-                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
-
-                                        if(alias != null && !alias.isEmpty()) {
-                                            for(String a : alias) {
-                                                if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                    if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        cleared = true;
-                                                    }
-
-                                                    s2 = true;
-
-                                                    break;
-                                                }
-                                            }
-
-                                            if(s2)
-                                                break;
-                                        }
-                                    }
-
-                                    String[] ids = {
-                                            mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                            mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                            DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                            DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                    };
-
-                                    boolean s3 = false;
-
-                                    for(String id : ids) {
-                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                            s3 = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if(s2 || s3) {
-                                        result.add(st);
-                                    }
-
-                                    if(cleared) {
-                                        clear.add(st);
-                                    }
-                                }
-                            } else {
-                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
-
-                                int stMin = Integer.MAX_VALUE;
-
-                                for(int d : stDistances)
-                                    if(d != -1)
-                                        stMin = Math.min(stMin, d);
-
-                                if(stMin <= 3) {
-                                    int stInd = 0;
-
-                                    for(Stage st : stm.list.getList()) {
-                                        if(stDistances.get(stInd) == stMin) {
-                                            result.add(st);
-                                        }
-
-                                        stInd++;
-                                    }
-                                } else {
-                                    for(Stage st : stm.list.getList()) {
-                                        String[] ids = {
-                                                mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                        };
-
-                                        boolean s3 = false;
-
-                                        for(String id : ids) {
-                                            if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                s3 = true;
-                                                break;
-                                            }
-                                        }
-
-                                        if(s3)
-                                            result.add(st);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
-
-                        int stmMin = Integer.MAX_VALUE;
-
-                        for(int d : stmDistances)
-                            if(d != -1)
-                                stmMin = Math.min(stmMin, d);
-
-                        if(stmMin <= 3) {
-                            int stmInd = 0;
-
-                            for(StageMap stm : mc.maps.getList()) {
-                                if(stmDistances.get(stmInd) == stmMin) {
-                                    if(stContain) {
-                                        for(Stage st : stm.list.getList()) {
-                                            if(st == null)
-                                                continue;
-
-                                            boolean s2 = false;
-                                            boolean cleared = false;
-
-                                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                                String stName = StaticStore.safeMultiLangGet(st, locale);
-
-                                                if(stName != null && !stName.isBlank()) {
-                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        s2 = true;
-                                                    }
-
-                                                    stName = stName.replace("-", " ");
-
-                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        s2 = true;
-                                                    }
-                                                }
-
-                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
-
-                                                if(alias != null && !alias.isEmpty()) {
-                                                    for(String a : alias) {
-                                                        if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                            if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                                cleared = true;
-                                                            }
-
-                                                            s2 = true;
-
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    if(s2)
-                                                        break;
-                                                }
-                                            }
-
-                                            String[] ids = {
-                                                    mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                    mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                    DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                    DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                            };
-
-                                            boolean s3 = false;
-
-                                            for(String id : ids) {
-                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                    s3 = true;
-                                                    break;
-                                                }
-                                            }
-
-                                            if(s2 || s3) {
-                                                result.add(st);
-                                            }
-
-                                            if(cleared) {
-                                                clear.add(st);
-                                            }
-                                        }
-                                    } else {
-                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
-
-                                        int stMin = Integer.MAX_VALUE;
-
-                                        for(int d : stDistances)
-                                            if(d != -1)
-                                                stMin = Math.min(stMin, d);
-
-                                        if(stMin <= 3) {
-                                            int stInd = 0;
-
-                                            for(Stage st : stm.list.getList()) {
-                                                if(stDistances.get(stInd) == stMin) {
-                                                    result.add(st);
-                                                }
-
-                                                stInd++;
-                                            }
-                                        } else {
-                                            for(Stage st : stm.list.getList()) {
-                                                String[] ids = {
-                                                        mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                        mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                        DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                        DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                                };
-
-                                                boolean s3 = false;
-
-                                                for(String id : ids) {
-                                                    if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        s3 = true;
-                                                        break;
-                                                    }
-                                                }
-
-                                                if(s3)
-                                                    result.add(st);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                stmInd++;
-                            }
-                        }
-                    }
-                }
-            } else {
-                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
-
-                int mcMin = Integer.MAX_VALUE;
-
-                for(int d : mcDistances)
-                    if(d != -1)
-                        mcMin = Math.min(d, mcMin);
-
-                if(mcMin <= 5) {
-                    int mcInd = 0;
-
-                    for(MapColc mc : MapColc.values()) {
-                        if(mcDistances.get(mcInd) == mcMin) {
-                            if(stmContain) {
-                                for(StageMap stm : mc.maps.getList()) {
-                                    if(stm == null)
-                                        continue;
-
-                                    boolean s1 = false;
-
-                                    if(names[1] != null && !names[1].isBlank()) {
-                                        for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                            String stmName = StaticStore.safeMultiLangGet(stm, locale);
-
-                                            if(stmName == null || stmName.isBlank())
-                                                continue;
-
-                                            if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                                s1 = true;
-                                                break;
-                                            }
-
-                                            stmName = stmName.replace("-", " ");
-
-                                            if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
-                                                s1 = true;
-                                                break;
-                                            }
-                                        }
-                                    } else {
-                                        s1 = true;
-                                    }
-
-                                    if(!s1)
-                                        continue;
-
-                                    if(stContain) {
-                                        for(Stage st : stm.list.getList()) {
-                                            if(st == null)
-                                                continue;
-
-                                            boolean s2 = false;
-                                            boolean cleared = false;
-
-                                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                                String stName = StaticStore.safeMultiLangGet(st, locale);
-
-                                                if(stName != null && !stName.isBlank()) {
-                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        s2 = true;
-                                                    }
-
-                                                    stName = stName.replace("-", " ");
-
-                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        s2 = true;
-                                                    }
-                                                }
-
-                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
-
-                                                if(alias != null && !alias.isEmpty()) {
-                                                    for(String a : alias) {
-                                                        if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                            if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                                cleared = true;
-                                                            }
-
-                                                            s2 = true;
-
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    if(s2)
-                                                        break;
-                                                }
-                                            }
-
-                                            String[] ids = {
-                                                    mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                    mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                    DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                    DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                            };
-
-                                            boolean s3 = false;
-
-                                            for(String id : ids) {
-                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                    s3 = true;
-                                                    break;
-                                                }
-                                            }
-
-                                            if(s2 || s3) {
-                                                result.add(st);
-                                            }
-
-                                            if(cleared) {
-                                                clear.add(st);
-                                            }
-                                        }
-                                    } else {
-                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
-
-                                        int stMin = Integer.MAX_VALUE;
-
-                                        for(int d : stDistances)
-                                            if(d != -1)
-                                                stMin = Math.min(stMin, d);
-
-                                        if(stMin <= 3) {
-                                            int stInd = 0;
-
-                                            for(Stage st : stm.list.getList()) {
-                                                if(stDistances.get(stInd) == stMin) {
-                                                    result.add(st);
-                                                }
-
-                                                stInd++;
-                                            }
-                                        } else {
-                                            for(Stage st : stm.list.getList()) {
-                                                String[] ids = {
-                                                        mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                        mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                        DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                        DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                                };
-
-                                                boolean s3 = false;
-
-                                                for(String id : ids) {
-                                                    if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        s3 = true;
-                                                        break;
-                                                    }
-                                                }
-
-                                                if(s3)
-                                                    result.add(st);
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
-
-                                int stmMin = Integer.MAX_VALUE;
-
-                                for(int d : stmDistances)
-                                    if(d != -1)
-                                        stmMin = Math.min(stmMin, d);
-
-                                if(stmMin <= 3) {
-                                    int stmInd = 0;
-
-                                    for(StageMap stm : mc.maps.getList()) {
-                                        if(stmDistances.get(stmInd) == stmMin) {
-                                            if(stContain) {
-                                                for(Stage st : stm.list.getList()) {
-                                                    if(st == null)
-                                                        continue;
-
-                                                    boolean s2 = false;
-                                                    boolean cleared = false;
-
-                                                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                                        String stName = StaticStore.safeMultiLangGet(st, locale);
-
-                                                        if(stName != null && !stName.isBlank()) {
-                                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                                s2 = true;
-                                                            }
-
-                                                            stName = stName.replace("-", " ");
-
-                                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                                s2 = true;
-                                                            }
-                                                        }
-
-                                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, locale);
-
-                                                        if(alias != null && !alias.isEmpty()) {
-                                                            for(String a : alias) {
-                                                                if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                                    if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                                        cleared = true;
-                                                                    }
-
-                                                                    s2 = true;
-
-                                                                    break;
-                                                                }
-                                                            }
-
-                                                            if(s2)
-                                                                break;
-                                                        }
-                                                    }
-
-                                                    String[] ids = {
-                                                            mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                            mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                            DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                            DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                                    };
-
-                                                    boolean s3 = false;
-
-                                                    for(String id : ids) {
-                                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                            s3 = true;
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    if(s2 || s3) {
-                                                        result.add(st);
-                                                    }
-
-                                                    if(cleared) {
-                                                        clear.add(st);
-                                                    }
-                                                }
-                                            } else {
-                                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
-
-                                                int stMin = Integer.MAX_VALUE;
-
-                                                for(int d : stDistances)
-                                                    if(d != -1)
-                                                        stMin = Math.min(stMin, d);
-
-                                                if(stMin <= 3) {
-                                                    int stInd = 0;
-
-                                                    for(Stage st : stm.list.getList()) {
-                                                        if(stDistances.get(stInd) == stMin) {
-                                                            result.add(st);
-                                                        }
-                                                        stInd++;
-                                                    }
-                                                } else {
-                                                    for(Stage st : stm.list.getList()) {
-                                                        String[] ids = {
-                                                                mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                                mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                                DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                                DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                                                        };
-
-                                                        boolean s3 = false;
-
-                                                        for(String id : ids) {
-                                                            if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                                s3 = true;
-                                                                break;
-                                                            }
-                                                        }
-
-                                                        if(s3)
-                                                            result.add(st);
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        stmInd++;
-                                    }
-                                }
-                            }
-                        }
-
-                        mcInd++;
-                    }
-                }
-            }
-        }
-
-        if(!clear.isEmpty()) {
-            return clear;
-        } else {
-            return result;
-        }
-    }
-
-    public static ArrayList<StageMap> findStageMapWithName(String[] names, CommonStatic.Lang.Locale lang) {
-        ArrayList<StageMap> result = new ArrayList<>();
-
-        if(searchMapColc(names) && names[0] != null && !names[0].isBlank()) {
-            //Search normally
-            for(MapColc mc : MapColc.values()) {
-                if(mc == null)
-                    continue;
-
-                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                    String mcName = StaticStore.safeMultiLangGet(mc, locale);
-
-                    if(mcName == null || mcName.isBlank())
-                        continue;
-
-                    boolean s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
-
-                    if(!s0) {
-                        mcName = mcName.replace("-", " ");
-
-                        if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                            s0 = true;
-                        }
-                    }
-
-                    if (!s0) {
-                        mcName = mcName.replace("\\.", "");
-
-                        if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                            s0 = true;
-                        }
-                    }
-
-                    if(s0) {
-                        for(StageMap stm : mc.maps.getList()) {
-                            if(stm == null)
-                                continue;
-
-                            result.add(stm);
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            //Start autocorrect mode if no map colc found
-            if(result.isEmpty()) {
-                ArrayList<Integer> distances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
-
-                int disMin = Integer.MAX_VALUE;
-
-                for(int d : distances) {
-                    if(d != -1) {
-                        disMin = Math.min(d, disMin);
-                    }
-                }
-
-                if(disMin <= 5) {
-                    int i = 0;
-
-                    for(MapColc mc : MapColc.values()) {
-                        if(distances.get(i) == disMin) {
-                            result.addAll(mc.maps.getList());
-                        }
-
-                        i++;
-                    }
-                }
-            }
-        } else {
-            boolean mcContain;
-
-            if (names[0] != null && !names[0].isBlank())
-                mcContain = needToPerformContainMode(MapColc.values(), names[0], MapColc.class);
-            else
-                mcContain = true;
-
-            boolean stmContain = false;
-
-            for (MapColc mc : MapColc.values()) {
-                if (mc == null)
-                    continue;
-
-                stmContain |= needToPerformContainMode(mc.maps.getList(), names[1], StageMap.class);
-            }
-
-            if (mcContain) {
-                for (MapColc mc : MapColc.values()) {
-                    if (mc == null)
-                        continue;
-
-                    boolean s0 = false;
-
-                    if (names[0] != null && !names[0].isBlank()) {
-                        for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, locale);
-
-                            if (mcName == null || mcName.isBlank())
-                                continue;
-
-                            if (mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                                s0 = true;
-                                break;
-                            }
-
-                            mcName = mcName.replace("-", " ");
-
-                            if (mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                                s0 = true;
-                                break;
-                            }
-                        }
-                    } else {
-                        s0 = true;
-                    }
-
-                    if (!s0)
-                        continue;
-
-                    if (stmContain) {
-                        for (StageMap stm : mc.maps.getList()) {
-                            if (stm == null)
-                                continue;
-
-                            result.add(stm);
-                        }
-                    } else {
-                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
-
-                        int disMin = Integer.MAX_VALUE;
-
-                        for (int d : stmDistances)
-                            if (d != -1)
-                                disMin = Math.min(d, disMin);
-
-                        if (disMin <= 5) {
-                            int i = 0;
-
-                            for (StageMap stm : mc.maps.getList()) {
-                                if (stmDistances.get(i) == disMin) {
-                                    result.add(stm);
-                                }
-
-                                i++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
+        return filterData(initialData, name, lang, AliasHolder.EALIAS, true, nameGenerator, idRegexGenerator);
     }
 
     public static ArrayList<MapColc> findMapCollectionWithName(String name, CommonStatic.Lang.Locale lang) {
-        ArrayList<MapColc> result = new ArrayList<>();
+        ArrayList<MapColc> initialMapCollections = new ArrayList<>(MapColc.values());
+        ArrayList<MapColc> filteredMapCollections;
 
-        if(name != null && !name.isBlank()) {
-            //Search normally
-            for (MapColc mc : MapColc.values()) {
-                if (mc == null)
-                    continue;
+        Function<MapColc, String> idRegexGenerator = DataToString::getMapCode;
+        Function2<MapColc, CommonStatic.Lang.Locale, String> nameGenerator = (mc, locale) -> {
+            String mapCollectionName = StaticStore.safeMultiLangGet(mc, locale);
 
-                for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                    String mcName = StaticStore.safeMultiLangGet(mc, locale);
+            if (mapCollectionName == null || mapCollectionName.isBlank())
+                mapCollectionName = "";
 
-                    if (mcName == null || mcName.isBlank())
-                        continue;
+            return mapCollectionName;
+        };
 
-                    boolean s0 = mcName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH));
+        filteredMapCollections = filterData(initialMapCollections, name, lang, null, false, nameGenerator, idRegexGenerator);
 
-                    if (!s0) {
-                        mcName = mcName.replace("-", " ");
+        if (filteredMapCollections.isEmpty())
+            filteredMapCollections = filterData(initialMapCollections, name, lang, null, true, nameGenerator, idRegexGenerator);
 
-                        if (mcName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                            s0 = true;
-                        }
-                    }
+        return filteredMapCollections;
+    }
 
-                    if (!s0) {
-                        mcName = mcName.replace("\\.", "");
+    public static ArrayList<StageMap> findStageMapWithName(String[] names, CommonStatic.Lang.Locale lang) {
+        if ((names[0] == null || names[0].isBlank()) && (names[1] == null || names[1].isBlank())) {
+            return new ArrayList<>();
+        }
 
-                        if (mcName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                            s0 = true;
-                        }
-                    }
+        ArrayList<MapColc> initialMapCollections = new ArrayList<>(MapColc.values());
+        ArrayList<MapColc> filteredMapCollections;
 
-                    if (s0) {
-                        result.add(mc);
+        if (names[0] != null && !names[0].isBlank()) {
+            Function<MapColc, String> idRegexGenerator = DataToString::getMapCode;
+            Function2<MapColc, CommonStatic.Lang.Locale, String> nameGenerator = (mc, locale) -> {
+                String mapCollectionName = StaticStore.safeMultiLangGet(mc, locale);
 
-                        break;
-                    }
+                if (mapCollectionName == null || mapCollectionName.isBlank())
+                    mapCollectionName = "";
+
+                return mapCollectionName;
+            };
+
+            filteredMapCollections = filterData(initialMapCollections, names[0], lang, null, false, nameGenerator, idRegexGenerator);
+
+            if (filteredMapCollections.isEmpty())
+                filteredMapCollections = filterData(initialMapCollections, names[0], lang, null, true, nameGenerator, idRegexGenerator);
+        } else {
+            filteredMapCollections = new ArrayList<>(initialMapCollections);
+        }
+
+        if (filteredMapCollections.isEmpty())
+            return new ArrayList<>();
+
+        ArrayList<StageMap> initialStageMaps = new ArrayList<>();
+        ArrayList<StageMap> filteredStageMaps;
+
+        for (MapColc mc : filteredMapCollections) {
+            initialStageMaps.addAll(mc.maps.getList());
+        }
+
+        if (names[1] != null && !names[1].isBlank()) {
+            Function<StageMap, String> idRegexGenerator = stm -> DataToString.getMapCode(stm.getCont()) + "(( *- *)?" + Data.trio(stm.id.id) + "| *- *" + stm.id.id + ")";
+            Function2<StageMap, CommonStatic.Lang.Locale, String> nameGenerator = (stm, locale) -> {
+                String stageMapName = StaticStore.safeMultiLangGet(stm, locale);
+
+                if (stageMapName == null || stageMapName.isBlank()) {
+                    stageMapName = "";
                 }
+
+                return stageMapName;
+            };
+
+            filteredStageMaps = filterData(initialStageMaps, names[1], lang, null, false, nameGenerator, idRegexGenerator);
+
+            if (filteredStageMaps.isEmpty())
+                filteredStageMaps = filterData(initialStageMaps, names[1], lang, null, true, nameGenerator, idRegexGenerator);
+        } else {
+            filteredStageMaps = new ArrayList<>(initialStageMaps);
+        }
+
+        return filteredStageMaps;
+    }
+
+    public static ArrayList<Stage> findStageWithName(String[] names, CommonStatic.Lang.Locale lang) {
+        if ((names[0] == null || names[0].isBlank()) && (names[1] == null || names[1].isBlank()) && (names[2] == null || names[2].isBlank())) {
+            return new ArrayList<>();
+        }
+
+        ArrayList<MapColc> initialMapCollections = new ArrayList<>(MapColc.values());
+        ArrayList<MapColc> filteredMapCollections;
+
+        if (names[0] != null && !names[0].isBlank()) {
+            Function<MapColc, String> idRegexGenerator = DataToString::getMapCode;
+            Function2<MapColc, CommonStatic.Lang.Locale, String> nameGenerator = (mc, locale) -> {
+                String mapCollectionName = StaticStore.safeMultiLangGet(mc, locale);
+
+                if (mapCollectionName == null || mapCollectionName.isBlank())
+                    mapCollectionName = "";
+
+                return mapCollectionName;
+            };
+
+            filteredMapCollections = filterData(initialMapCollections, names[0], lang, null, false, nameGenerator, idRegexGenerator);
+
+            if (filteredMapCollections.isEmpty())
+                filteredMapCollections = filterData(initialMapCollections, names[0], lang, null, true, nameGenerator, idRegexGenerator);
+        } else {
+            filteredMapCollections = new ArrayList<>(initialMapCollections);
+        }
+
+        if (filteredMapCollections.isEmpty())
+            return new ArrayList<>();
+
+        ArrayList<StageMap> initialStageMaps = new ArrayList<>();
+        ArrayList<StageMap> filteredStageMaps;
+
+        for (MapColc mc : filteredMapCollections) {
+            initialStageMaps.addAll(mc.maps.getList());
+        }
+
+        if (names[1] != null && !names[1].isBlank()) {
+            Function<StageMap, String> idRegexGenerator = stm -> DataToString.getMapCode(stm.getCont()) + "(( *- *)?" + Data.trio(stm.id.id) + "| *- *" + stm.id.id + ")";
+            Function2<StageMap, CommonStatic.Lang.Locale, String> nameGenerator = (stm, locale) -> {
+                String stageMapName = StaticStore.safeMultiLangGet(stm, locale);
+
+                if (stageMapName == null || stageMapName.isBlank()) {
+                    stageMapName = "";
+                }
+
+                return stageMapName;
+            };
+
+            filteredStageMaps = filterData(initialStageMaps, names[1], lang, null, false, nameGenerator, idRegexGenerator);
+
+            if (filteredStageMaps.isEmpty())
+                filteredStageMaps = filterData(initialStageMaps, names[1], lang, null, true, nameGenerator, idRegexGenerator);
+        } else {
+            filteredStageMaps = new ArrayList<>(initialStageMaps);
+        }
+
+        if (filteredStageMaps.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        ArrayList<Stage> initialStages = new ArrayList<>();
+        ArrayList<Stage> filteredStages;
+
+        for (StageMap stm : filteredStageMaps) {
+            initialStages.addAll(stm.list.getList());
+        }
+
+        if (names[2] != null && !names[2].isBlank()) {
+            Function<Stage, String> idRegexGenerator = st -> DataToString.getMapCode(st.getCont().getCont()) + "(( *- *)?" + Data.trio(st.getCont().id.id) + "| *- *" + st.getCont().id.id + ")(( *- *)?" + Data.trio(st.id.id) + "| *- *" + st.id.id + ")";
+            Function2<Stage, CommonStatic.Lang.Locale, String> nameGenerator = (st, locale) -> {
+                String stageName = StaticStore.safeMultiLangGet(st, locale);
+
+                if (stageName == null || stageName.isBlank()) {
+                    stageName = "";
+                }
+
+                return stageName;
+            };
+
+            filteredStages = filterData(initialStages, names[2], lang, AliasHolder.SALIAS, false, nameGenerator, idRegexGenerator);
+
+            if (filteredStages.isEmpty())
+                filteredStages = filterData(initialStages, names[2], lang, AliasHolder.SALIAS, false, nameGenerator, idRegexGenerator);
+        } else {
+            filteredStages = new ArrayList<>(initialStages);
+        }
+
+        return filteredStages;
+    }
+
+    public static ArrayList<Stage> findStageWithMapName(String name, CommonStatic.Lang.Locale lang) {
+        ArrayList<Stage> result = new ArrayList<>();
+
+        ArrayList<StageMap> initialStageMaps = new ArrayList<>();
+
+        for (MapColc mc : MapColc.values()) {
+            initialStageMaps.addAll(mc.maps.getList());
+        }
+
+        Function<StageMap, String> idRegexGenerator = stm -> DataToString.getMapCode(stm.getCont()) + "(( *- *)?" + Data.trio(stm.id.id) + "| *- *" + stm.id.id + ")";
+        Function2<StageMap, CommonStatic.Lang.Locale, String> nameGenerator = (stm, locale) -> {
+            String stageMapName = StaticStore.safeMultiLangGet(stm, locale);
+
+            if (stageMapName == null || stageMapName.isBlank()) {
+                stageMapName = "";
             }
 
-            //Start autocorrect mode if no map colc found
-            if (result.isEmpty()) {
-                ArrayList<Integer> distances = getDistances(MapColc.values(), name, lang, MapColc.class);
+            return stageMapName;
+        };
 
-                int disMin = Integer.MAX_VALUE;
+        ArrayList<StageMap> filteredStageMaps = filterData(initialStageMaps, name, lang, null, false, nameGenerator, idRegexGenerator);
 
-                for (int d : distances) {
-                    if (d != -1) {
-                        disMin = Math.min(d, disMin);
-                    }
-                }
+        if (filteredStageMaps.isEmpty())
+            filteredStageMaps = filterData(initialStageMaps, name, lang, null, true, nameGenerator, idRegexGenerator);
 
-                if (disMin <= 5) {
-                    int i = 0;
-
-                    for (MapColc mc : MapColc.values()) {
-                        if (distances.get(i) == disMin) {
-                            result.add(mc);
-                        }
-
-                        i++;
-                    }
-                }
-            }
+        for (StageMap stm : filteredStageMaps) {
+            result.addAll(stm.list.getList());
         }
 
         return result;
-    }
-
-    public static ArrayList<Stage> findStageWithMapName(String name) {
-        ArrayList<Stage> stmResult = new ArrayList<>();
-
-        for(MapColc mc : MapColc.values()) {
-            if(mc == null)
-                continue;
-
-            for(StageMap stm : mc.maps.getList()) {
-                if(stm == null)
-                    continue;
-
-                boolean s1 = false;
-
-                for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                    String stmName = StaticStore.safeMultiLangGet(stm, locale);
-
-                    if(stmName == null || stmName.isBlank())
-                        continue;
-
-                    if(stmName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                        s1 = true;
-                        break;
-                    }
-                }
-
-                if(s1) {
-                    stmResult.addAll(stm.list.getList());
-                }
-            }
-        }
-
-        return stmResult;
     }
 
     public static ArrayList<Stage> findStage(List<Enemy> enemies, int music, int background, int castle, boolean hasBoss, boolean orOperator, boolean monthly) {
@@ -1612,199 +395,72 @@ public class EntityFilter {
     }
 
     public static ArrayList<Integer> findMedalByName(String name, CommonStatic.Lang.Locale lang) {
-        ArrayList<Integer> result = new ArrayList<>();
+        ArrayList<Integer> initialMedals = new ArrayList<>();
 
-        for(int i = 0; i < StaticStore.medalNumber; i++) {
-            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                String medalName = StaticStore.MEDNAME.getCont(i, locale);
-
-                if(medalName == null || medalName.isBlank()) {
-                    medalName = Data.trio(i);
-                } else {
-                    medalName += " " + Data.trio(i);
-                }
-
-                if(medalName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                    result.add(i);
-                    break;
-                }
-            }
+        for (int i = 0; i < StaticStore.medalNumber; i++) {
+            initialMedals.add(i);
         }
 
-        if(result.isEmpty()) {
-            ArrayList<Integer> similar = new ArrayList<>();
-            ArrayList<Integer> similarity = new ArrayList<>();
+        Function<Integer, String> idRegexGenerator = id -> "(" + Data.trio(id) + "|" + id + ")";
+        Function2<Integer, CommonStatic.Lang.Locale, String> nameGenerator = (id, locale) -> {
+            String medalName = StaticStore.MEDNAME.getCont(id, locale);
 
-            int sMin = 10;
-
-            name = name.toLowerCase(Locale.ENGLISH);
-
-            if(lang == CommonStatic.Lang.Locale.KR)
-                name = KoreanSeparater.separate(name);
-
-            for(int i = 0; i < StaticStore.medalNumber; i++) {
-                String medalName = StaticStore.MEDNAME.getCont(i, lang);
-
-                if(medalName == null || medalName.isBlank())
-                    continue;
-
-                medalName = medalName.toLowerCase(Locale.ENGLISH);
-
-                if(lang == CommonStatic.Lang.Locale.KR)
-                    medalName = KoreanSeparater.separate(medalName);
-
-                int s = calculateOptimalDistance(name, medalName);
-
-                if (s <= TOLERANCE) {
-                    similar.add(i);
-                    similarity.add(s);
-
-                    sMin = Math.min(s, sMin);
-                }
+            if (medalName == null || medalName.isBlank()) {
+                medalName = "";
             }
 
-            if(similar.isEmpty())
-                return similar;
+            return medalName;
+        };
 
-            ArrayList<Integer> finalResult = new ArrayList<>();
+        ArrayList<Integer> filteredMedals = filterData(initialMedals, name, lang, null, false, nameGenerator, idRegexGenerator);
 
-            for(int i = 0; i < similar.size(); i++) {
-                if (sMin == similarity.get(i)) {
-                    finalResult.add(similar.get(i));
-                }
-            }
+        if (filteredMedals.isEmpty())
+            filteredMedals = filterData(initialMedals, name, lang, null, true, nameGenerator, idRegexGenerator);
 
-            return finalResult;
-        } else {
-            return result;
-        }
+        return filteredMedals;
     }
 
-    @SuppressWarnings("ForLoopReplaceableByForEach")
-    public static ArrayList<Combo> filterComboWithUnit(Form f, String cName) {
-        ArrayList<Combo> result = new ArrayList<>();
+    public static ArrayList<Combo> filterComboWithUnit(Form f, String name, CommonStatic.Lang.Locale lang) {
+        ArrayList<Combo> initialCombos = new ArrayList<>(UserProfile.getBCData().combos.getList());
 
-        List<Combo> fullCombo = UserProfile.getBCData().combos.getList();
+        Function<Combo, String> idRegexGenerator = c -> "(" + Data.trio(c.id.id) + "|" + c.id.id + ")";
+        Function2<Combo, CommonStatic.Lang.Locale, String> nameGenerator = (c, locale) -> MultiLangCont.getStatic().COMNAME.getCont(c, locale) + " | " + DataToString.getComboType(c, locale);
 
-        for(int i = 0; i < fullCombo.size(); i++) {
-            Combo c = fullCombo.get(i);
+        ArrayList<Combo> filteredCombos = filterData(initialCombos, name, lang, null, false, nameGenerator, idRegexGenerator);
 
-            if(f == null) {
-                if(cName != null) {
-                    for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, locale) + " | " + DataToString.getComboType(c, locale);
+        if (filteredCombos.isEmpty())
+            filteredCombos = filterData(initialCombos, name, lang, null, true, nameGenerator, idRegexGenerator);
 
-                        if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
-                            result.add(c);
-                            break;
-                        }
-                    }
-                } else {
-                    result.add(c);
-                }
-            } else {
-                for(int k = 0; k < 5; k++) {
-                    boolean added = false;
+        if (f != null)
+            filteredCombos.removeIf(c -> {
+                System.out.println(f);
+                System.out.println(Arrays.stream(c.forms).noneMatch(form -> form.unit.id.id == f.unit.id.id && f.fid >= form.fid));
 
-                    if(k >= c.forms.length || c.forms[k] == null || c.forms[k].unit == null)
-                        continue;
+                return Arrays.stream(c.forms).noneMatch(form -> form.unit.id.id == f.unit.id.id && f.fid >= form.fid);
+            });
 
-                    if(c.forms[k].unit.id.id == f.unit.id.id && c.forms[k].fid <= f.fid) {
-                        if(cName != null) {
-                            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, locale) + " | " + DataToString.getComboType(c, locale);
-
-                                if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
-                                    result.add(c);
-                                    added = true;
-                                    break;
-                                }
-                            }
-                        } else {
-                            result.add(c);
-                            added = true;
-                        }
-                    }
-
-                    if(added)
-                        break;
-                }
-            }
-        }
-
-        result.sort(Comparator.comparingInt(c -> c.id.id));
-
-        return result;
+        return filteredCombos;
     }
 
     public static List<Integer> findRewardByName(String name, CommonStatic.Lang.Locale lang) {
-        List<Integer> result = new ArrayList<>();
+        ArrayList<Integer> initialRewards = new ArrayList<>(StaticStore.existingRewards);
 
-        for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
-            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i), locale);
+        Function<Integer, String> idRegexGenerator = id -> "(" + Data.trio(id) + "|" + id + ")";
+        Function2<Integer, CommonStatic.Lang.Locale, String> nameGenerator = (id, locale) -> {
+            String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(id), locale);
 
-                if (rewardName == null || rewardName.isBlank()) {
-                    rewardName = Data.trio(StaticStore.existingRewards.get(i));
-                } else {
-                    rewardName = Data.trio(StaticStore.existingRewards.get(i)) + " " + rewardName;
-                }
+            if (rewardName == null || rewardName.isBlank())
+                rewardName = "";
 
-                if (rewardName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                    result.add(StaticStore.existingRewards.get(i));
+            return rewardName;
+        };
 
-                    break;
-                }
-            }
-        }
+        List<Integer> filteredRewards = filterData(initialRewards, name, lang, null, false, nameGenerator, idRegexGenerator);
 
-        if(result.isEmpty()) {
-            ArrayList<Integer> similar = new ArrayList<>();
-            ArrayList<Integer> similarity = new ArrayList<>();
+        if (filteredRewards.isEmpty())
+            filteredRewards = filterData(initialRewards, name, lang, null, true, nameGenerator, idRegexGenerator);
 
-            int sMin = 10;
-
-            name = name.toLowerCase(Locale.ENGLISH);
-
-            if(lang == CommonStatic.Lang.Locale.KR)
-                name = KoreanSeparater.separate(name);
-
-            for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
-                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i), lang);
-
-                if(rewardName == null || rewardName.isBlank())
-                    continue;
-
-                rewardName = rewardName.toLowerCase(Locale.ENGLISH);
-
-                if(lang == CommonStatic.Lang.Locale.KR)
-                    rewardName = KoreanSeparater.separate(rewardName);
-
-                int s = calculateOptimalDistance(name, rewardName);
-
-                if (s <= TOLERANCE) {
-                    similar.add(StaticStore.existingRewards.get(i));
-                    similarity.add(s);
-
-                    sMin = Math.min(sMin, s);
-                }
-            }
-
-            if(similar.isEmpty())
-                return similar;
-
-            ArrayList<Integer> finalResult = new ArrayList<>();
-
-            for(int i = 0; i < similar.size(); i++) {
-                if (sMin == similarity.get(i)) {
-                    finalResult.add(similar.get(i));
-                }
-            }
-
-            return finalResult;
-        } else {
-            return result;
-        }
+        return filteredRewards;
     }
 
     public static List<Stage> findStageByReward(int reward, double chance, int amount) {
@@ -1890,14 +546,6 @@ public class EntityFilter {
         return result;
     }
 
-    private static boolean searchMapColc(String[] names) {
-        return names[1] == null && names[2] == null;
-    }
-
-    private static boolean searchStageMap(String[] names) {
-        return names[2] == null;
-    }
-
     private static int damerauLevenshteinDistance(String src, String compare) {
         int[][] table = new int[src.length() + 1][compare.length() + 1];
 
@@ -1967,183 +615,6 @@ public class EntityFilter {
         return result;
     }
 
-    private static <T> boolean needToPerformContainMode(Iterable<T> set, String keyword, Class<T> cls) {
-        for(T t : set) {
-            if(t == null)
-                continue;
-
-            keyword = keyword.toLowerCase(Locale.ENGLISH);
-
-            for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                String name = StaticStore.safeMultiLangGet(t, locale);
-
-                if(name != null && !name.isBlank()) {
-                    if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
-                        return true;
-
-                    name = name.replace("-", " ");
-
-                    if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
-                        return true;
-
-                    name = name.replace("\\.", "");
-
-                    if (name.toLowerCase(Locale.ENGLISH).contains(keyword))
-                        return true;
-
-                    ArrayList<String> alias;
-
-                    if(cls == Form.class) {
-                        alias = AliasHolder.FALIAS.getCont((Form) t, locale);
-                    } else if(cls == Enemy.class) {
-                        alias = AliasHolder.EALIAS.getCont((Enemy) t, locale);
-                    } else if(cls == Stage.class) {
-                        alias = AliasHolder.SALIAS.getCont((Stage) t, locale);
-                    } else {
-                        continue;
-                    }
-
-                    if(alias != null && !alias.isEmpty()) {
-                        for(String a : alias) {
-                            if(a.toLowerCase(Locale.ENGLISH).contains(keyword))
-                                return true;
-                        }
-                    }
-                } else {
-                    ArrayList<String> alias;
-
-                    if(cls == Form.class) {
-                        alias = AliasHolder.FALIAS.getCont((Form) t, locale);
-                    } else if(cls == Enemy.class) {
-                        alias = AliasHolder.EALIAS.getCont((Enemy) t, locale);
-                    } else if(cls == Stage.class) {
-                        alias = AliasHolder.SALIAS.getCont((Stage) t, locale);
-                    } else {
-                        continue;
-                    }
-
-                    if(alias != null && !alias.isEmpty()) {
-                        for(String a : alias) {
-                            if(a.toLowerCase(Locale.ENGLISH).contains(keyword))
-                                return true;
-                        }
-                    }
-                }
-            }
-
-            if(cls == Stage.class) {
-                Stage st = (Stage) t;
-
-                StageMap stm = st.getCont();
-
-                if(stm != null) {
-                    MapColc mc = stm.getCont();
-
-                    if(mc != null) {
-                        String[] ids = {
-                                mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
-                        };
-
-                        for(String id : ids) {
-                            if(id.toLowerCase(Locale.ENGLISH).contains(keyword)) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static <T> ArrayList<Integer> getDistances(Iterable<T> set, String keyword, CommonStatic.Lang.Locale lang, Class<T> cls) {
-        ArrayList<Integer> distances = new ArrayList<>();
-        int allMin = Integer.MAX_VALUE;
-
-        keyword = keyword.toLowerCase(Locale.ENGLISH);
-
-        if(lang == CommonStatic.Lang.Locale.KR)
-            keyword = KoreanSeparater.separate(keyword);
-
-        for(T t : set) {
-            if(t == null) {
-                distances.add(-1);
-                continue;
-            }
-
-            String name = StaticStore.safeMultiLangGet(t, lang);
-
-            if(name == null || name.isBlank()) {
-                distances.add(-1);
-                continue;
-            }
-
-            name = name.toLowerCase(Locale.ENGLISH);
-
-            if(lang == CommonStatic.Lang.Locale.KR) {
-                name = KoreanSeparater.separate(name);
-            }
-
-            int s = calculateOptimalDistance(name, keyword);
-
-            int disMin = s;
-            allMin = Math.min(allMin, s);
-
-            if(disMin > allMin) {
-                ArrayList<String> alias;
-
-                if(cls == Form.class) {
-                    alias = AliasHolder.FALIAS.getCont((Form) t, lang);
-                } else if(cls == Enemy.class) {
-                    alias = AliasHolder.EALIAS.getCont((Enemy) t, lang);
-                } else if(cls == Stage.class) {
-                    alias = AliasHolder.SALIAS.getCont((Stage) t, lang);
-                } else {
-                    distances.add(disMin);
-                    continue;
-                }
-
-                if(alias != null && !alias.isEmpty()) {
-                    for(String a : alias) {
-                        a = a.toLowerCase(Locale.ENGLISH);
-
-                        if(lang == CommonStatic.Lang.Locale.KR)
-                            a = KoreanSeparater.separate(a);
-
-                        s = calculateOptimalDistance(keyword, a);
-
-                        disMin = Math.min(disMin, s);
-                        allMin = Math.min(allMin, s);
-                    }
-                }
-            }
-
-            distances.add(disMin);
-        }
-
-        return distances;
-    }
-
-    private static int calculateOptimalDistance(String src, String target) {
-        int distance = calculateRawDistance(src, target);
-
-        if (target.contains("-") && target.contains(".")) {
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll(spaceRegex, " ")));
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("\\.", "")));
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll(spaceRegex, " ").replaceAll("\\.", "")));
-        } else if (target.contains("-")) {
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll(spaceRegex, " ")));
-        } else if (target.contains(".")) {
-            distance = Math.min(distance, calculateRawDistance(src, target.replaceAll("\\.", "")));
-        }
-
-        return distance;
-    }
-
     private static int calculateRawDistance(String src, String target) {
         int distance = Integer.MAX_VALUE;
 
@@ -2166,6 +637,132 @@ public class EntityFilter {
         distance = Math.min(distance, damerauLevenshteinDistance(target, src));
 
         return distance;
+    }
+
+    private static <T> ArrayList<T> filterData(List<T> preData, String name, CommonStatic.Lang.Locale lang, MultiLangCont<T, ArrayList<String>> aliasData, boolean dynamicMode, Function2<T, CommonStatic.Lang.Locale, String> nameGenerator, Function<T, String> idRegexGenerator) {
+        String keyword = name.replaceAll(spaceRegex, " ").replaceAll(apostropheRegex, "'").replaceAll("\\.", "").toLowerCase(Locale.ENGLISH);
+
+        if (dynamicMode && lang == CommonStatic.Lang.Locale.KR) {
+            keyword = KoreanSeparater.separate(keyword);
+        }
+
+        if (!dynamicMode) {
+            ArrayList<T> result = new ArrayList<>();
+            ArrayList<T> clear = new ArrayList<>();
+
+            for (int i = 0; i < preData.size(); i++) {
+                T data = preData.get(i);
+
+                if (idRegexGenerator != null) {
+                    String idRegex = idRegexGenerator.apply(data);
+
+                    if (keyword.matches(idRegex)) {
+                        clear.add(data);
+
+                        continue;
+                    }
+                }
+
+                for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+                    String dataName = nameGenerator.invoke(data, locale).replace(spaceRegex, "").replace(apostropheRegex, "'").replace("\\.", "").toLowerCase(Locale.ENGLISH);
+
+                    if (dataName.contains(keyword)) {
+                        result.add(data);
+
+                        break;
+                    }
+
+                    if (aliasData != null) {
+                        boolean added = false;
+
+                        ArrayList<String> aliasList = aliasData.getCont(data, locale);
+
+                        if (aliasList != null && !aliasList.isEmpty()) {
+                            for (String a : aliasList) {
+                                String alias = a.replaceAll(spaceRegex, " ").replaceAll(apostropheRegex, "'").replaceAll("\\.", "").toLowerCase(Locale.ENGLISH);
+
+                                if (alias.equals(keyword)) {
+                                    clear.add(data);
+
+                                    added = true;
+
+                                    break;
+                                } else if (alias.contains(keyword)) {
+                                    result.add(data);
+
+                                    added = true;
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (added)
+                            break;
+                    }
+                }
+            }
+
+            if (!clear.isEmpty()) {
+                return clear;
+            } else {
+                return result;
+            }
+        } else {
+            Map<T, Integer> scoreMap = new HashMap<>();
+
+            int minScore = TOLERANCE;
+
+            for (int i = 0; i < preData.size(); i++) {
+                T data = preData.get(i);
+
+                String dataName = nameGenerator.invoke(data, lang).replace(spaceRegex, "").replace(apostropheRegex, "'").replace("\\.", "").toLowerCase(Locale.ENGLISH);
+
+                if (lang == CommonStatic.Lang.Locale.KR) {
+                    dataName = KoreanSeparater.separate(dataName);
+                }
+
+                int score = calculateRawDistance(keyword, dataName);
+
+                if (score <= TOLERANCE) {
+                    scoreMap.put(data, score);
+
+                    if (score < minScore) {
+                        minScore = score;
+                        scoreMap.entrySet().removeIf(e -> e.getValue() > score);
+                    }
+                } else if (aliasData != null) {
+                    ArrayList<String> aliasList = aliasData.getCont(data, lang);
+
+                    if (aliasList != null && !aliasList.isEmpty()) {
+                        for (String a : aliasList) {
+                            String alias = a.replaceAll(spaceRegex, " ").replaceAll(apostropheRegex, "'").replaceAll("\\.", "").toLowerCase(Locale.ENGLISH);
+
+                            if (lang == CommonStatic.Lang.Locale.KR) {
+                                alias = KoreanSeparater.separate(alias);
+                            }
+
+                            int aliasScore = calculateRawDistance(keyword, alias);
+
+                            if (aliasScore <= TOLERANCE) {
+                                scoreMap.put(data, aliasScore);
+
+                                if (aliasScore < minScore) {
+                                    minScore = aliasScore;
+                                    scoreMap.entrySet().removeIf(e -> e.getValue() > score);
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            int finalMinScore = minScore;
+
+            return new ArrayList<>(scoreMap.entrySet().stream().filter(e -> e.getValue() == finalMinScore).map(Map.Entry::getKey).toList());
+        }
     }
 
     private static boolean containsEnemies(SCDef.Line[] lines, List<Enemy> enemies, boolean hasBoss, boolean or) {

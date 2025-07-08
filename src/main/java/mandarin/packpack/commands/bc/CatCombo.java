@@ -45,7 +45,7 @@ public class CatCombo extends TimedConstraintCommand {
         String cName = getComboName(loader.getContent());
 
         if(name == null || name.isBlank()) {
-            ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(null, cName);
+            ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(null, cName, lang);
 
             if(combos.isEmpty()) {
                 disableTimer();
@@ -91,7 +91,7 @@ public class CatCombo extends TimedConstraintCommand {
                 disableTimer();
                 replyToMessageSafely(ch, LangID.getStringByID("combo.failed.noCombo", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(forms.size() == 1) {
-                ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.getFirst(), cName);
+                ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.getFirst(), cName, lang);
 
                 if(combos.isEmpty()) {
                     disableTimer();
@@ -177,7 +177,7 @@ public class CatCombo extends TimedConstraintCommand {
         String[] contents = message.split(" ");
 
         if(contents.length <= 1)
-            return null;
+            return "";
         else {
             StringBuilder builder = new StringBuilder();
 
@@ -193,7 +193,7 @@ public class CatCombo extends TimedConstraintCommand {
             }
 
             if(builder.toString().isBlank())
-                return null;
+                return "";
 
             return builder.toString();
         }

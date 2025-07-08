@@ -251,7 +251,7 @@ public class AliasRemove extends ConstraintCommand {
                 ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
                 if (stages.isEmpty() && names[0] == null && names[1] == null) {
-                    stages = EntityFilter.findStageWithMapName(names[2]);
+                    stages = EntityFilter.findStageWithMapName(names[2], lang);
 
                     if (!stages.isEmpty()) {
                         ch.sendMessage(LangID.getStringByID("stageInfo.smartSearch", lang)).queue();

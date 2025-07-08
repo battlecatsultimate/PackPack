@@ -137,7 +137,7 @@ public class StageInfo extends TimedConstraintCommand {
             String additionalContent;
 
             if(stages.isEmpty() && names[0] == null && names[1] == null) {
-                stages = EntityFilter.findStageWithMapName(names[2]);
+                stages = EntityFilter.findStageWithMapName(names[2], lang);
 
                 if(!stages.isEmpty()) {
                     additionalContent = LangID.getStringByID("stageInfo.smartSearch", lang) + "\n\n";

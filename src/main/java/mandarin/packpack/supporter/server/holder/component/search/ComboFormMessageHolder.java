@@ -68,7 +68,7 @@ public class ComboFormMessageHolder extends SearchHolder {
         try {
             Form f = form.get(id);
 
-            ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(f, cName);
+            ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(f, cName, lang);
 
             if(combos.isEmpty()) {
                 message.delete().queue();
