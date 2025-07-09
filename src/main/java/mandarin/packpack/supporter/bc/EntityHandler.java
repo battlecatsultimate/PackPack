@@ -4731,7 +4731,11 @@ public class EntityHandler {
             if (Modifier.isStatic(f.getModifiers()))
                 continue;
 
-            f.setAccessible(true);
+            try {
+                f.setAccessible(true);
+            } catch (Exception ignored) {
+                continue;
+            }
 
             Object obj = f.get(object);
 
