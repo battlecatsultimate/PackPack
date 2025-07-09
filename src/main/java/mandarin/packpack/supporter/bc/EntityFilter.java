@@ -310,7 +310,7 @@ public class EntityFilter {
             filteredStages = filterData(initialStages, names[2], lang, AliasHolder.SALIAS, false, nameGenerator, idRegexGenerator);
 
             if (filteredStages.isEmpty())
-                filteredStages = filterData(initialStages, names[2], lang, AliasHolder.SALIAS, false, nameGenerator, idRegexGenerator);
+                filteredStages = filterData(initialStages, names[2], lang, AliasHolder.SALIAS, true, nameGenerator, idRegexGenerator);
         } else {
             filteredStages = new ArrayList<>(initialStages);
         }
@@ -659,7 +659,7 @@ public class EntityFilter {
                 }
 
                 for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-                    String dataName = nameGenerator.invoke(data, locale).replace(spaceRegex, "").replace(apostropheRegex, "'").replace("\\.", "").toLowerCase(Locale.ENGLISH);
+                    String dataName = nameGenerator.invoke(data, locale).replaceAll(spaceRegex, "").replaceAll(apostropheRegex, "'").replaceAll("\\.", "").toLowerCase(Locale.ENGLISH);
 
                     if (dataName.contains(keyword)) {
                         result.add(data);
@@ -711,7 +711,7 @@ public class EntityFilter {
             for (int i = 0; i < preData.size(); i++) {
                 T data = preData.get(i);
 
-                String dataName = nameGenerator.invoke(data, lang).replace(spaceRegex, "").replace(apostropheRegex, "'").replace("\\.", "").toLowerCase(Locale.ENGLISH);
+                String dataName = nameGenerator.invoke(data, lang).replaceAll(spaceRegex, "").replaceAll(apostropheRegex, "'").replaceAll("\\.", "").toLowerCase(Locale.ENGLISH);
 
                 if (lang == CommonStatic.Lang.Locale.KR) {
                     dataName = KoreanSeparater.separate(dataName);
