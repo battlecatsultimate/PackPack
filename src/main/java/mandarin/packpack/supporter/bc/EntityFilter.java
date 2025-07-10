@@ -642,6 +642,8 @@ public class EntityFilter {
         }
 
         if (!dynamicMode) {
+            String idKeyword = name.replaceAll(apostropheRegex, "'").replaceAll("\\.", "").toLowerCase(Locale.ENGLISH);
+
             ArrayList<T> result = new ArrayList<>();
             ArrayList<T> clear = new ArrayList<>();
 
@@ -649,9 +651,9 @@ public class EntityFilter {
                 T data = preData.get(i);
 
                 if (idRegexGenerator != null) {
-                    String idRegex = idRegexGenerator.apply(data);
+                    String idRegex = "(?i)" + idRegexGenerator.apply(data);
 
-                    if (keyword.matches(idRegex)) {
+                    if (idKeyword.matches(idRegex)) {
                         clear.add(data);
 
                         continue;
