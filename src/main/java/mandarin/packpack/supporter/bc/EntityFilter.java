@@ -442,7 +442,7 @@ public class EntityFilter {
 
         Function<Integer, String> idRegexGenerator = id -> "(" + Data.trio(id) + "|" + id + ")";
         Function2<Integer, CommonStatic.Lang.Locale, String> nameGenerator = (id, locale) -> {
-            String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(id), locale);
+            String rewardName = MultiLangCont.getStatic().RWNAME.getCont(id, locale);
 
             if (rewardName == null || rewardName.isBlank())
                 rewardName = "";
