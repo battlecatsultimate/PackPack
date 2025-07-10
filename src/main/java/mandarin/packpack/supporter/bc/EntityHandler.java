@@ -1217,11 +1217,11 @@ public class EntityHandler {
             if(score != null) {
                 spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
             }
+        }
 
-            if(schemeLink != null) {
-                spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
-                spec.setImage(schemeLink);
-            }
+        if(schemeLink != null) {
+            spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
+            spec.setImage(schemeLink);
         }
 
         List<LayoutComponent> components = new ArrayList<>();
