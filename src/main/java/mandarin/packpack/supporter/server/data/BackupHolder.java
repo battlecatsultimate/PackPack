@@ -1,28 +1,30 @@
 package mandarin.packpack.supporter.server.data;
 
-import com.google.api.client.http.FileContent;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
+import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.UploadUploader;
+import com.dropbox.core.v2.sharing.RequestedLinkAccessLevel;
+import com.dropbox.core.v2.sharing.SharedLinkMetadata;
+import com.dropbox.core.v2.sharing.SharedLinkSettings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.StaticStore;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
 
 public class BackupHolder {
-    private static final String CARD_DEALER_BACKUP_FOLDER_ID = "1FlXSURFasPuI0NuGqZ8hmneLQGBXezii";
-    private static final String PACKPACK_BACKUP_FOLDER_ID = "1RR4eUCrqkBBV6TkNADVRzTn-68VLxm9Y";
+    private static final String CARD_DEALER_BACKUP_FOLDER = "Card Dealer Backup";
+    private static final String PACKPACK_BACKUP_FOLDER = "PackPack Backup";
     private static final int MAX_BACKUP = 50;
 
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -49,40 +51,47 @@ public class BackupHolder {
     }
 
     public Map<Long, String> backupList = new HashMap<>();
-    private final Drive service;
+    private final DbxClientV2 client;
 
     private BackupHolder() {
-        File serviceKey = new File("./data/serviceKey.json");
+        File accessToken = new File("./data/dropboxToken.txt");
 
-        if (!serviceKey.exists()) {
-            StaticStore.logger.uploadLog("W/BackupHolder::init - Failed to find key json file for google service account");
+        if (!accessToken.exists()) {
+            StaticStore.logger.uploadLog("W/BackupHolder::init - Failed to find access token for dropbox API");
 
-            service = null;
+            client = null;
 
             return;
         }
 
-        Drive tempService;
+        DbxClientV2 tempClient;
 
-        try {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(serviceKey)).createScoped(DriveScopes.DRIVE);
-            HttpCredentialsAdapter adapter = new HttpCredentialsAdapter(credentials);
-            NetHttpTransport transport = new NetHttpTransport();
-            GsonFactory factory = GsonFactory.getDefaultInstance();
+        try(BufferedReader reader = new BufferedReader(new FileReader("./data/dropboxToken.txt"))) {
+            StringBuilder tokenBuilder = new StringBuilder();
 
-            tempService = new Drive.Builder(transport, factory, adapter).setApplicationName("PackPack").build();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                tokenBuilder.append(line).append("\n");
+            }
+
+            String token = tokenBuilder.toString().trim();
+
+            DbxRequestConfig config = DbxRequestConfig.newBuilder("Discord Bot Backup").build();
+
+            tempClient = new DbxClientV2(config, token);
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::init - Failed to initialize google drive service");
+            StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::init - Failed to initialize dropbox API service client");
 
-            tempService = null;
+            tempClient = null;
         }
 
-        service = tempService;
+        client = tempClient;
     }
 
     public String uploadBackup(Logger.BotInstance instance) throws Exception {
-        if (service == null) {
-            StaticStore.logger.uploadLog("W/BackupHolder::uploadBackup - Google drive service hasn't been initialized");
+        if (client == null) {
+            StaticStore.logger.uploadLog("W/BackupHolder::uploadBackup - Dropbox API client isn't initialized");
 
             return "";
         }
@@ -93,28 +102,32 @@ public class BackupHolder {
         switch (instance) {
             case PACK_PACK -> {
                 fileName = "serverinfo.json";
-                parentFolder = PACKPACK_BACKUP_FOLDER_ID;
+                parentFolder = PACKPACK_BACKUP_FOLDER;
             }
             case CARD_DEALER -> {
                 fileName = "cardSave.json";
-                parentFolder = CARD_DEALER_BACKUP_FOLDER_ID;
+                parentFolder = CARD_DEALER_BACKUP_FOLDER;
             }
             default -> throw new IllegalStateException("E/BackupHolder::uploadBackup - Invalid bot instance value");
         }
 
-        com.google.api.services.drive.model.File target = new com.google.api.services.drive.model.File();
-        FileContent content = new FileContent("application/json", new File("./data/" + fileName));
-
         long unixTime = Instant.now(Clock.systemUTC()).toEpochMilli();
         String date = format.format(new Date(unixTime));
 
-        target.setName(date + " - " + fileName);
-        target.setMimeType(content.getType());
-        target.setParents(List.of(parentFolder));
+        String fullFileName = "/" + parentFolder + "/" + date + " - " + fileName;
 
-        com.google.api.services.drive.model.File result = service.files().create(target, content).execute();
+        try (
+                UploadUploader uploader = client.files().upload(fullFileName);
+                FileInputStream stream = new FileInputStream("./data/" + fileName)
+        ) {
+            FileMetadata result = uploader.uploadAndFinish(stream);
 
-        backupList.put(unixTime, result.getId());
+            backupList.put(unixTime, result.getName());
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to upload backup file for instance : " + instance);
+
+            return "";
+        }
 
         if (backupList.size() > MAX_BACKUP) {
             List<Long> timestamps = new ArrayList<>(backupList.keySet());
@@ -123,22 +136,25 @@ public class BackupHolder {
             Collections.reverse(timestamps);
 
             for (int i = MAX_BACKUP; i < timestamps.size(); i++) {
-                String fileID = backupList.get(timestamps.get(i));
+                String backupFileName = backupList.get(timestamps.get(i));
 
-                if (fileID == null) {
+                if (backupFileName == null) {
                     backupList.remove(timestamps.get(i));
 
                     continue;
                 }
 
-                service.files().delete(fileID).execute();
+                client.files().deleteV2("/" + parentFolder + "/" + backupFileName);
                 backupList.remove(timestamps.get(i));
             }
         }
 
+        SharedLinkSettings settings = SharedLinkSettings.newBuilder().withAccess(RequestedLinkAccessLevel.VIEWER).withAllowDownload(true).build();
+        SharedLinkMetadata sharing = client.sharing().createSharedLinkWithSettings(fullFileName, settings);
+
         StaticStore.saveServerInfo();
 
-        return "https://drive.google.com/file/d/" + result.getId() + "/view";
+        return sharing.getUrl();
     }
 
     public JsonArray toJson() {
