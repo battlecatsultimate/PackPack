@@ -62,4 +62,4 @@ hs_err_pid*
 /data/cardBanner/
 /data/cardBanner/*
 /data/cardBannerData.json
-/data/serviceKey.json
+/data/dropboxToken.txt
