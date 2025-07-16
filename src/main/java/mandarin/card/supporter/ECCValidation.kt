@@ -3,7 +3,6 @@ package mandarin.card.supporter
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.supporter.card.Card
-import mandarin.packpack.supporter.EmojiStore
 
 class ECCValidation {
     enum class ValidationWay {
