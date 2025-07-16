@@ -279,7 +279,7 @@ class ECCValidationHolder(author: Message, userID: String, channelID: String, me
 
         TransactionLogger.logECCObtain(authorMessage.author.idLong, inventory.eccValidation)
 
-        val role = guild.roles.find { r -> r.id == CardData.cc }
+        val role = guild.roles.find { r -> r.id == CardData.ecc }
 
         if (role == null) {
             event.deferEdit()
