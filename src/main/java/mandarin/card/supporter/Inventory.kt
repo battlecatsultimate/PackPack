@@ -20,6 +20,9 @@ class Inventory(private val id: Long) {
     var favorites = PositiveMap<Card, Int>()
     var auctionQueued = PositiveMap<Card, Int>()
 
+    var ccValidation = CCValidation()
+    var eccValidation = ECCValidation()
+
     var vanityRoles = ArrayList<CardData.Role>()
 
     var skins = HashSet<Skin>()
@@ -257,6 +260,9 @@ class Inventory(private val id: Long) {
         obj.addProperty("catFoods", catFoods)
         obj.addProperty("platinumShard", platinumShard)
 
+        obj.add("ccValidation", ccValidation.toJson())
+        obj.add("eccValidation", eccValidation.toJson())
+
         return obj
     }
 
@@ -445,6 +451,14 @@ class Inventory(private val id: Long) {
 
             if (obj.has("platinumShard")) {
                 inventory.platinumShard = obj.get("platinumShard").asLong
+            }
+
+            if (obj.has("ccValidation")) {
+                inventory.ccValidation = CCValidation.fromJson(obj.getAsJsonObject("ccValidation"))
+            }
+
+            if (obj.has("eccValidation")) {
+                inventory.eccValidation = ECCValidation.fromJson(obj.getAsJsonObject("eccValidation"))
             }
 
             return inventory
