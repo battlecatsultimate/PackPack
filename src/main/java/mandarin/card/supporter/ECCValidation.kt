@@ -33,8 +33,8 @@ class ECCValidation {
         }
     }
 
-    private var validationWay = ValidationWay.NONE
-    private val cardList = ArrayList<Card>()
+    var validationWay = ValidationWay.NONE
+    val cardList = ArrayList<Card>()
 
     fun toJson() : JsonObject {
         val obj = JsonObject()
