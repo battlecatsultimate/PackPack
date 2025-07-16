@@ -6,11 +6,10 @@ import mandarin.card.supporter.card.Card
 
 class ECCValidation {
     enum class ValidationWay {
-        SEASONAL_15,
-        COLLABORATION_12,
-        SEASONAL_15_COLLABORATION_12,
-        T3_3,
         LEGENDARY_COLLECTOR,
+        SEASONAL_15_COLLAB_12_T4,
+        T4_2,
+        SAME_T4_3,
         NONE
     }
 
