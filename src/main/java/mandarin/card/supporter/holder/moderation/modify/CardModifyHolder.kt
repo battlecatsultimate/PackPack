@@ -394,7 +394,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
 
         rows.add(ActionRow.of(cardCategory))
 
-        val totalPage = Holder.getTotalPage(cards.size)
+        val totalPage = getTotalPage(cards.size)
 
         if (cards.size > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()

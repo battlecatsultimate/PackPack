@@ -1498,4 +1498,35 @@ object TransactionLogger {
             logChannel.sendMessageEmbeds(builder.build()).queue()
         }
     }
+
+    fun logCCObtain(obtainer: Long, validationData: CCValidation) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+        val way = when(validationData.validationWay) {
+            CCValidation.ValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
+            CCValidation.ValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
+            CCValidation.ValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
+            CCValidation.ValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
+            CCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            CCValidation.ValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("CC Obtained")
+            .setDescription("User <@$obtainer> obtained CC with way of `$way`")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
+        builder.addField("Way", "**$way**", false)
+
+        if (validationData.cardList.isNotEmpty()) {
+            builder.addField("Selected Cards", validationData.cardList.joinToString("\n") { c -> c.simpleCardInfo() }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
 }

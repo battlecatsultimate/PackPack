@@ -139,8 +139,8 @@ object CardData {
 
     val guild = ServerData.get("guild")
 
-    private val cc = ServerData.get("cc")
-    private val ecc = ServerData.get("ecc")
+    val cc = ServerData.get("cc")
+    val ecc = ServerData.get("ecc")
 
     val bankAccount = ServerData.get("bankAccount")
 
