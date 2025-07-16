@@ -2,7 +2,7 @@ package mandarin.card.supporter.holder.buy
 
 import common.CommonStatic
 import mandarin.card.CardBot
-import mandarin.card.supporter.CCValidation
+import mandarin.card.supporter.ECCValidation
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
@@ -21,13 +21,14 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import kotlin.collections.set
 
-class CCValidationHolder(author: Message, userID: String, channelID: String, message: Message, private val validationWay: CCValidation.ValidationWay) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ECCValidationHolder(author: Message, userID: String, channelID: String, message: Message, private val validationWay: ECCValidation.ValidationWay) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private val seasonalCards = ArrayList<Card>()
     private val collaborationCards = ArrayList<Card>()
-    private val t3Cards = ArrayList<Card>()
+    private val t4Cards = ArrayList<Card>()
 
     init {
         registerAutoExpiration(FIVE_MIN)
@@ -38,33 +39,41 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
 
         when(event.componentId) {
             "seasonal" -> {
-                val cards = inventory.cards.keys.filter { c -> c.cardType == Card.CardType.SEASONAL }.sortedWith(CardComparator())
+                val cards = inventory.cards.keys.filter { c -> c.cardType == Card.CardType.SEASONAL }.toList().sortedWith(CardComparator())
 
                 connectTo(event, ValidationPayHolder(authorMessage, userID, channelID, message, cards, seasonalCards, 15))
             }
             "collaboration" -> {
-                val cards = inventory.cards.keys.filter { c -> c.cardType == Card.CardType.COLLABORATION}.sortedWith(CardComparator())
+                val cards = inventory.cards.keys.filter { c -> c.cardType == Card.CardType.COLLABORATION}.toList().sortedWith(CardComparator())
 
                 connectTo(event, ValidationPayHolder(authorMessage, userID, channelID, message, cards, collaborationCards, 12))
             }
-            "t3" -> {
-                val cards = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.ULTRA }.sortedWith(CardComparator())
+            "t4" -> {
+                val cards = if (validationWay == ECCValidation.ValidationWay.SAME_T4_3) {
+                    inventory.cards.keys.filter { c -> c.tier == CardData.Tier.LEGEND }.filter { c -> (inventory.cards[c] ?: 0) >= 3 }
+                } else {
+                    inventory.cards.keys.filter { c -> c.tier == CardData.Tier.LEGEND }
+                }
 
-                connectTo(event, ValidationPayHolder(authorMessage, userID, channelID, message, cards, t3Cards, 3))
+                if (validationWay == ECCValidation.ValidationWay.T4_2) {
+                    connectTo(event, ValidationPayHolder(authorMessage, userID, channelID, message, cards, t4Cards, 2))
+                } else {
+                    connectTo(event, ValidationPayHolder(authorMessage, userID, channelID, message, cards, t4Cards, 1))
+                }
             }
             "obtain" -> {
-                if (validationWay != CCValidation.ValidationWay.LEGENDARY_COLLECTOR) {
-                    registerPopUp(event, "Are you sure you want to obtain CC with these cards? This cannot be undone!")
+                if (validationWay != ECCValidation.ValidationWay.LEGENDARY_COLLECTOR) {
+                    registerPopUp(event, "Are you sure you want to obtain ECC with these cards? This cannot be undone!")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
-                        obtainCC(guild, e)
+                        obtainECC(guild, e)
                     }, CommonStatic.Lang.Locale.EN))
                 } else {
-                    obtainCC(guild, event)
+                    obtainECC(guild, event)
                 }
             }
             "back" -> {
-                if (seasonalCards.isNotEmpty() || collaborationCards.isNotEmpty() || t3Cards.isNotEmpty()) {
+                if (seasonalCards.isNotEmpty() || collaborationCards.isNotEmpty() || t4Cards.isNotEmpty()) {
                     registerPopUp(event, "Are you sure you want to go back? Your purchase progress will be lost")
 
                     connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
@@ -121,39 +130,20 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
     }
 
     private fun getContents() : String {
-        val doable = CCValidation.checkDoable(validationWay, inventory)
+        val doable = ECCValidation.checkDoable(validationWay, inventory)
 
         if (doable.isNotBlank()) {
-            return "You can't validate CC with this way because of the reasons below! :\n\n$doable"
+            return "You can't validate ECC with this way because of the reasons below! :\n\n$doable"
         }
 
-        if (validationWay == CCValidation.ValidationWay.LEGENDARY_COLLECTOR) {
-            return "Are you sure you want to obtain CC with this way? **Keep in mind that your CC will be lost if you lose <@&${CardData.Role.LEGEND.id}>**"
+        if (validationWay == ECCValidation.ValidationWay.LEGENDARY_COLLECTOR) {
+            return "Are you sure you want to obtain ECC with this way? **Keep in mind that your ECC will be lost if you lose <@&${CardData.Role.LEGEND.id}>**"
         }
 
         val builder = StringBuilder("Please check validation status below :\n\n")
-        val cf = EmojiStore.ABILITY["CF"]?.formatted
 
         when(validationWay) {
-            CCValidation.ValidationWay.SEASONAL_15 -> {
-                val seasonal = if (seasonalCards.size < 15) {
-                    "❌"
-                } else {
-                    "⭕"
-                }
-
-                builder.append("- Unique 15 Seasonal Cards : ").append(seasonal).append("\n").append("- $cf 150000 : ⭕")
-            }
-            CCValidation.ValidationWay.COLLABORATION_12 -> {
-                val collaboration = if (collaborationCards.size < 12) {
-                    "❌"
-                } else {
-                    "⭕"
-                }
-
-                builder.append("- Unique 12 Collaboration Cards : ").append(collaboration).append("\n").append("- $cf 150000 : ⭕")
-            }
-            CCValidation.ValidationWay.SEASONAL_15_COLLABORATION_12 -> {
+            ECCValidation.ValidationWay.SEASONAL_15_COLLAB_12_T4 -> {
                 val seasonal = if (seasonalCards.size < 15) {
                     "❌"
                 } else {
@@ -166,18 +156,35 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
                     "⭕"
                 }
 
-                builder.append("- Unique 15 Seasonal Cards : ").append(seasonal).append("\n").append("- Unique 12 Collaboration Cards : ").append(collaboration)
-            }
-            CCValidation.ValidationWay.T3_3 -> {
-                val t3 = if (t3Cards.size < 3) {
+                val t4 = if (t4Cards.isEmpty()) {
                     "❌"
                 } else {
                     "⭕"
                 }
 
-                builder.append("- Unique 3 T3 Cards : ").append(t3).append("\n").append("- $cf 200000 : ⭕")
+                builder.append("- Unique 15 Seasonal Cards : ").append(seasonal).append("\n")
+                    .append("- Unique 12 Collaboration Cards : ").append(collaboration).append("\n")
+                    .append("- 1 T4 Card : ").append(t4)
             }
-            else -> throw IllegalStateException("E/CCValidationHolder::getContents - Unhandled validation way : $validationWay")
+            ECCValidation.ValidationWay.T4_2 -> {
+                val t4 = if (t4Cards.size < 2) {
+                    "❌"
+                } else {
+                    "⭕"
+                }
+
+                builder.append("- 2 Unique T4 Cards : ").append(t4)
+            }
+            ECCValidation.ValidationWay.SAME_T4_3 -> {
+                val t4 = if (t4Cards.isEmpty()) {
+                    "❌"
+                } else {
+                    "⭕"
+                }
+
+                builder.append("- 3 Same T4 Cards : ").append(t4)
+            }
+            else -> throw IllegalStateException("E/ECCValidationHolder::getContents - Unhandled validation way : $validationWay")
         }
 
         return builder.toString()
@@ -186,7 +193,7 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        if (CCValidation.checkDoable(validationWay, inventory).isNotBlank()) {
+        if (ECCValidation.checkDoable(validationWay, inventory).isNotBlank()) {
             result.add(ActionRow.of(
                 Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK),
                 Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
@@ -195,9 +202,9 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
             return result
         }
 
-        if (validationWay == CCValidation.ValidationWay.LEGENDARY_COLLECTOR) {
+        if (validationWay == ECCValidation.ValidationWay.LEGENDARY_COLLECTOR) {
             result.add(ActionRow.of(
-                Button.success("obtain", "Obtain CC!").withEmoji(EmojiStore.CHECK),
+                Button.success("obtain", "Obtain ECC!").withEmoji(EmojiStore.CHECK),
                 Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK),
                 Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
             ))
@@ -207,32 +214,22 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
 
         var needSeasonal = false
         var needCollaboration = false
-        var needT3 = false
         var obtainable: Boolean
 
         when(validationWay) {
-            CCValidation.ValidationWay.SEASONAL_15 -> {
-                needSeasonal = true
-
-                obtainable = seasonalCards.size >= 15
-            }
-            CCValidation.ValidationWay.COLLABORATION_12 -> {
-                needCollaboration = true
-
-                obtainable = collaborationCards.size >= 12
-            }
-            CCValidation.ValidationWay.SEASONAL_15_COLLABORATION_12 -> {
+            ECCValidation.ValidationWay.SEASONAL_15_COLLAB_12_T4 -> {
                 needSeasonal = true
                 needCollaboration = true
 
-                obtainable = seasonalCards.size >= 15 && collaborationCards.size >= 12
+                obtainable = seasonalCards.size >= 15 && collaborationCards.size >= 12 && t4Cards.isNotEmpty()
             }
-            CCValidation.ValidationWay.T3_3 -> {
-                needT3 = true
-
-                obtainable = t3Cards.size >= 3
+            ECCValidation.ValidationWay.T4_2 -> {
+                obtainable = t4Cards.size >= 2
             }
-            else -> throw IllegalStateException("E/CCValidationHolder::getComponents - Unhandled validation way : $validationWay")
+            ECCValidation.ValidationWay.SAME_T4_3 -> {
+                obtainable = t4Cards.isNotEmpty()
+            }
+            else -> throw IllegalStateException("E/ECCValidationHolder::getComponents - Unhandled validation way : $validationWay")
         }
 
         if (needSeasonal) {
@@ -243,12 +240,16 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
             result.add(ActionRow.of(Button.secondary("collaboration", "Pay Collaboration Cards").withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.COLLABORATION))))
         }
 
-        if (needT3) {
-            result.add(ActionRow.of(Button.secondary("t3", "Pay T3 Cards").withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T3))))
+        val label = if (validationWay == ECCValidation.ValidationWay.T4_2) {
+            "Pay T4 Cards"
+        } else {
+            "Pay T4 Card"
         }
 
+        result.add(ActionRow.of(Button.secondary("t4", label).withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T3))))
+
         result.add(ActionRow.of(
-            Button.success("obtain", "Obtain CC!").withDisabled(!obtainable),
+            Button.success("obtain", "Obtain ECC!").withDisabled(!obtainable),
             Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK),
             Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
         ))
@@ -256,20 +257,27 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
         return result
     }
 
-    private fun obtainCC(guild: Guild, event: IMessageEditCallback) {
-        inventory.ccValidation.validationWay = validationWay
+    private fun obtainECC(guild: Guild, event: IMessageEditCallback) {
+        inventory.eccValidation.validationWay = validationWay
 
-        inventory.ccValidation.cardList.addAll(seasonalCards)
-        inventory.ccValidation.cardList.addAll(collaborationCards)
-        inventory.ccValidation.cardList.addAll(t3Cards)
+        inventory.eccValidation.cardList.addAll(seasonalCards)
+        inventory.eccValidation.cardList.addAll(collaborationCards)
+
+        if (validationWay == ECCValidation.ValidationWay.SAME_T4_3) {
+            repeat(3) {
+                inventory.eccValidation.cardList.addAll(t4Cards)
+            }
+        } else {
+            inventory.eccValidation.cardList.addAll(t4Cards)
+        }
 
         seasonalCards.forEach { c -> inventory.cards[c] = (inventory.cards[c] ?: 0) - 1 }
         collaborationCards.forEach { c -> inventory.cards[c] = (inventory.cards[c] ?: 0) - 1 }
-        t3Cards.forEach { c -> inventory.cards[c] = (inventory.cards[c] ?: 0) - 1 }
+        t4Cards.forEach { c -> inventory.cards[c] = (inventory.cards[c] ?: 0) - (if (validationWay == ECCValidation.ValidationWay.SAME_T4_3) 3 else 1) }
 
         CardBot.saveCardData()
 
-        TransactionLogger.logCCObtain(authorMessage.author.idLong, inventory.ccValidation)
+        TransactionLogger.logECCObtain(authorMessage.author.idLong, inventory.eccValidation)
 
         val role = guild.roles.find { r -> r.id == CardData.cc }
 
@@ -286,7 +294,7 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
             guild.addRoleToMember(UserSnowflake.fromId(userID), role).queue()
 
             event.deferEdit()
-                .setContent("CC obtained successfully! Check your role list")
+                .setContent("ECC obtained successfully! Check your role list")
                 .setComponents()
                 .setAllowedMentions(arrayListOf())
                 .mentionRepliedUser(false)

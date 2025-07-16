@@ -119,6 +119,7 @@ class BuyHolder(author: Message, userID: String, channelID: String, message: Mes
                 }
             }
             "cc" -> connectTo(event, CCSelectHolder(authorMessage, userID, channelID, message))
+            "ecc" -> connectTo(event, ECCSelectHolder(authorMessage, userID, channelID, message))
             "cancel" -> {
                 event.deferEdit()
                     .setContent("Buying canceled")

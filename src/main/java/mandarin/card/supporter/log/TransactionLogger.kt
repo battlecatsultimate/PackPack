@@ -1529,4 +1529,32 @@ object TransactionLogger {
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
     }
+
+    fun logECCObtain(obtainer: Long, validationData: ECCValidation) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = when(validationData.validationWay) {
+            ECCValidation.ValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+            ECCValidation.ValidationWay.T4_2 -> "- 2 Unique T4 Cards"
+            ECCValidation.ValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
+            ECCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            ECCValidation.ValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("ECC Obtained")
+            .setDescription("User <@$obtainer> obtained ECC with way of `$way`")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
+        builder.addField("Way", "**$way**", false)
+
+        if (validationData.cardList.isNotEmpty()) {
+            builder.addField("Selected Cards", validationData.cardList.joinToString("\n") { c -> c.simpleCardInfo() }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
 }
