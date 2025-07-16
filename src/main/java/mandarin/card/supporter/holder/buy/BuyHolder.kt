@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.buy
 
 import common.CommonStatic
 import mandarin.card.CardBot
