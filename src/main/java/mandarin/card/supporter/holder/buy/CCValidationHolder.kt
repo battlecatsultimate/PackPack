@@ -267,6 +267,15 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
         collaborationCards.forEach { c -> inventory.cards[c] = (inventory.cards[c] ?: 0) - 1 }
         t3Cards.forEach { c -> inventory.cards[c] = (inventory.cards[c] ?: 0) - 1 }
 
+        when(validationWay) {
+            CCValidation.ValidationWay.SEASONAL_15,
+            CCValidation.ValidationWay.COLLABORATION_12 -> inventory.catFoods -= 150000
+            CCValidation.ValidationWay.SEASONAL_15_COLLABORATION_12 -> {}
+            CCValidation.ValidationWay.T3_3 -> inventory.catFoods -= 200000
+            CCValidation.ValidationWay.LEGENDARY_COLLECTOR -> {}
+            CCValidation.ValidationWay.NONE -> {}
+        }
+
         CardBot.saveCardData()
 
         TransactionLogger.logCCObtain(authorMessage.author.idLong, inventory.ccValidation)

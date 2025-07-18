@@ -32,6 +32,9 @@ class ECCValidationHolder(author: Message, userID: String, channelID: String, me
 
     init {
         registerAutoExpiration(FIVE_MIN)
+
+        seasonalCards.addAll(inventory.ccValidation.cardList.filter { card -> card.cardType == Card.CardType.SEASONAL }.toSet())
+        collaborationCards.addAll(inventory.ccValidation.cardList.filter { card -> card.cardType == Card.CardType.COLLABORATION }.toSet())
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
@@ -140,7 +143,7 @@ class ECCValidationHolder(author: Message, userID: String, channelID: String, me
             return "Are you sure you want to obtain ECC with this way? **Keep in mind that your ECC will be lost if you lose <@&${CardData.Role.LEGEND.id}>**"
         }
 
-        val builder = StringBuilder("Please check validation status below :\n\n")
+        val builder = StringBuilder("Please check validation status below :\n-# Some conditions could be validated already because of your previous CC validation\n\n")
 
         when(validationWay) {
             ECCValidation.ValidationWay.SEASONAL_15_COLLAB_12_T4 -> {

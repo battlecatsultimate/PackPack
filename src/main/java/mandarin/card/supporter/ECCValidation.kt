@@ -24,8 +24,8 @@ class ECCValidation {
                     }
                 }
                 ValidationWay.SEASONAL_15_COLLAB_12_T4 -> {
-                    val seasonalSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.SEASONAL }.toSet().size
-                    val collaborationSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.toSet().size
+                    val seasonalSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.SEASONAL }.union(inventory.ccValidation.cardList.filter { card -> card.cardType == Card.CardType.SEASONAL }).toSet().size
+                    val collaborationSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.union(inventory.ccValidation.cardList.filter { card -> card.cardType == Card.CardType.COLLABORATION }).toSet().size
 
                     if (seasonalSize < 15) {
                         builder.append("- Not enough unique collaboration cards! You currently have $seasonalSize unique card${if (seasonalSize >= 2) "s" else ""}, but 15 cards are required\n")
