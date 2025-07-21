@@ -4,10 +4,12 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -68,6 +70,19 @@ class CCCancelHolder(author: Message, userID: String, channelID: String, message
 
     override fun onExpire() {
 
+    }
+
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
+        applyResult(event)
+    }
+
+    private fun applyResult(event: IMessageEditCallback) {
+        event.deferEdit()
+            .setContent(getContents())
+            .setComponents(getComponents())
+            .setAllowedMentions(arrayListOf())
+            .mentionRepliedUser(false)
+            .queue()
     }
 
     private fun getComponents() : List<LayoutComponent> {
