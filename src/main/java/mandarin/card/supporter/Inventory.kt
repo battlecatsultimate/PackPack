@@ -303,6 +303,8 @@ class Inventory(private val id: Long) {
             validationArray.add(validationObject)
         }
 
+        obj.add("validationCards", validationArray)
+
         return obj
     }
 
@@ -569,7 +571,7 @@ class Inventory(private val id: Long) {
 
             when(validationWay) {
                 CCValidationWay.SEASONAL_15 -> {
-                    val cardSize = inventory.cards.keys.filter { card ->  card.cardType == Card.CardType.SEASONAL }.toSet().size
+                    val cardSize = inventory.cards.keys.filter { card ->  card.cardType == Card.CardType.SEASONAL }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.SEASONAL }.keys).toSet().size
                     val cf = EmojiStore.ABILITY["CF"]?.formatted
 
                     if (cardSize < 15) {
@@ -581,7 +583,7 @@ class Inventory(private val id: Long) {
                     }
                 }
                 CCValidationWay.COLLABORATION_12 -> {
-                    val cardSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.toSet().size
+                    val cardSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.COLLABORATION }.keys).toSet().size
                     val cf = EmojiStore.ABILITY["CF"]?.formatted
 
                     if (cardSize < 12) {
@@ -593,8 +595,8 @@ class Inventory(private val id: Long) {
                     }
                 }
                 CCValidationWay.SEASONAL_15_COLLABORATION_12 -> {
-                    val seasonalSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.SEASONAL }.toSet().size
-                    val collaborationSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.toSet().size
+                    val seasonalSize = inventory.cards.keys.filter { card ->  card.cardType == Card.CardType.SEASONAL }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.SEASONAL }.keys).toSet().size
+                    val collaborationSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.COLLABORATION }.keys).toSet().size
 
                     if (seasonalSize < 15) {
                         builder.append("- Not enough unique collaboration cards! You currently have $seasonalSize unique card${if (seasonalSize >= 2) "s" else ""}, but 15 cards are required\n")
@@ -605,7 +607,7 @@ class Inventory(private val id: Long) {
                     }
                 }
                 CCValidationWay.T3_3 -> {
-                    val cardSize = inventory.cards.keys.filter { card -> card.tier == CardData.Tier.ULTRA }.toSet().size
+                    val cardSize = inventory.cards.keys.filter { card -> card.tier == CardData.Tier.ULTRA }.union(inventory.validationCards.filterKeys { k -> k.tier == CardData.Tier.ULTRA }.keys).toSet().size
                     val cf = EmojiStore.ABILITY["CF"]?.formatted
 
                     if (cardSize < 3) {
@@ -655,7 +657,7 @@ class Inventory(private val id: Long) {
                     }
                 }
                 ECCValidationWay.T4_2 -> {
-                    val cardSize = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.LEGEND }.toSet().size
+                    val cardSize = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.LEGEND }.union(inventory.validationCards.filterKeys { k -> k.tier == CardData.Tier.LEGEND }.keys).toSet().size
 
                     if (cardSize < 2) {
                         builder.append("- Not enough unique collaboration cards! You currently have $cardSize unique card, but 2 cards are required\n")
