@@ -42,8 +42,8 @@ public abstract class Command {
     public static MessageCreateAction registerConfirmButtons(MessageCreateAction m, CommonStatic.Lang.Locale lang) {
         List<ActionComponent> components = new ArrayList<>();
 
-        components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
-        components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
+        components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK));
+        components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS));
 
         return m.setActionRow(components);
     }

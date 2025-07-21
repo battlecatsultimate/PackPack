@@ -396,6 +396,15 @@ class Inventory(private val id: Long) {
 
         validationCards.clear()
 
+        when (ccValidationWay) {
+            CCValidationWay.SEASONAL_15,
+            CCValidationWay.COLLABORATION_12 -> catFoods += 150000
+            CCValidationWay.SEASONAL_15_COLLABORATION_12 -> {}
+            CCValidationWay.T3_3 -> catFoods += 200000
+            CCValidationWay.LEGENDARY_COLLECTOR -> {}
+            CCValidationWay.NONE -> {}
+        }
+
         val cc = g.roles.find { r -> r.id == CardData.cc } ?: return
         val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
 
@@ -664,7 +673,7 @@ class Inventory(private val id: Long) {
                     }
                 }
                 ECCValidationWay.SAME_T4_3 -> {
-                    if (inventory.cards.keys.filter { c -> c.tier == CardData.Tier.LEGEND }.none { c -> (inventory.cards[c] ?: 0) >= 3 }) {
+                    if (inventory.cards.entries.filter { (card, amount) -> card.tier == CardData.Tier.LEGEND && amount >= 3 }.union(inventory.validationCards.entries.filter { (card, pair) -> card.tier == CardData.Tier.LEGEND && pair.second >= 3 }.map { e -> e.key }).toSet().isEmpty()) {
                         builder.append("- You don't have any T4 cards with amount of 3 or over!")
                     }
                 }
