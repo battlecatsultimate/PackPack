@@ -128,6 +128,12 @@ object Notification {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), ccRole).queue()
 
                     ccRemoved = true
+
+                    if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && inventory.eccValidationWay != Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
+                        inventory.cancelECC(g, userID)
+
+                        eccRemoved = true
+                    }
                 }
 
                 if (inventory.eccValidationWay == Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
@@ -142,11 +148,11 @@ object Notification {
                             "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n"
 
                     if (ccRemoved && eccRemoved) {
-                        message += "Additionally, your CC and ECC status were also removed because you have obtained both two roles with Legendary Collector way. You will have to obtain them back by getting Legendary Collector again, or other way\n\n"
+                        message += "Additionally, your CC status was also removed because you have obtained both two roles with Legendary Collector way. ECC status could be lost as well because CC requires you to have ECC. If you have paid cards for ECC, cards should be retrieved to your inventory. You will have to obtain them back by getting Legendary Collector again, or other way\n\n"
                     } else if (ccRemoved) {
-                        message += "Additionally, your CC status were also removed because you have obtained CC with Legendary Collector way. You will have to obtain it back by getting Legendary Collector again, or other way\n\n"
+                        message += "Additionally, your CC status was also removed because you have obtained CC with Legendary Collector way. You will have to obtain it back by getting Legendary Collector again, or other way\n\n"
                     } else if (eccRemoved) {
-                        message += "Additionally, your ECC status were also removed because you have obtained ECC with Legendary Collector way. You will have to obtain it back by getting Legendary Collector again, or other way\n\n"
+                        message += "Additionally, your ECC status was also removed because you have obtained ECC with Legendary Collector way. You will have to obtain it back by getting Legendary Collector again, or other way\n\n"
                     }
 
                     message += "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}"

@@ -29,7 +29,6 @@ class CCCancelHolder(author: Message, userID: String, channelID: String, message
         when(event.componentId) {
             "confirm" -> {
                 val guild = event.guild ?: return
-                val member = event.member ?: return
 
                 registerPopUp(event, "Are you really sure you want to cancel ${cancelMode.name}?")
 
@@ -37,11 +36,11 @@ class CCCancelHolder(author: Message, userID: String, channelID: String, message
                     if (cancelMode == CancelMode.CC) {
                         TransactionLogger.logCCCancel(authorMessage.author.idLong, inventory)
 
-                        inventory.cancelCC(guild, member)
+                        inventory.cancelCC(guild, authorMessage.author.idLong)
                     } else {
                         TransactionLogger.logECCCancel(authorMessage.author.idLong, inventory)
 
-                        inventory.cancelECC(guild, member)
+                        inventory.cancelECC(guild, authorMessage.author.idLong)
                     }
 
                     CardBot.saveCardData()
