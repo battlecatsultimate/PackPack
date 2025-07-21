@@ -1,5 +1,6 @@
 package mandarin.card.supporter.log
 
+import glm_.sum
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
@@ -1499,13 +1500,13 @@ object TransactionLogger {
         }
     }
 
-    fun logCCObtain(obtainer: Long, validationWay: Inventory.CCValidationWay, cards: List<Card>) {
+    fun logCCObtain(obtainer: Long, inventory: Inventory) {
         if (!this::logChannel.isInitialized)
             return
 
         val cf = EmojiStore.ABILITY["CF"]?.formatted
 
-        val way = when(validationWay) {
+        val way = when(inventory.ccValidationWay) {
             Inventory.CCValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
             Inventory.CCValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
             Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
@@ -1523,18 +1524,20 @@ object TransactionLogger {
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
 
+        val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.CC || pair.first == Inventory.ShareStatus.BOTH }
+
         if (cards.isNotEmpty()) {
-            builder.addField("Selected Cards", cards.joinToString("\n") { c -> c.simpleCardInfo() }, false)
+            builder.addField("Selected Cards", cards.entries.joinToString("\n") { (card, _) -> card.simpleCardInfo() }, false)
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
     }
 
-    fun logECCObtain(obtainer: Long, validationWay: Inventory.ECCValidationWay, cards: List<Card>) {
+    fun logECCObtain(obtainer: Long, inventory: Inventory) {
         if (!this::logChannel.isInitialized)
             return
 
-        val way = when(validationWay) {
+        val way = when(inventory.eccValidationWay) {
             Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
             Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
             Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
@@ -1551,12 +1554,87 @@ object TransactionLogger {
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
 
+        val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC || pair.first == Inventory.ShareStatus.BOTH }
+
         if (cards.isNotEmpty()) {
-            builder.addField("Selected Cards", cards.joinToString("\n") { c ->
-                if (c.tier == CardData.Tier.LEGEND && validationWay == Inventory.ECCValidationWay.SAME_T4_3) {
-                    c.simpleCardInfo() + " x3"
+            builder.addField("Selected Cards", cards.entries.joinToString("\n") { (card, pair) ->
+                if (pair.second >= 2) {
+                    "${card.simpleCardInfo()} x${pair.second}"
                 } else {
-                    c.simpleCardInfo()
+                    card.simpleCardInfo()
+                }
+            }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCCCancel(canceller: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+        val way = when(inventory.ccValidationWay) {
+            Inventory.CCValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
+            Inventory.CCValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
+            Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
+            Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
+            Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("CC Obtained")
+            .setDescription("User <@$canceller> cancelled CC with way of `$way`")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Obtainer", "<@$canceller> [$canceller]", false)
+        builder.addField("Way", "**$way**", false)
+
+        if (inventory.validationCards.isNotEmpty()) {
+            builder.addField("Retrieved Cards", inventory.validationCards.entries.joinToString("\n") { (card, pair) ->
+                if (pair.second >= 2) {
+                    "${card.simpleCardInfo()} x${pair.second}"
+                } else {
+                    card.simpleCardInfo()
+                }
+            }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logECCCancel(canceller: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = when(inventory.eccValidationWay) {
+            Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+            Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
+            Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
+            Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("ECC Obtained")
+            .setDescription("User <@$canceller> obtained ECC with way of `$way`")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Obtainer", "<@$canceller> [$canceller]", false)
+        builder.addField("Way", "**$way**", false)
+
+        val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC }
+
+        if (cards.isNotEmpty()) {
+            builder.addField("Retrieved Cards", cards.entries.joinToString("\n") { (card, pair) ->
+                if (pair.second >= 2) {
+                    "${card.simpleCardInfo()} x${pair.second}"
+                } else {
+                    card.simpleCardInfo()
                 }
             }, false)
         }

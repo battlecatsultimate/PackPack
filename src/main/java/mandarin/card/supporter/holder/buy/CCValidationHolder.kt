@@ -285,7 +285,7 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
 
         CardBot.saveCardData()
 
-        TransactionLogger.logCCObtain(authorMessage.author.idLong, validationWay, seasonalCards.union(collaborationCards).union(t3Cards).toList())
+        TransactionLogger.logCCObtain(authorMessage.author.idLong, inventory)
 
         val role = guild.roles.find { r -> r.id == CardData.cc }
 

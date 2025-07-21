@@ -3,6 +3,7 @@ package mandarin.card.supporter.holder
 import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -34,8 +35,12 @@ class CCCancelHolder(author: Message, userID: String, channelID: String, message
 
                 connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     if (cancelMode == CancelMode.CC) {
+                        TransactionLogger.logCCCancel(authorMessage.author.idLong, inventory)
+
                         inventory.cancelCC(guild, member)
                     } else {
+                        TransactionLogger.logECCCancel(authorMessage.author.idLong, inventory)
+
                         inventory.cancelECC(guild, member)
                     }
 

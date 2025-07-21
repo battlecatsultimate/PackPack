@@ -283,7 +283,7 @@ class ECCValidationHolder(author: Message, userID: String, channelID: String, me
 
         CardBot.saveCardData()
 
-        TransactionLogger.logECCObtain(authorMessage.author.idLong, validationWay, seasonalCards.union(collaborationCards).union(t4Cards).toList())
+        TransactionLogger.logECCObtain(authorMessage.author.idLong, inventory)
 
         val role = guild.roles.find { r -> r.id == CardData.ecc }
 
