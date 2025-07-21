@@ -8,17 +8,45 @@ import mandarin.card.CardBot
 import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.UserSnowflake
 import java.io.File
 import java.io.FileWriter
-import java.util.HashMap
-import java.util.HashSet
 import kotlin.math.min
 
 class Inventory(private val id: Long) {
+    enum class ShareStatus {
+        CC,
+        ECC,
+        BOTH
+    }
+
+    enum class CCValidationWay {
+        SEASONAL_15,
+        COLLABORATION_12,
+        SEASONAL_15_COLLABORATION_12,
+        T3_3,
+        LEGENDARY_COLLECTOR,
+        NONE
+    }
+
+    enum class ECCValidationWay {
+        SEASONAL_15_COLLAB_12_T4,
+        T4_2,
+        SAME_T4_3,
+        LEGENDARY_COLLECTOR,
+        NONE
+    }
+
     var cards = PositiveMap<Card, Int>()
     var favorites = PositiveMap<Card, Int>()
     var auctionQueued = PositiveMap<Card, Int>()
+
+    var ccValidationWay = CCValidationWay.NONE
+    var eccValidationWay = ECCValidationWay.NONE
+    var validationCards = HashMap<Card, Pair<ShareStatus, Int>>()
 
     var vanityRoles = ArrayList<CardData.Role>()
 
@@ -257,6 +285,23 @@ class Inventory(private val id: Long) {
         obj.addProperty("catFoods", catFoods)
         obj.addProperty("platinumShard", platinumShard)
 
+        obj.addProperty("ccValidationWay", ccValidationWay.name)
+        obj.addProperty("eccValidationWay", eccValidationWay.name)
+
+        val validationArray = JsonArray()
+
+        validationCards.entries.forEach { (card, pair) ->
+            val validationObject = JsonObject()
+
+            validationObject.addProperty("key", card.id)
+            validationObject.addProperty("val1", pair.first.name)
+            validationObject.addProperty("val2", pair.second)
+
+            validationArray.add(validationObject)
+        }
+
+        obj.add("validationCards", validationArray)
+
         return obj
     }
 
@@ -337,6 +382,57 @@ class Inventory(private val id: Long) {
         }
 
         return builder.toString().trim()
+    }
+
+    fun cancelCC(g: Guild, userID: Long) {
+        val entries = ArrayList(validationCards.entries)
+
+        entries.forEach { (card, pair) ->
+            cards[card] = (cards[card] ?: 0) + pair.second
+        }
+
+        validationCards.clear()
+
+        when (ccValidationWay) {
+            CCValidationWay.SEASONAL_15,
+            CCValidationWay.COLLABORATION_12 -> catFoods += 150000
+            CCValidationWay.SEASONAL_15_COLLABORATION_12 -> {}
+            CCValidationWay.T3_3 -> catFoods += 200000
+            CCValidationWay.LEGENDARY_COLLECTOR -> {}
+            CCValidationWay.NONE -> {}
+        }
+
+        ccValidationWay = CCValidationWay.NONE
+        eccValidationWay = ECCValidationWay.NONE
+
+        val cc = g.roles.find { r -> r.id == CardData.cc } ?: return
+        val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
+
+        g.removeRoleFromMember(UserSnowflake.fromId(userID), cc).queue()
+        g.removeRoleFromMember(UserSnowflake.fromId(userID), ecc).queue()
+    }
+
+    fun cancelECC(g: Guild, userID: Long) {
+        val entries = ArrayList(validationCards.entries)
+
+        entries.forEach { (card, pair) ->
+            when(pair.first) {
+                ShareStatus.CC -> return@forEach
+                ShareStatus.ECC -> {
+                    cards[card] = (cards[card] ?: 0) + pair.second
+                    validationCards.remove(card)
+                }
+                ShareStatus.BOTH -> {
+                    validationCards[card] = Pair(ShareStatus.CC, pair.second)
+                }
+            }
+        }
+
+        eccValidationWay = ECCValidationWay.NONE
+
+        val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
+
+        g.removeRoleFromMember(UserSnowflake.fromId(userID), ecc).queue()
     }
 
     fun extractAsFile() : File {
@@ -447,6 +543,25 @@ class Inventory(private val id: Long) {
                 inventory.platinumShard = obj.get("platinumShard").asLong
             }
 
+            if (obj.has("ccValidationWay")) {
+                inventory.ccValidationWay = CCValidationWay.valueOf(obj.get("ccValidationWay").asString)
+            }
+
+            if (obj.has("eccValidationWay")) {
+                inventory.eccValidationWay = ECCValidationWay.valueOf(obj.get("eccValidationWay").asString)
+            }
+
+            if (obj.has("validationCards")) {
+                obj.getAsJsonArray("validationCards").filterIsInstance<JsonObject>().forEach { o ->
+                    val card = CardData.cards.find { c -> c.id == o.get("key").asInt } ?: return@forEach
+
+                    val status = ShareStatus.valueOf(o.get("val1").asString)
+                    val amount = o.get("val2").asInt
+
+                    inventory.validationCards[card] = Pair(status, amount)
+                }
+            }
+
             return inventory
         }
 
@@ -460,6 +575,114 @@ class Inventory(private val id: Long) {
             }
 
             return inventory
+        }
+
+        fun checkCCDoable(validationWay: CCValidationWay, inventory: Inventory) : String {
+            val builder = StringBuilder("")
+
+            when(validationWay) {
+                CCValidationWay.SEASONAL_15 -> {
+                    val cardSize = inventory.cards.keys.filter { card ->  card.cardType == Card.CardType.SEASONAL }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.SEASONAL }.keys).toSet().size
+                    val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+                    if (cardSize < 15) {
+                        builder.append("- Not enough unique seasonal cards! You currently have $cardSize unique card${if (cardSize >= 2) "s" else ""}, but 15 cards are required\n")
+                    }
+
+                    if (inventory.actualCatFood < 150000) {
+                        builder.append("- Not enough $cf! You currently have $cf ${inventory.actualCatFood}, but $cf 150000 is required")
+                    }
+                }
+                CCValidationWay.COLLABORATION_12 -> {
+                    val cardSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.COLLABORATION }.keys).toSet().size
+                    val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+                    if (cardSize < 12) {
+                        builder.append("- Not enough unique collaboration cards! You currently have $cardSize unique card${if (cardSize >= 2) "s" else ""}, but 12 cards are required\n")
+                    }
+
+                    if (inventory.actualCatFood < 150000) {
+                        builder.append("- Not enough $cf! You currently have $cf ${inventory.actualCatFood}, but $cf 150000 is required")
+                    }
+                }
+                CCValidationWay.SEASONAL_15_COLLABORATION_12 -> {
+                    val seasonalSize = inventory.cards.keys.filter { card ->  card.cardType == Card.CardType.SEASONAL }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.SEASONAL }.keys).toSet().size
+                    val collaborationSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.union(inventory.validationCards.filterKeys { k -> k.cardType == Card.CardType.COLLABORATION }.keys).toSet().size
+
+                    if (seasonalSize < 15) {
+                        builder.append("- Not enough unique collaboration cards! You currently have $seasonalSize unique card${if (seasonalSize >= 2) "s" else ""}, but 15 cards are required\n")
+                    }
+
+                    if (collaborationSize < 12) {
+                        builder.append("- Not enough unique collaboration cards! You currently have $collaborationSize unique card${if (collaborationSize >= 2) "s" else ""}, but 12 cards are required\n")
+                    }
+                }
+                CCValidationWay.T3_3 -> {
+                    val cardSize = inventory.cards.keys.filter { card -> card.tier == CardData.Tier.ULTRA }.union(inventory.validationCards.filterKeys { k -> k.tier == CardData.Tier.ULTRA }.keys).toSet().size
+                    val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+                    if (cardSize < 3) {
+                        builder.append("- Not enough unique T3 cards! You currently have $cardSize unique card${if (cardSize >= 2) "s" else ""}, but 3 cards are required\n")
+                    }
+
+                    if (inventory.actualCatFood < 200000) {
+                        builder.append("- Not enough $cf! You currently have $cf ${inventory.actualCatFood}, but $cf 200000 is required")
+                    }
+                }
+                CCValidationWay.LEGENDARY_COLLECTOR -> {
+                    if (!inventory.vanityRoles.contains(CardData.Role.LEGEND)) {
+                        builder.append("- You aren't currently owning <@&${CardData.Role.LEGEND.id}>!")
+                    }
+                }
+                CCValidationWay.NONE -> {
+
+                }
+            }
+
+            return builder.toString()
+        }
+
+        fun checkECCDoable(validationWay: ECCValidationWay, inventory: Inventory) : String {
+            val builder = StringBuilder("")
+
+            when(validationWay) {
+                ECCValidationWay.LEGENDARY_COLLECTOR -> {
+                    if (!inventory.vanityRoles.contains(CardData.Role.LEGEND)) {
+                        builder.append("- You aren't currently owning <@&${CardData.Role.LEGEND.id}>!")
+                    }
+                }
+                ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> {
+                    val seasonalSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.SEASONAL }.union(inventory.validationCards.filterKeys { card -> card.cardType == Card.CardType.SEASONAL }.keys).toSet().size
+                    val collaborationSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.union(inventory.validationCards.filterKeys { card -> card.cardType == Card.CardType.COLLABORATION }.keys).toSet().size
+
+                    if (seasonalSize < 15) {
+                        builder.append("- Not enough unique collaboration cards! You currently have $seasonalSize unique card${if (seasonalSize >= 2) "s" else ""}, but 15 cards are required\n")
+                    }
+
+                    if (collaborationSize < 12) {
+                        builder.append("- Not enough unique collaboration cards! You currently have $collaborationSize unique card${if (collaborationSize >= 2) "s" else ""}, but 12 cards are required\n")
+                    }
+
+                    if (inventory.cards.keys.none { c -> c.tier == CardData.Tier.LEGEND }) {
+                        builder.append("- You don't have any T4 cards!")
+                    }
+                }
+                ECCValidationWay.T4_2 -> {
+                    val cardSize = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.LEGEND }.union(inventory.validationCards.filterKeys { k -> k.tier == CardData.Tier.LEGEND }.keys).toSet().size
+
+                    if (cardSize < 2) {
+                        builder.append("- Not enough unique collaboration cards! You currently have $cardSize unique card, but 2 cards are required\n")
+                    }
+                }
+                ECCValidationWay.SAME_T4_3 -> {
+                    if (inventory.cards.entries.filter { (card, amount) -> card.tier == CardData.Tier.LEGEND && amount >= 3 }.union(inventory.validationCards.entries.filter { (card, pair) -> card.tier == CardData.Tier.LEGEND && pair.second >= 3 }.map { e -> e.key }).toSet().isEmpty()) {
+                        builder.append("- You don't have any T4 cards with amount of 3 or over!")
+                    }
+                }
+                ECCValidationWay.NONE -> {}
+            }
+
+            return builder.toString()
         }
     }
 }

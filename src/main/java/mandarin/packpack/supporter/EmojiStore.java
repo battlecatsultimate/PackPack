@@ -75,6 +75,9 @@ public class EmojiStore {
 
         CAT = Emoji.fromCustom("Cat", 1268786079041851526L, false);
 
+        CC = Emoji.fromCustom("CC", 1394900943996194917L, false);
+        ECC = Emoji.fromCustom("ECC", 1394900930612166666L, false);
+
         File iconData = new File("./data/abilityIcons.txt");
 
         if(iconData.exists()) {
@@ -224,6 +227,9 @@ public class EmojiStore {
     public static Emoji BACK;
 
     public static Emoji CAT;
+
+    public static Emoji CC;
+    public static Emoji ECC;
 
     public static final Map<String, Emoji> ABILITY = new HashMap<>();
     public static final MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();

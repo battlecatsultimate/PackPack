@@ -5,6 +5,7 @@ import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.holder.modal.BannerNameHolder
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -55,6 +56,11 @@ class BannerEditHolder(author: Message, userID: String, channelID: String, messa
                     CardData.activatedBanners.remove(banner)
                 else
                     CardData.activatedBanners.add(banner)
+
+                val member = event.member
+
+                if (member != null)
+                    TransactionLogger.logBannerActivate(banner, member, banner in CardData.activatedBanners)
 
                 applyResult(event)
             }

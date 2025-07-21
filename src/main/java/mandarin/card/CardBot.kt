@@ -594,6 +594,14 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}ter" -> TempRestore()
             "${globalPrefix}allowchannel",
             "${globalPrefix}alc" -> AllowChannel()
+            "${globalPrefix}validationcheck",
+            "${globalPrefix}vc" -> ValidationCheck()
+            "${globalPrefix}cancelcc" -> CancelCC()
+            "${globalPrefix}cancelecc" -> CancelECC()
+            "${globalPrefix}removecc",
+            "${globalPrefix}rcc" -> RemoveCC()
+            "${globalPrefix}removeecc",
+            "${globalPrefix}recc" -> RemoveECC()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 

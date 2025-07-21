@@ -1,6 +1,9 @@
 package mandarin.card.supporter.log
 
-import mandarin.card.supporter.*
+import mandarin.card.supporter.AuctionSession
+import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.TradingSession
 import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
@@ -13,7 +16,6 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import java.util.HashMap
 import kotlin.math.min
 
 object TransactionLogger {
@@ -1497,5 +1499,167 @@ object TransactionLogger {
         } else {
             logChannel.sendMessageEmbeds(builder.build()).queue()
         }
+    }
+
+    fun logCCObtain(obtainer: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+        val way = when(inventory.ccValidationWay) {
+            Inventory.CCValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
+            Inventory.CCValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
+            Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
+            Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
+            Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("CC Obtained")
+            .setDescription("User <@$obtainer> obtained CC with way of `$way`")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
+        builder.addField("Way", "**$way**", false)
+
+        val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.CC || pair.first == Inventory.ShareStatus.BOTH }
+
+        if (cards.isNotEmpty()) {
+            builder.addField("Selected Cards", cards.entries.joinToString("\n") { (card, _) -> card.simpleCardInfo() }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logECCObtain(obtainer: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = when(inventory.eccValidationWay) {
+            Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+            Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
+            Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
+            Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("ECC Obtained")
+            .setDescription("User <@$obtainer> obtained ECC with way of `$way`")
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
+        builder.addField("Way", "**$way**", false)
+
+        val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC || pair.first == Inventory.ShareStatus.BOTH }
+
+        if (cards.isNotEmpty()) {
+            builder.addField("Selected Cards", cards.entries.joinToString("\n") { (card, pair) ->
+                if (pair.second >= 2) {
+                    "${card.simpleCardInfo()} x${pair.second}"
+                } else {
+                    card.simpleCardInfo()
+                }
+            }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCCCancel(canceler: Long, manager: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+        val way = when(inventory.ccValidationWay) {
+            Inventory.CCValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
+            Inventory.CCValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
+            Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
+            Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
+            Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        val description = if (manager == -1L) {
+            "User <@$canceler> canceled CC with the way of `$way`"
+        } else {
+            "Manager <@$manager> removed CC from user <@$canceler> with the way of `$way`"
+        }
+
+        builder.setTitle("CC Canceled")
+            .setDescription(description)
+            .setColor(StaticStore.rainbow.random())
+
+        if (manager != -1L) {
+            builder.addField("Remover", "<@$manager> [$manager]", false)
+        }
+
+        builder.addField("Canceler", "<@$canceler> [$canceler]", false)
+        builder.addField("Way", "**$way**", false)
+
+        if (inventory.validationCards.isNotEmpty()) {
+            builder.addField("Retrieved Cards", inventory.validationCards.entries.joinToString("\n") { (card, pair) ->
+                if (pair.second >= 2) {
+                    "${card.simpleCardInfo()} x${pair.second}"
+                } else {
+                    card.simpleCardInfo()
+                }
+            }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logECCCancel(canceler: Long, manager: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = when(inventory.eccValidationWay) {
+            Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+            Inventory.ECCValidationWay.T4_2 -> "2 Unique T4 Cards"
+            Inventory.ECCValidationWay.SAME_T4_3 -> "3 Same T4 Cards"
+            Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.NONE -> "None"
+        }
+
+        val builder = EmbedBuilder()
+
+        val description = if (manager == -1L) {
+            "User <@$canceler> canceled ECC with the way of `$way`"
+        } else {
+            "Manager <@$manager> removed ECC from user <@$canceler> with the way of `$way`"
+        }
+
+        builder.setTitle("ECC Canceled")
+            .setDescription(description)
+            .setColor(StaticStore.rainbow.random())
+
+        if (manager != -1L) {
+            builder.addField("Remover", "<@$manager> [$manager]", false)
+        }
+
+        builder.addField("Canceler", "<@$canceler> [$canceler]", false)
+        builder.addField("Way", "**$way**", false)
+
+        val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC }
+
+        if (cards.isNotEmpty()) {
+            builder.addField("Retrieved Cards", cards.entries.joinToString("\n") { (card, pair) ->
+                if (pair.second >= 2) {
+                    "${card.simpleCardInfo()} x${pair.second}"
+                } else {
+                    card.simpleCardInfo()
+                }
+            }, false)
+        }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
     }
 }

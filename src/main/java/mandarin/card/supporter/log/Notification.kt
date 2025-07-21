@@ -109,9 +109,13 @@ object Notification {
     fun handleCollectorRoleNotification(client: ShardManager) {
         val g = client.getGuildById(CardData.guild)
         val collectorRole = g?.roles?.find { r -> r.id == CardData.Role.LEGEND.id }
+        val ccRole = g?.roles?.find { r -> r.id == CardData.cc }
+        val eccRole = g?.roles?.find { r -> r.id == CardData.ecc }
 
         CardData.inventories.keys.forEach { userID ->
             val inventory = Inventory.getInventory(userID)
+            var ccRemoved = false
+            var eccRemoved = false
 
             if (!inventory.validForLegendCollector() && inventory.vanityRoles.contains(CardData.Role.LEGEND)) {
                 inventory.vanityRoles.remove(CardData.Role.LEGEND)
@@ -120,13 +124,40 @@ object Notification {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), collectorRole).queue()
                 }
 
+                if (inventory.ccValidationWay == Inventory.CCValidationWay.LEGENDARY_COLLECTOR && ccRole != null) {
+                    g.removeRoleFromMember(UserSnowflake.fromId(userID), ccRole).queue()
+
+                    ccRemoved = true
+
+                    if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && inventory.eccValidationWay != Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
+                        inventory.cancelECC(g, userID)
+
+                        eccRemoved = true
+                    }
+                }
+
+                if (inventory.eccValidationWay == Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
+                    g.removeRoleFromMember(UserSnowflake.fromId(userID), eccRole).queue()
+
+                    eccRemoved = true
+                }
+
                 if (this::notificationChannel.isInitialized) {
-                    notificationChannel.sendMessage(
-                        "<@$userID>, your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
-                                "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
-                                "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
-                                "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}"
-                    ).queue(null) { e ->
+                    var message = "<@$userID>, your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
+                            "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
+                            "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n"
+
+                    if (ccRemoved && eccRemoved) {
+                        message += "Additionally, your CC status was also removed because you have obtained both two roles with Legendary Collector way. ECC status could be lost as well because CC requires you to have ECC. If you have paid cards for ECC, cards should be retrieved to your inventory. You will have to obtain them back by getting Legendary Collector again, or other way\n\n"
+                    } else if (ccRemoved) {
+                        message += "Additionally, your CC status was also removed because you have obtained CC with Legendary Collector way. You will have to obtain it back by getting Legendary Collector again, or other way\n\n"
+                    } else if (eccRemoved) {
+                        message += "Additionally, your ECC status was also removed because you have obtained ECC with Legendary Collector way. You will have to obtain it back by getting Legendary Collector again, or other way\n\n"
+                    }
+
+                    message += "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}"
+
+                    notificationChannel.sendMessage(message).queue(null) { e ->
                         StaticStore.logger.uploadErrorLog(e, "E/Notification::sendCollectorRoleNotification - Failed to send notification")
                     }
                 }
