@@ -1499,19 +1499,19 @@ object TransactionLogger {
         }
     }
 
-    fun logCCObtain(obtainer: Long, validationData: CCValidation) {
+    fun logCCObtain(obtainer: Long, validationWay: Inventory.CCValidationWay, cards: List<Card>) {
         if (!this::logChannel.isInitialized)
             return
 
         val cf = EmojiStore.ABILITY["CF"]?.formatted
 
-        val way = when(validationData.validationWay) {
-            CCValidation.ValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
-            CCValidation.ValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
-            CCValidation.ValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
-            CCValidation.ValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
-            CCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
-            CCValidation.ValidationWay.NONE -> "None"
+        val way = when(validationWay) {
+            Inventory.CCValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
+            Inventory.CCValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
+            Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
+            Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
+            Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.NONE -> "None"
         }
 
         val builder = EmbedBuilder()
@@ -1523,23 +1523,23 @@ object TransactionLogger {
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
 
-        if (validationData.cardList.isNotEmpty()) {
-            builder.addField("Selected Cards", validationData.cardList.joinToString("\n") { c -> c.simpleCardInfo() }, false)
+        if (cards.isNotEmpty()) {
+            builder.addField("Selected Cards", cards.joinToString("\n") { c -> c.simpleCardInfo() }, false)
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
     }
 
-    fun logECCObtain(obtainer: Long, validationData: ECCValidation) {
+    fun logECCObtain(obtainer: Long, validationWay: Inventory.ECCValidationWay, cards: List<Card>) {
         if (!this::logChannel.isInitialized)
             return
 
-        val way = when(validationData.validationWay) {
-            ECCValidation.ValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
-            ECCValidation.ValidationWay.T4_2 -> "- 2 Unique T4 Cards"
-            ECCValidation.ValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
-            ECCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
-            ECCValidation.ValidationWay.NONE -> "None"
+        val way = when(validationWay) {
+            Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+            Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
+            Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
+            Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.NONE -> "None"
         }
 
         val builder = EmbedBuilder()
@@ -1551,8 +1551,14 @@ object TransactionLogger {
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
 
-        if (validationData.cardList.isNotEmpty()) {
-            builder.addField("Selected Cards", validationData.cardList.joinToString("\n") { c -> c.simpleCardInfo() }, false)
+        if (cards.isNotEmpty()) {
+            builder.addField("Selected Cards", cards.joinToString("\n") { c ->
+                if (c.tier == CardData.Tier.LEGEND && validationWay == Inventory.ECCValidationWay.SAME_T4_3) {
+                    c.simpleCardInfo() + " x3"
+                } else {
+                    c.simpleCardInfo()
+                }
+            }, false)
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()

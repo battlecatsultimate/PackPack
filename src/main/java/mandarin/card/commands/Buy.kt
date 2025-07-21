@@ -2,9 +2,7 @@ package mandarin.card.commands
 
 import common.CommonStatic
 import mandarin.card.CardBot
-import mandarin.card.supporter.CCValidation
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.ECCValidation
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.Product
 import mandarin.card.supporter.holder.buy.BuyHolder
@@ -85,8 +83,8 @@ class Buy : Command(CommonStatic.Lang.Locale.EN, true) {
         rows.add(ActionRow.of(roleMenu))
         rows.add(ActionRow.of(restMenu))
 
-        rows.add(ActionRow.of(Button.secondary("cc", "Obtain CC").withEmoji(EmojiStore.CC).withDisabled(inventory.ccValidation.validationWay != CCValidation.ValidationWay.NONE && inventory.ccValidation.validationWay != CCValidation.ValidationWay.LEGENDARY_COLLECTOR)))
-        rows.add(ActionRow.of(Button.secondary("ecc", "Obtain ECC").withEmoji(EmojiStore.ECC).withDisabled(inventory.ccValidation.validationWay == CCValidation.ValidationWay.NONE || (inventory.eccValidation.validationWay != ECCValidation.ValidationWay.NONE && inventory.eccValidation.validationWay != ECCValidation.ValidationWay.LEGENDARY_COLLECTOR))))
+        rows.add(ActionRow.of(Button.secondary("cc", "Obtain CC").withEmoji(EmojiStore.CC).withDisabled(inventory.ccValidationWay != Inventory.CCValidationWay.NONE && inventory.ccValidationWay != Inventory.CCValidationWay.LEGENDARY_COLLECTOR)))
+        rows.add(ActionRow.of(Button.secondary("ecc", "Obtain ECC").withEmoji(EmojiStore.ECC).withDisabled(inventory.ccValidationWay == Inventory.CCValidationWay.NONE || (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && inventory.eccValidationWay != Inventory.ECCValidationWay.LEGENDARY_COLLECTOR))))
 
         rows.add(ActionRow.of(Button.danger("cancel", "Cancel")))
 

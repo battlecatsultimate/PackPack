@@ -1,9 +1,7 @@
 package mandarin.card.supporter.log
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.CCValidation
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.ECCValidation
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.StaticStore
@@ -126,13 +124,13 @@ object Notification {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), collectorRole).queue()
                 }
 
-                if (inventory.ccValidation.validationWay == CCValidation.ValidationWay.LEGENDARY_COLLECTOR && ccRole != null) {
+                if (inventory.ccValidationWay == Inventory.CCValidationWay.LEGENDARY_COLLECTOR && ccRole != null) {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), ccRole).queue()
 
                     ccRemoved = true
                 }
 
-                if (inventory.eccValidation.validationWay == ECCValidation.ValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
+                if (inventory.eccValidationWay == Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), eccRole).queue()
 
                     eccRemoved = true

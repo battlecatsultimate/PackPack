@@ -1,7 +1,6 @@
 package mandarin.card.supporter.holder.buy
 
 import common.CommonStatic
-import mandarin.card.supporter.CCValidation
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -30,7 +29,7 @@ class CCSelectHolder(author: Message, userID: String, channelID: String, message
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                val validationWay = CCValidation.ValidationWay.valueOf(event.values.first())
+                val validationWay = Inventory.CCValidationWay.valueOf(event.values.first())
 
                 connectTo(event, CCValidationHolder(authorMessage, userID, channelID, message, validationWay))
             }
@@ -98,22 +97,22 @@ class CCSelectHolder(author: Message, userID: String, channelID: String, message
 
         val options = ArrayList<SelectOption>()
 
-        CCValidation.ValidationWay.entries.forEach { v ->
-            if (v == CCValidation.ValidationWay.NONE)
+        Inventory.CCValidationWay.entries.forEach { v ->
+            if (v == Inventory.CCValidationWay.NONE)
                 return@forEach
 
-            val doable = if (CCValidation.checkDoable(v, inventory).isBlank()) {
+            val doable = if (Inventory.checkCCDoable(v, inventory).isBlank()) {
                 "Can be validated"
             } else {
                 "Cannot be validated"
             }
 
             val label = when (v) {
-                CCValidation.ValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + 150k Cat Foods"
-                CCValidation.ValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + 150k Cat Foods"
-                CCValidation.ValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
-                CCValidation.ValidationWay.T3_3 -> "3 Unique T3 Cards + 200k Cat Foods"
-                CCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+                Inventory.CCValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + 150k Cat Foods"
+                Inventory.CCValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + 150k Cat Foods"
+                Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
+                Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + 200k Cat Foods"
+                Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
                 else -> throw IllegalStateException("E/CCSelectHolder::getComponents - Unhandled validation way : $v")
             }
 

@@ -1,9 +1,7 @@
 package mandarin.card.commands
 
 import common.CommonStatic
-import mandarin.card.supporter.CCValidation
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.ECCValidation
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
@@ -60,26 +58,28 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val builder = StringBuilder("## <@$memberID> CC/ECC Status\n### CC Status\n")
 
-        if (inventory.ccValidation.validationWay == CCValidation.ValidationWay.NONE) {
+        if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE) {
             builder.append("- No CC\n")
         } else {
             val cf = EmojiStore.ABILITY["CF"]?.formatted
 
-            val way = when(inventory.ccValidation.validationWay) {
-                CCValidation.ValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
-                CCValidation.ValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
-                CCValidation.ValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
-                CCValidation.ValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
-                CCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
-                CCValidation.ValidationWay.NONE -> "None"
+            val way = when(inventory.ccValidationWay) {
+                Inventory.CCValidationWay.SEASONAL_15 -> "15 Unique Seasonal Cards + $cf 150k"
+                Inventory.CCValidationWay.COLLABORATION_12 -> "12 Unique Collaboration Cards + $cf 150k"
+                Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
+                Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
+                Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+                Inventory.CCValidationWay.NONE -> "None"
             }
 
             builder.append("**Validation Way**\n- ").append(way).append("\n")
+            
+            val ccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.CC || p.first == Inventory.ShareStatus.BOTH }.keys
 
-            if (inventory.ccValidation.cardList.isNotEmpty()) {
+            if (ccCardList.isNotEmpty()) {
                 builder.append("**Selected Cards**\n")
 
-                inventory.ccValidation.cardList.forEachIndexed { index, card ->
+                ccCardList.forEachIndexed { index, card ->
                     builder.append(index + 1).append(". ").append(card.simpleCardInfo()).append("\n")
                 }
             }
@@ -87,23 +87,25 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
 
         builder.append("### ECC Status\n")
 
-        if (inventory.eccValidation.validationWay == ECCValidation.ValidationWay.NONE) {
+        if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE) {
             builder.append("- No ECC\n")
         } else {
-            val way = when(inventory.eccValidation.validationWay) {
-                ECCValidation.ValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
-                ECCValidation.ValidationWay.T4_2 -> "- 2 Unique T4 Cards"
-                ECCValidation.ValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
-                ECCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
-                ECCValidation.ValidationWay.NONE -> "None"
+            val way = when(inventory.eccValidationWay) {
+                Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+                Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
+                Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
+                Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+                Inventory.ECCValidationWay.NONE -> "None"
             }
 
             builder.append("**Validation Way**\n- ").append(way).append("\n")
 
-            if (inventory.eccValidation.cardList.isNotEmpty()) {
+            val eccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.ECC || p.first == Inventory.ShareStatus.BOTH }.keys
+
+            if (eccCardList.isNotEmpty()) {
                 builder.append("**Selected Cards**\n")
 
-                inventory.eccValidation.cardList.forEachIndexed { index, card ->
+                eccCardList.forEachIndexed { index, card ->
                     builder.append(index + 1).append(". ").append(card.simpleCardInfo()).append("\n")
                 }
             }

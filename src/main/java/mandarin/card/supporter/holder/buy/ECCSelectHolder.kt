@@ -1,7 +1,6 @@
 package mandarin.card.supporter.holder.buy
 
 import common.CommonStatic
-import mandarin.card.supporter.ECCValidation
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -30,7 +29,7 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                val validationWay = ECCValidation.ValidationWay.valueOf(event.values.first())
+                val validationWay = Inventory.ECCValidationWay.valueOf(event.values.first())
 
                 connectTo(event, ECCValidationHolder(authorMessage, userID, channelID, message, validationWay))
             }
@@ -95,21 +94,21 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
 
         val options = ArrayList<SelectOption>()
 
-        ECCValidation.ValidationWay.entries.forEach { v ->
-            if (v == ECCValidation.ValidationWay.NONE)
+        Inventory.ECCValidationWay.entries.forEach { v ->
+            if (v == Inventory.ECCValidationWay.NONE)
                 return@forEach
 
-            val doable = if (ECCValidation.checkDoable(v, inventory).isBlank()) {
+            val doable = if (Inventory.checkECCDoable(v, inventory).isBlank()) {
                 "Can be validated"
             } else {
                 "Cannot be validated"
             }
 
             val label = when (v) {
-                ECCValidation.ValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
-                ECCValidation.ValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
-                ECCValidation.ValidationWay.T4_2 -> "- 2 Unique T4 Cards"
-                ECCValidation.ValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
+                Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+                Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+                Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
+                Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
                 else -> throw IllegalStateException("E/ECCSelectHolder::getComponents - Unhandled validation way : $v")
             }
 
