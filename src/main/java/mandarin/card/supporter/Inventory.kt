@@ -10,6 +10,9 @@ import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.UserSnowflake
 import java.io.File
 import java.io.FileWriter
 import java.util.HashMap
@@ -382,24 +385,23 @@ class Inventory(private val id: Long) {
         return builder.toString().trim()
     }
 
-    fun cancelCC() {
+    fun cancelCC(g: Guild, m: Member) {
         val entries = ArrayList(validationCards.entries)
 
         entries.forEach { (card, pair) ->
-            when(pair.first) {
-                ShareStatus.CC -> {
-                    cards[card] = (cards[card] ?: 0) + pair.second
-                    validationCards.remove(card)
-                }
-                ShareStatus.ECC -> return@forEach
-                ShareStatus.BOTH -> {
-                    validationCards[card] = Pair(ShareStatus.ECC, pair.second)
-                }
-            }
+            cards[card] = (cards[card] ?: 0) + pair.second
         }
+
+        validationCards.clear()
+
+        val cc = g.roles.find { r -> r.id == CardData.cc } ?: return
+        val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
+
+        g.removeRoleFromMember(UserSnowflake.fromId(m.idLong), cc).queue()
+        g.removeRoleFromMember(UserSnowflake.fromId(m.idLong), ecc).queue()
     }
 
-    fun cancelECC() {
+    fun cancelECC(g: Guild, m: Member) {
         val entries = ArrayList(validationCards.entries)
 
         entries.forEach { (card, pair) ->
@@ -414,6 +416,10 @@ class Inventory(private val id: Long) {
                 }
             }
         }
+
+        val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
+
+        g.removeRoleFromMember(UserSnowflake.fromId(m.idLong), ecc).queue()
     }
 
     fun extractAsFile() : File {
