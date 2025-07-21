@@ -1570,7 +1570,7 @@ object TransactionLogger {
         logChannel.sendMessageEmbeds(builder.build()).queue()
     }
 
-    fun logCCCancel(canceller: Long, inventory: Inventory) {
+    fun logCCCancel(canceler: Long, manager: Long, inventory: Inventory) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -1587,11 +1587,21 @@ object TransactionLogger {
 
         val builder = EmbedBuilder()
 
-        builder.setTitle("CC Obtained")
-            .setDescription("User <@$canceller> cancelled CC with way of `$way`")
+        val description = if (manager == -1L) {
+            "User <@$canceler> canceled CC with the way of `$way`"
+        } else {
+            "Manager <@$manager> removed CC from user <@$canceler> with the way of `$way`"
+        }
+
+        builder.setTitle("CC Canceled")
+            .setDescription(description)
             .setColor(StaticStore.rainbow.random())
 
-        builder.addField("Obtainer", "<@$canceller> [$canceller]", false)
+        if (manager != -1L) {
+            builder.addField("Remover", "<@$manager> [$manager]", false)
+        }
+
+        builder.addField("Canceler", "<@$canceler> [$canceler]", false)
         builder.addField("Way", "**$way**", false)
 
         if (inventory.validationCards.isNotEmpty()) {
@@ -1607,25 +1617,35 @@ object TransactionLogger {
         logChannel.sendMessageEmbeds(builder.build()).queue()
     }
 
-    fun logECCCancel(canceller: Long, inventory: Inventory) {
+    fun logECCCancel(canceler: Long, manager: Long, inventory: Inventory) {
         if (!this::logChannel.isInitialized)
             return
 
         val way = when(inventory.eccValidationWay) {
-            Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
-            Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
-            Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
+            Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
+            Inventory.ECCValidationWay.T4_2 -> "2 Unique T4 Cards"
+            Inventory.ECCValidationWay.SAME_T4_3 -> "3 Same T4 Cards"
             Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
             Inventory.ECCValidationWay.NONE -> "None"
         }
 
         val builder = EmbedBuilder()
 
-        builder.setTitle("ECC Obtained")
-            .setDescription("User <@$canceller> obtained ECC with way of `$way`")
+        val description = if (manager == -1L) {
+            "User <@$canceler> canceled ECC with the way of `$way`"
+        } else {
+            "Manager <@$manager> removed ECC from user <@$canceler> with the way of `$way`"
+        }
+
+        builder.setTitle("ECC Canceled")
+            .setDescription(description)
             .setColor(StaticStore.rainbow.random())
 
-        builder.addField("Obtainer", "<@$canceller> [$canceller]", false)
+        if (manager != -1L) {
+            builder.addField("Remover", "<@$manager> [$manager]", false)
+        }
+
+        builder.addField("Canceler", "<@$canceler> [$canceler]", false)
         builder.addField("Way", "**$way**", false)
 
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC }

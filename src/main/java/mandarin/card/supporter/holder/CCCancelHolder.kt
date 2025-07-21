@@ -34,11 +34,11 @@ class CCCancelHolder(author: Message, userID: String, channelID: String, message
 
                 connectTo(ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     if (cancelMode == CancelMode.CC) {
-                        TransactionLogger.logCCCancel(authorMessage.author.idLong, inventory)
+                        TransactionLogger.logCCCancel(authorMessage.author.idLong, -1L, inventory)
 
                         inventory.cancelCC(guild, authorMessage.author.idLong)
                     } else {
-                        TransactionLogger.logECCCancel(authorMessage.author.idLong, inventory)
+                        TransactionLogger.logECCCancel(authorMessage.author.idLong, -1L, inventory)
 
                         inventory.cancelECC(guild, authorMessage.author.idLong)
                     }

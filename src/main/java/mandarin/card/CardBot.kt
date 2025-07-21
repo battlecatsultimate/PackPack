@@ -598,6 +598,10 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}vc" -> ValidationCheck()
             "${globalPrefix}cancelcc" -> CancelCC()
             "${globalPrefix}cancelecc" -> CancelECC()
+            "${globalPrefix}removecc",
+            "${globalPrefix}rcc" -> RemoveCC()
+            "${globalPrefix}removeecc",
+            "${globalPrefix}recc" -> RemoveECC()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 
