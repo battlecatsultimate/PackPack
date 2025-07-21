@@ -249,10 +249,10 @@ class ECCValidationHolder(author: Message, userID: String, channelID: String, me
             "Pay T4 Card"
         }
 
-        result.add(ActionRow.of(Button.secondary("t4", label).withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T3))))
+        result.add(ActionRow.of(Button.secondary("t4", label).withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T4))))
 
         result.add(ActionRow.of(
-            Button.success("obtain", "Obtain ECC!").withDisabled(!obtainable),
+            Button.success("obtain", "Obtain ECC!").withDisabled(!obtainable).withEmoji(EmojiStore.ECC),
             Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK),
             Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
         ))

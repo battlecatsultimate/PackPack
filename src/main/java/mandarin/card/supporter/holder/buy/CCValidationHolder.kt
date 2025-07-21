@@ -251,7 +251,7 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
         }
 
         result.add(ActionRow.of(
-            Button.success("obtain", "Obtain CC!").withDisabled(!obtainable),
+            Button.success("obtain", "Obtain CC!").withDisabled(!obtainable).withEmoji(EmojiStore.CC),
             Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK),
             Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
         ))
