@@ -1,7 +1,6 @@
 package mandarin.card.commands
 
 import common.CommonStatic
-import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.CCCancelHolder
 import mandarin.packpack.commands.Command
@@ -10,15 +9,13 @@ import mandarin.packpack.supporter.server.CommandLoader
 
 class CancelECC : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
-        val member = loader.member
+        val inventory = Inventory.getInventory(loader.user.idLong)
 
-        if (!member.roles.any { r -> r.id == CardData.ecc }) {
+        if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE) {
             replyToMessageSafely(loader.channel, "You currently don't own ECC!", loader.message) { a -> a }
 
             return
         }
-
-        val inventory = Inventory.getInventory(member.idLong)
 
         val builder = StringBuilder(
             "## Cancellation of ECC\n" +
@@ -43,7 +40,7 @@ class CancelECC : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, builder.toString(), loader.message, { a -> registerConfirmButtons(a, lang) }) { msg ->
-            StaticStore.putHolder(member.id, CCCancelHolder(loader.message, member.id, loader.channel.id, msg, CCCancelHolder.CancelMode.ECC))
+            StaticStore.putHolder(loader.user.id, CCCancelHolder(loader.message, loader.user.id, loader.channel.id, msg, CCCancelHolder.CancelMode.ECC))
         }
     }
 }

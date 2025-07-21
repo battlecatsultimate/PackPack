@@ -1,7 +1,6 @@
 package mandarin.card.commands
 
 import common.CommonStatic
-import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.CCCancelHolder
 import mandarin.packpack.commands.Command
@@ -11,9 +10,9 @@ import mandarin.packpack.supporter.server.CommandLoader
 
 class CancelCC : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
-        val member = loader.member
+        val inventory = Inventory.getInventory(loader.user.idLong)
 
-        if (!member.roles.any { r -> r.id == CardData.cc }) {
+        if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE) {
             replyToMessageSafely(loader.channel, "You currently don't own CC!", loader.message) { a -> a }
 
             return
@@ -29,8 +28,6 @@ class CancelCC : Command(CommonStatic.Lang.Locale.EN, true) {
                     "2. If you also had ECC, ECC will be cancelled together because ECC requires users to have CC\n" +
                     "3. You can re-join CC or ECC again at any time"
         )
-
-        val inventory = Inventory.getInventory(member.idLong)
 
         if (inventory.ccValidationWay != Inventory.CCValidationWay.LEGENDARY_COLLECTOR || (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && inventory.eccValidationWay != Inventory.ECCValidationWay.LEGENDARY_COLLECTOR)) {
             builder.append("\n\nBelow lists are what you will retrieve :\n")
@@ -60,7 +57,7 @@ class CancelCC : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, builder.toString(), loader.message, { a -> registerConfirmButtons(a, lang) }) { msg ->
-            StaticStore.putHolder(member.id, CCCancelHolder(loader.message, member.id, loader.channel.id, msg, CCCancelHolder.CancelMode.CC))
+            StaticStore.putHolder(loader.user.id, CCCancelHolder(loader.message, loader.user.id, loader.channel.id, msg, CCCancelHolder.CancelMode.CC))
         }
     }
 }
