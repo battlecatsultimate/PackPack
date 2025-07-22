@@ -16,18 +16,13 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
-            return
-
         val contents = loader.content.split(" ")
 
-        if (contents.size < 2) {
-            replyToMessageSafely(loader.channel, "Format : cd.vc [User ID/Mention]", loader.message) { a -> a }
-
-            return
+        val value = if (contents.size >= 2 && (m.id == StaticStore.MANDARIN_SMELL || CardData.isManager(m))) {
+            contents[1].replace(Regex("(<@|>)"), "")
+        } else {
+            m.id
         }
-
-        val value = contents[1].replace(Regex("(<@|>)"), "")
 
         if (!StaticStore.isNumeric(value)) {
             replyToMessageSafely(loader.channel, "User ID must be numeric!", loader.message) { a -> a }
