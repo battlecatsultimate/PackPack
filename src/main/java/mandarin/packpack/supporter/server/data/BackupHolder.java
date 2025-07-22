@@ -1,6 +1,11 @@
 package mandarin.packpack.supporter.server.data;
 
+import com.dropbox.core.DbxAppInfo;
+import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.DbxWebAuth;
+import com.dropbox.core.oauth.DbxCredential;
+import com.dropbox.core.oauth.DbxRefreshResult;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.UploadUploader;
@@ -13,10 +18,8 @@ import com.google.gson.JsonObject;
 import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.StaticStore;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Instant;
@@ -33,7 +36,7 @@ public class BackupHolder {
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    public static BackupHolder fromJson(JsonArray arr) {
+    public static BackupHolder fromJson(JsonArray arr) throws Exception {
         BackupHolder holder = new BackupHolder();
 
         for (JsonElement e : arr) {
@@ -51,42 +54,81 @@ public class BackupHolder {
     }
 
     public Map<Long, String> backupList = new HashMap<>();
-    private final DbxClientV2 client;
+    private DbxClientV2 client;
 
-    private BackupHolder() {
-        File accessToken = new File("./data/dropboxToken.txt");
+    private final String appKey;
+    private final String appSecret;
 
-        if (!accessToken.exists()) {
-            StaticStore.logger.uploadLog("W/BackupHolder::init - Failed to find access token for dropbox API");
+    private final DbxRequestConfig config;
+    private DbxCredential credential = null;
+
+    private BackupHolder() throws Exception {
+        File jsonFile = new File("./data/dropboxToken.json");
+
+        if (!jsonFile.exists()) {
+            StaticStore.logger.uploadLog("W/BackupHolder::init - Failed to find dropbox token json file. Minimum required data in json : Valid App Token, App Key, App Secret");
 
             client = null;
+
+            appKey = null;
+            appSecret = null;
+
+            config = null;
 
             return;
         }
 
-        DbxClientV2 tempClient;
+        JsonObject obj = StaticStore.getJsonFile("dropboxToken");
 
-        try(BufferedReader reader = new BufferedReader(new FileReader("./data/dropboxToken.txt"))) {
-            StringBuilder tokenBuilder = new StringBuilder();
+        if (obj == null) {
+            StaticStore.logger.uploadLog("W/BackupHolder::init - Failed to load dropbox token json file");
 
-            String line;
+            client = null;
 
-            while ((line = reader.readLine()) != null) {
-                tokenBuilder.append(line).append("\n");
-            }
+            appKey = null;
+            appSecret = null;
 
-            String token = tokenBuilder.toString().trim();
+            config = null;
 
-            DbxRequestConfig config = DbxRequestConfig.newBuilder("Discord Bot Backup").build();
-
-            tempClient = new DbxClientV2(config, token);
-        } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::init - Failed to initialize dropbox API service client");
-
-            tempClient = null;
+            return;
         }
 
-        client = tempClient;
+        appKey = obj.get("appKey").getAsString();
+        appSecret = obj.get("appSecret").getAsString();
+
+        config = DbxRequestConfig.newBuilder(appKey).build();
+
+        String appToken = obj.get("appToken").getAsString();
+
+        String accessToken = obj.get("accessToken").getAsString();
+        String refreshToken = obj.get("refreshToken").getAsString();
+        long expiredAt = obj.get("expiredAt").getAsLong();
+
+        if (refreshToken.isBlank() || accessToken.isBlank()) {
+            DbxAppInfo info = new DbxAppInfo(appKey, appSecret);
+            DbxWebAuth webAuth = new DbxWebAuth(config, info);
+
+            DbxAuthFinish authFinish = webAuth.finishFromCode(appToken);
+
+            accessToken = authFinish.getAccessToken();
+            refreshToken = authFinish.getRefreshToken();
+            expiredAt = authFinish.getExpiresAt();
+
+            JsonObject object = new JsonObject();
+
+            object.addProperty("appToken", appToken);
+            object.addProperty("accessToken", accessToken);
+            object.addProperty("appKey", appKey);
+            object.addProperty("appSecret", appSecret);
+            object.addProperty("refreshToken", refreshToken);
+            object.addProperty("expiredAt", expiredAt);
+
+            StaticStore.saveJsonFile("dropboxToken", object);
+        }
+
+        credential = new DbxCredential(accessToken, expiredAt, refreshToken, appKey, appSecret);
+
+        client = new DbxClientV2(config, credential);
     }
 
     public String uploadBackup(Logger.BotInstance instance) throws Exception {
@@ -94,6 +136,24 @@ public class BackupHolder {
             StaticStore.logger.uploadLog("W/BackupHolder::uploadBackup - Dropbox API client isn't initialized");
 
             return "";
+        }
+
+        if (credential.getExpiresAt() <= Instant.now(Clock.systemUTC()).toEpochMilli()) {
+            DbxRefreshResult result = client.refreshAccessToken();
+
+            credential = new DbxCredential(result.getAccessToken(), result.getExpiresAt(), credential.getRefreshToken(), appKey, appSecret);
+            client = new DbxClientV2(config, credential);
+
+            JsonObject object = new JsonObject();
+
+            object.addProperty("appToken", "");
+            object.addProperty("accessToken", result.getAccessToken());
+            object.addProperty("appKey", appKey);
+            object.addProperty("appSecret", appSecret);
+            object.addProperty("refreshToken", credential.getRefreshToken());
+            object.addProperty("expiredAt", result.getExpiresAt());
+
+            StaticStore.saveJsonFile("dropboxToken", object);
         }
 
         String fileName;
@@ -152,7 +212,7 @@ public class BackupHolder {
         SharedLinkSettings settings = SharedLinkSettings.newBuilder().withAccess(RequestedLinkAccessLevel.VIEWER).withAllowDownload(true).build();
         SharedLinkMetadata sharing = client.sharing().createSharedLinkWithSettings(fullFileName, settings);
 
-        StaticStore.saveServerInfo();
+        //StaticStore.saveServerInfo();
 
         return sharing.getUrl();
     }

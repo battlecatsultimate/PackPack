@@ -687,6 +687,41 @@ public class StaticStore {
         }
     }
 
+    public static void saveJsonFile(String name, JsonObject obj) throws Exception {
+        File folder = new File("./data/");
+
+        if(!folder.exists()) {
+            boolean res = folder.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder " + folder.getAbsolutePath());
+                return;
+            }
+        }
+
+        File file = new File(folder.getAbsolutePath(), name + ".json");
+
+        if(!file.exists()) {
+            boolean res = file.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create file " + file.getAbsolutePath());
+                return;
+            }
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
+        String json = obj.toString();
+        JsonNode tree = mapper.readTree(json);
+
+        FileWriter writer = new FileWriter(file);
+
+        writer.append(mapper.writeValueAsString(tree));
+        writer.close();
+    }
+
     public static void saveServerInfo() {
         JsonObject obj = new JsonObject();
 
@@ -958,10 +993,14 @@ public class StaticStore {
                 assetManager = AssetManager.fromJson(obj.getAsJsonArray("assetManager"));
             }
 
-            if (obj.has("backup")) {
-                backup = BackupHolder.fromJson(obj.getAsJsonArray("backup"));
-            } else {
-                backup = BackupHolder.fromJson(new JsonArray());
+            try {
+                if (obj.has("backup")) {
+                    backup = BackupHolder.fromJson(obj.getAsJsonArray("backup"));
+                } else {
+                    backup = BackupHolder.fromJson(new JsonArray());
+                }
+            } catch (Exception e) {
+                logger.uploadErrorLog(e, "E/StaticStore::readServerInfo - Failed to initialize backup holder");
             }
 
             // If any of these are null, bot can't check event data properly, resetting
