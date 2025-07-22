@@ -10,11 +10,14 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CreateIconCache extends ConstraintCommand {
     public CreateIconCache(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
@@ -33,7 +36,36 @@ public class CreateIconCache extends ConstraintCommand {
 
         CommonStatic.getConfig().ref = false;
 
+        String progress = "**Progress**\n\nUnit : %d / %d \n Enemy : %d / %d";
+
+        AtomicReference<Message> message = new AtomicReference<>();
+        CountDownLatch countdown = new CountDownLatch(1);
+
+        replyToMessageSafely(loader.getChannel(), progress.formatted(0, UserProfile.getBCData().units.size(), 0, UserProfile.getBCData().enemies.size()), loader.getMessage(), a -> a, msg -> {
+            message.set(msg);
+
+            countdown.countDown();
+        });
+
+        countdown.await();
+
+        Message msg = message.get();
+
+        if (msg == null)
+            return;
+
+        int unitIndex = 0;
+        int enemyIndex = 0;
+
+        long currentTime = System.currentTimeMillis();
+
         for (Unit u : UserProfile.getBCData().units) {
+            if (System.currentTimeMillis() - currentTime >= 1500) {
+                msg.editMessage(progress.formatted(unitIndex, UserProfile.getBCData().units.size(), enemyIndex, UserProfile.getBCData().enemies.size())).queue();
+
+                currentTime = System.currentTimeMillis();
+            }
+
             if (u.id == null)
                 continue;
 
@@ -62,9 +94,17 @@ public class CreateIconCache extends ConstraintCommand {
                     StaticStore.assetManager.getUnitIcon(f);
                 }
             }
+
+            unitIndex++;
         }
 
         for (Enemy e : UserProfile.getBCData().enemies) {
+            if (System.currentTimeMillis() - currentTime >= 1500) {
+                msg.editMessage(progress.formatted(unitIndex, UserProfile.getBCData().units.size(), enemyIndex, UserProfile.getBCData().enemies.size())).queue();
+
+                currentTime = System.currentTimeMillis();
+            }
+
             if (e.id == null)
                 continue;
 
@@ -91,6 +131,10 @@ public class CreateIconCache extends ConstraintCommand {
                 StaticStore.assetManager.removeEnemyIcon(e);
                 StaticStore.assetManager.getEnemyIcon(e);
             }
+
+            enemyIndex++;
         }
+
+        msg.editMessage(progress.formatted(unitIndex, UserProfile.getBCData().units.size(), enemyIndex, UserProfile.getBCData().enemies.size()) + "\n\n**Done!**").queue();
     }
 }

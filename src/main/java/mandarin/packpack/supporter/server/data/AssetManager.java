@@ -95,8 +95,8 @@ public class AssetManager {
             }
         }
 
-        if (obj.has("unitIcons")) {
-            for (JsonElement e : obj.getAsJsonArray("unitIcons")) {
+        if (obj.has("enemyIcons")) {
+            for (JsonElement e : obj.getAsJsonArray("enemyIcons")) {
                 if (!(e instanceof JsonObject o)) {
                     continue;
                 }
@@ -117,6 +117,40 @@ public class AssetManager {
                 manager.enemyIcons.put(enemy, new Triple<>(id, code, link));
             }
         }
+
+        for (Map.Entry<String, Pair<Long, String>> entry : manager.assetCache.entrySet()) {
+            if (entry.getKey().matches("UNIT-MODEL.+")) {
+                String[] segments = entry.getKey().split("-");
+
+                int unitID = StaticStore.safeParseInt(segments[3]);
+                int formID = StaticStore.safeParseInt(segments[4]);
+
+                Unit u = UserProfile.getBCData().units.get(unitID);
+
+                if (u == null)
+                    continue;
+
+                if (formID < 0 || formID >= u.forms.length)
+                    continue;
+
+                Form f = u.forms[formID];
+
+                manager.unitIcons.put(f, new Triple<>(entry.getValue().getFirst(), entry.getKey(), entry.getValue().getSecond()));
+            } else if (entry.getKey().matches("ENEMY-MODEL.+")) {
+                String[] segments = entry.getKey().split("-");
+
+                int enemyID = StaticStore.safeParseInt(segments[3]);
+
+                Enemy e = UserProfile.getBCData().enemies.get(enemyID);
+
+                if (e == null || e.id == null)
+                    continue;
+
+                manager.enemyIcons.put(e, new Triple<>(entry.getValue().getFirst(), entry.getKey(), entry.getValue().getSecond()));
+            }
+        }
+
+        manager.assetCache.entrySet().removeIf(e -> e.getKey().matches("UNIT-MODEL.+") || e.getKey().matches("ENEMY-MODEL.+"));
 
         return manager;
     }
@@ -140,6 +174,40 @@ public class AssetManager {
 
             manager.assetCache.put(key, new Pair<>(id, link));
         }
+
+        for (Map.Entry<String, Pair<Long, String>> entry : manager.assetCache.entrySet()) {
+            if (entry.getKey().matches("UNIT-MODEL.+")) {
+                String[] segments = entry.getKey().split("-");
+
+                int unitID = StaticStore.safeParseInt(segments[3]);
+                int formID = StaticStore.safeParseInt(segments[4]);
+
+                Unit u = UserProfile.getBCData().units.get(unitID);
+
+                if (u == null)
+                    continue;
+
+                if (formID < 0 || formID >= u.forms.length)
+                    continue;
+
+                Form f = u.forms[formID];
+
+                manager.unitIcons.put(f, new Triple<>(entry.getValue().getFirst(), entry.getKey(), entry.getValue().getSecond()));
+            } else if (entry.getKey().matches("ENEMY-MODEL.+")) {
+                String[] segments = entry.getKey().split("-");
+
+                int enemyID = StaticStore.safeParseInt(segments[3]);
+
+                Enemy e = UserProfile.getBCData().enemies.get(enemyID);
+
+                if (e == null || e.id == null)
+                    continue;
+
+                manager.enemyIcons.put(e, new Triple<>(entry.getValue().getFirst(), entry.getKey(), entry.getValue().getSecond()));
+            }
+        }
+
+        manager.assetCache.entrySet().removeIf(e -> e.getKey().matches("UNIT-MODEL.+") || e.getKey().matches("ENEMY-MODEL.+"));
 
         return manager;
     }
@@ -279,7 +347,7 @@ public class AssetManager {
                 if(rect.height % 2 == 1)
                     rect.height++;
 
-                CountDownLatch countdown = new CountDownLatch(2);
+                CountDownLatch renderWaiter = new CountDownLatch(1);
 
                 StaticStore.renderManager.createRenderer(AssetManager.ICON_SIZE, AssetManager.ICON_SIZE, folder, r -> {
                     r.queue(g -> {
@@ -295,15 +363,17 @@ public class AssetManager {
 
                     return kotlin.Unit.INSTANCE;
                 }, unused -> file, () -> {
-                    countdown.countDown();
+                    renderWaiter.countDown();
 
                     return kotlin.Unit.INSTANCE;
                 });
 
-                countdown.await();
+                renderWaiter.await();
 
                 AtomicReference<String> l = new AtomicReference<>();
                 AtomicReference<Long> i = new AtomicReference<>();
+
+                CountDownLatch uploadWaiter = new CountDownLatch(1);
 
                 channel.sendMessage(id)
                         .addFiles(FileUpload.fromData(file))
@@ -319,14 +389,14 @@ public class AssetManager {
                                 i.set(msg.getIdLong());
                             }
 
-                            countdown.countDown();
+                            uploadWaiter.countDown();
                         }, e -> {
                             StaticStore.logger.uploadErrorLog(e, "E/AssetManager::getUnitIcon - Error occurred while trying to upload asset");
 
-                            countdown.countDown();
+                            uploadWaiter.countDown();
                         });
 
-                countdown.await();
+                uploadWaiter.await();
 
                 StaticStore.deleteFile(file, true);
 
@@ -495,7 +565,7 @@ public class AssetManager {
                 if(rect.height % 2 == 1)
                     rect.height++;
 
-                CountDownLatch countdown = new CountDownLatch(2);
+                CountDownLatch renderWaiter = new CountDownLatch(2);
 
                 StaticStore.renderManager.createRenderer(AssetManager.ICON_SIZE, AssetManager.ICON_SIZE, folder, r -> {
                     r.queue(g -> {
@@ -511,15 +581,17 @@ public class AssetManager {
 
                     return kotlin.Unit.INSTANCE;
                 }, unused -> file, () -> {
-                    countdown.countDown();
+                    renderWaiter.countDown();
 
                     return kotlin.Unit.INSTANCE;
                 });
 
-                countdown.await();
+                renderWaiter.await();
 
                 AtomicReference<String> l = new AtomicReference<>();
                 AtomicReference<Long> i = new AtomicReference<>();
+
+                CountDownLatch uploadWaiter = new CountDownLatch(1);
 
                 channel.sendMessage(id)
                         .addFiles(FileUpload.fromData(file))
@@ -535,14 +607,14 @@ public class AssetManager {
                                 i.set(msg.getIdLong());
                             }
 
-                            countdown.countDown();
+                            uploadWaiter.countDown();
                         }, err -> {
                             StaticStore.logger.uploadErrorLog(err, "E/AssetManager::getEnemyIcon - Error occurred while trying to upload asset");
 
-                            countdown.countDown();
+                            uploadWaiter.countDown();
                         });
 
-                countdown.await();
+                uploadWaiter.await();
 
                 StaticStore.deleteFile(file, true);
 
@@ -768,7 +840,18 @@ public class AssetManager {
 
         JsonArray cacheArray = new JsonArray();
 
-        for (Map.Entry<String, Pair<Long, String>> entry : assetCache.entrySet()) {
+        for (Map.Entry<String, Pair<Long, String>> entry : assetCache.entrySet().stream().sorted((e1, e2) -> {
+            if (e1 == null && e2 == null)
+                return 0;
+
+            if (e1 == null)
+                return 1;
+
+            if (e2 == null)
+                return -1;
+
+            return e1.getKey().compareTo(e2.getKey());
+        }).toList()) {
             String key = entry.getKey();
             Pair<Long, String> pair = entry.getValue();
 
@@ -789,7 +872,34 @@ public class AssetManager {
 
         JsonArray unitIconArray = new JsonArray();
 
-        for (Map.Entry<Form, Triple<Long, String, String>> entry : unitIcons.entrySet()) {
+        for (Map.Entry<Form, Triple<Long, String, String>> entry : unitIcons.entrySet().stream().sorted((e1, e2) -> {
+            if (e1 == null && e2 == null)
+                return 0;
+
+            if (e1 == null)
+                return 1;
+
+            if (e2 == null)
+                return -1;
+
+            Form f1 = e1.getKey();
+            Form f2 = e2.getKey();
+
+            if (f1.unit.id == null && f2.unit.id == null)
+                return 0;
+
+            if (f1.unit.id == null)
+                return 1;
+
+            if (f2.unit.id == null)
+                return -1;
+
+            if (f1.unit.id.id != f2.unit.id.id) {
+                return Integer.compare(f1.unit.id.id, f2.unit.id.id);
+            } else {
+                return Integer.compare(f1.fid, f2.fid);
+            }
+        }).toList()) {
             Form f = entry.getKey();
 
             if (f == null)
@@ -823,7 +933,30 @@ public class AssetManager {
 
         JsonArray enemyIconArray = new JsonArray();
 
-        for (Map.Entry<Enemy, Triple<Long, String, String>> entry : enemyIcons.entrySet()) {
+        for (Map.Entry<Enemy, Triple<Long, String, String>> entry : enemyIcons.entrySet().stream().sorted((e1, e2) -> {
+            if (e1 == null && e2 == null)
+                return 0;
+
+            if (e1 == null)
+                return 1;
+
+            if (e2 == null)
+                return -1;
+
+            Enemy en1 = e1.getKey();
+            Enemy en2 = e2.getKey();
+
+            if (en1.id == null && en2.id == null)
+                return 0;
+
+            if (en1.id == null)
+                return 1;
+
+            if (en2.id == null)
+                return -1;
+
+            return Integer.compare(en1.id.id, en2.id.id);
+        }).toList()) {
             Enemy e = entry.getKey();
 
             if (e == null || e.id == null)
