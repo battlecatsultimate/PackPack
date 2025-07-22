@@ -1528,7 +1528,26 @@ object TransactionLogger {
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.CC || pair.first == Inventory.ShareStatus.BOTH }
 
         if (cards.isNotEmpty()) {
-            builder.addField("Selected Cards", cards.entries.joinToString("\n") { (card, _) -> card.simpleCardInfo() }, false)
+            val cardBuilder = StringBuilder()
+            var index = 0
+
+            cards.entries.forEach { (card, pair) ->
+                val text = if (pair.second >= 2) {
+                    "${card.simpleCardInfo()} x${pair.second}"
+                } else {
+                    card.simpleCardInfo()
+                }
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Selected Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
@@ -1558,13 +1577,26 @@ object TransactionLogger {
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC || pair.first == Inventory.ShareStatus.BOTH }
 
         if (cards.isNotEmpty()) {
-            builder.addField("Selected Cards", cards.entries.joinToString("\n") { (card, pair) ->
-                if (pair.second >= 2) {
+            val cardBuilder = StringBuilder()
+            var index = 0
+
+            cards.entries.forEach { (card, pair) ->
+                val text = if (pair.second >= 2) {
                     "${card.simpleCardInfo()} x${pair.second}"
                 } else {
                     card.simpleCardInfo()
                 }
-            }, false)
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Selected Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
