@@ -111,7 +111,7 @@ class TransferInventorySourceHolder(author: Message, userID: String, channelID: 
             "After transfer is done, picked user's inventory will be wiped out"
         }
 
-        return return "## Inventory Transfer\n" +
+        return "## Inventory Transfer\n" +
                 "This command will allow you to transfer specific user's inventory to other user. First, you have to pick which user's inventory you want to transfer\n" +
                 "### Transfer Mode : Inject\n" +
                 "$modeExplanation\n" +

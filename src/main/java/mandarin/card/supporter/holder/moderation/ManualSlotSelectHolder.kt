@@ -101,7 +101,7 @@ class ManualSlotSelectHolder(author: Message, userID: String, channelID: String,
         val options = ArrayList<SelectOption>()
 
         for (i in page * SearchHolder.PAGE_CHUNK until min(slotMachines.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-            var option = SelectOption.of(slotMachines[i].name, i.toString())
+            val option = SelectOption.of(slotMachines[i].name, i.toString())
 
             options.add(option)
         }

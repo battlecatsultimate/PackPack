@@ -151,7 +151,7 @@ class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, 
     }
 
     private fun applyResult(event: IMessageEditCallback) {
-        var builder = event.deferEdit()
+        val builder = event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
@@ -161,7 +161,7 @@ class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, 
     }
 
     private fun applyResult() {
-        var builder = message.editMessage(getContent())
+        val builder = message.editMessage(getContent())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)

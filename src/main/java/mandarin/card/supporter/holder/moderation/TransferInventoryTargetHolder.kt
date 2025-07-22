@@ -156,7 +156,7 @@ class TransferInventoryTargetHolder(
             "After transfer is done, picked user's inventory will be wiped out"
         }
 
-        return return "## Inventory Transfer\n" +
+        return "## Inventory Transfer\n" +
                 "Now you have to pick target user who will get transferred to\n" +
                 "### Source User : <@$sourceUser>\n" +
                 "### Transfer Mode : Inject\n" +

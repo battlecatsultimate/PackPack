@@ -362,8 +362,7 @@ class PackPayHolder(
 
         val availableSkins = result.toSet()
             .filter { c -> inventory.equippedSkins.containsKey(c) }
-            .map { c -> inventory.equippedSkins[c] }
-            .filterNotNull()
+            .mapNotNull { c -> inventory.equippedSkins[c] }
 
         if (availableSkins.isEmpty()) {
             message.editMessage("")

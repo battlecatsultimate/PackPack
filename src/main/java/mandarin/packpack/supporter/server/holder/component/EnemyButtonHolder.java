@@ -50,7 +50,7 @@ public class EnemyButtonHolder extends ComponentHolder {
     public void onExpire() {
         ArrayList<Button> buttons = new ArrayList<>();
 
-        for(Button button : message.getButtons()) {
+        for(Button button : message.getComponentTree().findAll(Button.class)) {
             if(button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
                 buttons.add(button);
             } else if(!configData.isCompact) {

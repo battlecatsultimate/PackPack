@@ -113,7 +113,7 @@ class ActivatorHolder(author: Message, userID: String, channelID: String, messag
             StringSelectMenu.create("banner").addOptions(bannerOptions).setPlaceholder("Select banner to activate/deactivate").build()
         ))
 
-        val totalPage = SearchHolder.getTotalPage(dataSize)
+        val totalPage = getTotalPage(dataSize)
 
         if (dataSize > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()

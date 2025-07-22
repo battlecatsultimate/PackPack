@@ -312,7 +312,7 @@ class CardChancePairHolder(
 
         val buttons = ArrayList<Button>()
 
-        val totalPage = Holder.getTotalPage(CardData.banners.size)
+        val totalPage = getTotalPage(CardData.banners.size)
 
         if (totalPage > 10) {
             buttons.add(Button.secondary("prev10", "Previous 10 Pages").withEmoji(EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

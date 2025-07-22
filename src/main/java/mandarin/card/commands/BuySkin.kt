@@ -33,7 +33,7 @@ class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
             .toMutableList()
 
         if (cards.isEmpty()) {
-            if (CardData.skins.filter { s -> s.public }.isEmpty()) {
+            if (CardData.skins.none { s -> s.public }) {
                 replyToMessageSafely(loader.channel, "There's no skin to purchase at the moment! Please wait for new releases!", loader.message) { a -> a }
             } else {
                 replyToMessageSafely(loader.channel,"You have purchased all the public skins! Please wait for new releases!", loader.message) { a -> a }

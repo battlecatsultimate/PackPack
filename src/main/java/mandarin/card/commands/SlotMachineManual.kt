@@ -105,7 +105,7 @@ class SlotMachineManual : Command(CommonStatic.Lang.Locale.EN, true) {
         val options = ArrayList<SelectOption>()
 
         for (i in 0 until min(possibleSlotMachines.size, SearchHolder.PAGE_CHUNK)) {
-            var option = SelectOption.of(possibleSlotMachines[i].name, i.toString())
+            val option = SelectOption.of(possibleSlotMachines[i].name, i.toString())
 
             options.add(option)
         }

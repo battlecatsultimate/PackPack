@@ -141,7 +141,7 @@ class CommandLockHolder(author: Message, userID: String, channelID: String, mess
             StringSelectMenu.create("command").addOptions(commandOptions).setPlaceholder("Select command to lock/unlock").build()
         ))
 
-        val totalPage = SearchHolder.getTotalPage(classes.size)
+        val totalPage = getTotalPage(classes.size)
 
         if (classes.size > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
