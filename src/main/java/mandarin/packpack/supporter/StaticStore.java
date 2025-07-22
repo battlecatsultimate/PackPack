@@ -36,6 +36,9 @@ import net.dv8tion.jda.api.entities.Role;
 import java.awt.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -202,6 +205,11 @@ public class StaticStore {
     public static final String MEDAL_ICON = "MEDAL-ICON-%s-%s";
     /** UNIT-COMBO-051-ABD4C **/
     public static final String COMBO_IMAGE = "UNIT-COMBO-%s-%s";
+    /** UNIT-MODEL-ICON-000-000-18D9E **/
+    public static final String UNIT_MODEL_ICON = "UNIT-MODEL-ICON-%s-%s-%s";
+    /** ENEMY-MODEL-ICON-000-18D9E **/
+    public static final String ENEMY_MODEL_ICON = "ENEMY-MODEL-ICON-%s-%s";
+
 
     public final static String SUPPORT_SERVER = "964054872649515048";
 
@@ -824,6 +832,10 @@ public class StaticStore {
             if (obj.has("backgroundStageLength")) {
                 backgroundStageLength = jsonToMapBackgroundInteger(obj.getAsJsonArray("backgroundStageLength"));
             }
+
+            if (obj.has("assetManager")) {
+                assetManager = AssetManager.fromJson(obj.get("assetManager"));
+            }
         }
     }
 
@@ -987,10 +999,6 @@ public class StaticStore {
 
             if (obj.has("bannerHolder")) {
                 BannerHolder.fromJson(bannerHolder, obj.getAsJsonObject("bannerHolder"));
-            }
-
-            if (obj.has("assetManager")) {
-                assetManager = AssetManager.fromJson(obj.getAsJsonArray("assetManager"));
             }
 
             try {
@@ -1423,5 +1431,82 @@ public class StaticStore {
         }
 
         return true;
+    }
+
+    public static long getHashOfVariables(Object object, List<Object> parents) throws Exception {
+        if (object == null)
+            return 0L;
+
+        Class<?> cls = object.getClass();
+
+        if (cls.isPrimitive() || object instanceof String || object instanceof Number || object instanceof Boolean) {
+            return object.hashCode();
+        } else if (cls.isArray()) {
+            long hash = 0L;
+
+            int length = Array.getLength(object);
+
+            for (int i = 0; i < length; i++) {
+                hash += getHashOfVariables(Array.get(object, i), parents);
+            }
+
+            return hash;
+        } else if (object instanceof List) {
+            long hash = 0L;
+
+            for (int i = 0; i < ((List<?>) object).size(); i++) {
+                hash += getHashOfVariables(((List<?>) object).get(i), parents);
+            }
+
+            return hash;
+        } else if (object instanceof Map) {
+            long hash = 0L;
+
+            for (Object key : ((Map<?, ?>) object).keySet()) {
+                hash += getHashOfVariables(key, parents);
+
+                Object val = ((Map<?, ?>) object).get(key);
+
+                if (val == null)
+                    continue;
+
+                hash += getHashOfVariables(val, parents);
+            }
+
+            return hash;
+        }
+
+        long hash = 0L;
+
+        Field[] fields = cls.getDeclaredFields();
+
+        for (int i = 0; i < fields.length; i++) {
+            Field f = fields[i];
+
+            if (Modifier.isStatic(f.getModifiers()))
+                continue;
+
+            try {
+                f.setAccessible(true);
+            } catch (Exception ignored) {
+                continue;
+            }
+
+            Object obj = f.get(object);
+
+            if (obj == null)
+                continue;
+
+            if (parents.contains(obj))
+                continue;
+
+            List<Object> tree = new ArrayList<>(parents);
+
+            tree.add(object);
+
+            hash += getHashOfVariables(obj, tree);
+        }
+
+        return hash;
     }
 }

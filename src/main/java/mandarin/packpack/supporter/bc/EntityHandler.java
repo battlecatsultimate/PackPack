@@ -1478,7 +1478,7 @@ public class EntityHandler {
     }
 
     private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int lv, int star, TreasureHolder holder) throws Exception {
-        String hash = Long.toHexString(getHashOfVariables(st.data, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+        String hash = Long.toHexString(StaticStore.getHashOfVariables(st.data, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
 
         if (hash.length() < 5)
             hash = "0".repeat(5 - hash.length()) + hash;
@@ -3594,7 +3594,7 @@ public class EntityHandler {
         }
 
         String procHash = getProcHash(du.getProc());
-        String levelHash = Long.toHexString(getHashOfVariables(lv, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+        String levelHash = Long.toHexString(StaticStore.getHashOfVariables(lv, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
 
         if (levelHash.length() < 5) {
             levelHash = "0".repeat(5 - levelHash.length()) + levelHash;
@@ -3602,7 +3602,7 @@ public class EntityHandler {
             levelHash = levelHash.substring(0, 5);
         }
 
-        String treasureHash = Long.toHexString(getHashOfVariables(treasureSetting, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+        String treasureHash = Long.toHexString(StaticStore.getHashOfVariables(treasureSetting, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
 
         if (treasureHash.length() < 5) {
             treasureHash = "0".repeat(5 - treasureHash.length()) + treasureHash;
@@ -4665,7 +4665,7 @@ public class EntityHandler {
             if (obj == null)
                 continue;
 
-            hash += getHashOfVariables(obj, new ArrayList<>());
+            hash += StaticStore.getHashOfVariables(obj, new ArrayList<>());
         }
 
         String hashCode = Long.toHexString(hash);
@@ -4675,109 +4675,6 @@ public class EntityHandler {
         } else {
             return hashCode.substring(0, 5).toUpperCase(Locale.ENGLISH);
         }
-    }
-
-    public static long getHashOfVariables(Object object, List<Object> parents) throws Exception {
-        if (object == null)
-            return 0L;
-
-        Class<?> cls = object.getClass();
-
-        if (cls.isPrimitive() || object instanceof String || object instanceof Number || object instanceof Boolean) {
-            return object.hashCode();
-        } else if (cls.isArray()) {
-            long hash = 0L;
-
-            int length = Array.getLength(object);
-
-            for (int i = 0; i < length; i++) {
-                hash += getHashOfVariables(Array.get(object, i), parents);
-            }
-
-            return hash;
-        } else if (object instanceof List) {
-            long hash = 0L;
-
-            for (int i = 0; i < ((List<?>) object).size(); i++) {
-                hash += getHashOfVariables(((List<?>) object).get(i), parents);
-            }
-
-            return hash;
-        } else if (object instanceof Map) {
-            long hash = 0L;
-
-            for (Object key : ((Map<?, ?>) object).keySet()) {
-                hash += getHashOfVariables(key, parents);
-
-                Object val = ((Map<?, ?>) object).get(key);
-
-                if (val == null)
-                    continue;
-
-                hash += getHashOfVariables(val, parents);
-            }
-
-            return hash;
-        }
-
-        long hash = 0L;
-
-        Field[] fields = cls.getDeclaredFields();
-
-        for (int i = 0; i < fields.length; i++) {
-            Field f = fields[i];
-
-            if (Modifier.isStatic(f.getModifiers()))
-                continue;
-
-            try {
-                f.setAccessible(true);
-            } catch (Exception ignored) {
-                continue;
-            }
-
-            Object obj = f.get(object);
-
-            if (obj == null)
-                continue;
-
-            if (parents.contains(obj))
-                continue;
-
-            Class<?> childCls = obj.getClass();
-
-            List<Object> tree = new ArrayList<>(parents);
-
-            tree.add(object);
-
-            if (childCls.isPrimitive() || obj instanceof String || obj instanceof Number || obj instanceof Boolean) {
-                hash += obj.hashCode();
-            } else if (childCls.isArray()) {
-                int length = Array.getLength(obj);
-
-                for (int j = 0; j < length; j++) {
-                    hash += getHashOfVariables(Array.get(obj, j), tree);
-                }
-            } else if (obj instanceof List) {
-                for (int j = 0; j < ((List<?>) obj).size(); j++) {
-                    hash += getHashOfVariables(((List<?>) obj).get(j), tree);
-                }
-            } else if (obj instanceof Map) {
-                for (Object key : ((Map<?, ?>) obj).keySet()) {
-                    hash += getHashOfVariables(key, tree);
-                    Object val = ((Map<?, ?>) obj).get(key);
-
-                    if (val == null)
-                        continue;
-
-                    hash += getHashOfVariables(val, tree);
-                }
-            } else {
-                hash += getHashOfVariables(obj, tree);
-            }
-        }
-
-        return hash;
     }
 
     private static BigDecimal getTotalAbilityAttack(MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
@@ -5362,7 +5259,7 @@ public class EntityHandler {
     }
 
     private static String generateComboImage(Combo c) throws Exception {
-        String hash = Long.toHexString(getHashOfVariables(c, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+        String hash = Long.toHexString(StaticStore.getHashOfVariables(c, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
 
         if (hash.length() < 5) {
             hash = "0".repeat(5 - hash.length()) + hash;

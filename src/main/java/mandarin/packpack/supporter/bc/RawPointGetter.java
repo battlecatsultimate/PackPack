@@ -6,7 +6,11 @@ import common.util.anim.EPart;
 import common.util.anim.MaModel;
 
 public class RawPointGetter {
-    P rightUp, rightDown, leftUp, leftDown, center;
+    P rightUp;
+    P rightDown;
+    P leftUp;
+    P leftDown;
+    public P center;
     float rawSizX = 1f, rawSizY = 1f, rawAngle;
 
     float flipX = 1f, flipY = 1f;

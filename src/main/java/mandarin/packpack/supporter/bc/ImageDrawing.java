@@ -2717,7 +2717,7 @@ public class ImageDrawing {
     }
 
     public static String drawLineupImage(Stage st, BattlePreset preset) throws Exception {
-        String hash = Long.toHexString(EntityHandler.getHashOfVariables(preset, new ArrayList<>()));
+        String hash = Long.toHexString(StaticStore.getHashOfVariables(preset, new ArrayList<>()));
 
         if (hash.length() < 5) {
             hash = "0".repeat(5 - hash.length()) + hash.toUpperCase(Locale.ENGLISH);

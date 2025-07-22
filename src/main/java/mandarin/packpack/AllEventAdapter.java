@@ -639,6 +639,9 @@ public class AllEventAdapter extends ListenerAdapter {
             case "removemaintainer", "rm" -> new RemoveMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removeasset", "ra" -> new RemoveAsset(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "updatebotstatus", "ub" -> new UpdateBotStatus(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "createiconcache", "cic" -> new CreateIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "manualformiconcache", "mfic" -> new ManualFormIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "manualenemyiconcache", "meic" -> new ManualEnemyIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 
@@ -815,6 +818,9 @@ public class AllEventAdapter extends ListenerAdapter {
             case "removemaintainer", "rm" -> new RemoveMaintainer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "removeasset", "ra" -> new RemoveAsset(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "updatebotstatus", "ub" -> new UpdateBotStatus(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "createiconcache", "cic" -> new CreateIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "manualformiconcache", "mfic" -> new ManualFormIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "manualenemyiconcache", "meic" -> new ManualEnemyIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 
