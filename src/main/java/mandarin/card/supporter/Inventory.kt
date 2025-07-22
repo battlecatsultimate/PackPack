@@ -656,7 +656,7 @@ class Inventory(private val id: Long) {
                     val collaborationSize = inventory.cards.keys.filter { card -> card.cardType == Card.CardType.COLLABORATION }.union(inventory.validationCards.filterKeys { card -> card.cardType == Card.CardType.COLLABORATION }.keys).toSet().size
 
                     if (seasonalSize < 15) {
-                        builder.append("- Not enough unique collaboration cards! You currently have $seasonalSize unique card${if (seasonalSize >= 2) "s" else ""}, but 15 cards are required\n")
+                        builder.append("- Not enough unique seasonal cards! You currently have $seasonalSize unique card${if (seasonalSize >= 2) "s" else ""}, but 15 cards are required\n")
                     }
 
                     if (collaborationSize < 12) {
