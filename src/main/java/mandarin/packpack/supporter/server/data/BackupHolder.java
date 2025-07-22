@@ -15,6 +15,7 @@ import com.dropbox.core.v2.sharing.SharedLinkSettings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import mandarin.card.CardBot;
 import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.StaticStore;
 
@@ -212,7 +213,11 @@ public class BackupHolder {
         SharedLinkSettings settings = SharedLinkSettings.newBuilder().withAccess(RequestedLinkAccessLevel.VIEWER).withAllowDownload(true).build();
         SharedLinkMetadata sharing = client.sharing().createSharedLinkWithSettings(fullFileName, settings);
 
-        StaticStore.saveServerInfo();
+        if (instance == Logger.BotInstance.PACK_PACK) {
+            StaticStore.saveServerInfo();
+        } else {
+            CardBot.INSTANCE.saveCardData();
+        }
 
         return sharing.getUrl();
     }
