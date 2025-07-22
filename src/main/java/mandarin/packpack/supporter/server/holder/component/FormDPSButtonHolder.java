@@ -55,7 +55,7 @@ public class FormDPSButtonHolder extends ComponentHolder {
         for (ActionRow row : message.getComponentTree().findAll(ActionRow.class)) {
             ArrayList<Button> expiredButtons = new ArrayList<>();
 
-            for (Button button : row.getComponentTree().findAll(Button.class)) {
+            for (Button button : row.getButtons()) {
                 if (button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
                     expiredButtons.add(button);
                 } else if (!configData.compact) {
