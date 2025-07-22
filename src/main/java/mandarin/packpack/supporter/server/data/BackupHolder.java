@@ -212,7 +212,7 @@ public class BackupHolder {
         SharedLinkSettings settings = SharedLinkSettings.newBuilder().withAccess(RequestedLinkAccessLevel.VIEWER).withAllowDownload(true).build();
         SharedLinkMetadata sharing = client.sharing().createSharedLinkWithSettings(fullFileName, settings);
 
-        //StaticStore.saveServerInfo();
+        StaticStore.saveServerInfo();
 
         return sharing.getUrl();
     }
