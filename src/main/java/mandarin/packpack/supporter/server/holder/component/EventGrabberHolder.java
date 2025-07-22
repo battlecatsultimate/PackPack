@@ -7,9 +7,9 @@ import mandarin.packpack.supporter.event.EventFileGrabber;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -83,8 +83,8 @@ public class EventGrabberHolder extends ComponentHolder {
                 .queue();
     }
 
-    private List<LayoutComponent> registerComponent() {
-        List<LayoutComponent> layouts = new ArrayList<>();
+    private List<MessageTopLevelComponent> registerComponent() {
+        List<MessageTopLevelComponent> layouts = new ArrayList<>();
 
         for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
             boolean newWay = EventFileGrabber.newWay.get(locale);

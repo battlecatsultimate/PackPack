@@ -7,9 +7,9 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 
 class SalvageCost : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
@@ -25,8 +25,8 @@ class SalvageCost : Command(CommonStatic.Lang.Locale.EN, true) {
         }
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(Button.secondary("t1", "Tier 1 [Common]")))
         result.add(ActionRow.of(Button.secondary("t2", "Regular Tier 2 [Uncommon]")))

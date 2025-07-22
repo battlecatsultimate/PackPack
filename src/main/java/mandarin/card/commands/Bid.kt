@@ -12,11 +12,11 @@ import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 
 class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
@@ -252,8 +252,8 @@ class Bid : Command(CommonStatic.Lang.Locale.EN, false) {
         }
     }
 
-    private fun getComponents(g: Guild) : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents(g: Guild) : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val options = ArrayList<SelectOption>()
 

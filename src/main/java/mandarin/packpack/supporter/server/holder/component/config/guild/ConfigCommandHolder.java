@@ -13,11 +13,11 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                         .build();
 
                 Modal modal = Modal.create("level", LangID.getStringByID("config.defaultLevel.set.tagName", holder.config.lang))
-                        .addActionRow(input)
+                        .addComponents(ActionRow.of(input))
                         .build();
 
                 event.replyModal(modal).queue();
@@ -250,8 +250,8 @@ public class ConfigCommandHolder extends ServerConfigHolder {
         throw new IndexOutOfBoundsException("Invalid range of command setting config. Page index out of bound : Page = %d, Size = %d".formatted(page, PAGE_SIZE));
     }
 
-    private List<LayoutComponent> getComponents() {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         switch (page) {
             case 0 -> {

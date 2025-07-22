@@ -11,11 +11,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 
 class CardCraftModeHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
@@ -80,7 +80,7 @@ class CardCraftModeHolder(author: Message, userID: String, channelID: String, me
         return "Select tier that you want to craft\n\nYou currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}"
     }
 
-    private fun getComponents() : List<LayoutComponent> {
+    private fun getComponents() : List<MessageTopLevelComponent> {
         val rows = ArrayList<ActionRow>()
 
         val options = ArrayList<SelectOption>()

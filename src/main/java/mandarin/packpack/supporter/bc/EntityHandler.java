@@ -43,12 +43,11 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -338,8 +337,8 @@ public class EntityHandler {
         if(t != null && talentExists(t))
             spec.setFooter(DataToString.getTalent(f.du, configData.lv, lang));
 
-        ArrayList<ActionComponent> forms = new ArrayList<>();
-        ArrayList<ActionComponent> misc = new ArrayList<>();
+        ArrayList<Button> forms = new ArrayList<>();
+        ArrayList<Button> misc = new ArrayList<>();
 
         if(addEmoji) {
             if (f.fid - 3 >= 0) {
@@ -377,7 +376,7 @@ public class EntityHandler {
             misc.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(EmojiStore.UDP));
         }
 
-        ArrayList<LayoutComponent> components = new ArrayList<>();
+        ArrayList<MessageTopLevelComponent> components = new ArrayList<>();
 
         if (!forms.isEmpty()) {
             components.add(ActionRow.of(forms));
@@ -512,7 +511,7 @@ public class EntityHandler {
         spec.setFooter(DataToString.accumulateNpCost(talent, lang));
 
         if (editMode) {
-            List<LayoutComponent> components = new ArrayList<>();
+            List<MessageTopLevelComponent> components = new ArrayList<>();
 
             components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
 
@@ -706,7 +705,7 @@ public class EntityHandler {
             onSuccess.accept(msg);
         };
 
-        List<LayoutComponent> components = new ArrayList<>();
+        List<MessageTopLevelComponent> components = new ArrayList<>();
 
         components.add(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("📈"))));
 
@@ -1224,7 +1223,7 @@ public class EntityHandler {
             spec.setImage(schemeLink);
         }
 
-        List<LayoutComponent> components = new ArrayList<>();
+        List<MessageTopLevelComponent> components = new ArrayList<>();
 
         ArrayList<Button> buttons = new ArrayList<>();
 
@@ -1302,7 +1301,7 @@ public class EntityHandler {
         String lineupLink = ImageDrawing.drawLineupImage(st, preset);
 
         if (lineupLink == null) {
-            List<LayoutComponent> components = new ArrayList<>();
+            List<MessageTopLevelComponent> components = new ArrayList<>();
 
             components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
 
@@ -1466,7 +1465,7 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("data.stage.battlePreset.level", lang).formatted(Emoji.fromUnicode("👑").getFormatted(), preset.level + 1));
 
-        List<LayoutComponent> components = new ArrayList<>();
+        List<MessageTopLevelComponent> components = new ArrayList<>();
 
         components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
 
@@ -4197,7 +4196,7 @@ public class EntityHandler {
             }
 
             if (editMode) {
-                List<LayoutComponent> components = new ArrayList<>();
+                List<MessageTopLevelComponent> components = new ArrayList<>();
 
                 components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
 
@@ -4619,7 +4618,7 @@ public class EntityHandler {
             spec.setThumbnail(iconLink);
 
             if (editMode) {
-                List<LayoutComponent> components = new ArrayList<>();
+                List<MessageTopLevelComponent> components = new ArrayList<>();
 
                 components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
 

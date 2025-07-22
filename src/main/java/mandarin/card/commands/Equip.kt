@@ -9,10 +9,10 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.min
 
 class Equip : Command(CommonStatic.Lang.Locale.EN, true) {
@@ -61,7 +61,7 @@ class Equip : Command(CommonStatic.Lang.Locale.EN, true) {
         return builder.toString()
     }
 
-    private fun getComponents(g: Guild, m: Member, inventory: Inventory) : List<LayoutComponent> {
+    private fun getComponents(g: Guild, m: Member, inventory: Inventory) : List<MessageTopLevelComponent> {
         val rows = ArrayList<ActionRow>()
 
         val roles = inventory.vanityRoles

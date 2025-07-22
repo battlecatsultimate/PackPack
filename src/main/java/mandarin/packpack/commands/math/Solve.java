@@ -14,9 +14,9 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SolutionHolder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;

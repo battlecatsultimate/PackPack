@@ -14,13 +14,13 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
 class ModifyModeSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -77,7 +77,7 @@ class ModifyModeSelectHolder(author: Message, userID: String, channelID: String,
                             .build()
 
                         val modal = Modal.create("cf", "Modify Cat Food")
-                            .addActionRow(input)
+                            .addComponents(ActionRow.of(input))
                             .build()
 
                         event.replyModal(modal).queue()
@@ -90,7 +90,7 @@ class ModifyModeSelectHolder(author: Message, userID: String, channelID: String,
                             .build()
 
                         val modal = Modal.create("shard", "Modify Platinum Shard")
-                            .addActionRow(input)
+                            .addComponents(ActionRow.of(input))
                             .build()
 
                         event.replyModal(modal).queue()
@@ -181,7 +181,7 @@ class ModifyModeSelectHolder(author: Message, userID: String, channelID: String,
             .queue()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
+    private fun getComponents() : List<MessageTopLevelComponent> {
         val rows = ArrayList<ActionRow>()
 
         val modeOptions = ArrayList<SelectOption>()

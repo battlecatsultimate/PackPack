@@ -18,11 +18,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
 class AuctionCreateHolder(author: Message, userID: String, channelID: String, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -57,7 +57,7 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                     .build()
 
                 val modal = Modal.create("endTime", "Decide Auction End Time")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -78,7 +78,7 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                     .build()
 
                 val modal = Modal.create("price", "Decide Initial Price")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -99,7 +99,7 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                     .build()
 
                 val modal = Modal.create("minimumBid", "Decide Minimum Bid Increase")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -141,7 +141,7 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                     .build()
 
                 val modal = Modal.create("autoClose", "Auto Close Time")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -291,8 +291,8 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
         return builder.toString()
     }
 
-    private fun getComponent() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponent() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(
             Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"]),

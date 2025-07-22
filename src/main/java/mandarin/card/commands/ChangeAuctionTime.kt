@@ -6,7 +6,6 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
-import okhttp3.internal.UTC
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
@@ -110,7 +109,7 @@ class ChangeAuctionTime : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         date.set(year, max(0, month - 1), day, hour, minute, second)
-        date.timeZone = UTC
+        date.timeZone = TimeZone.getTimeZone("UTC")
 
         return date.timeInMillis / 1000L
     }

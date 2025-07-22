@@ -13,10 +13,10 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -249,8 +249,8 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         return builder.toString();
     }
 
-    private List<LayoutComponent> getComponents() {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         Guild g = getAuthorMessage().getGuild();
         List<Role> roles = g.getRoles();

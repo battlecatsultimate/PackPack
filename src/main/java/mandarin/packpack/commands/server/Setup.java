@@ -13,10 +13,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import javax.annotation.Nonnull;
 
@@ -34,7 +33,7 @@ public class Setup extends ConstraintCommand {
         MessageChannel ch = loader.getChannel();
 
         if(alreadySet(g)) {
-            List<ActionComponent> components = new ArrayList<>();
+            List<Button> components = new ArrayList<>();
 
             components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
             components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));

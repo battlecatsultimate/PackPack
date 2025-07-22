@@ -19,12 +19,11 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -40,12 +39,12 @@ import java.util.function.Function;
 @SuppressWarnings("unused")
 public abstract class Command {
     public static MessageCreateAction registerConfirmButtons(MessageCreateAction m, CommonStatic.Lang.Locale lang) {
-        List<ActionComponent> components = new ArrayList<>();
+        List<Button> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK));
         components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS));
 
-        return m.setActionRow(components);
+        return m.setComponents(ActionRow.of(components));
     }
 
     public static MessageCreateAction registerSearchComponents(MessageCreateAction m, int dataSize, List<String> data, CommonStatic.Lang.Locale lang) {

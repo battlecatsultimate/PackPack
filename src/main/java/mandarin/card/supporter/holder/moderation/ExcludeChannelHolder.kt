@@ -15,14 +15,13 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import kotlin.math.max
 import kotlin.math.min
 
@@ -137,8 +136,8 @@ class ExcludeChannelHolder(author: Message, userID: String, channelID: String, m
             .queue()
     }
 
-    private fun getComponents(guild: Guild) : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents(guild: Guild) : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK) {
             var totalPage = CardData.excludedCatFoodChannel.size / SearchHolder.PAGE_CHUNK
@@ -146,7 +145,7 @@ class ExcludeChannelHolder(author: Message, userID: String, channelID: String, m
             if (CardData.excludedCatFoodChannel.size % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++
 
-            val pages = ArrayList<ActionComponent>()
+            val pages = ArrayList<Button>()
 
             if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

@@ -11,9 +11,9 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -89,8 +89,8 @@ class CCCancelHolder(author: Message, userID: String, channelID: String, message
             .queue()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(
             Button.success("confirm", "Confirm").withEmoji(EmojiStore.CHECK),

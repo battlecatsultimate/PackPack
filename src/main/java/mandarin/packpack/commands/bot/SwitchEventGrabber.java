@@ -12,9 +12,9 @@ import mandarin.packpack.supporter.server.holder.component.EventGrabberHolder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +41,7 @@ public class SwitchEventGrabber extends ConstraintCommand {
     }
 
     private MessageCreateAction registerComponent(MessageCreateAction action) {
-        List<LayoutComponent> layouts = new ArrayList<>();
+        List<MessageTopLevelComponent> layouts = new ArrayList<>();
 
         for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
             boolean newWay = EventFileGrabber.newWay.get(locale);

@@ -9,11 +9,11 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 
 class ModifyInventory : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
@@ -67,7 +67,7 @@ class ModifyInventory : Command(CommonStatic.Lang.Locale.EN, true) {
         return ""
     }
 
-    private fun registerComponents() : List<LayoutComponent> {
+    private fun registerComponents() : List<MessageTopLevelComponent> {
         val rows = ArrayList<ActionRow>()
 
         val modeOptions = ArrayList<SelectOption>()

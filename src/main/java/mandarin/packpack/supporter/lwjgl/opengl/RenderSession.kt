@@ -7,7 +7,6 @@ import mandarin.packpack.supporter.lwjgl.opengl.buffer.MultiSampler
 import mandarin.packpack.supporter.lwjgl.opengl.buffer.PostProcessor
 import mandarin.packpack.supporter.lwjgl.opengl.buffer.VAO
 import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
-import okhttp3.internal.and
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -292,4 +291,6 @@ class RenderSession {
             n.toString()
         }
     }
+
+    private infix fun Byte.and(mask: Int): Int = toInt() and mask
 }

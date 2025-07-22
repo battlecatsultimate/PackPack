@@ -17,12 +17,12 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import java.nio.file.Files
@@ -91,7 +91,7 @@ class SkinModifyHolder(
                     .build()
 
                 val modal = Modal.create("skinName", "Skin Name")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -248,8 +248,8 @@ class SkinModifyHolder(
         return builder.toString()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         var creatorBuilder = EntitySelectMenu.create("creator", EntitySelectMenu.SelectTarget.USER)
             .setPlaceholder("Select User To Change Creator")

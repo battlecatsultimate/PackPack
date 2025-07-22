@@ -13,11 +13,10 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.onlyMember", lang), "noticeX").withDefault(true));
         notices.add(SelectOption.of(LangID.getStringByID("scamDetector.notice.allUsers", lang), "noticeAll"));
 
-        List<ActionComponent> components = new ArrayList<>();
+        List<Button> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
         components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));

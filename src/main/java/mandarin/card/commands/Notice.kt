@@ -8,9 +8,9 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 
 class Notice : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
@@ -61,10 +61,10 @@ class Notice : Command(CommonStatic.Lang.Locale.EN, false) {
         return builder.toString()
     }
 
-    private fun getComponents(userID: Long) : List<LayoutComponent> {
+    private fun getComponents(userID: Long) : List<MessageTopLevelComponent> {
         val notifyGroup = CardData.notifierGroup.computeIfAbsent(userID) { booleanArrayOf(false, false) }
 
-        val result = ArrayList<LayoutComponent>()
+        val result = ArrayList<MessageTopLevelComponent>()
 
         if (CardData.skins.any { s -> s.creator == userID }) {
             result.add(ActionRow.of(

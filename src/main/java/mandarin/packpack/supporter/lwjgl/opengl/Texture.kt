@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.lwjgl.opengl
 
 import mandarin.packpack.supporter.Logger
-import okhttp3.internal.and
 import org.lwjgl.opengl.GL33
 import org.lwjgl.stb.STBImage
 import org.lwjgl.util.freetype.FT_Bitmap
@@ -14,6 +13,8 @@ import javax.imageio.ImageIO
 class Texture private constructor(val textureID: Int, val width: Float, val height: Float) {
     companion object {
         private val registeredTexture = ArrayList<Texture>()
+
+        private infix fun Byte.and(mask: Int): Int = toInt() and mask
 
         fun build(file: File) : Texture {
             val w = IntArray(1)

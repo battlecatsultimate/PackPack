@@ -13,10 +13,10 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
@@ -91,8 +91,8 @@ public class IDSet extends ConstraintCommand {
         return builder.toString();
     }
 
-    private List<LayoutComponent> getComponents(Guild g) {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents(Guild g) {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         if (holder == null)
             return result;

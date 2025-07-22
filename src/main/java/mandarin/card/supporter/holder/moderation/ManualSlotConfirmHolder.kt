@@ -14,11 +14,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.max
 
@@ -79,7 +79,7 @@ class ManualSlotConfirmHolder(author: Message, userID: String, channelID: String
 
                 val input = TextInput.create("fee", "Entry Fee", TextInputStyle.SHORT).setPlaceholder("Put Entry Fee From $minimumInput To ${slotMachine.entryFee.maximumFee}").setRequired(true).build()
 
-                val modal = Modal.create("roll", "Slot Machine Roll").addActionRow(input).build()
+                val modal = Modal.create("roll", "Slot Machine Roll").addComponents(ActionRow.of(input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -157,8 +157,8 @@ class ManualSlotConfirmHolder(author: Message, userID: String, channelID: String
         return result
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(
             Button.secondary("input", "Define Input").withEmoji(EmojiStore.ABILITY["CF"])

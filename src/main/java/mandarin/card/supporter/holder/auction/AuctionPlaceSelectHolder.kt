@@ -13,13 +13,13 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
 class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -70,7 +70,7 @@ class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: Strin
                     .build()
 
                 val modal = Modal.create("bid", "Bid The Auction")
-                    .addActionRow(textInput)
+                    .addComponents(ActionRow.of(textInput))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -142,8 +142,8 @@ class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: Strin
             .queue()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val options = ArrayList<SelectOption>()
 

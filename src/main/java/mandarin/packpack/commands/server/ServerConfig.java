@@ -9,9 +9,9 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.config.guild.ConfigCategoryHolder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
 import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ public class ServerConfig extends ConstraintCommand {
         );
     }
 
-    private List<LayoutComponent> getComponents() {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         result.add(
                 ActionRow.of(

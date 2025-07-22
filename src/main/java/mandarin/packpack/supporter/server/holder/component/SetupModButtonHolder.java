@@ -9,9 +9,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import javax.annotation.Nonnull;
 
 import java.util.ArrayList;

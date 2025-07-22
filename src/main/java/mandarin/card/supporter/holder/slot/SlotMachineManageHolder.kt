@@ -17,13 +17,13 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.selections.SelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
@@ -53,7 +53,7 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
                 val input = TextInput.create("slot", "Size", TextInputStyle.SHORT).setRequired(true).build()
 
                 val modal = Modal.create("size", "Slot Machine Slot Size")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -79,7 +79,7 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
             "name" -> {
                 val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Decide Slot Machine Name Here").setRequired(true).setRequiredRange(1, 50).build()
 
-                val modal = Modal.create("name", "Slot Machine Name").addActionRow(input).build()
+                val modal = Modal.create("name", "Slot Machine Name").addComponents(ActionRow.of(input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -95,7 +95,7 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
                 val input = TextInput.create("cooldown", "Cooldown", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 3d4h30m -> 3 Days 4 Hours 30 Minutes").build()
 
                 val modal = Modal.create("cooldown", "Slot Machine Cooldown")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -197,8 +197,8 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
             .queue()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(
             Button.secondary("name", "Change Slot Machine Name").withEmoji(Emoji.fromUnicode("🏷️")),

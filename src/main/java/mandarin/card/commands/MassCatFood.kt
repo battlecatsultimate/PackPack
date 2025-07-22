@@ -10,11 +10,11 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.interactions.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.utils.concurrent.Task
 import kotlin.math.abs
 
@@ -75,12 +75,12 @@ class MassCatFood : Command(CommonStatic.Lang.Locale.EN, true) {
             }
 
             replyToMessageSafely(loader.channel, "Are you sure you want to $sentence users?", loader.message, { a ->
-                val components = ArrayList<ActionComponent>()
+                val components = ArrayList<Button>()
 
                 components.add(Button.success("confirm", "Confirm"))
                 components.add(Button.danger("cancel", "Cancel"))
 
-                a.setActionRow(components)
+                a.setComponents(ActionRow.of(components))
             }) { msg ->
                 StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, loader.channel.id, msg, lang) {
                     members.forEach { member ->

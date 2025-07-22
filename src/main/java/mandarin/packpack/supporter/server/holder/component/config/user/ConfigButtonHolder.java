@@ -14,13 +14,12 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
@@ -77,7 +76,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                         .build();
 
                 Modal modal = Modal.create("level", LangID.getStringByID("config.defaultLevel.set.tagName", config.lang))
-                        .addActionRow(input)
+                        .addComponents(ActionRow.of(input))
                         .build();
                 
                 event.replyModal(modal).queue();
@@ -251,7 +250,7 @@ public class ConfigButtonHolder extends ComponentHolder {
             }
         }
 
-        List<ActionComponent> pages = new ArrayList<>();
+        List<Button> pages = new ArrayList<>();
 
         if(page == 0) {
             pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
@@ -266,7 +265,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
         m.add(ActionRow.of(pages));
 
-        List<ActionComponent> components = new ArrayList<>();
+        List<Button> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
         components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));

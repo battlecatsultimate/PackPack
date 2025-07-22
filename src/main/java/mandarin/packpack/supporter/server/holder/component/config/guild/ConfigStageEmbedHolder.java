@@ -14,9 +14,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -106,8 +106,8 @@ public class ConfigStageEmbedHolder extends ServerConfigHolder {
                 .queue();
     }
 
-    private List<LayoutComponent> getComponents() {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         Emoji showMiscellaneous = holder.config.showMiscellaneous ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
         Emoji showExtraStage = holder.config.showExtraStage ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;

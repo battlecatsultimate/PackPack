@@ -13,9 +13,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -153,8 +153,8 @@ public class ConfigEnemyEmbedHolder extends ServerConfigHolder {
         return builder.build();
     }
 
-    private List<LayoutComponent> getComponents() {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         Emoji showEnemyDescription = holder.config.showEnemyDescription ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
 

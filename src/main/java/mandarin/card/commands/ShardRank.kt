@@ -9,11 +9,10 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.interactions.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -69,11 +68,11 @@ class ShardRank : Command(CommonStatic.Lang.Locale.EN, true) {
         return builder.toString()
     }
 
-    private fun getComponents(memberList: List<Long>) : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents(memberList: List<Long>) : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         if (memberList.size > SearchHolder.PAGE_CHUNK) {
-            val pages = ArrayList<ActionComponent>()
+            val pages = ArrayList<Button>()
 
             if (memberList.size > SearchHolder.PAGE_CHUNK * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

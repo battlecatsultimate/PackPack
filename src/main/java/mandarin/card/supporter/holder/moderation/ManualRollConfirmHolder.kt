@@ -15,9 +15,9 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.utils.FileUpload
 
 class ManualRollConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val member: Member, private val pack: CardPack, private val users: List<String>) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -145,8 +145,8 @@ class ManualRollConfirmHolder(author: Message, userID: String, channelID: String
             .queue()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val buttons = ArrayList<Button>()
 

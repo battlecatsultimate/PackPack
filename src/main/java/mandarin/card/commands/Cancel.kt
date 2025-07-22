@@ -9,8 +9,9 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.Button
 
 class Cancel(private val session: TradingSession) : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
@@ -28,7 +29,7 @@ class Cancel(private val session: TradingSession) : Command(CommonStatic.Lang.Lo
             components.add(Button.success("confirm", "Confirm"))
             components.add(Button.danger("cancel", "Cancel"))
 
-            a.setActionRow(components)
+            a.setComponents(ActionRow.of(components))
         }, { msg ->
             StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, ch.id, msg, CommonStatic.Lang.Locale.EN, true) {
                 CardData.sessions.remove(session)

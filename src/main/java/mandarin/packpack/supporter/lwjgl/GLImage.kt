@@ -5,7 +5,6 @@ import common.system.fake.FakeImage
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
 import mandarin.packpack.supporter.lwjgl.opengl.model.TextureMesh
-import okhttp3.internal.and
 import org.lwjgl.opengl.GL33
 import java.awt.Color
 import java.nio.ByteBuffer
@@ -267,4 +266,6 @@ class GLImage : FakeImage {
 
         return buffer
     }
+
+    private infix fun Byte.and(mask: Int): Int = toInt() and mask
 }

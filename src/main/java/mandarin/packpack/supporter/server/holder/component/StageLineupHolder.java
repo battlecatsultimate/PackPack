@@ -5,14 +5,14 @@ import common.util.stage.Stage;
 import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.holder.Holder;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -45,19 +45,19 @@ public class StageLineupHolder extends ComponentHolder {
                     .mentionRepliedUser(false)
                     .queue();
         } else {
-            ArrayList<LayoutComponent> components = new ArrayList<>();
+            ArrayList<MessageTopLevelComponent> components = new ArrayList<>();
 
-            for (LayoutComponent layout : message.getComponents()) {
+            for (MessageTopLevelComponent layout : message.getComponents()) {
                 if (!(layout instanceof ActionRow row))
                     continue;
 
-                List<ItemComponent> itemComponents = new ArrayList<>();
+                List<ActionRowChildComponentUnion> itemComponents = new ArrayList<>();
 
-                for (ItemComponent i : row.getComponents()) {
+                for (ActionRowChildComponentUnion i : row.getComponents()) {
                     if (i instanceof Button button) {
-                        itemComponents.add(button.asDisabled());
+                        itemComponents.add((ActionRowChildComponentUnion) button.asDisabled());
                     } else if (i instanceof SelectMenu selectMenu) {
-                        itemComponents.add(selectMenu.asDisabled());
+                        itemComponents.add((ActionRowChildComponentUnion) selectMenu.asDisabled());
                     }
                 }
 

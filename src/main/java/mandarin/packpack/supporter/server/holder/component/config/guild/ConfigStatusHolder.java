@@ -16,13 +16,13 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -164,8 +164,8 @@ public class ConfigStatusHolder extends ServerConfigHolder {
         return builder.toString();
     }
 
-    private List<LayoutComponent> getComponents(IMessageEditCallback event) {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents(IMessageEditCallback event) {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         Guild g = event.getGuild();
 

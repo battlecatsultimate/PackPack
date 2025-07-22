@@ -14,11 +14,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 
@@ -71,7 +71,7 @@ class SlotMachineEntryFeeHolder(author: Message, userID: String, channelID: Stri
                 val input = TextInput.create("entryFee", "Entry Fee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
 
                 val modal = Modal.create("minMax", "Slot Machine Minimum Entry Fee")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -82,7 +82,7 @@ class SlotMachineEntryFeeHolder(author: Message, userID: String, channelID: Stri
                 val input = TextInput.create("entryFee", "Entry Fee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
 
                 val modal = Modal.create("minMax", "Slot Machine Maximum Entry Fee")
-                    .addActionRow(input)
+                    .addComponents(ActionRow.of(input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -162,8 +162,8 @@ class SlotMachineEntryFeeHolder(author: Message, userID: String, channelID: Stri
                 "Maximum Entry Fee : $emoji ${slotMachine.entryFee.maximumFee}"
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val emoji = when(slotMachine.entryFee.entryType) {
             SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]

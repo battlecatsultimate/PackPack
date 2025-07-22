@@ -6,8 +6,8 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import okhttp3.internal.UTC
 import java.util.Calendar
+import java.util.TimeZone
 import kotlin.collections.forEachIndexed
 import kotlin.math.max
 import kotlin.math.min
@@ -76,7 +76,7 @@ class AuctionEndTimeHolder(author: Message, userID: String, channelID: String, m
         }
 
         date.set(year, max(0, month - 1), day, hour, minute, second)
-        date.timeZone = UTC
+        date.timeZone = TimeZone.getTimeZone("UTC")
 
         return date.timeInMillis / 1000L
     }

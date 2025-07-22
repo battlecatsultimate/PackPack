@@ -8,9 +8,9 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 
 class CatFoodRate : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
@@ -34,8 +34,8 @@ class CatFoodRate : Command(CommonStatic.Lang.Locale.EN, true) {
         }
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(Button.secondary("cf", "Define Cat Foods").withEmoji(EmojiStore.ABILITY["CF"])))
         result.add(ActionRow.of(Button.secondary("cooldown", "Define Cooldown (in seconds)").withEmoji(Emoji.fromUnicode("⏰"))))
