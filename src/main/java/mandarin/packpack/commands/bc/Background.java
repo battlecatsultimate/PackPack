@@ -99,7 +99,7 @@ public class Background extends TimedConstraintCommand {
 
                 children.add(TextDisplay.of(
                         LangID.getStringByID("background.result.title", lang) + "\n" +
-                                LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
+                                LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
                                 LangID.getStringByID("background.result.size", lang).formatted(960, 540)
                 ));
 
@@ -168,7 +168,19 @@ public class Background extends TimedConstraintCommand {
             } else {
                 if(animation && bg.effect != -1) {
                     if(cache != null) {
-                        replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("data.animation.gif.cached", lang).formatted(cache)));
+                        List<ContainerChildComponent> children = new ArrayList<>();
+
+                        children.add(TextDisplay.of(
+                                LangID.getStringByID("background.result.title", lang) + "\n" +
+                                        LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
+                                        LangID.getStringByID("data.animation.gif.cached", lang).formatted(cache)
+                        ));
+
+                        Container container = Container.of(children);
+
+                        children.add(MediaGallery.of(MediaGalleryItem.fromUrl(cache)));
+
+                        replyToMessageSafely(ch, loader.getMessage(), container);
 
                         return;
                     } else {
@@ -186,7 +198,7 @@ public class Background extends TimedConstraintCommand {
 
                     children.add(TextDisplay.of(
                             LangID.getStringByID("background.result.title", lang) + "\n" +
-                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
+                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
                                     LangID.getStringByID("background.result.size", lang).formatted(width, height)
                     ));
 

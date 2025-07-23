@@ -3018,7 +3018,7 @@ public class EntityHandler {
 
                                     children.add(TextDisplay.of(
                                             LangID.getStringByID("background.result.title", lang) + "\n" +
-                                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
+                                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
                                                     LangID.getStringByID("background.result.fileSize", lang).formatted(size) + "\n" +
                                                     LangID.getStringByID("background.result.renderingTime", lang).formatted(DataToString.df.format((end - start) / 1000.0))
                                     ));
