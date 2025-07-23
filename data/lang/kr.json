@@ -568,12 +568,12 @@
         },
         "animation" : {
             "background" : {
-                "dimension" : "배경 애니메이션 생성 중 (15 초) : _WWW_x_HHH_",
+                "dimension" : "배경 애니메이션 생성 중 (15 초) : %dx%d",
                 "failed" : "배경 애니메이션 mp4 업로드 실패",
                 "fileTooBig" : "배경 애니메이션 mp4 파일 크기가 너무 큽니다! (%s)",
                 "ignore" : "기여자가 아니므로 애니메이션 제작 인자는 무시됩니다",
                 "prepare" : "배경 애니메이션 생성 준비 중",
-                "progress" : "```py\n<_PPP_/_LLL_> _BBB_ _VVV_% | 남은 시간 : _SSS_s\n```",
+                "progress" : "```py\n<%s/%d> %s %s%% | 남은 시간 : %ss\n```",
                 "result" : "배경 애니메이션 mp4 업로드 성공 (_SSS_) [_TTT_s]",
                 "uploading" : "배경 애니메이션 파일 처리 및 업로드 중..."
             },

@@ -568,12 +568,12 @@
         },
         "animation" : {
             "background" : {
-                "dimension" : "背景のアニメーションを組み立てました。 (15秒) : _WWW_x_HHH_",
+                "dimension" : "背景のアニメーションを組み立てました。 (15秒) : %dx%d",
                 "failed" : "背景のアニメーション(mp4)のアップロードに失敗しました。",
                 "fileTooBig" : "mp4ファイルが大きすぎます! (%s)",
                 "ignore" : "申し訳ありませんがあなたは信用されていないのでコマンドの実行を拒否しました。",
                 "prepare" : "背景のアニメーションを組み立てています...",
-                "progress" : "```py\n<_PPP_/_LLL_> _BBB_ _VVV_% | ETA : _SSS_s\n```",
+                "progress" : "```py\n<%s/%d> %s %s%% | ETA : %ss\n```",
                 "result" : "背景のアニメーション(mp4)をアップロードしました。 (_SSS_) [_TTT_s]",
                 "uploading" : "ファイルのアップロード中です..."
             },
