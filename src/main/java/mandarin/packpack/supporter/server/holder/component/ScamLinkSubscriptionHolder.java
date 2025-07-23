@@ -10,11 +10,10 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -170,7 +169,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
 
         m.add(ActionRow.of(StringSelectMenu.create("notice").addOptions(notices).build()));
 
-        List<ActionComponent> components = new ArrayList<>();
+        List<Button> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
         components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));

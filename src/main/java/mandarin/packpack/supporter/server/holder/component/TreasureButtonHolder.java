@@ -8,10 +8,10 @@ import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.modal.TreasureModalHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import org.jetbrains.annotations.Nullable;
@@ -41,9 +41,9 @@ public class TreasureButtonHolder extends ComponentHolder {
                 TextInput study = buildTextInput("study", "data.treasure.upgrades.study", "treasure.set.level.study", false, 1, TreasureHolder.basicMax[TreasureHolder.L_STUDY], String.valueOf(treasure.basic[TreasureHolder.L_STUDY]));
 
                 Modal modal = Modal.create("basic", LangID.getStringByID("data.treasure.upgrades.title", lang))
-                        .addActionRow(research)
-                        .addActionRow(account)
-                        .addActionRow(study)
+                        .addComponents(ActionRow.of(research))
+                        .addComponents(ActionRow.of(account))
+                        .addComponents(ActionRow.of(study))
                         .build();
 
                 event.replyModal(modal).queue();
@@ -58,11 +58,11 @@ public class TreasureButtonHolder extends ComponentHolder {
                 TextInput attack = buildTextInput("attack", "data.treasure.eoc.damage.ui", "treasure.set.treasure.attack", true, 0, TreasureHolder.eocMax[TreasureHolder.T_ATTACK], String.valueOf(treasure.eoc[TreasureHolder.T_ATTACK]));
 
                 Modal modal = Modal.create("eoc", LangID.getStringByID("data.treasure.eoc.title", lang))
-                        .addActionRow(research)
-                        .addActionRow(study)
-                        .addActionRow(account)
-                        .addActionRow(health)
-                        .addActionRow(attack)
+                        .addComponents(ActionRow.of(research))
+                        .addComponents(ActionRow.of(study))
+                        .addComponents(ActionRow.of(account))
+                        .addComponents(ActionRow.of(health))
+                        .addComponents(ActionRow.of(attack))
                         .build();
 
                 event.replyModal(modal).queue();
@@ -77,11 +77,11 @@ public class TreasureButtonHolder extends ComponentHolder {
                 TextInput angel = buildTextInput("angel", "data.treasure.itf.angel.ui", "treasure.set.treasure.angel", true, 0, TreasureHolder.itfMax[TreasureHolder.T_ANGEL], String.valueOf(treasure.itf[TreasureHolder.T_ANGEL]));
 
                 Modal modal = Modal.create("itf", LangID.getStringByID("data.treasure.itf.title", lang))
-                        .addActionRow(crystal)
-                        .addActionRow(black)
-                        .addActionRow(red)
-                        .addActionRow(floating)
-                        .addActionRow(angel)
+                        .addComponents(ActionRow.of(crystal))
+                        .addComponents(ActionRow.of(black))
+                        .addComponents(ActionRow.of(red))
+                        .addComponents(ActionRow.of(floating))
+                        .addComponents(ActionRow.of(angel))
                         .build();
 
                 event.replyModal(modal).queue();
@@ -96,11 +96,11 @@ public class TreasureButtonHolder extends ComponentHolder {
                 TextInput study = buildTextInput("study", "data.treasure.cotc.study.ui", "treasure.set.treasure.study.cotc", true, 0, TreasureHolder.cotcMax[TreasureHolder.T_STUDY2], String.valueOf(treasure.cotc[TreasureHolder.T_STUDY2]));
 
                 Modal modal = Modal.create("cotc", LangID.getStringByID("data.treasure.cotc.title", lang))
-                        .addActionRow(crystal)
-                        .addActionRow(metal)
-                        .addActionRow(zombie)
-                        .addActionRow(alien)
-                        .addActionRow(study)
+                        .addComponents(ActionRow.of(crystal))
+                        .addComponents(ActionRow.of(metal))
+                        .addComponents(ActionRow.of(zombie))
+                        .addComponents(ActionRow.of(alien))
+                        .addComponents(ActionRow.of(study))
                         .build();
 
                 event.replyModal(modal).queue();

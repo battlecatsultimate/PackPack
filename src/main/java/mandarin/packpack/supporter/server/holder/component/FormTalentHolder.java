@@ -8,9 +8,9 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -46,7 +46,7 @@ public class FormTalentHolder extends ComponentHolder {
     public void onExpire() {
         ArrayList<ActionRow> rows = new ArrayList<>();
 
-        for (ActionRow row : message.getActionRows()) {
+        for (ActionRow row : message.getComponentTree().findAll(ActionRow.class)) {
             ArrayList<Button> expiredButtons = new ArrayList<>();
 
             for (Button button : row.getButtons()) {

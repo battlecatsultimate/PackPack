@@ -5,10 +5,11 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.holder.component.CultButtonHolder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import javax.annotation.Nonnull;
 
 public class SayHi extends Command {
@@ -27,10 +28,10 @@ public class SayHi extends Command {
             if (StaticStore.cultist.contains(u.getId())) {
                 replyToMessageSafely(ch, LangID.getStringByID("hi.special.recognize", lang), loader.getMessage(), a -> a);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("hi.special.invitation", lang), loader.getMessage(), a -> a.setActionRow(
+                replyToMessageSafely(ch, LangID.getStringByID("hi.special.invitation", lang), loader.getMessage(), a -> a.setComponents(ActionRow.of(
                         Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("ui.button.yes", lang)),
                         Button.of(ButtonStyle.DANGER, "no", LangID.getStringByID("ui.button.no", lang))
-                ), msg -> StaticStore.putHolder(u.getId(), new CultButtonHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang)));
+                )), msg -> StaticStore.putHolder(u.getId(), new CultButtonHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang)));
             }
         } else if(chance <= 0.05) {
             replyToMessageSafely(ch, LangID.getStringByID("hi.dog", lang), loader.getMessage(), a -> a);

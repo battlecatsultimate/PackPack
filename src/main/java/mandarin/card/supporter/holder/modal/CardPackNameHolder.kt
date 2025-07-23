@@ -10,9 +10,9 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 
 class CardPackNameHolder(author: Message, userID: String, channelID: String, message: Message, private val new: Boolean, private val pack: CardPack?) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun clean() {
@@ -51,8 +51,8 @@ class CardPackNameHolder(author: Message, userID: String, channelID: String, mes
         }
     }
 
-    fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(
             Button.secondary("name", "Change Name"),

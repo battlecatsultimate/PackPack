@@ -13,13 +13,13 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 
 import javax.annotation.Nonnull;
@@ -71,7 +71,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                         .build();
 
                 Modal modal = Modal.create("prefix", LangID.getStringByID("serverConfig.general.serverPrefix", lang))
-                        .addActionRow(input)
+                        .addComponents(ActionRow.of(input))
                         .build();
 
                 event.replyModal(modal).queue();
@@ -182,8 +182,8 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 LangID.getStringByID("serverConfig.general.documentation.prefix.description", lang).formatted(StaticStore.globalPrefix, StaticStore.globalPrefix);
     }
 
-    private List<LayoutComponent> getComponents() {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         List<SelectOption> languageOptions = new ArrayList<>();
 

@@ -11,14 +11,13 @@ import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import kotlin.math.min
 
 class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
@@ -33,11 +32,11 @@ class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
         }
     }
 
-    private fun getComponents(guild: Guild) : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents(guild: Guild) : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK) {
-            val pages = ArrayList<ActionComponent>()
+            val pages = ArrayList<Button>()
 
             if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

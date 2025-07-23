@@ -17,13 +17,13 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import java.io.File
@@ -35,7 +35,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
             "id" -> {
                 val id = TextInput.create("id", "ID", TextInputStyle.SHORT).setPlaceholder("Make sure not to conflict the ID!").build()
 
-                val modal = Modal.create("cardID", "Card ID").addActionRow(id).build()
+                val modal = Modal.create("cardID", "Card ID").addComponents(ActionRow.of(id)).build()
 
                 event.replyModal(modal).queue()
 
@@ -44,7 +44,7 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
             "name" -> {
                 val name = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Type card name here").build()
 
-                val modal = Modal.create("cardName", "Card Name").addActionRow(name).build()
+                val modal = Modal.create("cardName", "Card Name").addComponents(ActionRow.of(name)).build()
 
                 event.replyModal(modal).queue()
 
@@ -377,8 +377,8 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
         return text
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val activated = if (card.activated) {
             EmojiStore.SWITCHON

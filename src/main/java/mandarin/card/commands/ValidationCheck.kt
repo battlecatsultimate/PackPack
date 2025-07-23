@@ -51,7 +51,7 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val inventory = Inventory.getInventory(memberID)
 
-        val builder = StringBuilder("## <@$memberID> CC/ECC Status\n### CC Status\n")
+        val builder = StringBuilder("## <@$memberID> CC/ECC Status\n### CC Status")
 
         if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE) {
             builder.append("- No CC\n")
@@ -69,7 +69,7 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
 
             builder.append("**Validation Way**\n- ").append(way).append("\n")
             
-            val ccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.CC || p.first == Inventory.ShareStatus.BOTH }.keys
+            val ccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.CC }.keys
 
             if (ccCardList.isNotEmpty()) {
                 builder.append("**Selected Cards**\n")
@@ -95,7 +95,7 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
 
             builder.append("**Validation Way**\n- ").append(way).append("\n")
 
-            val eccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.ECC || p.first == Inventory.ShareStatus.BOTH }.keys
+            val eccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.ECC }.keys
 
             if (eccCardList.isNotEmpty()) {
                 builder.append("**Selected Cards**\n")
@@ -103,6 +103,22 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
                 eccCardList.forEachIndexed { index, card ->
                     builder.append(index + 1).append(". ").append(card.simpleCardInfo()).append("\n")
                 }
+            }
+        }
+
+        val sharedCards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.BOTH }.entries
+
+        if (sharedCards.isNotEmpty()) {
+            builder.append("### Shared Cards for CC/ECC\n")
+
+            sharedCards.forEachIndexed { index, (card, pair) ->
+                builder.append(index + 1).append(". ").append(card.simpleCardInfo())
+
+                if (pair.second >= 2) {
+                    builder.append(" x").append(pair.second)
+                }
+
+                builder.append("\n")
             }
         }
 

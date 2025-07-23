@@ -12,10 +12,10 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.min
 
 class EquipHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -159,7 +159,7 @@ class EquipHolder(author: Message, userID: String, channelID: String, message: M
         return builder.toString()
     }
 
-    private fun getComponents(g: Guild, m: Member) : List<LayoutComponent> {
+    private fun getComponents(g: Guild, m: Member) : List<MessageTopLevelComponent> {
         val rows = ArrayList<ActionRow>()
 
         val roles = inventory.vanityRoles

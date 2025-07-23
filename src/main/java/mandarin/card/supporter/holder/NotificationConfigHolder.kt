@@ -9,9 +9,9 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 
 class NotificationConfigHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var tested = false
@@ -130,11 +130,11 @@ class NotificationConfigHolder(author: Message, userID: String, channelID: Strin
         return builder.toString()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
+    private fun getComponents() : List<MessageTopLevelComponent> {
         val userID = authorMessage.author.idLong
         val notifyGroup = CardData.notifierGroup.computeIfAbsent(userID) { booleanArrayOf(false, false) }
 
-        val result = ArrayList<LayoutComponent>()
+        val result = ArrayList<MessageTopLevelComponent>()
 
         if (CardData.skins.any { s -> s.creator == userID }) {
             result.add(ActionRow.of(

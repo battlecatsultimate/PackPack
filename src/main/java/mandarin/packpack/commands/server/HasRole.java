@@ -14,9 +14,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.buttons.Button;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -134,8 +134,8 @@ public class HasRole extends ConstraintCommand {
         return embed.build();
     }
 
-    private List<LayoutComponent> getComponents(List<Member> members) {
-        List<LayoutComponent> result = new ArrayList<>();
+    private List<MessageTopLevelComponent> getComponents(List<Member> members) {
+        List<MessageTopLevelComponent> result = new ArrayList<>();
 
         if (members.size() > SearchHolder.PAGE_CHUNK) {
             int totalPage = (int) Math.ceil(members.size() * 1.0 / SearchHolder.PAGE_CHUNK);

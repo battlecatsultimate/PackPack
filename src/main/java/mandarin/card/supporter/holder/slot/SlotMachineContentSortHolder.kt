@@ -17,12 +17,12 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import org.jcodec.api.UnsupportedFormatException
 import java.util.concurrent.TimeUnit
@@ -125,7 +125,7 @@ class SlotMachineContentSortHolder(author: Message, userID: String, channelID: S
 
                         val input = TextInput.create("index", "Place", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide place to be set here").build()
 
-                        val modal = Modal.create("sort", "Content Place Setter").addActionRow(input).build()
+                        val modal = Modal.create("sort", "Content Place Setter").addComponents(ActionRow.of(input)).build()
 
                         event.replyModal(modal).queue()
 
@@ -271,8 +271,8 @@ class SlotMachineContentSortHolder(author: Message, userID: String, channelID: S
         return builder.toString()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val feeEmoji = when(slotMachine.entryFee.entryType) {
             SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted

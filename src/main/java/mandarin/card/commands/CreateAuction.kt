@@ -11,9 +11,9 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 
@@ -96,8 +96,8 @@ class CreateAuction : Command(CommonStatic.Lang.Locale.EN, true) {
         return memberReference.get()
     }
 
-    private fun getComponents(anonymous: Boolean) : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents(anonymous: Boolean) : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         result.add(ActionRow.of(
             Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"]),

@@ -21,14 +21,14 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -103,7 +103,7 @@ class SlotMachineCardRewardHolder(
             "search" -> {
                 val input = TextInput.create("keyword", "Keyword", TextInputStyle.SHORT).setRequired(false).setPlaceholder("Empty Keyword For No Filter").build()
 
-                val modal = Modal.create("search", "Emoji Search").addActionRow(input).build()
+                val modal = Modal.create("search", "Emoji Search").addComponents(ActionRow.of(input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -124,7 +124,7 @@ class SlotMachineCardRewardHolder(
             "slot" -> {
                 val input = TextInput.create("size", "Size", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Put Slot Size Here").build()
 
-                val modal = Modal.create("slot", "Slot Content Required Slot Size").addActionRow(input).build()
+                val modal = Modal.create("slot", "Slot Content Required Slot Size").addComponents(ActionRow.of(input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -139,7 +139,7 @@ class SlotMachineCardRewardHolder(
             "name" -> {
                 val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide Name Here").setRequiredRange(1, 50).build()
 
-                val modal = Modal.create("name", "Card Reward Name").addActionRow(input).build()
+                val modal = Modal.create("name", "Card Reward Name").addComponents(ActionRow.of(input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -284,8 +284,8 @@ class SlotMachineCardRewardHolder(
         return builder.toString()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val emojiOption = ArrayList<SelectOption>()
 

@@ -12,12 +12,12 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import kotlin.math.min
 
 class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
@@ -33,7 +33,7 @@ class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
             .toMutableList()
 
         if (cards.isEmpty()) {
-            if (CardData.skins.filter { s -> s.public }.isEmpty()) {
+            if (CardData.skins.none { s -> s.public }) {
                 replyToMessageSafely(loader.channel, "There's no skin to purchase at the moment! Please wait for new releases!", loader.message) { a -> a }
             } else {
                 replyToMessageSafely(loader.channel,"You have purchased all the public skins! Please wait for new releases!", loader.message) { a -> a }
@@ -60,8 +60,8 @@ class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
         return builder.toString()
     }
 
-    private fun getComponents(cards: List<Card>) : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents(cards: List<Card>) : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val tierCategoryElements = ArrayList<SelectOption>()
 

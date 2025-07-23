@@ -15,11 +15,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 
 class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -151,7 +151,7 @@ class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, 
     }
 
     private fun applyResult(event: IMessageEditCallback) {
-        var builder = event.deferEdit()
+        val builder = event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
@@ -161,7 +161,7 @@ class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, 
     }
 
     private fun applyResult() {
-        var builder = message.editMessage(getContent())
+        val builder = message.editMessage(getContent())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
@@ -187,8 +187,8 @@ class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, 
         return builder.toString()
     }
 
-    private fun getComponents() : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents() : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         if (containers.isNotEmpty()) {
             val options = ArrayList<SelectOption>()

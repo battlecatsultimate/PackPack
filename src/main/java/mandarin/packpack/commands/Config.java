@@ -12,11 +12,10 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -76,12 +75,12 @@ public class Config extends ConstraintCommand {
             languages.add(SelectOption.of(LangID.getStringByID("config.locale.title", lang).replace("_", l), loc.name()).withDefault(config.lang == loc));
         }
 
-        List<ActionComponent> components = new ArrayList<>();
+        List<Button> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
         components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
 
-        List<ActionComponent> pages = new ArrayList<>();
+        List<Button> pages = new ArrayList<>();
 
         pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
         pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));

@@ -11,12 +11,12 @@ import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import java.util.concurrent.CountDownLatch
 import kotlin.math.ceil
 import kotlin.math.min
@@ -99,13 +99,13 @@ class SlotMachineManual : Command(CommonStatic.Lang.Locale.EN, true) {
         return result
     }
 
-    private fun getComponents(possibleSlotMachines: List<SlotMachine>) : List<LayoutComponent> {
-        val result = ArrayList<LayoutComponent>()
+    private fun getComponents(possibleSlotMachines: List<SlotMachine>) : List<MessageTopLevelComponent> {
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val options = ArrayList<SelectOption>()
 
         for (i in 0 until min(possibleSlotMachines.size, SearchHolder.PAGE_CHUNK)) {
-            var option = SelectOption.of(possibleSlotMachines[i].name, i.toString())
+            val option = SelectOption.of(possibleSlotMachines[i].name, i.toString())
 
             options.add(option)
         }

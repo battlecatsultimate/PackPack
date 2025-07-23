@@ -11,12 +11,12 @@ import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.ceil
@@ -67,12 +67,12 @@ class Slot : Command(CommonStatic.Lang.Locale.EN, false){
         }
     }
 
-    private fun getComponents(user: User, possibleSlotMachines: List<SlotMachine>) : List<LayoutComponent> {
+    private fun getComponents(user: User, possibleSlotMachines: List<SlotMachine>) : List<MessageTopLevelComponent> {
         val cooldownMap = CardData.slotCooldown.computeIfAbsent(user.idLong) { HashMap() }
 
         val currentTime = CardData.getUnixEpochTime()
 
-        val result = ArrayList<LayoutComponent>()
+        val result = ArrayList<MessageTopLevelComponent>()
 
         val options = ArrayList<SelectOption>()
 
