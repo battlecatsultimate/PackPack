@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.server.slash;
 
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.calculation.Formula;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
