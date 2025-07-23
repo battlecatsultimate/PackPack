@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server.slash;
 
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.calculation.Formula;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -19,6 +20,16 @@ public class SlashBuilder {
         client.retrieveApplicationInfo().queue(info -> {
             if(info == null)
                 return;
+
+            getCommandCreation(client, "bg", "Show background image",
+                    List.of(
+                            new SlashOption("id", "ID of background", true, SlashOption.TYPE.INT, false),
+                            new SlashOption("width", "Width of background, up to 1080", false, SlashOption.TYPE.INT, false),
+                            new SlashOption("height", "Height of background, up to 1920", false, SlashOption.TYPE.INT, false),
+                            new SlashOption("effect", "Render effect together when rendering background", false, SlashOption.TYPE.BOOLEAN, false),
+                            new SlashOption("animation", "Bring background animation if possible", false, SlashOption.TYPE.BOOLEAN, false)
+                    )
+            );
 
             getCommandCreation(client, "edps", "Show DPS graph of enemy",
                     List.of(

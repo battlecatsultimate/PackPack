@@ -56,10 +56,16 @@
         }
     },
     "background" : {
-        "result" : "배경-_ 업로드 성공 (WWWXHHH)",
         "fail" : {
-            "invalidID" : "유효하지 않은 ID 범위 입니다. 오로지 0 ~ _, 1000 ~ - 만 가능한 ID 입니다",
+            "invalidID" : "유효하지 않은 ID 범위 입니다. 오로지 0 ~ %d, 1000 ~ %d 만 가능한 ID 입니다",
             "noParameter" : "해당 명령어는 하나의 정보를 더 요구합니다! : [배경 ID]"
+        },
+        "result" : {
+            "fileSize" : "파일 크기 : %s",
+            "id" : "배경 %s",
+            "renderingTime" : "랜더링 시간 : %ss",
+            "size" : "크기 : %dx%d",
+            "title" : "### 배경 업로드됨"
         }
     },
     "boosterEmoji" : {
@@ -564,7 +570,7 @@
             "background" : {
                 "dimension" : "배경 애니메이션 생성 중 (15 초) : _WWW_x_HHH_",
                 "failed" : "배경 애니메이션 mp4 업로드 실패",
-                "fileTooBig" : "배경 애니메이션 mp4 파일 크기가 너무 큽니다! (_SSS_)",
+                "fileTooBig" : "배경 애니메이션 mp4 파일 크기가 너무 큽니다! (%s)",
                 "ignore" : "기여자가 아니므로 애니메이션 제작 인자는 무시됩니다",
                 "prepare" : "배경 애니메이션 생성 준비 중",
                 "progress" : "```py\n<_PPP_/_LLL_> _BBB_ _VVV_% | 남은 시간 : _SSS_s\n```",
@@ -573,7 +579,7 @@
             },
             "gif" : {
                 "analyzingBox" : "경계 분석중...",
-                "cached" : "저장된 이미지 링크를 가져옵니다\n_",
+                "cached" : "저장된 이미지 링크를 가져옵니다\n%s",
                 "converting" : "PNG 파일들을 MP4 파일로 변환 중...",
                 "dummy" : "현재, 이 데이터는 더미로 존재합니다. 따라서 gif 생성을 취소합니다",
                 "ignoring" : "유저가 개발자가 아니므로 -raw 인자를 무시합니다",

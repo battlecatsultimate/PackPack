@@ -11,7 +11,13 @@ import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -36,23 +42,30 @@ public class Background extends TimedConstraintCommand {
             lang =  StaticStore.config.get(u.getId()).lang;
         }
 
-        File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
+        File img = ImageDrawing.drawBGImage(bg, 960, 540, false);
 
         if(img != null) {
+            List<ContainerChildComponent> children = new ArrayList<>();
+
+            children.add(TextDisplay.of(
+                    LangID.getStringByID("background.result.title", lang) + "\n" +
+                           LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
+                           LangID.getStringByID("background.result.size", lang).formatted(960, 540)
+            ));
+
+            children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+
+            Container container = Container.of(children);
+
             event.deferReply()
+                    .setComponents(container)
+                    .useComponentsV2()
                     .setAllowedMentions(new ArrayList<>())
-                    .setContent(LangID.getStringByID("background.result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
-                    .addFiles(FileUpload.fromData(img, "bg.png"))
-                    .queue(m -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
+                    .mentionRepliedUser(false)
+                    .queue(m -> StaticStore.deleteFile(img, true), e -> {
                         StaticStore.logger.uploadErrorLog(e, "E/Background::performButton - Failed to upload bg image");
 
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
+                        StaticStore.deleteFile(img, true);
                     });
         }
     }
@@ -79,64 +92,117 @@ public class Background extends TimedConstraintCommand {
         MessageChannel ch = loader.getChannel();
 
         if(bg != null) {
-            File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
+            File img = ImageDrawing.drawBGImage(bg, 960, 540, false);
 
             if(img != null) {
-                sendMessageWithFile(ch, LangID.getStringByID("background.result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""), img, "bg.png", loader.getMessage());
+                List<ContainerChildComponent> children = new ArrayList<>();
+
+                children.add(TextDisplay.of(
+                        LangID.getStringByID("background.result.title", lang) + "\n" +
+                                LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
+                                LangID.getStringByID("background.result.size", lang).formatted(960, 540)
+                ));
+
+                children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+
+                Container container = Container.of(children);
+
+                replyToMessageSafely(loader.getChannel(), loader.getMessage(), container);
             }
         } else {
-            String[] msg = loader.getContent().split(" ");
+            int id;
+            int width;
+            int height;
+            boolean effect;
+            boolean animation;
 
-            if(msg.length == 1) {
-                replyToMessageSafely(ch, LangID.getStringByID("background.fail.noParameter", lang), loader.getMessage(), a -> a);
-            } else {
-                int id = getID(loader.getContent());
+            if (loader.fromMessage) {
+                String[] msg = loader.getContent().split(" ");
+
+                if(msg.length == 1) {
+                    replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("background.fail.noParameter", lang)));
+
+                    return;
+                }
+
+                id = getID(loader.getContent());
 
                 if(id == -1) {
-                    replyToMessageSafely(ch, LangID.getStringByID("background.fail.noParameter", lang), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("background.fail.noParameter", lang)));
 
                     return;
                 }
 
-                common.util.pack.Background bg = UserProfile.getBCData().bgs.getRaw(id);
+                width = Math.max(1, getWidth(loader.getContent()));
+                height = Math.max(1, getHeight(loader.getContent()));
+                effect = drawEffect(loader.getContent());
+                animation = generateAnim(loader.getContent());
+            } else {
+                SlashOptionMap options = loader.getOptions();
 
-                if(bg == null) {
-                    int[] size = getBGSize();
+                id = options.getOption("id", 0);
+                width = options.getOption("width", 960);
+                height = options.getOption("height", 540);
+                effect = options.getOption("effect", false);
+                animation = options.getOption("animation", false);
+            }
 
-                    replyToMessageSafely(ch, LangID.getStringByID("background.fail.invalidID", lang).replace("_", String.valueOf(size[0])).replace("-", String.valueOf(size[1])), loader.getMessage(), a -> a);
-                    return;
-                }
+            common.util.pack.Background bg = UserProfile.getBCData().bgs.getRaw(id);
 
-                User u = loader.getUser();
+            if(bg == null) {
+                int[] size = getBGSize();
 
-                int w = Math.max(1, getWidth(loader.getContent()));
-                int h = Math.max(1, getHeight(loader.getContent()));
-                boolean eff = drawEffect(loader.getContent());
-                boolean anim = generateAnim(loader.getContent());
-                boolean isTrusted = StaticStore.contributors.contains(u.getId());
+                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("background.fail.invalidID", lang).formatted(size[0], size[1])));
 
-                String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
+                return;
+            }
 
-                if(anim && bg.effect != -1 && cache == null && isTrusted) {
-                    EntityHandler.generateBGAnim(ch, loader.getMessage(), bg, lang);
-                } else {
-                    if(anim && bg.effect != -1) {
-                        if(cache != null) {
-                            replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.cached", lang).replace("_", cache), loader.getMessage(), a -> a);
+            User u = loader.getUser();
 
-                            return;
-                        } else {
-                            ch.sendMessage(LangID.getStringByID("data.animation.background.ignore", lang)).queue();
-                        }
+            boolean isTrusted = StaticStore.contributors.contains(u.getId());
+
+            String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
+
+            if(animation && bg.effect != -1 && cache == null && isTrusted) {
+                EntityHandler.generateBGAnim(loader, bg, lang);
+            } else {
+                if(animation && bg.effect != -1) {
+                    if(cache != null) {
+                        replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("data.animation.gif.cached", lang).formatted(cache)));
+
+                        return;
+                    } else {
+                        ch.sendMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.ignore", lang))).useComponentsV2().queue();
                     }
+                }
 
-                    if(eff && bg.effect != -1)
-                        w = w * 5 / 6;
+                if(effect && bg.effect != -1)
+                    width = width * 5 / 6;
 
-                    File img = ImageDrawing.drawBGImage(bg, w, h, eff);
+                File img = ImageDrawing.drawBGImage(bg, width, height, effect);
 
-                    if(img != null) {
-                        sendMessageWithFile(ch, LangID.getStringByID("background.result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", String.valueOf(w)).replace("HHH", String.valueOf(h)), img, "bg.png", loader.getMessage());
+                if(img != null) {
+                    List<ContainerChildComponent> children = new ArrayList<>();
+
+                    children.add(TextDisplay.of(
+                            LangID.getStringByID("background.result.title", lang) + "\n" +
+                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
+                                    LangID.getStringByID("background.result.size", lang).formatted(width, height)
+                    ));
+
+                    children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+
+                    Container container = Container.of(children);
+
+                    if (loader.fromMessage) {
+                        replyToMessageSafely(loader.getChannel(), loader.getMessage(), container);
+                    } else {
+                        loader.getInteractionEvent().deferReply()
+                                .setComponents(container)
+                                .useComponentsV2()
+                                .setAllowedMentions(new ArrayList<>())
+                                .mentionRepliedUser(false)
+                                .queue();
                     }
                 }
             }
@@ -162,7 +228,7 @@ public class Background extends TimedConstraintCommand {
         String[] contents = message.split(" ");
 
         if(contents.length == 1)
-            return 520;
+            return 540;
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].equals("-h") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
@@ -170,7 +236,7 @@ public class Background extends TimedConstraintCommand {
             }
         }
 
-        return 520;
+        return 540;
     }
 
     private boolean drawEffect(String message) {

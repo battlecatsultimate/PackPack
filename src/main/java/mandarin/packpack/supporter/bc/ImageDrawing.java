@@ -31,6 +31,7 @@ import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.GLGraphics;
 import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.Nullable;
@@ -306,14 +307,14 @@ public class ImageDrawing {
     public static File drawBGAnimEffect(Background bg, Message msg, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
-        if(!temp.exists() && !temp.mkdirs()) {
-            StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
+        if (!temp.exists() && !temp.mkdirs()) {
+            StaticStore.logger.uploadLog("Can't create folder : " + temp.getAbsolutePath());
             return null;
         }
 
         File folder = StaticStore.generateTempFile(temp, "images", "", true);
 
-        if(folder == null) {
+        if (folder == null) {
             return null;
         }
 
@@ -321,7 +322,7 @@ public class ImageDrawing {
 
         File mp4 = StaticStore.generateTempFile(temp, "result", ".mp4", false);
 
-        if(mp4 == null) {
+        if (mp4 == null) {
             return null;
         }
 
@@ -349,7 +350,7 @@ public class ImageDrawing {
 
         int w = (int) ((400 + pw * CommonStatic.BattleConst.ratio) * bgAnimRatio);
 
-        if(w % 2 == 1)
+        if (w % 2 == 1)
             w -= 1;
 
         float groundRatio = 0.1f;
@@ -358,7 +359,7 @@ public class ImageDrawing {
 
         BackgroundEffect eff;
 
-        if(bg.effect < 0)
+        if (bg.effect < 0)
             eff = BackgroundEffect.mixture.get(-bg.effect);
         else
             eff = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
@@ -369,17 +370,20 @@ public class ImageDrawing {
 
         eff.initialize(len, bgHeight, midH, bg);
 
-        String cont = LangID.getStringByID("data.animation.background.dimension", lang).replace("_WWW_", String.valueOf(w)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+        String initialContent = LangID.getStringByID("data.animation.background.dimension", lang).formatted(w, bgAnimHeight) + "\n\n" +
                 LangID.getStringByID("data.animation.background.progress", lang)
-                        .replace("_PPP_", "  0")
-                        .replace("_LLL_", bgAnimTime + "")
-                        .replace("_BBB_", getProgressBar(0, bgAnimTime))
-                        .replace("_VVV_", 0.0 + "")
-                        .replace("_SSS_", "-");
+                        .formatted(
+                                "  0",
+                                bgAnimTime,
+                                getProgressBar(0, bgAnimTime),
+                                String.valueOf(0.0),
+                                "-"
+                        );
 
-        msg.editMessage(cont).queue();
+        msg.editMessageComponents(TextDisplay.of(initialContent)).useComponentsV2().mentionRepliedUser(false).queue();
 
         final int finalW = w;
+
         CountDownLatch pause = new CountDownLatch(1);
 
         AtomicReference<Long> start = new AtomicReference<>(System.currentTimeMillis());
@@ -388,56 +392,58 @@ public class ImageDrawing {
         StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
             bg.load();
 
-            for(int i = 0; i < bgAnimTime; i++) {
+            for (int i = 0; i < bgAnimTime; i++) {
                 final int finalI = i;
 
                 connector.queue(g -> {
-                    if(System.currentTimeMillis() - current.get() >= 1500) {
+                    if (System.currentTimeMillis() - current.get() >= 1500) {
                         String prog = DataToString.df.format(finalI * 100.0 / bgAnimTime);
                         String eta = getETA(start.get(), System.currentTimeMillis(), finalI, bgAnimTime);
                         String ind = String.valueOf(finalI);
-                        String content = LangID.getStringByID("data.animation.background.dimension", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
-                                LangID.getStringByID("data.animation.background.progress", lang)
-                                        .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
-                                        .replace("_LLL_", bgAnimTime+"")
-                                        .replace("_BBB_", getProgressBar(finalI, bgAnimTime))
-                                        .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                                        .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
 
-                        msg.editMessage(content).queue();
+                        String content = LangID.getStringByID("data.animation.background.dimension", lang).formatted(finalW, bgAnimHeight) + "\n\n" +
+                                LangID.getStringByID("data.animation.background.progress", lang).formatted(
+                                        " ".repeat(Math.max(0, 3 - ind.length())) + ind,
+                                        bgAnimTime,
+                                        getProgressBar(finalI, bgAnimTime),
+                                        " ".repeat(Math.max(0, 6 - prog.length())) + prog,
+                                        " ".repeat(Math.max(0, 6 - eta.length())) + eta
+                                );
+
+                        msg.editMessageComponents(TextDisplay.of(content)).useComponentsV2().mentionRepliedUser(false).queue();
 
                         current.set(System.currentTimeMillis());
                     }
 
                     g.gradRect(0, h - groundHeight, finalW, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
 
-                    int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * bgAnimRatio);
+                    int pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * bgAnimRatio);
 
                     int y = h - groundHeight;
 
                     int lowHeight = (int) (bg.parts[Background.BG].getHeight() * bgAnimRatio);
                     int lowWidth = (int) (bg.parts[Background.BG].getWidth() * bgAnimRatio);
 
-                    while(pos < finalW) {
+                    while (pos < finalW) {
                         g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
 
                         pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
                     }
 
-                    if(bg.top) {
+                    if (bg.top) {
                         int topHeight = (int) (bg.parts[Background.TOP].getHeight() * bgAnimRatio);
                         int topWidth = (int) (bg.parts[Background.TOP].getWidth() * bgAnimRatio);
 
                         pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * bgAnimRatio);
                         y = h - groundHeight - lowHeight;
 
-                        while(pos < finalW) {
+                        while (pos < finalW) {
                             g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
 
                             pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
                         }
 
-                        if(y - topHeight > 0) {
+                        if (y - topHeight > 0) {
                             g.gradRect(0, 0, finalW, h - groundHeight - lowHeight - topHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight - topHeight, bg.cs[1]);
                         }
                     } else {
@@ -451,7 +457,7 @@ public class ImageDrawing {
 
                     P.delete(base);
 
-                    if(bg.overlay != null) {
+                    if (bg.overlay != null) {
                         g.gradRectAlpha(0, 0, finalW, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
                     }
 
@@ -462,21 +468,23 @@ public class ImageDrawing {
             }
 
             return Unit.INSTANCE;
-        }, progress -> new File("./temp/"+folderName+"/", quad(progress)+".png"), () -> {
+        }, progress -> new File("./temp/" + folderName + "/", quad(progress) + ".png"), () -> {
             try {
-                String content = LangID.getStringByID("data.animation.background.dimension", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                String content = LangID.getStringByID("data.animation.background.dimension", lang).formatted(finalW, bgAnimHeight) + "\n\n" +
                         LangID.getStringByID("data.animation.background.progress", lang)
-                                .replace("_PPP_", bgAnimTime + "")
-                                .replace("_LLL_", bgAnimTime + "")
-                                .replace("_BBB_", getProgressBar(bgAnimTime, bgAnimTime))
-                                .replace("_VVV_", "100.00")
-                                .replace("_SSS_", "     0") + "\n"+
+                                .formatted(
+                                        String.valueOf(bgAnimTime),
+                                        bgAnimTime,
+                                        getProgressBar(bgAnimTime, bgAnimTime),
+                                        String.valueOf(100.0),
+                                        "     0"
+                                ) + "\n" +
                         LangID.getStringByID("data.animation.background.uploading", lang);
 
-                msg.editMessage(content).queue();
+                msg.editMessageComponents(TextDisplay.of(content)).useComponentsV2().mentionRepliedUser(false).queue();
 
-                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", finalW+"x"+h,
-                        "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+mp4.getName());
+                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", finalW + "x" + h,
+                        "-i", "temp/" + folderName + "/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/" + mp4.getName());
                 builder.redirectErrorStream(true);
 
                 Process pro = builder.start();
@@ -485,7 +493,7 @@ public class ImageDrawing {
 
                 String line;
 
-                while((line = reader.readLine()) != null) {
+                while ((line = reader.readLine()) != null) {
                     System.out.println(line);
                 }
 

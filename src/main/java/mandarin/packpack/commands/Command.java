@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -182,6 +183,62 @@ public abstract class Command {
             }
         } else {
             action.setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+            } else {
+                ch.sendMessageComponents(components).useComponentsV2().queue();
+            }
+        } else {
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+            } else {
+                ch.sendMessageComponents(component, components).useComponentsV2().queue();
+            }
+        } else {
+            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components, Consumer<Message> onSuccess) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            } else {
+                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess);
+            }
+        } else {
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, Consumer<Message> onSuccess, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            } else {
+                ch.sendMessageComponents(component, components).useComponentsV2().queue(onSuccess);
+            }
+        } else {
+            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
         }
     }
 

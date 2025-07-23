@@ -32,9 +32,15 @@ import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.GLGraphics;
 import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -66,6 +72,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
@@ -2916,66 +2923,128 @@ public class EntityHandler {
         });
     }
 
-    public static void generateBGAnim(MessageChannel ch, Message reference, Background bg, CommonStatic.Lang.Locale lang) {
-        ch.sendMessage(LangID.getStringByID("data.animation.background.prepare", lang)).queue(message -> {
-            if(message == null)
-                return;
+    public static void generateBGAnim(CommandLoader loader, Background bg, CommonStatic.Lang.Locale lang) throws Exception {
+        AtomicReference<Message> atomicMessage = new AtomicReference<>();
+        CountDownLatch countdown = new CountDownLatch(1);
 
-            ShardManager client = ch.getJDA().getShardManager();
+        if (loader.fromMessage) {
+            loader.getChannel().sendMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.prepare", lang)))
+                    .useComponentsV2()
+                    .setMessageReference(loader.getMessage())
+                    .mentionRepliedUser(false)
+                    .queue(message -> {
+                        atomicMessage.set(message);
 
-            if (client == null)
-                return;
+                        countdown.countDown();
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
 
-            long start = System.currentTimeMillis();
+                        countdown.countDown();
+                    });
+        } else {
+            loader.getInteractionEvent().deferReply()
+                    .setComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.prepare", lang)))
+                    .useComponentsV2()
+                    .mentionRepliedUser(false)
+                    .queue(hook ->
+                        hook.retrieveOriginal().queue(message -> {
+                            atomicMessage.set(message);
 
-            File result;
+                            countdown.countDown();
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
 
-            try {
-                result = ImageDrawing.drawBGAnimEffect(bg, message, lang);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate bg animation");
+                            countdown.countDown();
+                        })
+                    , e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
 
-                return;
+                        countdown.countDown();
+                    });
+        }
+
+        countdown.await();
+
+        Message message = atomicMessage.get();
+
+        if (message == null)
+            return;
+
+        ShardManager client = loader.getClient().getShardManager();
+
+        if (client == null)
+            return;
+
+        long start = System.currentTimeMillis();
+
+        File result;
+
+        try {
+            result = ImageDrawing.drawBGAnimEffect(bg, message, lang);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate bg animation");
+
+            return;
+        }
+
+        long end = System.currentTimeMillis();
+
+        if(result == null) {
+            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.failed", lang)))
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+        } else if(result.length() >= 8 * 1024 * 1024) {
+            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.fileTooBig", lang).formatted(getFileSize(result))))
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+        } else {
+            GuildChannel channel = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+
+            if(channel instanceof MessageChannel) {
+                String size = getFileSize(result);
+
+                ((MessageChannel) channel).sendMessage("BG - "+Data.trio(bg.id.id))
+                        .addFiles(FileUpload.fromData(result, "result.mp4"))
+                        .queue(m -> {
+                            StaticStore.deleteFile(result, true);
+
+                            for(int i = 0; i < m.getAttachments().size(); i++) {
+                                Message.Attachment at = m.getAttachments().get(i);
+
+                                if(at.getFileName().startsWith("result.")) {
+                                    List<ContainerChildComponent> children = new ArrayList<>();
+
+                                    children.add(TextDisplay.of(
+                                            LangID.getStringByID("background.result.title", lang) + "\n" +
+                                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
+                                                    LangID.getStringByID("background.result.fileSize", lang).formatted(size) + "\n" +
+                                                    LangID.getStringByID("background.result.renderingTime", lang).formatted(DataToString.df.format((end - start) / 1000.0))
+                                    ));
+
+                                    children.add(MediaGallery.of(MediaGalleryItem.fromUrl(at.getUrl())));
+
+                                    Container container = Container.of(children);
+
+                                    message.editMessageComponents(container)
+                                            .useComponentsV2()
+                                            .setAllowedMentions(new ArrayList<>())
+                                            .mentionRepliedUser(false)
+                                            .queue();
+
+                                    StaticStore.imgur.put("BG - " + Data.trio(bg.id.id), at.getUrl(), true);
+                                }
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate BG anim");
+
+                            if(result.exists() && !result.delete()) {
+                                StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
+                            }
+                        });
             }
-
-            long end = System.currentTimeMillis();
-
-            if(result == null) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.background.failed", lang), reference, a -> a);
-            } else if(result.length() >= 8 * 1024 * 1024) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.background.fileTooBig", lang).replace("_SSS_", getFileSize(result)), reference, a -> a);
-            } else {
-                GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
-
-                if(chan instanceof MessageChannel) {
-                    String siz = getFileSize(result);
-
-                    ((MessageChannel) chan).sendMessage("BG - "+Data.trio(bg.id.id))
-                            .addFiles(FileUpload.fromData(result, "result.mp4"))
-                            .queue(m -> {
-                                if(result.exists() && !result.delete()) {
-                                    StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
-                                }
-
-                                for(int i = 0; i < m.getAttachments().size(); i++) {
-                                    Message.Attachment at = m.getAttachments().get(i);
-
-                                    if(at.getFileName().startsWith("result.")) {
-                                        Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.background.result", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl(), reference, a -> a);
-
-                                        StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), at.getUrl(), true);
-                                    }
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate BG anim");
-
-                                if(result.exists() && !result.delete()) {
-                                    StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
-                                }
-                            });
-                }
-            }
-        });
+        }
     }
 
     public static void generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {

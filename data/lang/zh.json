@@ -56,10 +56,14 @@
         }
     },
     "background" : {
-        "result" : "Uploaded BG-_ (WWWXHHH)",
         "fail" : {
-            "invalidID" : "Invalid ID range, only 0 ~ _, and 1000 ~ - can be accepted",
+            "invalidID" : "Invalid ID range, only 0 ~ %d, and 1000 ~ %d can be accepted",
             "noParameter" : "This command requires one more parameter! : [BG ID]"
+        },
+        "result" : {
+            "id" : "BG %s",
+            "size" : "Size : %dx%d",
+            "title" : "### BG Uploaded"
         }
     },
     "boosterEmoji" : {
@@ -564,7 +568,7 @@
             "background" : {
                 "dimension" : "Generating background animation (15 sec) : _WWW_x_HHH_",
                 "failed" : "Failed to generate background animation mp4",
-                "fileTooBig" : "Result mp4 file was too big! (_SSS_)",
+                "fileTooBig" : "Result mp4 file was too big! (%s)",
                 "ignore" : "Ignoring animation generation flag because you aren't trusted",
                 "prepare" : "Preparing background animation generation",
                 "progress" : "```py\n<_PPP_/_LLL_> _BBB_ _VVV_% | ETA : _SSS_s\n```",
@@ -573,7 +577,7 @@
             },
             "gif" : {
                 "analyzingBox" : "Analyzing Boxes...",
-                "cached" : "Bringing cached image link\n_",
+                "cached" : "Bringing cached image link\n%s",
                 "converting" : "Converting PNGs to MP4...",
                 "dummy" : "Currently, this data is dummy, so generating gif is blocked for this",
                 "ignoring" : "Ignoring -raw param because user isn't dev",

@@ -56,10 +56,16 @@
         }
     },
     "background" : {
-        "result" : " BG-_ (WWWXHHH)をアップロードしました",
         "fail" : {
-            "invalidID" : "IDが無効です。 0 ~ _、1000 ~ - にしてください。",
+            "invalidID" : "IDが無効です。 0 ~ %d、1000 ~ %d にしてください。",
             "noParameter" : "このコマンドはもう一つ引数が必要です! : [BG ID]"
+        },
+        "result" : {
+            "fileSize" : "File Size : %s",
+            "id" : "BG %s",
+            "renderingTime" : "Rendering Time : %ss",
+            "size" : "Size : %dx%d",
+            "title" : "### BG Uploaded"
         }
     },
     "boosterEmoji" : {
@@ -564,7 +570,7 @@
             "background" : {
                 "dimension" : "背景のアニメーションを組み立てました。 (15秒) : _WWW_x_HHH_",
                 "failed" : "背景のアニメーション(mp4)のアップロードに失敗しました。",
-                "fileTooBig" : "mp4ファイルが大きすぎます! (_SSS_)",
+                "fileTooBig" : "mp4ファイルが大きすぎます! (%s)",
                 "ignore" : "申し訳ありませんがあなたは信用されていないのでコマンドの実行を拒否しました。",
                 "prepare" : "背景のアニメーションを組み立てています...",
                 "progress" : "```py\n<_PPP_/_LLL_> _BBB_ _VVV_% | ETA : _SSS_s\n```",
@@ -573,7 +579,7 @@
             },
             "gif" : {
                 "analyzingBox" : "アナライズしています...",
-                "cached" : "画像のリンク表示\n_",
+                "cached" : "画像のリンク表示\n%s",
                 "converting" : "PNGをMP4に変換しています...",
                 "dummy" : "Currently, this data is dummy, so generating gif is blocked for this",
                 "ignoring" : "ユーザーが開発者ではないため、-raw を無視します",
