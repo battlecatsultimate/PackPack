@@ -662,7 +662,7 @@
                 "title" : "研究力アップ"
             },
             "critical" : {
-                "description" : "特性 「クリティカル」　効果+%d%%上昇 critical chance by %d%%",
+                "description" : "特性 「クリティカル」　効果+%d%%上昇",
                 "title" : "「クリティカル」 効果アップ"
             },
             "efficiency" : {
