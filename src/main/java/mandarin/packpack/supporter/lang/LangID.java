@@ -9,6 +9,10 @@ import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LangID {
     public static JsonObject EN_OBJ;
@@ -16,6 +20,8 @@ public class LangID {
     public static JsonObject KR_OBJ;
     public static JsonObject ZH_OBJ;
     public static JsonObject RU_OBJ;
+
+    private static final Pattern formatRegex = Pattern.compile("%(d|s|(\\.\\d+)?[fg])");
 
     public static void initialize() {
         File f = new File("./data/lang");
@@ -253,6 +259,27 @@ public class LangID {
                 findMissingTexts(currentPath + key + ".", obj, tObj);
             } else if (e instanceof JsonObject || te instanceof JsonObject) {
                 throw new IllegalStateException("E/LangID::findMissingTexts - Desynced tag found : " + currentPath + key);
+            } else if (e instanceof JsonPrimitive ep && te instanceof JsonPrimitive tp) {
+                String enValue = ep.getAsString();
+                String value = tp.getAsString();
+
+                Matcher enMatcher = formatRegex.matcher(enValue);
+                Matcher matcher = formatRegex.matcher(value);
+
+                List<String> enFormat = new ArrayList<>();
+                List<String> format = new ArrayList<>();
+
+                while (enMatcher.find()) {
+                    enFormat.add(enMatcher.group(0));
+                }
+
+                while (matcher.find()) {
+                    format.add(matcher.group(0));
+                }
+
+                if (enFormat.size() != format.size()) {
+                    System.out.println("F : " + currentPath + key + " -> " + enFormat + ", " + format);
+                }
             }
         }
     }
