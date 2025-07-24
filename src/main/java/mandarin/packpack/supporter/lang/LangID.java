@@ -280,6 +280,14 @@ public class LangID {
                 if (enFormat.size() != format.size()) {
                     System.out.println("F : " + currentPath + key + " -> " + enFormat + ", " + format);
                 }
+
+                for (int i = 0; i < enFormat.size(); i++) {
+                    if (!enFormat.get(i).equals(format.get(i))) {
+                        System.out.println("F : " + currentPath + key + " -> " + enFormat + ", " + format);
+
+                        break;
+                    }
+                }
             }
         }
     }
