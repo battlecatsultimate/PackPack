@@ -64,7 +64,7 @@ public class PackBot {
 
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Logger.writeLog(Logger.BotInstance.PACK_PACK)));
-        Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
+        Thread.setDefaultUncaughtExceptionHandler((t, e) ->
                 StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Uncaught exception found : " + t.getName())
         );
 
