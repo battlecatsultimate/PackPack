@@ -61,7 +61,9 @@
             "noParameter" : "This command requires one more parameter! : [BG ID]"
         },
         "result" : {
+            "fileSize" : "File Size : %s",
             "id" : "BG %s",
+            "renderingTime" : "Rendering Time : %ss",
             "size" : "Size : %dx%d",
             "title" : "### BG Uploaded"
         }
