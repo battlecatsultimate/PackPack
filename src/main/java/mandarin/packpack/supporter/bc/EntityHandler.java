@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -3016,9 +3017,12 @@ public class EntityHandler {
                                 if(at.getFileName().startsWith("result.")) {
                                     List<ContainerChildComponent> children = new ArrayList<>();
 
+                                    children.add(TextDisplay.of(LangID.getStringByID("background.result.title", lang)));
+
+                                    children.add(Separator.create(true, Separator.Spacing.LARGE));
+
                                     children.add(TextDisplay.of(
-                                            LangID.getStringByID("background.result.title", lang) + "\n" +
-                                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
+                                            LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
                                                     LangID.getStringByID("background.result.fileSize", lang).formatted(size) + "\n" +
                                                     LangID.getStringByID("background.result.renderingTime", lang).formatted(DataToString.df.format((end - start) / 1000.0))
                                     ));

@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -47,10 +48,13 @@ public class Background extends TimedConstraintCommand {
         if(img != null) {
             List<ContainerChildComponent> children = new ArrayList<>();
 
+            children.add(TextDisplay.of(LangID.getStringByID("background.result.title", lang)));
+
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
+
             children.add(TextDisplay.of(
-                    LangID.getStringByID("background.result.title", lang) + "\n" +
-                           LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n" +
-                           LangID.getStringByID("background.result.size", lang).formatted(960, 540)
+                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
+                    LangID.getStringByID("background.result.size", lang).formatted(960, 540)
             ));
 
             children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
@@ -170,9 +174,12 @@ public class Background extends TimedConstraintCommand {
                     if(cache != null) {
                         List<ContainerChildComponent> children = new ArrayList<>();
 
+                        children.add(TextDisplay.of(LangID.getStringByID("background.result.title", lang)));
+
+                        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
                         children.add(TextDisplay.of(
-                                LangID.getStringByID("background.result.title", lang) + "\n" +
-                                        LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
+                                LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
                                         LangID.getStringByID("data.animation.gif.cached", lang).formatted(cache)
                         ));
 
@@ -196,9 +203,12 @@ public class Background extends TimedConstraintCommand {
                 if(img != null) {
                     List<ContainerChildComponent> children = new ArrayList<>();
 
+                    children.add(TextDisplay.of(LangID.getStringByID("background.result.title", lang)));
+
+                    children.add(Separator.create(true, Separator.Spacing.LARGE));
+
                     children.add(TextDisplay.of(
-                            LangID.getStringByID("background.result.title", lang) + "\n" +
-                                    LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
+                            LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
                                     LangID.getStringByID("background.result.size", lang).formatted(width, height)
                     ));
 
