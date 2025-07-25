@@ -286,11 +286,15 @@
         }
     },
     "castle" : {
-        "result" : "_CCC_-_III_をアップロードしました\nボス出現地点 = _BBB_",
         "fail" : {
-            "noID" : "IDがコマンドに含まれてないようです!\n使い方 : `_城 [ID]",
+            "noID" : "IDがコマンドに含まれてないようです!\n使い方 : `%scastle [ID]",
             "noParameter" : "このコマンドはもう一つ引数が必要です! : [ID]",
             "notNumber" : "IDは数である必要があります!"
+        },
+        "result" : {
+            "boss" : "ボス出現地点 = %.4g",
+            "id" : "Castle %s-%s",
+            "title" : "### Uploaded Castle"
         }
     },
     "checkEvent" : {

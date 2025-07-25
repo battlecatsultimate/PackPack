@@ -1225,6 +1225,16 @@ public class AllEventAdapter extends ListenerAdapter {
                     }
                 }
             }
+            case "cs" -> {
+                List<Command.Choice> choices = new ArrayList<>();
+
+                choices.add(new Command.Choice("RC", "rc"));
+                choices.add(new Command.Choice("EC", "ec"));
+                choices.add(new Command.Choice("WC", "wc"));
+                choices.add(new Command.Choice("SC", "sc"));
+
+                event.replyChoices(choices).queue();
+            }
         }
     }
 

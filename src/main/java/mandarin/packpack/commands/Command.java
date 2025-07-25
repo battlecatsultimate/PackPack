@@ -242,6 +242,34 @@ public abstract class Command {
         }
     }
 
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+            } else {
+                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess, onError);
+            }
+        } else {
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, Consumer<Message> onSuccess, Consumer<Throwable> onError, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+            } else {
+                ch.sendMessageComponents(component, components).useComponentsV2().queue(onSuccess, onError);
+            }
+        } else {
+            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+        }
+    }
+
     public static void replyToMessageSafely(GenericCommandInteractionEvent event, String content, Function<ReplyCallbackAction, ReplyCallbackAction> function) {
         ReplyCallbackAction action = event.deferReply()
                 .setContent(content)

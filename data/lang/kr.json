@@ -65,7 +65,7 @@
             "id" : "배경 %s",
             "renderingTime" : "랜더링 시간 : %ss",
             "size" : "크기 : %dx%d",
-            "title" : "### 배경 업로드됨"
+            "title" : "### 배경 업로드 성공"
         }
     },
     "boosterEmoji" : {
@@ -286,11 +286,15 @@
         }
     },
     "castle" : {
-        "result" : "_CCC_-_III_ 업로드 성공\n보스 스폰 위치 = _BBB_",
         "fail" : {
-            "noID" : "명령어에 ID가 없는거 같습니다!\n용도 : `_castle [ID]`",
+            "noID" : "명령어에 ID가 없는거 같습니다!\n용도 : `%scastle [ID]`",
             "noParameter" : "해당 명령어는 하나의 정보를 더 요구합니다 : [ID]",
             "notNumber" : "ID는 숫자여야만 합니다!"
+        },
+        "result" : {
+            "boss" : "보스 스폰 위치 = %.4g",
+            "id" : "성 %s-%s",
+            "title" : "### 성 업로드 성공"
         }
     },
     "checkEvent" : {

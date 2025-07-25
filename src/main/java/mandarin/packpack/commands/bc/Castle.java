@@ -6,14 +6,20 @@ import common.system.files.VFile;
 import common.util.Data;
 import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
+import kotlin.Unit;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -22,6 +28,7 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
 public class Castle extends ConstraintCommand {
@@ -32,7 +39,7 @@ public class Castle extends ConstraintCommand {
 
         User u = interaction.getUser();
 
-        if(StaticStore.config.containsKey(u.getId())) {
+        if (StaticStore.config.containsKey(u.getId())) {
             lang = StaticStore.config.get(u.getId()).lang;
 
             if (lang == null)
@@ -41,19 +48,19 @@ public class Castle extends ConstraintCommand {
 
         File temp = new File("./temp");
 
-        if(!temp.exists() && !temp.mkdirs()) {
-            StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
+        if (!temp.exists() && !temp.mkdirs()) {
+            StaticStore.logger.uploadLog("Can't create folder : " + temp.getAbsolutePath());
 
             return;
         }
 
         File img = StaticStore.generateTempFile(temp, "castle", ".png", false);
 
-        if(img == null) {
+        if (img == null) {
             return;
         }
 
-        if(cs != null) {
+        if (cs != null) {
             int code = switch (cs.getCont().getSID()) {
                 case "000001" -> 1;
                 case "000002" -> 2;
@@ -81,14 +88,14 @@ public class Castle extends ConstraintCommand {
                 connector.queue(g -> {
                     g.drawImage(castle, 0f, 0f);
 
-                    return null;
+                    return Unit.INSTANCE;
                 });
 
-                return null;
+                return Unit.INSTANCE;
             }, progress -> img, () -> {
                 waiter.countDown();
 
-                return null;
+                return Unit.INSTANCE;
             });
 
             waiter.await();
@@ -104,20 +111,30 @@ public class Castle extends ConstraintCommand {
             else
                 castleCode = "SC";
 
-            event.deferReply()
-                    .setAllowedMentions(new ArrayList<>())
-                    .setContent(LangID.getStringByID("castle.result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(cs.id.id)).replace("_BBB_", String.valueOf(cs.boss_spawn)))
-                    .addFiles(FileUpload.fromData(img, "result.png"))
-                    .queue(m -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/Castle::performButton - Failed to upload castle image");
+            List<ContainerChildComponent> children = new ArrayList<>();
 
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
+            children.add(TextDisplay.of(LangID.getStringByID("castle.result.title", lang)));
+
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+            children.add(TextDisplay.of(
+                    LangID.getStringByID("castle.result.id", lang).formatted(castleCode, Data.trio(cs.id.id)) + "\n" +
+                            LangID.getStringByID("castle.result.boss", lang).formatted(cs.boss_spawn)
+            ));
+
+            children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+
+            Container container = Container.of(children);
+
+            event.deferReply()
+                    .setComponents(container)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(m -> StaticStore.deleteFile(img, true), e -> {
+                        StaticStore.deleteFile(img, true);
+
+                        StaticStore.logger.uploadErrorLog(e, "E/Castle::performButton - Failed to send castle message");
                     });
         }
     }
@@ -135,16 +152,8 @@ public class Castle extends ConstraintCommand {
     private static final int PARAM_WC = 8;
     private static final int PARAM_SC = 16;
 
-    private CastleImg cs;
-
     public Castle(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, false);
-    }
-
-    public Castle(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, CastleImg cs) {
-        super(role, lang, id, false);
-
-        this.cs = cs;
     }
 
     private int startIndex = 1;
@@ -156,179 +165,155 @@ public class Castle extends ConstraintCommand {
 
     @Override
     public void doSomething(@Nonnull CommandLoader loader) throws Exception {
-        MessageChannel ch = loader.getChannel();
-
         File temp = new File("./temp");
 
-        if(!temp.exists()) {
+        if (!temp.exists()) {
             boolean res = temp.mkdirs();
 
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+            if (!res) {
+                System.out.println("Can't create folder : " + temp.getAbsolutePath());
                 return;
             }
         }
 
         File img = StaticStore.generateTempFile(temp, "castle", ".png", false);
 
-        if(img == null) {
+        if (img == null) {
             return;
         }
 
-        if(cs != null) {
-            int code = switch (cs.getCont().getSID()) {
-                case "000001" -> 1;
-                case "000002" -> 2;
-                case "000003" -> 3;
-                default -> 0;
-            };
+        int id;
+        int code;
 
-            FakeImage castle;
-
-            if(code == 1 && lang != CommonStatic.Lang.Locale.JP) {
-                VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(cs.id.id)+"_"+getLocale(lang)+".png");
-
-                if(vf != null) {
-                    castle = vf.getData().getImg();
-                } else {
-                    castle = cs.img.getImg();
-                }
-            } else {
-                castle = cs.img.getImg();
-            }
-
-            CountDownLatch waiter = new CountDownLatch(1);
-
-            StaticStore.renderManager.createRenderer(castle.getWidth(), castle.getHeight(), temp, connector -> {
-                connector.queue(g -> {
-                    g.drawImage(castle, 0f, 0f);
-
-                    return null;
-                });
-
-                return null;
-            }, progress -> img, () -> {
-                waiter.countDown();
-
-                return null;
-            });
-
-            waiter.await();
-
-            int finalId = cs.id.id;
-
-            String castleCode;
-
-            if(code == 0)
-                castleCode = "RC";
-            else if(code == 1)
-                castleCode = "EC";
-            else if(code == 2)
-                castleCode = "WC";
-            else
-                castleCode = "SC";
-
-            sendMessageWithFile(ch, LangID.getStringByID("castle.result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", String.valueOf(cs.boss_spawn)), img, "result.png", loader.getMessage());
-        } else {
+        if (loader.fromMessage) {
             String[] list = loader.getContent().split(" ");
 
-            if(list.length >= 2) {
-                int param = checkParameters(loader.getContent());
+            if (list.length < 2) {
+                replyToMessageSafely(loader.getChannel(), loader.getMessage(), TextDisplay.of(LangID.getStringByID("castle.fail.noParameter", lang)));
 
-                String[] messages = loader.getContent().split(" ", startIndex+1);
-
-                if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle.fail.noID", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
-
-                    return;
-                }
-
-                String msg = messages[startIndex];
-
-                int id;
-
-                if(StaticStore.isNumeric(msg)) {
-                    id = StaticStore.safeParseInt(msg);
-                } else {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle.fail.notNumber", lang), loader.getMessage(), a -> a);
-
-                    return;
-                }
-
-                ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
-
-                List<CastleImg> imgs;
-                int code;
-
-                if((param & PARAM_EC) > 0) {
-                    imgs = castleLists.get(1).getList();
-                    code = 1;
-                } else if((param & PARAM_WC) > 0) {
-                    imgs = castleLists.get(2).getList();
-                    code = 2;
-                } else if((param & PARAM_SC) > 0) {
-                    imgs = castleLists.get(3).getList();
-                    code = 3;
-                } else {
-                    imgs = castleLists.getFirst().getList();
-                    code = 0;
-                }
-
-                if(id >= imgs.size())
-                    id = imgs.size() - 1;
-
-                if(id < 0)
-                    id = 0;
-
-                CastleImg image = imgs.get(id);
-
-                FakeImage castle;
-
-                if(code == 1 && lang != CommonStatic.Lang.Locale.JP) {
-                    VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(image.id.id)+"_"+getLocale(lang)+".png");
-
-                    if(vf != null) {
-                        castle = vf.getData().getImg();
-                    } else {
-                        castle = image.img.getImg();
-                    }
-                } else {
-                    castle = image.img.getImg();
-                }
-
-                CountDownLatch waiter = new CountDownLatch(1);
-
-                StaticStore.renderManager.createRenderer(castle.getWidth(), castle.getHeight(), temp, connector -> {
-                    connector.queue(g -> {
-                        g.drawImage(castle, 0f, 0f);
-
-                        return null;
-                    });
-
-                    return null;
-                }, progress -> img, () -> {
-                    waiter.countDown();
-
-                    return null;
-                });
-
-                waiter.await();
-
-                String castleCode;
-
-                if(code == 0)
-                    castleCode = "RC";
-                else if(code == 1)
-                    castleCode = "EC";
-                else if(code == 2)
-                    castleCode = "WC";
-                else
-                    castleCode = "SC";
-
-                sendMessageWithFile(ch, LangID.getStringByID("castle.result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", String.valueOf(image.boss_spawn)), img, "result.png", loader.getMessage());
-            } else {
-                replyToMessageSafely(ch, LangID.getStringByID("castle.fail.noParameter", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
+                return;
             }
+
+            int param = checkParameters(loader.getContent());
+
+            String[] messages = loader.getContent().split(" ", startIndex + 1);
+
+            if (messages.length <= startIndex) {
+                replyToMessageSafely(loader.getChannel(), loader.getMessage(), TextDisplay.of(LangID.getStringByID("castle.fail.noID", lang).formatted(holder == null ? StaticStore.globalPrefix : holder.config.prefix)));
+
+                return;
+            }
+
+            String msg = messages[startIndex];
+
+            if (StaticStore.isNumeric(msg)) {
+                id = StaticStore.safeParseInt(msg);
+            } else {
+                replyToMessageSafely(loader.getChannel(), loader.getMessage(), TextDisplay.of(LangID.getStringByID("castle.fail.notNumber", lang)));
+
+                return;
+            }
+
+            if ((param & PARAM_EC) > 0) {
+                code = 1;
+            } else if ((param & PARAM_WC) > 0) {
+                code = 2;
+            } else if ((param & PARAM_SC) > 0) {
+                code = 3;
+            } else {
+                code = 0;
+            }
+        } else {
+            id = loader.getOptions().getOption("id", 0);
+            code = switch (loader.getOptions().getOption("type", "").toUpperCase(Locale.ENGLISH)) {
+                case "EC" -> 1;
+                case "WC" -> 2;
+                case "SC" -> 3;
+                default -> 0;
+            };
+        }
+
+        List<CastleImg> images = new ArrayList<>(CastleList.defset()).get(code).getList();
+
+        if (id >= images.size())
+            id = images.size() - 1;
+
+        if (id < 0)
+            id = 0;
+
+        CastleImg castle = images.get(id);
+
+        FakeImage castleImage;
+
+        if (code == 1 && lang != CommonStatic.Lang.Locale.JP) {
+            VFile vf = VFile.get("./org/img/ec/ec" + Data.trio(castle.id.id) + "_" + getLocale(lang) + ".png");
+
+            if (vf != null) {
+                castleImage = vf.getData().getImg();
+            } else {
+                castleImage = castle.img.getImg();
+            }
+        } else {
+            castleImage = castle.img.getImg();
+        }
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(castleImage.getWidth(), castleImage.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(castleImage, 0f, 0f);
+
+                return Unit.INSTANCE;
+            });
+
+            return Unit.INSTANCE;
+        }, progress -> img, () -> {
+            waiter.countDown();
+
+            return Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        String castleCode = switch(code) {
+            case 1 -> "EC";
+            case 2 -> "WC";
+            case 3 -> "SC";
+            default -> "RC";
+        };
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        children.add(TextDisplay.of(LangID.getStringByID("castle.result.title", lang)));
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(TextDisplay.of(
+                LangID.getStringByID("castle.result.id", lang).formatted(castleCode, Data.trio(castle.id.id)) + "\n" +
+                        LangID.getStringByID("castle.result.boss", lang).formatted(castle.boss_spawn)
+        ));
+
+        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+
+        Container container = Container.of(children);
+
+        if (loader.fromMessage) {
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), msg -> StaticStore.deleteFile(img, true), e -> {
+                StaticStore.deleteFile(img, true);
+
+                StaticStore.logger.uploadErrorLog(e, "Castle::doSomething - Failed to upload castle image");
+            }, container);
+        } else {
+            loader.getInteractionEvent().deferReply()
+                    .setComponents(container)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(m -> StaticStore.deleteFile(img, true), e -> {
+                        StaticStore.deleteFile(img, true);
+
+                        StaticStore.logger.uploadErrorLog(e, "E/Castle::performButton - Failed to send castle message");
+                    });
         }
     }
 

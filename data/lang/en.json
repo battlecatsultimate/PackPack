@@ -286,11 +286,15 @@
         }
     },
     "castle" : {
-        "result" : "Uploaded _CCC_-_III_\nBoss spawn point = _BBB_",
         "fail" : {
-            "noID" : "It seems there isn't id in command!\nUsage : `_castle [ID]`",
+            "noID" : "It seems there isn't id in command!\nUsage : `%scastle [ID]`",
             "noParameter" : "This command requires one more parameter : [ID]",
             "notNumber" : "ID must be number!"
+        },
+        "result" : {
+            "boss" : "Boss Spawn Point = %.4g",
+            "id" : "Castle %s-%s",
+            "title" : "### Uploaded Castle"
         }
     },
     "checkEvent" : {

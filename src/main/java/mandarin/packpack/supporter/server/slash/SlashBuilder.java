@@ -30,6 +30,13 @@ public class SlashBuilder {
                     )
             );
 
+            getCommandCreation(client, "cas", "Show castle image",
+                    List.of(
+                           new SlashOption("id", "ID of castle", true, SlashOption.TYPE.INT, false),
+                           new SlashOption("type", "Castle Type", false, SlashOption.TYPE.STRING, true)
+                    )
+            );
+
             getCommandCreation(client, "edps", "Show DPS graph of enemy",
                     List.of(
                             new SlashOption("name", "Name of enemy", true, SlashOption.TYPE.STRING, true),
