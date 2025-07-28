@@ -114,9 +114,7 @@ public class FindStageMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
-        int id = parseDataToInt(event);
-
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         String mid = getAuthorMessage().getId();
 
         if(StaticStore.timeLimit.containsKey(mid)) {
@@ -130,8 +128,8 @@ public class FindStageMessageHolder extends SearchHolder {
         }
 
         try {
-            EntityHandler.showStageEmb(actualStage.get(id), event, getAuthorMessage(), "", treasure, configData, true, false, lang, msg ->
-                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), userID, channelID, msg, treasure, configData, false, lang))
+            EntityHandler.showStageEmb(actualStage.get(index), event, getAuthorMessage(), "", treasure, configData, true, false, lang, msg ->
+                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(index), getAuthorMessage(), userID, channelID, msg, treasure, configData, false, lang))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FindStageMessageHolder::onSelected - Failed to upload stage embed");

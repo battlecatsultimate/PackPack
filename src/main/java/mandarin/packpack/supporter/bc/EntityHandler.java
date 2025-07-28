@@ -3583,42 +3583,63 @@ public class EntityHandler {
     }
 
     public static void showComboEmbed(Object sender, Message reference, Combo c, CommonStatic.Lang.Locale lang, boolean editMode) throws Exception {
-        List<ContainerChildComponent> children = new ArrayList<>();
-
-
-
         String comboLink = generateComboImage(c);
 
-        EmbedBuilder e = new EmbedBuilder();
+        if (comboLink == null)
+            return;
+
+        List<ContainerChildComponent> children = new ArrayList<>();
 
         String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, lang);
 
         if (comboName == null || comboName.isBlank()) {
             comboName = "Combo " + c.name;
         }
+        
+        children.add(TextDisplay.of("## " + comboName));
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+        
+        children.add(TextDisplay.of("**" + DataToString.getComboType(c, lang) + "**"));
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
+        
+        children.add(TextDisplay.of(DataToString.getComboDescription(c, lang)));
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
 
-        e.setTitle(comboName);
+        children.add(MediaGallery.of(MediaGalleryItem.fromUrl(comboLink)));
 
-        if (c.lv == 0) {
-            e.setColor(StaticStore.rainbow[4]);
-        } else if (c.lv == 1) {
-            e.setColor(StaticStore.rainbow[3]);
-        } else if (c.lv == 2) {
-            e.setColor(StaticStore.rainbow[2]);
+        int color = switch (c.lv) {
+            case 0 -> StaticStore.rainbow[4];
+            case 1 -> StaticStore.rainbow[3];
+            case 2 -> StaticStore.rainbow[2];
+            default -> StaticStore.rainbow[0];
+        };
+
+        Container container = Container.of(children).withAccentColor(color);
+
+        if (editMode) {
+            if (sender instanceof IMessageEditCallback e) {
+                e.deferEdit().setComponents(container)
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            } else if (sender instanceof Message m) {
+                m.editMessageComponents(container)
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            }
         } else {
-            e.setColor(StaticStore.rainbow[0]);
-        }
-
-        e.addField(DataToString.getComboType(c, lang), DataToString.getComboDescription(c, lang), false);
-
-        if (comboLink != null) {
-            e.setImage(comboLink);
-        }
-
-        if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(e.build()));
-        } else if (sender instanceof IMessageEditCallback event) {
-
+            if (sender instanceof GenericComponentInteractionCreateEvent e) {
+                e.deferReply().setComponents(container)
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            } else if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, container);
+            }
         }
     }
 

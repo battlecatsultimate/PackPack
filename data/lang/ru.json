@@ -308,7 +308,11 @@
     "combo" : {
         "selected" : "```\nЮнит выбран как _\n```",
         "failed" : {
-            "noCombo" : "Поиск с [_] не дало результатов о комбо!"
+            "noCombo" : "Поиск с [%s] не дало результатов о комбо!"
+        },
+        "search" : {
+            "comboOnly" : "Searching with %s, %d results have been found...",
+            "withUnit" : "Searching %s with unit of %s, %d results have been found..."
         },
         "slot" : {
             "plural" : "<Слоты %d>",

@@ -103,13 +103,11 @@ public class EnemyAnimMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
 
-        int id = parseDataToInt(event);
-
         try {
-            Enemy e = enemy.get(id);
+            Enemy e = enemy.get(index);
 
             if(EnemyGif.forbidden.contains(e.id.id)) {
                 ch.sendMessage(LangID.getStringByID("data.animation.gif.dummy", lang)).queue();

@@ -50,26 +50,24 @@ public class FormDPSHolder extends SearchHolder {
 
             String text = null;
 
-            switch(textType) {
+            switch (textType) {
                 case TEXT -> {
                     if (layout == ConfigHolder.SearchLayout.COMPACTED) {
-                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + " ";
 
-                        String name = StaticStore.safeMultiLangGet(f, lang);
-
-                        if (name != null && !name.isBlank()) {
-                            text += " " + name;
+                        if (StaticStore.safeMultiLangGet(f, lang) != null) {
+                            text += StaticStore.safeMultiLangGet(f, lang);
                         }
                     } else {
-                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "`";
+                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "` ";
 
-                        String name = StaticStore.safeMultiLangGet(f, lang);
+                        String formName = StaticStore.safeMultiLangGet(f, lang);
 
-                        if (name == null || name.isBlank()) {
-                            name = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        if (formName == null || formName.isBlank()) {
+                            formName = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
                         }
 
-                        text += " " + name;
+                        text += "**" + formName + "**";
                     }
                 }
                 case LIST_LABEL -> {
@@ -89,11 +87,9 @@ public class FormDPSHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
-        int id = parseDataToInt(event);
-
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         try {
-            Form f = form.get(id);
+            Form f = form.get(index);
 
             EntityHandler.showFormDPS(event, hasAuthorMessage() ? getAuthorMessage() : null, f, t, lv, config, talent, treasure, true, lang);
         } catch (Exception e) {

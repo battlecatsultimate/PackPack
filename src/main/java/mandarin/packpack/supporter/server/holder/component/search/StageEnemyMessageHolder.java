@@ -122,7 +122,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
         Message author = getAuthorMessage();
 
@@ -183,9 +183,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
     @Override
     public void finish(GenericComponentInteractionCreateEvent event, int index) {
-        int id = parseDataToInt(event);
-
-        Enemy e = enemy.get(id);
+        Enemy e = enemy.get(index);
 
         filterEnemy.add(e);
 

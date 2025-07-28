@@ -116,14 +116,15 @@ public abstract class SearchHolder extends ComponentHolder {
 
     public abstract List<String> accumulateTextData(TextType textType);
 
-    public abstract void onSelected(GenericComponentInteractionCreateEvent event);
+    public abstract void onSelected(GenericComponentInteractionCreateEvent event, int index);
 
     public abstract int getDataSize();
 
     public void finish(GenericComponentInteractionCreateEvent event, int index) {
-        onSelected(event);
+        onSelected(event, index);
 
-        end(true);
+        if (child == null)
+            end(true);
     }
 
     public void cancel(GenericComponentInteractionCreateEvent event) {
@@ -142,7 +143,7 @@ public abstract class SearchHolder extends ComponentHolder {
         List<ContainerChildComponent> children = new ArrayList<>();
         List<String> data = accumulateTextData(TextType.TEXT);
 
-        children.add(TextDisplay.of(LangID.getStringByID("ui.search.severalResult", lang).formatted(keyword, getDataSize())));
+        children.add(TextDisplay.of(getSearchSummary()));
         children.add(Separator.create(true, Separator.Spacing.LARGE));
 
         switch (layout) {
@@ -234,6 +235,10 @@ public abstract class SearchHolder extends ComponentHolder {
         children.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return Container.of(children);
+    }
+
+    public String getSearchSummary() {
+        return LangID.getStringByID("ui.search.severalResult", lang).formatted(keyword, getDataSize());
     }
 
     protected void apply(IMessageEditCallback event) {

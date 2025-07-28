@@ -112,19 +112,17 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
 
-        int id = parseDataToInt(event);
-
         if(!vf.getName().equals("org")) {
-            id--;
+            index--;
         }
 
-        if(id - page * chunk == -1)
+        if(index - page * chunk == -1)
             throw new IllegalStateException("E/AssetBrowserHolder::onSelected - Invalid ID found : -1");
 
-        VFile file = files.get(id);
+        VFile file = files.get(index);
 
         if(file.getData() == null)
             throw new IllegalStateException("E/AssetBrowserHolder::onSelected - Folder passed through the filter");
@@ -179,17 +177,15 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     @Override
     public void finish(GenericComponentInteractionCreateEvent event, int index) {
-        int id = parseDataToInt(event);
-
         if(!vf.getName().equals("org"))
-            id--;
+            index--;
 
         VFile file;
 
-        if(id - page * chunk == -1) {
+        if(index - page * chunk == -1) {
             file = vf.getParent();
         } else {
-            file = files.get(id);
+            file = files.get(index);
         }
 
         if(file.getData() == null) {

@@ -308,7 +308,11 @@
     "combo" : {
         "selected" : "```\nUnit selected as _\n```",
         "failed" : {
-            "noCombo" : "Searching with [_], but no such combo found!"
+            "noCombo" : "Searching with [%s], but no such combo found!"
+        },
+        "search" : {
+            "comboOnly" : "Searching with %s, %d results have been found...",
+            "withUnit" : "Searching %s with unit of %s, %d results have been found..."
         },
         "slot" : {
             "plural" : "<%d Slots>",

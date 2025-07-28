@@ -79,15 +79,13 @@ public class EnemyDPSHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
-
-        int id = parseDataToInt(event);
 
         message.delete().queue();
 
         try {
-            Enemy f = form.get(id);
+            Enemy f = form.get(index);
 
             EntityHandler.showEnemyDPS(ch, getAuthorMessage(), f, t, magnification, false, lang);
         } catch (Exception e) {

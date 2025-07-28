@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ConfigHolder implements Cloneable {
     public enum SearchLayout {
-        FANCY_BUTTON(10),
-        FANCY_LIST(15),
+        FANCY_BUTTON(8),
+        FANCY_LIST(12),
         COMPACTED(20);
 
         public final int chunkSize;

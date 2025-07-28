@@ -75,15 +75,13 @@ public class MedalMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
-
-        int i = parseDataToInt(event);
 
         message.delete().queue();
 
         try {
-            EntityHandler.showMedalEmbed(id.get(i), ch, getAuthorMessage(), lang);
+            EntityHandler.showMedalEmbed(id.get(index), ch, getAuthorMessage(), lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/MedalMessageHolder::onSelected - Failed to upload medal embed");
         }

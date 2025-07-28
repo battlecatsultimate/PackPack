@@ -44,16 +44,14 @@ public class EventDataArchiveHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
 
-        int id = parseDataToInt(event);
-
-        File f = files.get(id);
+        File f = files.get(index);
 
         String uploadFileName;
 
-        if (id == 0) {
+        if (index == 0) {
             uploadFileName = "current_" + fileName + ".txt";
         } else {
             uploadFileName = f.getName().replace(".txt", "").replaceAll(";", "-") + "_" + fileName + ".txt";

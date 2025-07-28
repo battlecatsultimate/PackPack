@@ -83,14 +83,12 @@ public class EnemyStatMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
-        int id = parseDataToInt(event);
-
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         try {
-            EntityHandler.showEnemyEmb(enemy.get(id), event, hasAuthorMessage() ? getAuthorMessage() : null, treasure, configData, true, lang, msg -> {
+            EntityHandler.showEnemyEmb(enemy.get(index), event, hasAuthorMessage() ? getAuthorMessage() : null, treasure, configData, true, lang, msg -> {
                 end(true);
 
-                StaticStore.putHolder(userID, new EnemyButtonHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, enemy.get(id), treasure, configData, lang));
+                StaticStore.putHolder(userID, new EnemyButtonHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, enemy.get(index), treasure, configData, lang));
             });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/EnemyStatMessageHolder::onSelected - Failed to upload enemy embed");

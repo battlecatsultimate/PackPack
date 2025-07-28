@@ -96,16 +96,14 @@ public class FindRewardMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
         Message author = getAuthorMessage();
 
         try {
-            int id = parseDataToInt(event);
-
             message.delete().queue();
 
-            List<Stage> stages = EntityFilter.findStageByReward(rewards.get(id), chance, amount);
+            List<Stage> stages = EntityFilter.findStageByReward(rewards.get(index), chance, amount);
 
             if(stages.isEmpty()) {
                 ch.sendMessage(LangID.getStringByID("findReward.failed.noStage", lang).replace("_", validateName(keyword))).queue();

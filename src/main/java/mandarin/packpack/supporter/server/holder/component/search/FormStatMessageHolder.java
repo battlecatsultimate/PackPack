@@ -45,26 +45,24 @@ public class FormStatMessageHolder extends SearchHolder {
 
             String text = null;
 
-            switch(textType) {
+            switch (textType) {
                 case TEXT -> {
                     if (layout == ConfigHolder.SearchLayout.COMPACTED) {
-                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + " ";
 
-                        String name = StaticStore.safeMultiLangGet(f, lang);
-
-                        if (name != null && !name.isBlank()) {
-                            text += " " + name;
+                        if (StaticStore.safeMultiLangGet(f, lang) != null) {
+                            text += StaticStore.safeMultiLangGet(f, lang);
                         }
                     } else {
-                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "`";
+                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "` ";
 
-                        String name = StaticStore.safeMultiLangGet(f, lang);
+                        String formName = StaticStore.safeMultiLangGet(f, lang);
 
-                        if (name == null || name.isBlank()) {
-                            name = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        if (formName == null || formName.isBlank()) {
+                            formName = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
                         }
 
-                        text += " " + name;
+                        text += "**" + formName + "**";
                     }
                 }
                 case LIST_LABEL -> {
@@ -84,18 +82,16 @@ public class FormStatMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
-        int id = parseDataToInt(event);
-
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         try {
-            Form f = form.get(id);
+            Form f = form.get(index);
 
             EntityHandler.showUnitEmb(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, true, result -> {
                 User u = event.getUser();
 
                 StaticStore.removeHolder(u.getId(), FormStatMessageHolder.this);
 
-                StaticStore.putHolder(u.getId(), new FormButtonHolder(form.get(id), hasAuthorMessage() ? getAuthorMessage() : null, u.getId(), channelID, result, config, t, configData, lang));
+                StaticStore.putHolder(u.getId(), new FormButtonHolder(form.get(index), hasAuthorMessage() ? getAuthorMessage() : null, u.getId(), channelID, result, config, t, configData, lang));
             });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormStatMessageHolder::onSelected - Failed to perform showing unit embed");

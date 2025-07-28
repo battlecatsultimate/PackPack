@@ -308,7 +308,11 @@
     "combo" : {
         "selected" : "```\n _ を選択しました。\n```",
         "failed" : {
-            "noCombo" : " [_] で検索しましたが、そのコンボは見つかりませんでした!"
+            "noCombo" : "[%s] で検索しましたが、そのコンボは見つかりませんでした!"
+        },
+        "search" : {
+            "comboOnly" : "Searching with %s, %d results have been found...",
+            "withUnit" : "Searching %s with unit of %s, %d results have been found..."
         },
         "slot" : {
             "plural" : "<%d Slots>",
@@ -3104,11 +3108,11 @@
             "expired" : "検索がタイムアウトしました...",
             "moreSpecific" : "データが見つかりません。 もっと正確に名前を指定してください!",
             "next" : "次のページへ",
-            "page" : "\nページ : %d/%d",
+            "page" : "ページ : %d/%d",
             "previous" : "前のページへ",
-            "selectData" : "データを選択\n\n",
+            "selectData" : "データを選択",
             "selectList" : "リストからデータを選ぶ",
-            "severalResult" : "_で探したのですが、結果が複数あります...\n",
+            "severalResult" : "Searching with %s, %d results have been found...",
             "old" : {
                 "page" : {
                     "cancel" : "\n\"c\" でキャンセルできます",

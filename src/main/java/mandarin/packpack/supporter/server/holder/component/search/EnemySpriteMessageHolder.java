@@ -76,13 +76,11 @@ public class EnemySpriteMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         MessageChannel ch = event.getChannel();
 
-        int id = parseDataToInt(event);
-
         try {
-            Enemy e = enemy.get(id);
+            Enemy e = enemy.get(index);
 
             EntityHandler.getEnemySprite(e, ch, getAuthorMessage(), mode, lang);
         } catch (Exception e) {

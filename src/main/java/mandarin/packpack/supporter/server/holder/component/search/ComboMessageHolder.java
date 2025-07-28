@@ -21,47 +21,91 @@ import java.util.Map;
 public class ComboMessageHolder extends SearchHolder {
     private final ArrayList<Combo> combo;
 
-    public ComboMessageHolder(ArrayList<Combo> combo, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
+    private final String unitName;
+
+    public ComboMessageHolder(ArrayList<Combo> combo, Message author, String userID, String channelID, Message message, String unitName, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.combo = combo;
+        this.unitName = unitName;
     }
 
     @Override
     public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = chunk * page; i < chunk * (page + 1) ; i++) {
-            if(i >= combo.size())
-                break;
-
+        for(int i = chunk * page; i < Math.min(combo.size(), chunk * (page + 1)); i++) {
             Combo c = combo.get(i);
 
-            String comboName = Data.trio(Integer.parseInt(c.name));
+            String text = null;
 
-            if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                comboName += " " + MultiLangCont.getStatic().COMNAME.getCont(c, lang);
+            switch (textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(StaticStore.safeParseInt(c.name));
 
-            comboName += " | " + DataToString.getComboType(c, lang) + " ";
+                        if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
+                            text += " " + MultiLangCont.getStatic().COMNAME.getCont(c, lang);
 
-            if(c.forms.length == 1) {
-                comboName += LangID.getStringByID("combo.slot.singular", lang);
-            } else {
-                comboName += String.format(LangID.getStringByID("combo.slot.plural", lang), c.forms.length);
+                        text += " | " + DataToString.getComboType(c, lang) + " ";
+
+                        if(c.forms.length == 1) {
+                            text += LangID.getStringByID("combo.slot.singular", lang);
+                        } else {
+                            text += String.format(LangID.getStringByID("combo.slot.plural", lang), c.forms.length);
+                        }
+                    } else {
+                        text = "`" + Data.trio(StaticStore.safeParseInt(c.name)) + "`";
+
+                        String comboName = StaticStore.safeMultiLangGet(c, lang);
+
+                        if (comboName == null || comboName.isBlank())
+                            comboName = Data.trio(StaticStore.safeParseInt(c.name));
+
+                        text += " **" + comboName;
+
+                        String slots;
+
+                        if(c.forms.length == 1) {
+                            slots = LangID.getStringByID("combo.slot.singular", lang);
+                        } else {
+                            slots = LangID.getStringByID("combo.slot.plural", lang).formatted(c.forms.length);
+                        }
+
+                        text += " " + slots + "**\n-# " + DataToString.getComboType(c, lang);
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = Data.trio(StaticStore.safeParseInt(c.name));
+
+                    String comboName = StaticStore.safeMultiLangGet(c, lang);
+
+                    if (comboName != null && !comboName.isBlank())
+                        text += " " + comboName;
+
+                    String slots;
+
+                    if(c.forms.length == 1) {
+                        slots = LangID.getStringByID("combo.slot.singular", lang);
+                    } else {
+                        slots = LangID.getStringByID("combo.slot.plural", lang).formatted(c.forms.length);
+                    }
+
+                    text += " " + slots;
+                }
+                case LIST_DESCRIPTION -> text = DataToString.getComboType(c, lang);
             }
 
-            data.add(comboName);
+            data.add(text);
         }
 
         return data;
     }
 
     @Override
-    public void onSelected(GenericComponentInteractionCreateEvent event) {
-        int id = parseDataToInt(event);
-
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         try {
-            EntityHandler.showComboEmbed(event, getAuthorMessage(), combo.get(id), lang, true);
+            EntityHandler.showComboEmbed(event, getAuthorMessage(), combo.get(index), lang, true);
 
             User u = event.getUser();
 
@@ -82,6 +126,17 @@ public class ComboMessageHolder extends SearchHolder {
     @Override
     public int getDataSize() {
         return combo.size();
+    }
+
+    @Override
+    public String getSearchSummary() {
+        if (unitName == null || unitName.isBlank()) {
+            return LangID.getStringByID("combo.search.comboOnly", lang).formatted(keyword, getDataSize());
+        } else if (keyword == null || keyword.isBlank()) {
+            return LangID.getStringByID("combo.search.comboOnly", lang).formatted(unitName, getDataSize());
+        } else {
+            return LangID.getStringByID("combo.search.withUnit", lang).formatted(keyword, unitName, getDataSize());
+        }
     }
 
     @Override
