@@ -36,6 +36,7 @@ class Banner(var name: String, var category: Boolean) {
 
         obj.addProperty("name", name)
         obj.addProperty("category", category)
+        obj.addProperty("legendCollector", legendCollector)
 
         return obj
     }
