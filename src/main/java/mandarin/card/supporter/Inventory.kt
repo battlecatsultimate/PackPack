@@ -306,7 +306,7 @@ class Inventory(private val id: Long) {
     }
 
     fun validForLegendCollector() : Boolean {
-        val cardsTotal = cards.keys.union(favorites.keys)
+        val cardsTotal = cards.keys.union(favorites.keys).union(validationCards.keys)
 
         CardData.banners.filter { b -> b.legendCollector }.forEach { b ->
             CardData.cards.filter { c -> b in c.banner }.forEach { c ->
