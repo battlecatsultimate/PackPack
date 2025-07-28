@@ -384,8 +384,7 @@ class SpecificCardCostHolder(
 
         result.add(ActionRow.of(cardCategory))
 
-
-        var totalPage = getTotalPage(dataSize)
+        val totalPage = getTotalPage(dataSize)
 
         if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()

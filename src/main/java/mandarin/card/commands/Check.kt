@@ -83,7 +83,7 @@ class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.
 
         val dataSize = members.size
 
-        var totalPage = SearchHolder.getTotalPage(dataSize)
+        val totalPage = SearchHolder.getTotalPage(dataSize)
 
         if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
