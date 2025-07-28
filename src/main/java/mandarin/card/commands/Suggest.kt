@@ -1,7 +1,9 @@
 package mandarin.card.commands
 
 import common.CommonStatic
-import mandarin.card.supporter.*
+import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.TradingSession
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.SuggestInventoryHolder
@@ -10,14 +12,15 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.UserSnowflake
 import kotlin.math.min
 
 class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.Locale.EN, true) {
@@ -108,7 +111,7 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
                     if (cards.isEmpty()) {
                         cardCategoryElements.add(SelectOption.of("a", "-1"))
                     } else {
-                        for (i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+                        for (i in 0 until min(dataSize, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                             cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
                         }
                     }
@@ -128,15 +131,12 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
 
                     rows.add(ActionRow.of(cardCategory))
 
-                    var totPage = dataSize / SearchHolder.PAGE_CHUNK
+                    val totalPage = SearchHolder.getTotalPage(dataSize)
 
-                    if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-                        totPage++
-
-                    if (dataSize > SearchHolder.PAGE_CHUNK) {
+                    if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
                         val buttons = ArrayList<Button>()
 
-                        if (totPage > 10) {
+                        if (totalPage > 10) {
                             buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
                         }
 
@@ -146,7 +146,7 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
 
                         buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-                        if (totPage > 10) {
+                        if (totalPage > 10) {
                             buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
                         }
 
@@ -179,7 +179,7 @@ class Suggest(private val session: TradingSession) : Command(CommonStatic.Lang.L
         val builder = StringBuilder("Inventory of ${message.author.asMention}, please select cards or suggest cf that will be traded\n\n```md\n")
 
         if (cards.isNotEmpty()) {
-            for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
+            for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
                 val amount = (inventory.cards[cards[i]] ?: 0) - (session.suggestion[index].cards[cards[i]] ?: 0)

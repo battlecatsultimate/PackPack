@@ -9,14 +9,14 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Member
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.ceil
@@ -77,7 +77,7 @@ class Roll : Command(CommonStatic.Lang.Locale.EN, false) {
 
         val packOptions = ArrayList<SelectOption>()
 
-        val size = min(packList.size, SearchHolder.PAGE_CHUNK)
+        val size = min(packList.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
         for (i in 0 until size) {
             val pack = packList[i]
@@ -107,9 +107,9 @@ class Roll : Command(CommonStatic.Lang.Locale.EN, false) {
 
         result.add(ActionRow.of(packs))
 
-        if (packList.size > SearchHolder.PAGE_CHUNK) {
+        if (packList.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
-            val totalPage = ceil(packList.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(packList.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

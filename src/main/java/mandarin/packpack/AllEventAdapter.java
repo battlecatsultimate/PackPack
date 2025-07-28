@@ -487,27 +487,27 @@ public class AllEventAdapter extends ListenerAdapter {
             case "stageinfo", "si" -> new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
             case "memory", "mm" -> new Memory(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "formimage", "formimg", "fimage", "fimg", "catimage", "catimg", "cimage", "cimg", "unitimage", "unitimg", "uimage", "uimg" ->
-                    new FormImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                    new FormImage(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 10000).execute(event);
             case "enemyimage", "enemyimg", "eimage", "eimg" ->
-                    new EnemyImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                    new EnemyImage(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 10000).execute(event);
             case "background", "bg" -> new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
             case "test" -> new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test").execute(event);
             case "formgif", "fgif", "fg", "catgif", "cgif", "cg", "unitgif", "ugif", "ug" ->
-                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, c, idh, "gif").execute(event);
             case "enemygif", "egif", "eg" ->
-                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, c, idh, "gif").execute(event);
             case "idset" -> new IDSet(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "clearcache" -> new ClearCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "aa", "animanalyzer" -> new AnimAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
                     new ChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "formsprite", "fsprite", "formsp", "fsp", "catsprite", "csprite", "catsp", "csp", "unitsprite", "usprite", "unitsp", "usp" ->
-                    new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+                    new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, c, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
             case "enemysprite", "esprite", "enemysp", "esp" ->
-                    new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
-            case "medal", "md" -> new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                    new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, c, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+            case "medal", "md" -> new Medal(ConstraintCommand.ROLE.MEMBER, lang, c, idh).execute(event);
             case "announcement", "ann" -> new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "catcombo", "combo", "cc" -> new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "catcombo", "combo", "cc" -> new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, c, idh).execute(event);
             case "serverjson", "json", "sj" -> new ServerJson(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "findstage", "findst", "fstage", "fst" ->
                     new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
@@ -598,13 +598,13 @@ public class AllEventAdapter extends ListenerAdapter {
             case "sayhi", "hi" -> new SayHi(lang).execute(event);
             case "calculator", "calc", "c" -> new Calculator(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "assetbrowser", "abroswer", "assetb", "ab" ->
-                    new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
             case "garbagecollect", "gc" ->
                     new GarbageCollect(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "findreward", "freward", "findr", "fr" ->
                     new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
             case "eventdataarchive", "eventddataa", "earchive", "eda" ->
-                    new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
             case "talanetanalyzer", "tala", "ta" ->
                     new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "catcomboanalyzer", "comboanalyzer", "cca", "ca" ->
@@ -612,7 +612,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "say", "s" -> new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "plot", "p" -> new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
             case "tplot", "tp" -> new TPlot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
-            case "solve", "sv" -> new Solve(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+            case "solve", "sv" -> new Solve(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 30000).execute(event);
             case "differentiate", "diff", "dx" ->
                     new Differentiate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "integrate", "int" -> new Integrate(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
@@ -629,7 +629,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "boosterpin", "bp" -> new BoosterPin(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "switcheventgrabber", "seg" -> new SwitchEventGrabber(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "formdps", "catdps", "unitdps", "fdps", "cdps", "udps", "fd", "cd", "ud" -> new FormDPS(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 10000).execute(event);
-            case "enemydps", "edps", "ed" -> new EnemyDPS(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "enemydps", "edps", "ed" -> new EnemyDPS(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 10000).execute(event);
             case "dumpheap", "dump", "heap", "dh" -> new DumpHeap(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "writelog", "wl" -> new WriteLog(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "zeroformanalyzer", "zfanalyzer", "zeroforma", "zfa" -> new ZeroFormAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
@@ -666,27 +666,27 @@ public class AllEventAdapter extends ListenerAdapter {
             case "stageinfo", "si" -> new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
             case "memory", "mm" -> new Memory(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "formimage", "formimg", "fimage", "fimg", "catimage", "catimg", "cimage", "cimg", "unitimage", "unitimg", "uimage", "uimg" ->
-                    new FormImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                    new FormImage(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 10000).execute(event);
             case "enemyimage", "enemyimg", "eimage", "eimg" ->
-                    new EnemyImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                    new EnemyImage(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 10000).execute(event);
             case "background", "bg" -> new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
             case "test" -> new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test").execute(event);
             case "formgif", "fgif", "fg", "catgif", "cgif", "cg", "unitgif", "ugif", "ug" ->
-                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, c, idh, "gif").execute(event);
             case "enemygif", "egif", "eg" ->
-                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, c, idh, "gif").execute(event);
             case "idset" -> new IDSet(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "clearcache" -> new ClearCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "aa", "animanalyzer" -> new AnimAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
                     new ChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "formsprite", "fsprite", "formsp", "fsp", "catsprite", "csprite", "catsp", "csp", "unitsprite", "usprite", "unitsp", "usp" ->
-                    new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+                    new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, c, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
             case "enemysprite", "esprite", "enemysp", "esp" ->
-                    new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
-            case "medal", "md" -> new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                    new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, c, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+            case "medal", "md" -> new Medal(ConstraintCommand.ROLE.MEMBER, lang, c, idh).execute(event);
             case "announcement", "ann" -> new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "catcombo", "combo", "cc" -> new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "catcombo", "combo", "cc" -> new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, c, idh).execute(event);
             case "serverjson", "json", "sj" -> new ServerJson(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "findstage", "findst", "fstage", "fst" ->
                     new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
@@ -777,13 +777,13 @@ public class AllEventAdapter extends ListenerAdapter {
             case "sayhi", "hi" -> new SayHi(lang).execute(event);
             case "calculator", "calc", "c" -> new Calculator(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "assetbrowser", "abroswer", "assetb", "ab" ->
-                    new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
             case "garbagecollect", "gc" ->
                     new GarbageCollect(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "findreward", "freward", "findr", "fr" ->
                     new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
             case "eventdataarchive", "eventddataa", "earchive", "eda" ->
-                    new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
             case "talanetanalyzer", "tala", "ta" ->
                     new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "catcomboanalyzer", "comboanalyzer", "cca", "ca" ->
@@ -791,7 +791,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "say", "s" -> new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "plot", "p" -> new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
             case "tplot", "tp" -> new TPlot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
-            case "solve", "sv" -> new Solve(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+            case "solve", "sv" -> new Solve(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 30000).execute(event);
             case "differentiate", "diff", "dx" ->
                     new Differentiate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "integrate", "int" -> new Integrate(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
@@ -808,7 +808,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "boosterpin", "bp" -> new BoosterPin(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "switcheventgrabber", "seg" -> new SwitchEventGrabber(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "formdps", "catdps", "unitdps", "fdps", "cdps", "udps", "fd", "cd", "ud" -> new FormDPS(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 10000).execute(event);
-            case "enemydps", "edps", "ed" -> new EnemyDPS(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "enemydps", "edps", "ed" -> new EnemyDPS(ConstraintCommand.ROLE.MEMBER, lang, c, idh, 10000).execute(event);
             case "dumpheap", "dump", "heap", "dh" -> new DumpHeap(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "writelog", "wl" -> new WriteLog(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "zeroformanalyzer", "zfanalyzer", "zeroforma", "zfa" -> new ZeroFormAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);

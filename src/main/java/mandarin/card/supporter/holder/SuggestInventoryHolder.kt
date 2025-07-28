@@ -2,7 +2,9 @@ package mandarin.card.supporter.holder
 
 import common.CommonStatic
 import mandarin.card.CardBot
-import mandarin.card.supporter.*
+import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.TradingSession
 import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
@@ -12,21 +14,21 @@ import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
@@ -466,7 +468,7 @@ class SuggestInventoryHolder(
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for(i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(dataSize, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
 
@@ -496,7 +498,7 @@ class SuggestInventoryHolder(
 
         val totalPage = getTotalPage(cards.size)
 
-        if (cards.size > SearchHolder.PAGE_CHUNK) {
+        if (cards.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if(totalPage > 10) {
@@ -539,7 +541,7 @@ class SuggestInventoryHolder(
         val builder = StringBuilder("Inventory of ${authorMention}\n\n```md\n")
 
         if (cards.isNotEmpty()) {
-            for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min((page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
                 val amount = (inventory.cards[cards[i]] ?: 0) - (backup.cards[cards[i]] ?: 0)

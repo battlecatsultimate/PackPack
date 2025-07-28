@@ -6,19 +6,19 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.selections.SelectOption
-import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import kotlin.math.min
 
 class SkinModifyHolder(author: Message, userID: String, channelID: String, message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -198,7 +198,7 @@ class SkinModifyHolder(author: Message, userID: String, channelID: String, messa
             }
         )
 
-        if (page * SearchHolder.PAGE_CHUNK > skins.size) {
+        if (page * ConfigHolder.SearchLayout.COMPACTED.chunkSize > skins.size) {
             page = getTotalPage(skins.size) - 1
         }
     }
@@ -209,7 +209,7 @@ class SkinModifyHolder(author: Message, userID: String, channelID: String, messa
         val roleOptions = ArrayList<SelectOption>()
 
         if (skins.isNotEmpty()) {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(skins.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 roleOptions.add(SelectOption.of(skins[i].name, i.toString()).withDescription(skins[i].skinID.toString()))
             }
         } else {
@@ -230,7 +230,7 @@ class SkinModifyHolder(author: Message, userID: String, channelID: String, messa
 
         result.add(ActionRow.of(roleMenu))
 
-        if (skins.size > SearchHolder.PAGE_CHUNK) {
+        if (skins.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
             val totalPage = getTotalPage(skins.size)
 

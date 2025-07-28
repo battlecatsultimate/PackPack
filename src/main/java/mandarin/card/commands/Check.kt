@@ -8,12 +8,13 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.entities.Member
 import kotlin.math.min
 
 class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.EN, true) {
@@ -55,7 +56,7 @@ class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.
         if (members.isNotEmpty()) {
             builder.append("Below list is members who have T${tier.ordinal} cards\n\n")
 
-            for (i in 0 until min(members.size, SearchHolder.PAGE_CHUNK)) {
+            for (i in 0 until min(members.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 val inventory = Inventory.getInventory(members[i].idLong)
 
                 builder.append(i + 1)
@@ -82,15 +83,12 @@ class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.
 
         val dataSize = members.size
 
-        var totPage = dataSize / SearchHolder.PAGE_CHUNK
+        var totalPage = SearchHolder.getTotalPage(dataSize)
 
-        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++
-
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 
@@ -98,7 +96,7 @@ class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
             }
 

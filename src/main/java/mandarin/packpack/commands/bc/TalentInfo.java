@@ -11,7 +11,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.TalentMessageHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
@@ -110,10 +109,10 @@ public class TalentInfo extends ConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(forms.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = forms.size() / SearchHolder.PAGE_CHUNK;
+                if(forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -125,13 +124,13 @@ public class TalentInfo extends ConstraintCommand {
                     replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
                         User u = loader.getUser();
 
-                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), res, forms, isFrame, lang));
+                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), res, name, config.searchLayout, forms, isFrame, lang));
                     });
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
                         User u = loader.getUser();
 
-                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getNullableMessage(), u.getId(), ch.getId(), res, forms, isFrame, lang));
+                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getNullableMessage(), u.getId(), ch.getId(), res, name, config.searchLayout, forms, isFrame, lang));
                     });
                 }
             }
@@ -200,7 +199,7 @@ public class TalentInfo extends ConstraintCommand {
     private List<String> accumulateListData(List<Form> forms) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= forms.size())
                 break;
 

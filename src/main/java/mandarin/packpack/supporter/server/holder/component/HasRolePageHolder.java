@@ -3,17 +3,17 @@ package mandarin.packpack.supporter.server.holder.component;
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.buttons.Button;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -104,9 +104,9 @@ public class HasRolePageHolder extends ComponentHolder {
 
         builder.append("\n\n");
 
-        int size = Math.min(members.size(), (page + 1) * SearchHolder.PAGE_CHUNK);
+        int size = Math.min(members.size(), (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
-        for (int i = page * SearchHolder.PAGE_CHUNK; i < size; i++) {
+        for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
             Member m = members.get(i);
 
             builder.append(i + 1).append(". ").append(m.getUser().getName()).append(" ").append(m.getAsMention()).append(" [").append(m.getId()).append("]");
@@ -116,8 +116,8 @@ public class HasRolePageHolder extends ComponentHolder {
             }
         }
 
-        if (members.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(members.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+        if (members.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(members.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             builder.append("\n\n").append(LangID.getStringByID("hasRole.embed.page", lang).formatted(1, totalPage));
         }
@@ -134,8 +134,8 @@ public class HasRolePageHolder extends ComponentHolder {
     private List<MessageTopLevelComponent> getComponents() {
         List<MessageTopLevelComponent> result = new ArrayList<>();
 
-        if (members.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(members.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+        if (members.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(members.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             List<Button> buttons = new ArrayList<>();
 

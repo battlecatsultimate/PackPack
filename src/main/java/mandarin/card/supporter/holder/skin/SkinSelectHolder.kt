@@ -4,19 +4,19 @@ import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.selections.SelectOption
-import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -147,7 +147,7 @@ class SkinSelectHolder(author: Message, userID: String, channelID: String, messa
         if (skins.isEmpty()) {
             builder.append("- No Skins For This Card")
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(skins.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 builder.append(i + 1).append(". [").append(skins[i].skinID).append("] ").append(skins[i].name).append("\n")
             }
         }
@@ -163,7 +163,7 @@ class SkinSelectHolder(author: Message, userID: String, channelID: String, messa
         if (skins.isEmpty()) {
             options.add(SelectOption.of("A", "A"))
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(skins.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 options.add(SelectOption.of("[${skins[i].skinID}] ${skins[i].name}", i.toString()).withDescription(skins[i].file.name))
             }
         }

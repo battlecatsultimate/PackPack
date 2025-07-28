@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.MedalMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -21,8 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Medal extends ConstraintCommand {
-    public Medal(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
+    private final ConfigHolder config;
+
+    public Medal(ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id) {
         super(role, lang, id, false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -56,11 +64,8 @@ public class Medal extends ConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(id.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = id.size() / SearchHolder.PAGE_CHUNK;
-
-                    if(id.size() % SearchHolder.PAGE_CHUNK != 0)
-                        totalPage++;
+                if(id.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = SearchHolder.getTotalPage(id.size());
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
@@ -72,7 +77,7 @@ public class Medal extends ConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new MedalMessageHolder(id, msg, u.getId(), ch.getId(), res, lang));
+                    StaticStore.putHolder(u.getId(), new MedalMessageHolder(id, msg, u.getId(), ch.getId(), res, realContents[1], config.searchLayout, lang));
                 });
             }
         } else {
@@ -83,7 +88,7 @@ public class Medal extends ConstraintCommand {
     private List<String> accumulateData(List<Integer> id) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= id.size())
                 break;
 

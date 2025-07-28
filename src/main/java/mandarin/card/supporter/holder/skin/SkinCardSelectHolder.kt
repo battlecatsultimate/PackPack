@@ -6,18 +6,18 @@ import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.selections.SelectOption
-import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -168,7 +168,7 @@ class SkinCardSelectHolder(author: Message, userID: String, channelID: String, m
     private fun getContents() : String {
         val builder = StringBuilder("Select card to manage skin of it\n\n```md\n")
 
-        for (i in page * SearchHolder.PAGE_CHUNK until min(cards.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+        for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(cards.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             builder.append(i + 1).append(". ").append(cards[i].simpleCardInfo()).append("\n")
         }
 
@@ -237,7 +237,7 @@ class SkinCardSelectHolder(author: Message, userID: String, channelID: String, m
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for(i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(dataSize, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -255,7 +255,7 @@ class SkinCardSelectHolder(author: Message, userID: String, channelID: String, m
 
         result.add(ActionRow.of(cardCategory))
 
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val totalPage = getTotalPage(dataSize)
             val buttons = ArrayList<Button>()
 

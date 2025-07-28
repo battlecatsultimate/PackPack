@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
@@ -10,19 +9,21 @@ import mandarin.packpack.commands.bc.FindStage;
 import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,8 +39,8 @@ public class FindStageMessageHolder extends SearchHolder {
 
     private FindStage.MONTHLY selected = FindStage.MONTHLY.ALL;
 
-    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, message, lang);
+    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, keyword, layout, lang);
 
         this.stage = stage;
         this.monthly = monthly;
@@ -51,55 +52,60 @@ public class FindStageMessageHolder extends SearchHolder {
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1); i++) {
-            if(i >= actualStage.size())
+        for(int i = chunk * page; i < chunk * (page + 1); i++) {
+            if(i >= stage.size())
                 break;
 
-            Stage st = actualStage.get(i);
+            Stage st = stage.get(i);
             StageMap stm = st.getCont();
             MapColc mc = stm.getCont();
 
             String name = "";
 
-            if(onText) {
-                if(mc != null) {
-                    String mcn = MultiLangCont.get(mc, lang);
+            String fullName = "";
 
-                    if(mcn == null || mcn.isBlank())
-                        mcn = mc.getSID();
+            if (mc != null) {
+                String mcName = StaticStore.safeMultiLangGet(mc, lang);
 
-                    name += mcn+" - ";
-                } else {
-                    name += "Unknown - ";
+                if (mcName == null || mcName.isBlank()) {
+                    mcName = DataToString.getMapCode(mc);
                 }
-            }
 
-            String stmn = MultiLangCont.get(stm, lang);
-
-            if(stm.id != null) {
-                if(stmn == null || stmn.isBlank())
-                    stmn = Data.trio(stm.id.id);
+                fullName += mcName + " - ";
             } else {
-                if(stmn == null || stmn.isBlank())
-                    stmn = "Unknown";
+                fullName += "Unknown - ";
             }
 
-            name += stmn+" - ";
+            String stmName = StaticStore.safeMultiLangGet(stm, lang);
 
-            String stn = MultiLangCont.get(st, lang);
-
-            if(st.id != null) {
-                if(stn == null || stn.isBlank())
-                    stn = Data.trio(st.id.id);
-            } else {
-                if(stn == null || stn.isBlank())
-                    stn = "Unknown";
+            if (stmName == null || stmName.isBlank()) {
+                stmName = Data.trio(stm.id.id);
             }
 
-            name += stn;
+            fullName += stmName + " - ";
+
+            String stName = StaticStore.safeMultiLangGet(st, lang);
+
+            if (stName == null || stName.isBlank()) {
+                stName = Data.trio(st.id.id);
+            }
+
+            fullName += stName;
+
+            switch (textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        name = fullName;
+                    } else {
+                        name = "`" + DataToString.getStageCode(st) + "` " + fullName;
+                    }
+                }
+                case LIST_DESCRIPTION -> name = DataToString.getStageCode(st);
+                case LIST_LABEL -> name = fullName;
+            }
 
             data.add(name);
         }
@@ -213,16 +219,12 @@ public class FindStageMessageHolder extends SearchHolder {
         }
     }
 
-    @Override
-    public List<ActionRow> getComponents() {
-        int totalPage = getDataSize() / SearchHolder.PAGE_CHUNK;
-
-        if(getDataSize() % SearchHolder.PAGE_CHUNK != 0)
-            totalPage++;
+    public List<ActionRow> getComponent() {
+        int totalPage = getTotalPage(getDataSize(), chunk);
 
         List<ActionRow> rows = new ArrayList<>();
 
-        if(getDataSize() > PAGE_CHUNK) {
+        if(getDataSize() > chunk) {
             List<Button> buttons = new ArrayList<>();
 
             if(totalPage > 10) {
@@ -258,7 +260,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
         List<SelectOption> options = new ArrayList<>();
 
-        List<String> data = accumulateListData(false);
+        List<String> data = accumulateTextData(TextType.LIST_LABEL);
 
         for(int i = 0; i < data.size(); i++) {
             String element = data.get(i);
@@ -267,12 +269,12 @@ public class FindStageMessageHolder extends SearchHolder {
 
             if(elements.length == 2) {
                 if(elements[0].matches("<:\\S+?:\\d+>")) {
-                    options.add(SelectOption.of(elements[1], String.valueOf(page * PAGE_CHUNK + i)).withEmoji(Emoji.fromFormatted(elements[0])));
+                    options.add(SelectOption.of(elements[1], String.valueOf(page * chunk + i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
-                    options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));
+                    options.add(SelectOption.of(element, String.valueOf(page * chunk + i)));
                 }
             } else {
-                options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));
+                options.add(SelectOption.of(element, String.valueOf(page * chunk + i)));
             }
         }
 

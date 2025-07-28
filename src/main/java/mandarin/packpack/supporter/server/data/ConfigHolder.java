@@ -8,7 +8,19 @@ import mandarin.packpack.supporter.StaticStore;
 import org.jetbrains.annotations.Nullable;
 
 public class ConfigHolder implements Cloneable {
-    public static ConfigHolder parseJson(JsonObject obj) {
+    public enum SearchLayout {
+        FANCY_BUTTON(10),
+        FANCY_LIST(15),
+        COMPACTED(20);
+
+        public final int chunkSize;
+
+        SearchLayout(int chunkSize) {
+            this.chunkSize = chunkSize;
+        }
+    }
+
+    public static ConfigHolder fromJson(JsonObject obj) {
         ConfigHolder holder = new ConfigHolder();
 
         if (obj.has("prefix")) {
@@ -94,6 +106,10 @@ public class ConfigHolder implements Cloneable {
             holder.showDropInfo = true;
         }
 
+        if (obj.has("searchLayout")) {
+            holder.searchLayout = SearchLayout.valueOf(obj.get("searchLayout").getAsString());
+        }
+
         return holder;
     }
 
@@ -102,6 +118,8 @@ public class ConfigHolder implements Cloneable {
     public CommonStatic.Lang.Locale lang = null;
     public int defLevel = 30;
     public boolean useFrame = true, compact = false, trueForm = false, treasure = false;
+
+    public SearchLayout searchLayout = SearchLayout.FANCY_LIST;
 
     // Unit Command Config
     public boolean showUnitDescription = false;
@@ -117,7 +135,7 @@ public class ConfigHolder implements Cloneable {
     public boolean showExtraStage = false;
     public boolean showDropInfo = false;
 
-    public JsonObject jsonfy() {
+    public JsonObject toJson() {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("prefix", prefix);
@@ -135,6 +153,7 @@ public class ConfigHolder implements Cloneable {
         obj.addProperty("showMaterialDrop", showMaterialDrop);
         obj.addProperty("showExtraStage", showExtraStage);
         obj.addProperty("showDropInfo", showDropInfo);
+        obj.addProperty("searchLayout", searchLayout.name());
 
         return obj;
     }
@@ -154,6 +173,7 @@ public class ConfigHolder implements Cloneable {
         showMaterialDrop = clone.showMaterialDrop;
         showExtraStage = clone.showExtraStage;
         showDropInfo = clone.showDropInfo;
+        searchLayout = clone.searchLayout;
     }
 
     @Override
@@ -183,6 +203,7 @@ public class ConfigHolder implements Cloneable {
         c.showMaterialDrop = showMaterialDrop;
         c.showExtraStage = showExtraStage;
         c.showDropInfo = showDropInfo;
+        c.searchLayout = searchLayout;
 
         return c;
     }

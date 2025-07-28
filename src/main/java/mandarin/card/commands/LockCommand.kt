@@ -7,6 +7,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
@@ -51,7 +52,7 @@ class LockCommand : Command(CommonStatic.Lang.Locale.EN, true) {
     private fun getContents(classes: List<Class<*>>) : String {
         val builder = StringBuilder("Select command to lock/unlock\n\n")
 
-        for (i in 0 until min(SearchHolder.PAGE_CHUNK, classes.size)) {
+        for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, classes.size)) {
             val locked = if (classes[i] in CardData.lockedCommands) {
                 EmojiStore.SWITCHOFF.formatted + " [Locked]"
             } else {
@@ -69,7 +70,7 @@ class LockCommand : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val commandOptions = ArrayList<SelectOption>()
 
-        for (i in 0 until min(SearchHolder.PAGE_CHUNK, classes.size)) {
+        for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, classes.size)) {
             val locked = if (classes[i] in CardData.lockedCommands) {
                 EmojiStore.SWITCHOFF
             } else {
@@ -85,7 +86,7 @@ class LockCommand : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val totalPage = SearchHolder.getTotalPage(classes.size)
 
-        if (classes.size > SearchHolder.PAGE_CHUNK) {
+        if (classes.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if (totalPage > 10) {

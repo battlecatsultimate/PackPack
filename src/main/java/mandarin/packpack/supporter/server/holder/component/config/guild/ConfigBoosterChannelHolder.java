@@ -3,11 +3,16 @@ package mandarin.packpack.supporter.server.holder.component.config.guild;
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -17,11 +22,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -191,9 +191,9 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                 if (holder.boosterPinChannel.isEmpty()) {
                     builder.append(LangID.getStringByID("serverConfig.boosterPin.noChannels", lang));
                 } else {
-                    int size = Math.min(holder.boosterPinChannel.size(), (page + 1) * SearchHolder.PAGE_CHUNK);
+                    int size = Math.min(holder.boosterPinChannel.size(), (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
-                    for (int i = page * SearchHolder.PAGE_CHUNK; i < size; i++) {
+                    for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
                         String channel = holder.boosterPinChannel.get(i);
 
                         builder.append(i + 1).append(". ").append("<#").append(channel).append("> [").append(channel).append("]");
@@ -231,10 +231,10 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                             .build()
             ));
 
-            if (holder.boosterPinChannel.size() > SearchHolder.PAGE_CHUNK) {
+            if (holder.boosterPinChannel.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
                 List<Button> buttons = new ArrayList<>();
 
-                int totalPage = (int) Math.ceil(holder.boosterPinChannel.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+                int totalPage = (int) Math.ceil(holder.boosterPinChannel.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
                 if(totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0 || channelNotManageable));

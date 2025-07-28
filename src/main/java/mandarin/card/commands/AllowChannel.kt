@@ -7,6 +7,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.components.actionrow.ActionRow
@@ -36,7 +37,7 @@ class AllowChannel : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.allowedChannel.isEmpty()) {
             builder.append("- There's no allowed channel")
         } else {
-            for (i in 0 until min(SearchHolder.PAGE_CHUNK, CardData.allowedChannel.size)) {
+            for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, CardData.allowedChannel.size)) {
                 builder.append(i + 1).append(". ").append("<#").append(CardData.allowedChannel[i]).append("> [").append(CardData.allowedChannel[i]).append("]\n")
             }
         }
@@ -57,7 +58,7 @@ class AllowChannel : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val totalPage = SearchHolder.getTotalPage(CardData.allowedChannel.size)
 
-        if (CardData.allowedChannel.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.allowedChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if (totalPage > 10) {

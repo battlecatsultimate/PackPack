@@ -6,10 +6,10 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.ceil
@@ -34,7 +34,7 @@ class ListGuild : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val guilds = jda.guilds
 
-        for (i in 0 until min(guilds.size, SearchHolder.PAGE_CHUNK)) {
+        for (i in 0 until min(guilds.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             val g = guilds[i]
 
             builder.append(i + 1).append(". ").append(g.name).append(" - ").append(g.id).append("\n")
@@ -48,10 +48,10 @@ class ListGuild : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val guilds = jda.guilds
 
-        if (guilds.size > SearchHolder.PAGE_CHUNK) {
+        if (guilds.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            val totalPage = ceil(guilds.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
+            val totalPage = ceil(guilds.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize).toInt()
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

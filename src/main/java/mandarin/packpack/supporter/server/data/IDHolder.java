@@ -131,7 +131,7 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("config")) {
-            id.config = ConfigHolder.parseJson(obj.getAsJsonObject("config"));
+            id.config = ConfigHolder.fromJson(obj.getAsJsonObject("config"));
         }
 
         if(obj.has("banned")) {
@@ -423,7 +423,7 @@ public class IDHolder implements Cloneable {
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", logDM);
         obj.add("eventData", mapLocaleEventData(eventData));
-        obj.add("config", config.jsonfy());
+        obj.add("config", config.toJson());
         obj.add("banned", listStringToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
         obj.addProperty("forceCompact", forceCompact);

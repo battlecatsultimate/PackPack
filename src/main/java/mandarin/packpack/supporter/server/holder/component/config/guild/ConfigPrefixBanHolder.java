@@ -4,24 +4,24 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.modal.PrefixBanHolder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
@@ -171,7 +171,7 @@ public class ConfigPrefixBanHolder extends ServerConfigHolder {
         } else if (holder.bannedPrefix.isEmpty()) {
             builder.append(LangID.getStringByID("serverConfig.prefixBan.prefixList.no", lang)).append("\n```");
         } else {
-            for (int i = page * SearchHolder.PAGE_CHUNK; i < Math.min((page + 1) * SearchHolder.PAGE_CHUNK, holder.bannedPrefix.size()); i++) {
+            for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < Math.min((page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize, holder.bannedPrefix.size()); i++) {
                 builder.append(i + 1).append(". ").append(holder.bannedPrefix.get(i)).append("\n");
             }
 
@@ -194,7 +194,7 @@ public class ConfigPrefixBanHolder extends ServerConfigHolder {
         if (holder.bannedPrefix.isEmpty()) {
             prefixOptions.add(SelectOption.of("a", "a"));
         } else {
-            for (int i = page * SearchHolder.PAGE_CHUNK; i < Math.min((page + 1) * SearchHolder.PAGE_CHUNK, holder.bannedPrefix.size()); i++) {
+            for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < Math.min((page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize, holder.bannedPrefix.size()); i++) {
                 String label = holder.bannedPrefix.get(i);
 
                 if (label.length() >= SelectOption.LABEL_MAX_LENGTH) {
@@ -221,7 +221,7 @@ public class ConfigPrefixBanHolder extends ServerConfigHolder {
                         .build()
         ));
 
-        if (holder.bannedPrefix.size() > SearchHolder.PAGE_CHUNK) {
+        if (holder.bannedPrefix.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             List<Button> buttons = new ArrayList<>();
 
             int totalPage = getTotalPage(holder.bannedPrefix.size());

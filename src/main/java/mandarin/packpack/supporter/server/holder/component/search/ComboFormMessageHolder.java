@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -29,8 +30,8 @@ public class ComboFormMessageHolder extends SearchHolder {
     private final String cName;
     private final String fName;
 
-    public ComboFormMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, String cName, String fName) {
-        super(author, userID, channelID, message, lang);
+    public ComboFormMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, String cName, String fName, ConfigHolder.SearchLayout layout) {
+        super(author, userID, channelID, message, fName,  layout, lang);
 
         this.form = form;
 
@@ -39,21 +40,36 @@ public class ComboFormMessageHolder extends SearchHolder {
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page +1); i++) {
+        for(int i = chunk * page; i < chunk * (page +1); i++) {
             if(i >= form.size())
                 break;
 
             Form f = form.get(i);
 
-            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+            String text = null;
 
-            if(MultiLangCont.get(f, lang) != null)
-                fname += MultiLangCont.get(f, lang);
+            switch (textType) {
+                case TEXT -> {
+                    text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + " ";
 
-            data.add(fname);
+                    if (StaticStore.safeMultiLangGet(f, lang) != null) {
+                        text += StaticStore.safeMultiLangGet(f, lang);
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(f, lang);
+
+                    if (text == null) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+            }
+
+            data.add(text);
         }
 
         return data;
@@ -87,10 +103,8 @@ public class ComboFormMessageHolder extends SearchHolder {
                     StaticStore.timeLimit.put(u.getId(), memberLimit);
                 }
 
-                message.delete().queue();
-
                 try {
-                    EntityHandler.showComboEmbed(ch, getAuthorMessage(), combos.getFirst(), lang);
+                    EntityHandler.showComboEmbed(event, getAuthorMessage(), combos.getFirst(), lang, true);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/ComboFormMessageHolder::onSelected - Failed to upload combo embed");
                 }
@@ -103,11 +117,8 @@ public class ComboFormMessageHolder extends SearchHolder {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(combos.size() > PAGE_CHUNK) {
-                    int totalPage = combos.size() / PAGE_CHUNK;
-
-                    if(combos.size() % PAGE_CHUNK != 0)
-                        totalPage++;
+                if(combos.size() > chunk) {
+                    int totalPage = getTotalPage(getDataSize(), chunk);
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
@@ -128,7 +139,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                     if(res != null) {
                         User u = event.getUser();
 
-                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), userID, ch.getId(), res, message, lang));
+                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), userID, ch.getId(), res, cName, layout, lang));
                     }
                 });
             }
@@ -163,7 +174,7 @@ public class ComboFormMessageHolder extends SearchHolder {
     private List<String> accumulateCombo(List<Combo> combos) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < PAGE_CHUNK ; i++) {
+        for(int i = 0; i < chunk ; i++) {
             if(i >= combos.size())
                 break;
 

@@ -22,18 +22,17 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FindStageMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageEnemyMessageHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -232,10 +231,10 @@ public class FindStage extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(stages.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = stages.size() / SearchHolder.PAGE_CHUNK;
+                if(stages.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = stages.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(stages.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(stages.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -248,7 +247,7 @@ public class FindStage extends TimedConstraintCommand {
 
                     TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, loader.getMessage(), u.getId(), ch.getId(), res, treasure, configData, lang));
+                    StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, loader.getMessage(), u.getId(), ch.getId(), res, enemyName, config.searchLayout, treasure, configData, lang));
                 });
 
                 disableTimer();
@@ -270,10 +269,10 @@ public class FindStage extends TimedConstraintCommand {
                 sb.append(i+1).append(". ").append(data.get(i)).append("\n");
             }
 
-            if(enemies.size() > SearchHolder.PAGE_CHUNK) {
-                int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
+            if(enemies.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                int totalPage = enemies.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
+                if(enemies.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                     totalPage++;
 
                 sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -288,7 +287,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, u.getId(), ch.getId(), res, orOperate, hasBoss, monthly, treasure, configData, background, castle, music, lang));
+                StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, enemyName, config.searchLayout, u.getId(), ch.getId(), res, orOperate, hasBoss, monthly, treasure, configData, background, castle, music, lang));
             });
         }
     }
@@ -500,7 +499,7 @@ public class FindStage extends TimedConstraintCommand {
     private List<String> accumulateEnemy(List<Enemy> enemies) {
         List<String> data = new ArrayList<>();
         
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= enemies.size())
                 break;
 
@@ -520,7 +519,7 @@ public class FindStage extends TimedConstraintCommand {
     private List<String> accumulateStage(List<Stage> stage, boolean onText) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= stage.size())
                 break;
 
@@ -574,24 +573,24 @@ public class FindStage extends TimedConstraintCommand {
     }
 
     private void createMonthlyMessage(MessageChannel ch, Message reference, String content, List<String> data, List<Stage> stages, int size, boolean monthly, Consumer<Message> onSuccess) {
-        int totPage = size / SearchHolder.PAGE_CHUNK;
+        int totalPage = size / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-        if(size % SearchHolder.PAGE_CHUNK != 0)
-            totPage++;
+        if(size % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
+            totalPage++;
 
         List<ActionRow> rows = new ArrayList<>();
 
-        if(size > SearchHolder.PAGE_CHUNK) {
+        if(size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             List<Button> buttons = new ArrayList<>();
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
             }
 

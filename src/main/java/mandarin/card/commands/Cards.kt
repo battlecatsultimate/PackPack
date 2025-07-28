@@ -10,15 +10,16 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.requests.RestAction
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
@@ -130,7 +131,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
             if (cards.isEmpty()) {
                 cardCategoryElements.add(SelectOption.of("a", "-1"))
             } else {
-                for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+                for(i in 0 until min(dataSize, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                     cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
                 }
             }
@@ -148,15 +149,12 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             rows.add(ActionRow.of(cardCategory))
 
-            var totPage = dataSize / SearchHolder.PAGE_CHUNK
+            val totalPage = SearchHolder.getTotalPage(dataSize)
 
-            if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-                totPage++
-
-            if (dataSize > SearchHolder.PAGE_CHUNK) {
+            if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
                 val buttons = ArrayList<Button>()
 
-                if (totPage > 10) {
+                if (totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
                 }
 
@@ -164,7 +162,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-                if (totPage > 10) {
+                if (totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
                 }
 
@@ -200,7 +198,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
         val builder = StringBuilder(start)
 
         if (cards.isNotEmpty()) {
-            for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
+            for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, cards.size)) {
                 builder.append("${i + 1}. ")
 
                 if (inventory.favorites.containsKey(cards[i])) {

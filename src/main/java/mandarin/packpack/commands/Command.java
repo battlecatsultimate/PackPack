@@ -8,9 +8,14 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.SpamPrevent;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -20,11 +25,6 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.components.selections.SelectOption;
-import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -49,24 +49,24 @@ public abstract class Command {
     }
 
     public static MessageCreateAction registerSearchComponents(MessageCreateAction m, int dataSize, List<String> data, CommonStatic.Lang.Locale lang) {
-        int totPage = dataSize / SearchHolder.PAGE_CHUNK;
+        int totalPage = dataSize / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-        if(dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++;
+        if(dataSize % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
+            totalPage++;
 
         List<ActionRow> rows = new ArrayList<>();
 
-        if(dataSize > SearchHolder.PAGE_CHUNK) {
+        if(dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             List<Button> buttons = new ArrayList<>();
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
             }
 
@@ -99,24 +99,24 @@ public abstract class Command {
     }
 
     public static ReplyCallbackAction registerSearchComponents(ReplyCallbackAction m, int dataSize, List<String> data, CommonStatic.Lang.Locale lang) {
-        int totPage = dataSize / SearchHolder.PAGE_CHUNK;
+        int totalPage = dataSize / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-        if(dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++;
+        if(dataSize % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
+            totalPage++;
 
         List<ActionRow> rows = new ArrayList<>();
 
-        if(dataSize > SearchHolder.PAGE_CHUNK) {
+        if(dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             List<Button> buttons = new ArrayList<>();
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
             }
 

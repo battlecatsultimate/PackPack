@@ -4,39 +4,60 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
-import javax.annotation.Nonnull;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SearchHolder extends ComponentHolder {
-    public static final int PAGE_CHUNK = 20;
+    public enum TextType {
+        TEXT,
+        LIST_LABEL,
+        LIST_DESCRIPTION
+    }
 
     protected int page = 0;
-    protected int chunk = PAGE_CHUNK;
 
-    public SearchHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
+    protected final String keyword;
+    protected int chunk;
+    protected ConfigHolder.SearchLayout layout;
+
+    public SearchHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
+
+        this.keyword = keyword;
+        this.chunk = layout.chunkSize;
+        this.layout = layout;
 
         registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
     public void onExpire() {
-        message.editMessage(LangID.getStringByID("ui.search.expired", lang))
+        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("ui.search.expired", lang)))
                 .setAllowedMentions(new ArrayList<>())
+                .useComponentsV2()
                 .mentionRepliedUser(false)
-                .setComponents()
                 .queue(null, e ->
                     StaticStore.logger.uploadErrorLog(e,
                             ("""
@@ -57,7 +78,12 @@ public abstract class SearchHolder extends ComponentHolder {
             case "next" -> page++;
             case "next10" -> page += 10;
             case "data" -> {
-                finish(event);
+                if (!(event instanceof StringSelectInteractionEvent e))
+                    return;
+
+                int index = StaticStore.safeParseInt(e.getValues().getFirst());
+
+                finish(event, index);
 
                 return;
             }
@@ -65,6 +91,11 @@ public abstract class SearchHolder extends ComponentHolder {
                 cancel(event);
 
                 return;
+            }
+            default -> {
+                if (StaticStore.isNumeric(event.getComponentId())) {
+                    finish(event, StaticStore.safeParseInt(event.getComponentId()));
+                }
             }
         }
 
@@ -78,22 +109,26 @@ public abstract class SearchHolder extends ComponentHolder {
 
     }
 
-    public abstract List<String> accumulateListData(boolean onText);
+    @Override
+    public final void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
+        apply(event);
+    }
+
+    public abstract List<String> accumulateTextData(TextType textType);
 
     public abstract void onSelected(GenericComponentInteractionCreateEvent event);
 
     public abstract int getDataSize();
 
-    public void finish(GenericComponentInteractionCreateEvent event) {
+    public void finish(GenericComponentInteractionCreateEvent event, int index) {
         onSelected(event);
 
         end(true);
     }
 
     public void cancel(GenericComponentInteractionCreateEvent event) {
-        event.deferEdit()
-                .setContent(LangID.getStringByID("ui.search.canceled", lang))
-                .setComponents()
+        event.deferEdit().setComponents(TextDisplay.of(LangID.getStringByID("ui.search.canceled", lang)))
+                .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
@@ -101,108 +136,112 @@ public abstract class SearchHolder extends ComponentHolder {
         end(true);
     }
 
-    protected String getPage() {
-        StringBuilder sb = new StringBuilder("```md\n")
-                .append(LangID.getStringByID("ui.search.selectData", lang));
+    public Container getComponents() {
+        int totalPage = getTotalPage(getDataSize(), chunk);
 
-        List<String> data = accumulateListData(true);
+        List<ContainerChildComponent> children = new ArrayList<>();
+        List<String> data = accumulateTextData(TextType.TEXT);
 
-        for(int i = 0; i < data.size(); i++) {
-            sb.append(i + chunk * page + 1)
-                    .append(". ")
-                    .append(data.get(i))
-                    .append("\n");
+        children.add(TextDisplay.of(LangID.getStringByID("ui.search.severalResult", lang).formatted(keyword, getDataSize())));
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        switch (layout) {
+            case FANCY_BUTTON -> {
+                for (int i = 0; i < data.size(); i++) {
+                    children.add(Section.of(Button.secondary(LangID.getStringByID("ui.button.select", lang), String.valueOf(page * chunk + i)), TextDisplay.of(data.get(i))));
+                }
+            }
+            case FANCY_LIST -> {
+                for (int i = 0; i < data.size(); i++) {
+                    children.add(TextDisplay.of(data.get(i)));
+
+                    if (i < data.size() - 1) {
+                        children.add(Separator.create(false, Separator.Spacing.SMALL));
+                    }
+                }
+            }
+            case COMPACTED -> {
+                StringBuilder builder = new StringBuilder();
+
+                for (int i = 0; i < data.size(); i++) {
+                    builder.append(i + 1).append(". ").append(data.get(i));
+
+                    if (i < data.size() - 1) {
+                        builder.append("\n");
+                    }
+                }
+
+                children.add(TextDisplay.of("```md\n" + builder + "\n```"));
+            }
         }
 
-        if(getDataSize() > chunk) {
-            int totalPage = getDataSize() / chunk;
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-            if(getDataSize() % chunk != 0)
-                totalPage++;
-
-            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
-        }
-
-        sb.append("```");
-
-        return sb.toString();
-    }
-
-    public List<ActionRow> getComponents() {
-        int totalPage = getDataSize() / chunk;
-
-        if(getDataSize() % chunk != 0)
-            totalPage++;
-
-        List<ActionRow> rows = new ArrayList<>();
+        children.add(TextDisplay.of(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)));
 
         if(getDataSize() > chunk) {
             List<Button> buttons = new ArrayList<>();
 
             if(totalPage > 10) {
-                if(page - 10 < 0) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS));
-                }
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0));
             }
 
-            if(page - 1 < 0) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS));
-            }
-
-            if(page + 1 >= totalPage) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).asDisabled());
-            } else {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
-            }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).withDisabled(page - 1 < 0));
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT).withDisabled(page + 1 >= totalPage));
 
             if(totalPage > 10) {
-                if(page + 10 >= totalPage) {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).asDisabled());
-                } else {
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
-                }
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage));
             }
 
-            rows.add(ActionRow.of(buttons));
+            children.add(ActionRow.of(buttons));
         }
 
-        List<SelectOption> options = new ArrayList<>();
+        if (layout == ConfigHolder.SearchLayout.COMPACTED || layout == ConfigHolder.SearchLayout.FANCY_LIST) {
+            List<SelectOption> options = new ArrayList<>();
 
-        List<String> data = accumulateListData(false);
+            List<String> labels = accumulateTextData(TextType.LIST_LABEL);
+            List<String> descriptions = accumulateTextData(TextType.LIST_DESCRIPTION);
 
-        for(int i = 0; i < data.size(); i++) {
-            String element = data.get(i);
+            for(int i = 0; i < labels.size(); i++) {
+                String label = labels.get(i);
+                String description;
 
-            String[] elements = element.split("\\\\\\\\");
-
-            if(elements.length == 2) {
-                if(elements[0].matches("<:\\S+?:\\d+>")) {
-                    options.add(SelectOption.of(elements[1], String.valueOf(page * chunk + i)).withEmoji(Emoji.fromFormatted(elements[0])));
+                if (descriptions == null) {
+                    description = null;
                 } else {
-                    options.add(SelectOption.of(element, String.valueOf(page * chunk + i)));
+                    description = descriptions.get(i);
                 }
-            } else {
-                options.add(SelectOption.of(element, String.valueOf(page * chunk + i)));
+
+                SelectOption option = SelectOption.of(label, String.valueOf(page * chunk + i));
+
+                String[] elements = label.split("\\\\\\\\");
+
+                if(elements.length == 2 && elements[0].matches("<:\\S+?:\\d+>")) {
+                    option = option.withEmoji(Emoji.fromFormatted(elements[0])).withLabel(elements[1]);
+                }
+
+                if (description != null)
+                    option = option.withDescription(description);
+
+                options.add(option);
             }
+
+            children.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
         }
 
-        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
 
-        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
+        children.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
-        return rows;
+        return Container.of(children);
     }
 
-    protected void apply(GenericComponentInteractionCreateEvent event) {
+    protected void apply(IMessageEditCallback event) {
         event.deferEdit()
-                .setContent(getPage())
                 .setComponents(getComponents())
-                .mentionRepliedUser(false)
+                .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
                 .queue();
     }
 }

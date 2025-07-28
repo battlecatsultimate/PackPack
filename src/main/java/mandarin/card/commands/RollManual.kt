@@ -7,15 +7,15 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.UserSnowflake
 import java.util.concurrent.CountDownLatch
 import kotlin.math.ceil
 import kotlin.math.min
@@ -95,7 +95,7 @@ class RollManual : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val packOptions = ArrayList<SelectOption>()
 
-        val size = min(CardData.cardPacks.size, SearchHolder.PAGE_CHUNK)
+        val size = min(CardData.cardPacks.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
         for (i in 0 until size) {
             packOptions.add(SelectOption.of(CardData.cardPacks[i].packName, CardData.cardPacks[i].uuid))
@@ -108,9 +108,9 @@ class RollManual : Command(CommonStatic.Lang.Locale.EN, true) {
 
         result.add(ActionRow.of(packs))
 
-        if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.cardPacks.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
-            val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(CardData.cardPacks.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

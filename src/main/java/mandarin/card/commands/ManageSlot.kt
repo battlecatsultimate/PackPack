@@ -7,14 +7,14 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -40,7 +40,7 @@ class ManageSlot : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.slotMachines.isEmpty()) {
             builder.append("- No Slot Machine")
         } else {
-            val size = min(CardData.slotMachines.size, SearchHolder.PAGE_CHUNK)
+            val size = min(CardData.slotMachines.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             for (i in 0 until size) {
                 builder.append(i + 1).append(". ").append(CardData.slotMachines[i].name)
@@ -62,7 +62,7 @@ class ManageSlot : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.slotMachines.isEmpty()) {
             options.add(SelectOption.of("A", "A"))
         } else {
-            for (i in 0 until min(CardData.slotMachines.size, SearchHolder.PAGE_CHUNK)) {
+            for (i in 0 until min(CardData.slotMachines.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 options.add(SelectOption.of(CardData.slotMachines[i].name, i.toString()))
             }
         }
@@ -77,10 +77,10 @@ class ManageSlot : Command(CommonStatic.Lang.Locale.EN, true) {
 
         result.add(ActionRow.of(selectMenuBuilder.build()))
 
-        if (CardData.slotMachines.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.slotMachines.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            val totalPage = ceil(CardData.slotMachines.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(CardData.slotMachines.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(true))

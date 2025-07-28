@@ -4,20 +4,20 @@ import common.CommonStatic
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.min
 
 class ValidationPayHolder(author: Message, userID: String, channelID: String, message: Message, private val cards: List<Card>, private val cardList: ArrayList<Card>, private val amount: Int) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -155,7 +155,7 @@ class ValidationPayHolder(author: Message, userID: String, channelID: String, me
         if (cards.isEmpty()) {
             builder.append("No Cards")
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(cards.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(cards.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 builder.append(i + 1).append(". ").append(cards[i].simpleCardInfo())
 
                 if ((inventory.cards[cards[i]] ?: 0) >= 2) {
@@ -186,7 +186,7 @@ class ValidationPayHolder(author: Message, userID: String, channelID: String, me
 
         val cardOption = ArrayList<SelectOption>()
 
-        for (i in page * SearchHolder.PAGE_CHUNK until min(cards.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+        for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(cards.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             cardOption.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()).withDescription(if (cards[i] in cardList) "Selected" else null))
         }
 
@@ -194,7 +194,7 @@ class ValidationPayHolder(author: Message, userID: String, channelID: String, me
             StringSelectMenu.create("card").addOptions(cardOption).setPlaceholder("Select cards to pay").build()
         ))
 
-        if (cards.size > SearchHolder.PAGE_CHUNK) {
+        if (cards.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val totalPage = getTotalPage(cards.size)
 
             val buttons = ArrayList<Button>()

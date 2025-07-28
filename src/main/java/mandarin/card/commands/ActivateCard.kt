@@ -112,15 +112,15 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
 
         rows.add(ActionRow.of(cardCategory))
 
-        var totPage = dataSize / CardActivateHolder.PAGE_CHUNK
+        var totalPage = dataSize / CardActivateHolder.PAGE_CHUNK
 
         if (dataSize % CardActivateHolder.PAGE_CHUNK != 0)
-            totPage++
+            totalPage++
 
         if (dataSize > CardActivateHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 

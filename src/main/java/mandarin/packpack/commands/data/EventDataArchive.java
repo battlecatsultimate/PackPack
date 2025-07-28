@@ -5,9 +5,9 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EventDataArchiveHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -18,8 +18,15 @@ import java.io.File;
 import java.util.*;
 
 public class EventDataArchive extends ConstraintCommand {
-    public EventDataArchive(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
+    private final ConfigHolder config;
+
+    public EventDataArchive(ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id) {
         super(role, lang, id, false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -78,12 +85,12 @@ public class EventDataArchive extends ConstraintCommand {
 
         List<String> data = accumulateData(files);
 
-        for(int i = 0; i < Math.min(SearchHolder.PAGE_CHUNK, data.size()); i++) {
+        for(int i = 0; i < Math.min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, data.size()); i++) {
             sb.append(i+1).append(". ").append(data.get(i)).append("\n");
         }
 
-        if(files.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(files.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+        if(files.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(files.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
         }
@@ -95,7 +102,7 @@ public class EventDataArchive extends ConstraintCommand {
 
             Message msg = loader.getMessage();
 
-            StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(msg, u.getId(), ch.getId(), res, files, fileName, lang));
+            StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(msg, u.getId(), ch.getId(), res, config.searchLayout, files, fileName, lang));
         });
     }
 
@@ -145,7 +152,7 @@ public class EventDataArchive extends ConstraintCommand {
     private List<String> accumulateData(List<File> files) {
         List<String> result = new ArrayList<>();
 
-        for(int i = 0; i < Math.min(files.size(), SearchHolder.PAGE_CHUNK); i++) {
+        for(int i = 0; i < Math.min(files.size(), ConfigHolder.SearchLayout.COMPACTED.chunkSize); i++) {
             if (i == 0) {
                 result.add(LangID.getStringByID("eventArchive.currentEvent", lang));
             } else {

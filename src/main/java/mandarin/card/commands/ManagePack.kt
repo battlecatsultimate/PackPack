@@ -7,14 +7,14 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -36,7 +36,7 @@ class ManagePack : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.cardPacks.isEmpty()) {
             builder.append("- No packs")
         } else {
-            for (i in 0 until min(SearchHolder.PAGE_CHUNK, CardData.cardPacks.size)) {
+            for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, CardData.cardPacks.size)) {
                 val emoji = EmojiStore.getPackEmoji(CardData.cardPacks[i])
 
                 val formatted = emoji?.formatted ?: ""
@@ -44,8 +44,8 @@ class ManagePack : Command(CommonStatic.Lang.Locale.EN, true) {
                 builder.append(i + 1).append(". ").append(formatted).append(" ").append(CardData.cardPacks[i].packName).append("\n")
             }
 
-            if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
-                val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            if (CardData.cardPacks.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                val totalPage = ceil(CardData.cardPacks.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
                 builder.append("\nPage : 1/").append(totalPage)
             }
@@ -65,7 +65,7 @@ class ManagePack : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.cardPacks.isNotEmpty()) {
             val options = ArrayList<SelectOption>()
 
-            for (i in 0 until min(SearchHolder.PAGE_CHUNK, CardData.cardPacks.size)) {
+            for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, CardData.cardPacks.size)) {
                 val packName = if (CardData.cardPacks[i].packName.length >= 100) {
                     CardData.cardPacks[i].packName.substring(0, 50) + "..."
                 } else {
@@ -82,10 +82,10 @@ class ManagePack : Command(CommonStatic.Lang.Locale.EN, true) {
                     .build()
             ))
 
-            if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
+            if (CardData.cardPacks.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
                 val buttons = ArrayList<Button>()
 
-                val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
+                val totalPage = ceil(CardData.cardPacks.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
                 if (totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

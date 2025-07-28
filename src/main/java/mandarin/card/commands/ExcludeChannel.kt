@@ -7,17 +7,17 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import kotlin.math.min
 
 class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
@@ -35,17 +35,17 @@ class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
     private fun getComponents(guild: Guild) : List<MessageTopLevelComponent> {
         val result = ArrayList<MessageTopLevelComponent>()
 
-        if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val pages = ArrayList<Button>()
 
-            if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK * 10) {
+            if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 
             pages.add(Button.of(ButtonStyle.SECONDARY,"prev", "Previous Page", EmojiStore.PREVIOUS).asDisabled())
             pages.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-            if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK * 10) {
+            if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
             }
 
@@ -65,7 +65,7 @@ class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.excludedCatFoodChannel.isNotEmpty()) {
             val options = ArrayList<SelectOption>()
 
-            val size = min(CardData.excludedCatFoodChannel.size, SearchHolder.PAGE_CHUNK)
+            val size = min(CardData.excludedCatFoodChannel.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             for (m in 0 until size) {
                 val channel = guild.getGuildChannelById(CardData.excludedCatFoodChannel[m])
@@ -99,16 +99,16 @@ class ExcludeChannel : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.excludedCatFoodChannel.isEmpty())
             return builder.append("- **No Channels**").toString()
         else {
-            val size = min(CardData.excludedCatFoodChannel.size, SearchHolder.PAGE_CHUNK)
+            val size = min(CardData.excludedCatFoodChannel.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             for (m in 0 until size) {
                 builder.append(m + 1).append(". <#").append(CardData.excludedCatFoodChannel[m]).append(">\n")
             }
 
-            if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK) {
-                var totalPage = CardData.excludedCatFoodChannel.size / SearchHolder.PAGE_CHUNK
+            if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                var totalPage = CardData.excludedCatFoodChannel.size / ConfigHolder.SearchLayout.COMPACTED.chunkSize
 
-                if (CardData.excludedCatFoodChannel.size % SearchHolder.PAGE_CHUNK != 0)
+                if (CardData.excludedCatFoodChannel.size % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                     totalPage++
 
                 builder.append("\n").append("Page : ").append(1).append("/").append(totalPage)

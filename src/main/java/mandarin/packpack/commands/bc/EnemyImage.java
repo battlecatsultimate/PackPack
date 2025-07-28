@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -31,8 +32,15 @@ public class EnemyImage extends TimedConstraintCommand {
     private static final int PARAM_TRANSPARENT = 2;
     private static final int PARAM_DEBUG = 4;
 
-    public EnemyImage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
+    private final ConfigHolder config;
+
+    public EnemyImage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_ENEMYIMAGE_ID, false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -115,10 +123,10 @@ public class EnemyImage extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(enemies.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
+                if(enemies.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = enemies.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(enemies.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -135,7 +143,7 @@ public class EnemyImage extends TimedConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, msg, u.getId(), ch.getId(), res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, msg, u.getId(), ch.getId(), res, search, config.searchLayout, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                 });
 
                 disableTimer();
@@ -335,7 +343,7 @@ public class EnemyImage extends TimedConstraintCommand {
     private List<String> accumulateData(List<Enemy> enemies) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= enemies.size())
                 break;
 

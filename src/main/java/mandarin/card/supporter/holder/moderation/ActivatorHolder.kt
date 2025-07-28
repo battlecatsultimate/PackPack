@@ -3,18 +3,18 @@ package mandarin.card.supporter.holder.moderation
 import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.min
 
 class ActivatorHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -105,7 +105,7 @@ class ActivatorHolder(author: Message, userID: String, channelID: String, messag
 
         val bannerOptions = ArrayList<SelectOption>()
 
-        for (i in SearchHolder.PAGE_CHUNK * page until min(dataSize, SearchHolder.PAGE_CHUNK * (page + 1))) {
+        for (i in ConfigHolder.SearchLayout.COMPACTED.chunkSize * page until min(dataSize, ConfigHolder.SearchLayout.COMPACTED.chunkSize * (page + 1))) {
             bannerOptions.add(SelectOption.of(banners[i].name, i.toString()).withEmoji(if (banners[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF))
         }
 
@@ -115,7 +115,7 @@ class ActivatorHolder(author: Message, userID: String, channelID: String, messag
 
         val totalPage = getTotalPage(dataSize)
 
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if (totalPage > 10) {
@@ -147,7 +147,7 @@ class ActivatorHolder(author: Message, userID: String, channelID: String, messag
 
         val banners = CardData.banners
 
-        for (i in SearchHolder.PAGE_CHUNK * page until min(SearchHolder.PAGE_CHUNK * (page + 1), CardData.banners.size)) {
+        for (i in ConfigHolder.SearchLayout.COMPACTED.chunkSize * page until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize * (page + 1), CardData.banners.size)) {
             builder.append("**")
                 .append(banners[i].name)
                 .append("** : ")

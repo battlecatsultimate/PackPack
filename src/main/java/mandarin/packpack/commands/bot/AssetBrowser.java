@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.AssetBrowserHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -21,8 +22,15 @@ import java.util.Collection;
 import java.util.List;
 
 public class AssetBrowser extends ConstraintCommand {
-    public AssetBrowser(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
+    private final ConfigHolder config;
+
+    public AssetBrowser(ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id) {
         super(role, lang, id, false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -53,10 +61,10 @@ public class AssetBrowser extends ConstraintCommand {
             builder.append(i + 1).append(". ").append(data.get(i)).append("\n");
         }
 
-        if(data.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = data.size() / SearchHolder.PAGE_CHUNK;
+        if(data.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = data.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-            if(data.size() % SearchHolder.PAGE_CHUNK != 0)
+            if(data.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                 totalPage++;
 
             builder.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -67,7 +75,7 @@ public class AssetBrowser extends ConstraintCommand {
         registerSearchComponents(ch.sendMessage(builder.toString()).setAllowedMentions(new ArrayList<>()), data.size(), accumulateData(vf, true), lang).queue(res -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(loader.getMessage(), u.getId(), ch.getId(), res, vf, lang));
+            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(loader.getMessage(), u.getId(), ch.getId(), res, config.searchLayout, vf, lang));
         });
     }
 
@@ -81,7 +89,7 @@ public class AssetBrowser extends ConstraintCommand {
 
         List<VFile> files = new ArrayList<>(fileList);
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= files.size())
                 break;
 

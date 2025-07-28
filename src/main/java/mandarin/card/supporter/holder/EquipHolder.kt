@@ -184,15 +184,15 @@ class EquipHolder(author: Message, userID: String, channelID: String, message: M
         }
         val dataSize = roles.size
 
-        var totPage = dataSize / 3
+        var totalPage = dataSize / 3
 
         if (dataSize % 3 != 0)
-            totPage++
+            totalPage++
 
         if (dataSize > 3) {
             val buttons = ArrayList<Button>()
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 if(page - 10 < 0) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
                 } else {
@@ -206,14 +206,14 @@ class EquipHolder(author: Message, userID: String, channelID: String, message: M
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
             }
 
-            if(page + 1 >= totPage) {
+            if(page + 1 >= totalPage) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
             } else {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
             }
 
-            if(totPage > 10) {
-                if(page + 10 >= totPage) {
+            if(totalPage > 10) {
+                if(page + 10 >= totalPage) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
                 } else {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))

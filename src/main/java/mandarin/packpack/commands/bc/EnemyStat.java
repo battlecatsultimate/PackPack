@@ -14,7 +14,6 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyStatMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -149,10 +148,10 @@ public class EnemyStat extends ConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(enemies.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
+                if(enemies.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = enemies.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(enemies.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -168,7 +167,7 @@ public class EnemyStat extends ConstraintCommand {
 
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, configData, lang));
+                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, name, config.searchLayout, treasure, configData, lang));
                     });
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
@@ -178,7 +177,7 @@ public class EnemyStat extends ConstraintCommand {
 
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, configData, lang));
+                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, name, config.searchLayout, treasure, configData, lang));
                     });
                 }
             }
@@ -413,7 +412,7 @@ public class EnemyStat extends ConstraintCommand {
     private List<String> accumulateData(List<Enemy> enemies) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= enemies.size())
                 break;
 

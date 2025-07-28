@@ -8,21 +8,21 @@ import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.pack.*
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.max
@@ -118,7 +118,7 @@ class CardCostPayHolder(
 
                         filterCards()
 
-                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                        if (cards.size <= page * ConfigHolder.SearchLayout.COMPACTED.chunkSize && page > 0) {
                             page--
                         }
 
@@ -129,7 +129,7 @@ class CardCostPayHolder(
 
                     filterCards()
 
-                    if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                    if (cards.size <= page * ConfigHolder.SearchLayout.COMPACTED.chunkSize && page > 0) {
                         page--
                     }
 
@@ -341,7 +341,7 @@ class CardCostPayHolder(
         if (cards.isEmpty()) {
             builder.append("No cards")
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min((page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize, cards.size)) {
                 val amount = (inventory.cards[cards[i]] ?: 0) - containers.sumOf { c -> c.pickedCards.count { card -> card.id == cards[i].id } }
 
                 builder.append(i + 1).append(". ").append(cards[i].simpleCardInfo())
@@ -389,7 +389,7 @@ class CardCostPayHolder(
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for(i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(dataSize, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -409,9 +409,9 @@ class CardCostPayHolder(
 
         result.add(ActionRow.of(cardCategory))
 
-        val totalPage = ceil(dataSize * 1.0 / SearchHolder.PAGE_CHUNK)
+        val totalPage = ceil(dataSize * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if(totalPage > 10) {

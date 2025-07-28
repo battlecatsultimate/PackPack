@@ -6,19 +6,19 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.config.guild.ConfigChannelRoleSelectHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
-import javax.annotation.Nonnull;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +65,7 @@ public class ChannelPermission extends ConstraintCommand {
         if (roles.isEmpty()) {
             builder.append(LangID.getStringByID("serverConfig.channelPermission.noRoleAssigned", lang));
         } else {
-            int size = Math.min(roles.size(), SearchHolder.PAGE_CHUNK);
+            int size = Math.min(roles.size(), ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             for (int i = 0; i < size; i++) {
                 String id = roles.get(i);
@@ -107,8 +107,8 @@ public class ChannelPermission extends ConstraintCommand {
             }
         }
 
-        if (roles.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(roles.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+        if (roles.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(roles.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
         }
@@ -127,7 +127,7 @@ public class ChannelPermission extends ConstraintCommand {
         if (roles.isEmpty()) {
             roleOptions.add(SelectOption.of("A", "A"));
         } else {
-            int size = Math.min(roles.size(), SearchHolder.PAGE_CHUNK);
+            int size = Math.min(roles.size(), ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             for (int i = 0; i < size; i++) {
                 String id = roles.get(i);
@@ -164,10 +164,10 @@ public class ChannelPermission extends ConstraintCommand {
                         .build()
         ));
 
-        if (roles.size() > SearchHolder.PAGE_CHUNK) {
+        if (roles.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             List<Button> buttons = new ArrayList<>();
 
-            int totalPage = (int) Math.ceil(roles.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+            int totalPage = (int) Math.ceil(roles.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());

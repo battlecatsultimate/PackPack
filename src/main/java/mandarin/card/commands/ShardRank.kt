@@ -8,9 +8,9 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.ceil
@@ -50,7 +50,7 @@ class ShardRank : Command(CommonStatic.Lang.Locale.EN, true) {
             }
         ).append("\n\n")
 
-        val size = min(SearchHolder.PAGE_CHUNK, memberList.size)
+        val size = min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, memberList.size)
 
         for (m in 0 until size) {
             builder.append(m + 1).append(". <@").append(memberList[m]).append("> : ").append(EmojiStore.ABILITY["SHARD"]?.formatted).append(" ").append(catFoods[m])
@@ -59,8 +59,8 @@ class ShardRank : Command(CommonStatic.Lang.Locale.EN, true) {
                 builder.append("\n")
         }
 
-        if (memberList.size > SearchHolder.PAGE_CHUNK) {
-            val totalPage = ceil(memberList.size / SearchHolder.PAGE_CHUNK * 1.0).toInt()
+        if (memberList.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            val totalPage = ceil(memberList.size / ConfigHolder.SearchLayout.COMPACTED.chunkSize * 1.0).toInt()
 
             builder.append("\n\n").append("Page : ").append(1).append("/").append(totalPage)
         }
@@ -71,17 +71,17 @@ class ShardRank : Command(CommonStatic.Lang.Locale.EN, true) {
     private fun getComponents(memberList: List<Long>) : List<MessageTopLevelComponent> {
         val result = ArrayList<MessageTopLevelComponent>()
 
-        if (memberList.size > SearchHolder.PAGE_CHUNK) {
+        if (memberList.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val pages = ArrayList<Button>()
 
-            if (memberList.size > SearchHolder.PAGE_CHUNK * 10) {
+            if (memberList.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 
             pages.add(Button.of(ButtonStyle.SECONDARY,"prev", "Previous Page", EmojiStore.PREVIOUS).asDisabled())
             pages.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-            if (memberList.size > SearchHolder.PAGE_CHUNK * 10) {
+            if (memberList.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
             }
 

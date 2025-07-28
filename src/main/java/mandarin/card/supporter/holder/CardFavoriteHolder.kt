@@ -8,23 +8,23 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.holder.modal.CardFavoriteAmountHolder
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.components.textinput.TextInput
+import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.selections.SelectOption
-import net.dv8tion.jda.api.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.components.textinput.TextInput
-import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
@@ -279,7 +279,7 @@ class CardFavoriteHolder(author: Message, userID: String, channelID: String, mes
 
             val options = ArrayList<SelectOption>()
 
-            for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(skins.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 options.add(SelectOption.of(skins[i].name, i.toString()).withDescription(skins[i].skinID.toString()).withDefault(skins[i] === equippedSkin))
             }
 
@@ -291,7 +291,7 @@ class CardFavoriteHolder(author: Message, userID: String, channelID: String, mes
                     .build()
             ))
 
-            if (skins.size > SearchHolder.PAGE_CHUNK) {
+            if (skins.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
                 val buttons = ArrayList<Button>()
                 val totalPage = getTotalPage(skins.size)
 

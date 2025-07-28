@@ -7,9 +7,9 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
@@ -37,7 +37,7 @@ class BanUser : Command(CommonStatic.Lang.Locale.EN, true) {
         if (CardData.bannedUser.isEmpty()) {
             builder.append("- No Banned Users")
         } else {
-            for (i in 0 until min(CardData.bannedUser.size, SearchHolder.PAGE_CHUNK)) {
+            for (i in 0 until min(CardData.bannedUser.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 builder.append(i + 1).append(". <@").append(CardData.bannedUser[i]).append("> [").append(CardData.bannedUser[i]).append("]\n")
             }
         }
@@ -55,9 +55,9 @@ class BanUser : Command(CommonStatic.Lang.Locale.EN, true) {
                 .build()
         ))
 
-        if (CardData.bannedUser.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.bannedUser.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
-            val totalPage = ceil(CardData.bannedUser.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
+            val totalPage = ceil(CardData.bannedUser.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize).toInt()
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

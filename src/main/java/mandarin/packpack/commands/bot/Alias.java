@@ -15,8 +15,8 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.AliasHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.message.alias.AliasEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.message.alias.AliasFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.message.alias.AliasStageMessageHolder;
@@ -132,10 +132,10 @@ public class Alias extends ConstraintCommand {
                         sb.append(i + 1).append(". ").append(fname).append("\n");
                     }
 
-                    if (forms.size() > SearchHolder.PAGE_CHUNK) {
-                        int totalPage = forms.size() / SearchHolder.PAGE_CHUNK;
+                    if (forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                        int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                        if (forms.size() % SearchHolder.PAGE_CHUNK != 0)
+                        if (forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                             totalPage++;
 
                         sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
@@ -228,10 +228,10 @@ public class Alias extends ConstraintCommand {
                         sb.append(i + 1).append(". ").append(ename).append("\n");
                     }
 
-                    if (enemies.size() > SearchHolder.PAGE_CHUNK) {
-                        int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
+                    if (enemies.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                        int totalPage = enemies.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                        if (enemies.size() % SearchHolder.PAGE_CHUNK != 0)
+                        if (enemies.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                             totalPage++;
 
                         sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));
@@ -376,10 +376,10 @@ public class Alias extends ConstraintCommand {
                         sb.append(i + 1).append(". ").append(stageName).append("\n");
                     }
 
-                    if (stages.size() > SearchHolder.PAGE_CHUNK) {
-                        int totalPage = stages.size() / SearchHolder.PAGE_CHUNK;
+                    if (stages.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                        int totalPage = stages.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                        if (stages.size() % SearchHolder.PAGE_CHUNK != 0)
+                        if (stages.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                             totalPage++;
 
                         sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage));

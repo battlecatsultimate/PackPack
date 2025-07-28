@@ -3,21 +3,21 @@ package mandarin.packpack.supporter.server.holder.component.config.guild;
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -180,9 +180,9 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
         if (holder.banned.isEmpty()) {
             builder.append(LangID.getStringByID("serverConfig.commandBan.noBanned", lang));
         } else {
-            int size = Math.min(holder.banned.size(), (page + 1) * SearchHolder.PAGE_CHUNK);
+            int size = Math.min(holder.banned.size(), (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
-            for (int i = page * SearchHolder.PAGE_CHUNK; i < size; i++) {
+            for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
                 builder.append(i + 1).append(". ").append("<@").append(holder.banned.get(i)).append("> [").append(holder.banned.get(i)).append("]");
 
                 if (i < size - 1) {
@@ -190,8 +190,8 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
                 }
             }
 
-            if (holder.banned.size() > SearchHolder.PAGE_CHUNK) {
-                int totalPage = (int) Math.ceil(holder.banned.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+            if (holder.banned.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                int totalPage = (int) Math.ceil(holder.banned.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
                 builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
             }
@@ -210,10 +210,10 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
                         .build()
         ));
 
-        if (holder.banned.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = holder.banned.size() / SearchHolder.PAGE_CHUNK;
+        if (holder.banned.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = holder.banned.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-            if(holder.banned.size() % SearchHolder.PAGE_CHUNK != 0)
+            if(holder.banned.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                 totalPage++;
 
             List<Button> buttons = new ArrayList<>();

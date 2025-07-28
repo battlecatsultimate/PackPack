@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.bc.EnemyGif;
 import mandarin.packpack.supporter.StaticStore;
@@ -10,6 +9,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.TimeBoolean;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -36,8 +36,8 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
     private final String command;
 
-    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, String userID, String channelID, Message message, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
-        super(author, userID, channelID, message, lang);
+    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
+        super(author, userID, channelID, message, keyword, layout, lang);
 
         this.enemy = enemy;
 
@@ -53,21 +53,50 @@ public class EnemyAnimMessageHolder extends SearchHolder {
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for (int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1); i++) {
+        for (int i = chunk * page; i < chunk * (page + 1); i++) {
             if (i >= enemy.size())
                 break;
 
             Enemy e = enemy.get(i);
 
-            String ename = Data.trio(e.id.id) + " ";
+            String text = null;
 
-            if (MultiLangCont.get(e, lang) != null)
-                ename += MultiLangCont.get(e, lang);
+            switch(textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(e.id.id);
 
-            data.add(ename);
+                        String name = StaticStore.safeMultiLangGet(e, lang);
+
+                        if (name != null && !name.isBlank()) {
+                            text += " " + name;
+                        }
+                    } else {
+                        text = "`" + Data.trio(e.id.id) + "`";
+
+                        String name = StaticStore.safeMultiLangGet(e, lang);
+
+                        if (name == null || name.isBlank()) {
+                            name = Data.trio(e.id.id);
+                        }
+
+                        text += " " + name;
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(e, lang);
+
+                    if (text == null) {
+                        text = Data.trio(e.id.id);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(e.id.id);
+            }
+
+            data.add(text);
         }
 
         return data;

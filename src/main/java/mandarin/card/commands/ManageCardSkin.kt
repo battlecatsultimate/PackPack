@@ -10,9 +10,10 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
@@ -36,7 +37,7 @@ class ManageCardSkin : Command(CommonStatic.Lang.Locale.EN, true) {
     private fun getContents(cards: List<Card>) : String {
         val builder = StringBuilder("Select card to manage skin of it\n\n```md\n")
 
-        for (i in 0 until min(cards.size, SearchHolder.PAGE_CHUNK)) {
+        for (i in 0 until min(cards.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             builder.append(i + 1).append(". ").append(cards[i].simpleCardInfo()).append("\n")
         }
 
@@ -93,7 +94,7 @@ class ManageCardSkin : Command(CommonStatic.Lang.Locale.EN, true) {
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+            for(i in 0 until min(dataSize, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -111,15 +112,12 @@ class ManageCardSkin : Command(CommonStatic.Lang.Locale.EN, true) {
 
         result.add(ActionRow.of(cardCategory))
 
-        var totPage = dataSize / SearchHolder.PAGE_CHUNK
+        val totalPage = SearchHolder.getTotalPage(dataSize)
 
-        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++
-
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 
@@ -127,7 +125,7 @@ class ManageCardSkin : Command(CommonStatic.Lang.Locale.EN, true) {
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
             }
 

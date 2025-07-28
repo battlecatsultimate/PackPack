@@ -3099,6 +3099,7 @@
             "confirm" : "확인",
             "dps" : "DPS 그래프",
             "no" : "아니요",
+            "select" : "선택",
             "yes" : "네"
         },
         "search" : {
@@ -3108,11 +3109,11 @@
             "expired" : "검색 시간 초과...",
             "moreSpecific" : "해당 데이터가 발견되지 않았거나 더 정확한 이름을 입력하셔야 합니다!",
             "next" : "다음 페이지",
-            "page" : "\n페이지 : %d/%d",
+            "page" : "페이지 : %d/%d",
             "previous" : "이전 페이지",
-            "selectData" : "원하는 데이터를 선택해 주세요\n\n",
+            "selectData" : "원하는 데이터를 선택해 주세요",
             "selectList" : "리스트에서 데이터를 선택해주세요",
-            "severalResult" : "_로 검색한 결과, 여러 종류의 결과가 존재합니다...\n",
+            "severalResult" : "%s 검색어로 검색한 결과, %d개의 결과가 발견되었습니다...",
             "old" : {
                 "page" : {
                     "cancel" : "\n\"c\" 를 입력하여 검색을 취소합니다",

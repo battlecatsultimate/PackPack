@@ -3097,6 +3097,7 @@
             "confirm" : "Confirm",
             "dps" : "DPS Graph",
             "no" : "No",
+            "select" : "Select",
             "yes" : "Yes"
         },
         "search" : {
@@ -3106,11 +3107,11 @@
             "expired" : "Searching process time expired...",
             "moreSpecific" : "No such data found. Or you have to provide more specific name!",
             "next" : "Next Page",
-            "page" : "\nPage : %d/%d",
+            "page" : "Page : %d/%d",
             "previous" : "Previous Page",
-            "selectData" : "Select data\n\n",
+            "selectData" : "Select data",
             "selectList" : "Select list to pick data",
-            "severalResult" : "Searching with _, and several results found...\n",
+            "severalResult" : "Searching with %s, %d results have been found...",
             "old" : {
                 "page" : {
                     "cancel" : "\n\"c\" to cancel searching process",

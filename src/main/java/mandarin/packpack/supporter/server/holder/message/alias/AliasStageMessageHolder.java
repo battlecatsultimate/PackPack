@@ -9,7 +9,7 @@ import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -302,10 +302,10 @@ public class AliasStageMessageHolder extends MessageHolder {
             sb.append(i+1).append(". ").append(name).append("\n");
         }
 
-        if(stage.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = stage.size() / SearchHolder.PAGE_CHUNK;
+        if(stage.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = stage.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-            if(stage.size() % SearchHolder.PAGE_CHUNK != 0)
+            if(stage.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                 totalPage++;
 
             sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));

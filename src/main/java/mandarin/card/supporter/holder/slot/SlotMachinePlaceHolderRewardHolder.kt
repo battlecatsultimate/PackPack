@@ -4,25 +4,27 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.slot.SlotMachineEmojiSearchModalHolder
-import mandarin.card.supporter.slot.*
+import mandarin.card.supporter.slot.SlotEmojiContainer
+import mandarin.card.supporter.slot.SlotMachine
+import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
@@ -156,7 +158,7 @@ class SlotMachinePlaceHolderRewardHolder(
         actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.any { c -> c.emoji?.name == e.name && c.emoji?.idLong == e.idLong } })
 
         if (actualEmojis.isNotEmpty()) {
-            val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
+            val totalPage = ceil(actualEmojis.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize).toInt()
 
             if (totalPage <= page) {
                 page = totalPage - 1
@@ -212,7 +214,7 @@ class SlotMachinePlaceHolderRewardHolder(
         if (actualEmojis.isEmpty()) {
             options.add(SelectOption.of("A", "A"))
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(actualEmojis.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(actualEmojis.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 val e = actualEmojis[i]
 
                 options.add(SelectOption.of(e.name, i.toString()).withEmoji(e).withDescription(e.id).withDefault(content.emoji?.name == e.name && content.emoji?.id == e.id))
@@ -221,10 +223,10 @@ class SlotMachinePlaceHolderRewardHolder(
 
         result.add(ActionRow.of(StringSelectMenu.create("emoji").addOptions(options).setPlaceholder("Select Emoji").setDisabled(actualEmojis.isEmpty()).build()))
 
-        if (actualEmojis.size > SearchHolder.PAGE_CHUNK) {
+        if (actualEmojis.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(actualEmojis.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

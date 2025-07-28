@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -49,8 +50,8 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private final int castle;
     private final int music;
 
-    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, boolean orOperate, boolean hasBoss, boolean monthly, TreasureHolder treasure, StageInfo.StageInfoConfig configData, int background, int castle, int music, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, msg, lang);
+    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, @Nullable Message author, String keyword, ConfigHolder.SearchLayout layout, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, boolean orOperate, boolean hasBoss, boolean monthly, TreasureHolder treasure, StageInfo.StageInfoConfig configData, int background, int castle, int music, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, msg, keyword, layout, lang);
 
         this.enemySequences = enemySequences;
         this.filterEnemy = filterEnemy;
@@ -71,21 +72,50 @@ public class StageEnemyMessageHolder extends SearchHolder {
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page +1); i++) {
+        for(int i = chunk * page; i < chunk * (page +1); i++) {
             if(i >= enemy.size())
                 break;
 
             Enemy e = enemy.get(i);
 
-            String ename = Data.trio(e.id.id) + " - ";
+            String text = null;
 
-            if(MultiLangCont.get(e, lang) != null)
-                ename += MultiLangCont.get(e, lang);
+            switch(textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(e.id.id);
 
-            data.add(ename);
+                        String name = StaticStore.safeMultiLangGet(e, lang);
+
+                        if (name != null && !name.isBlank()) {
+                            text += " " + name;
+                        }
+                    } else {
+                        text = "`" + Data.trio(e.id.id) + "`";
+
+                        String name = StaticStore.safeMultiLangGet(e, lang);
+
+                        if (name == null || name.isBlank()) {
+                            name = Data.trio(e.id.id);
+                        }
+
+                        text += " " + name;
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(e, lang);
+
+                    if (text == null) {
+                        text = Data.trio(e.id.id);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(e.id.id);
+            }
+
+            data.add(text);
         }
 
         return data;
@@ -129,10 +159,10 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(stages.size() > PAGE_CHUNK) {
-                    int totalPage = stages.size() / PAGE_CHUNK;
+                if(stages.size() > chunk) {
+                    int totalPage = stages.size() / chunk;
 
-                    if(stages.size() % PAGE_CHUNK != 0)
+                    if(stages.size() % chunk != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -141,7 +171,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 sb.append("```");
 
                 createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly).queue(res ->
-                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), userID, ch.getId(), res, treasure, configData, lang))
+                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), userID, ch.getId(), res, keyword, layout, treasure, configData, lang))
                 );
 
                 message.delete().queue();
@@ -152,7 +182,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void finish(GenericComponentInteractionCreateEvent event) {
+    public void finish(GenericComponentInteractionCreateEvent event, int index) {
         int id = parseDataToInt(event);
 
         Enemy e = enemy.get(id);
@@ -167,43 +197,13 @@ public class StageEnemyMessageHolder extends SearchHolder {
         enemyList.append(n).append(", ");
 
         if(enemySequences.isEmpty()) {
-            super.finish(event);
+            super.finish(event, index);
         } else {
             enemy = enemySequences.removeFirst();
             page = 0;
 
             apply(event);
         }
-    }
-
-    @Override
-    protected String getPage() {
-        StringBuilder sb = new StringBuilder();
-
-        if(!enemyList.isEmpty()) {
-            sb.append(LangID.getStringByID("findStage.selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
-        }
-
-        sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
-
-        List<String> data = accumulateListData(false);
-
-        for(int i = 0; i < data.size(); i++) {
-            sb.append(page * PAGE_CHUNK + i + 1).append(". ").append(data.get(i)).append("\n");
-        }
-
-        if(enemy.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = enemy.size() / SearchHolder.PAGE_CHUNK;
-
-            if(enemy.size() % SearchHolder.PAGE_CHUNK != 0)
-                totalPage++;
-
-            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
-        }
-
-        sb.append("```");
-
-        return sb.toString();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private List<String> accumulateStage(List<Stage> stages, boolean onText) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < PAGE_CHUNK; i++) {
+        for(int i = 0; i < chunk; i++) {
             if(i >= stages.size())
                 break;
 
@@ -283,24 +283,24 @@ public class StageEnemyMessageHolder extends SearchHolder {
     }
 
     private RestAction<Message> createMonthlyMessage(MessageChannel ch, String content, List<String> data, List<Stage> stages, int size, boolean monthly) {
-        int totPage = size / SearchHolder.PAGE_CHUNK;
+        int totalPage = size / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-        if(size % SearchHolder.PAGE_CHUNK != 0)
-            totPage++;
+        if(size % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
+            totalPage++;
 
         List<ActionRow> rows = new ArrayList<>();
 
-        if(size > SearchHolder.PAGE_CHUNK) {
+        if(size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             List<Button> buttons = new ArrayList<>();
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
             }
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
 
-            if(totPage > 10) {
+            if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
             }
 
@@ -315,7 +315,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             String[] elements = element.split("\\\\\\\\");
 
             if(elements.length == 2) {
-                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                if(elements[0].matches("<:\\S+?:\\d+>")) {
                     options.add(SelectOption.of(elements[1], String.valueOf(i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
                     options.add(SelectOption.of(element, String.valueOf(i)));

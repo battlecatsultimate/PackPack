@@ -3,10 +3,16 @@ package mandarin.packpack.supporter.server.holder.component.config.guild;
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -14,12 +20,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
-import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,8 +60,8 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
                         channels.add(id);
                 }
 
-                if (channels != null && page * SearchHolder.PAGE_CHUNK >= channels.size()) {
-                    page = (int) Math.ceil(channels.size() * 1.0 / SearchHolder.PAGE_CHUNK) - 1;
+                if (channels != null && page * ConfigHolder.SearchLayout.COMPACTED.chunkSize >= channels.size()) {
+                    page = (int) Math.ceil(channels.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize) - 1;
                 }
 
                 applyResult(event);
@@ -177,17 +177,17 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
             if (channels.isEmpty()) {
                 builder.append(LangID.getStringByID("serverConfig.channelPermission.role.noChannels", lang));
             } else {
-                int size = Math.min(channels.size() , (page + 1) * SearchHolder.PAGE_CHUNK);
+                int size = Math.min(channels.size() , (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
-                for (int i = page * SearchHolder.PAGE_CHUNK; i < size; i++) {
+                for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
                     builder.append(i + 1).append(". <#").append(channels.get(i)).append("> [").append(channels.get(i)).append("]");
 
                     if (i < size - 1)
                         builder.append("\n");
                 }
 
-                if (channels.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = (int) Math.ceil(channels.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+                if (channels.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = (int) Math.ceil(channels.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
                     builder.append("\n").append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
                 }
@@ -202,8 +202,8 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
     private List<MessageTopLevelComponent> getComponents() {
         List<MessageTopLevelComponent> result = new ArrayList<>();
 
-        if (channels != null && channels.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(channels.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+        if (channels != null && channels.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(channels.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             List<Button> buttons = new ArrayList<>();
 

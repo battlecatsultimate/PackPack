@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -40,8 +41,15 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             forbidden.add(d);
     }
 
-    public EnemyGif(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, String mainID) {
+    private final ConfigHolder config;
+
+    public EnemyGif(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30), false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -142,11 +150,8 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(enemies.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
-
-                    if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
-                        totalPage++;
+                if(enemies.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = SearchHolder.getTotalPage(enemies.size());
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
@@ -165,7 +170,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                         ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
                     }
 
-                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
+                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), res, search, config.searchLayout, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
                 });
 
                 disableTimer();
@@ -361,7 +366,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     private List<String> accumulateData(List<Enemy> enemies) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= enemies.size())
                 break;
 

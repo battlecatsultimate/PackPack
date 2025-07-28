@@ -17,7 +17,6 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
@@ -184,10 +183,10 @@ public class StageInfo extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(stages.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = stages.size() / SearchHolder.PAGE_CHUNK;
+                if(stages.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = stages.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(stages.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(stages.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -201,13 +200,13 @@ public class StageInfo extends TimedConstraintCommand {
                     replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, additionalContent, treasure, configData, lang));
+                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
                     });
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, additionalContent, treasure, configData, lang));
+                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
                     });
                 }
 
@@ -392,7 +391,7 @@ public class StageInfo extends TimedConstraintCommand {
     private List<String> accumulateData(List<Stage> stages, boolean full) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= stages.size())
                 break;
 

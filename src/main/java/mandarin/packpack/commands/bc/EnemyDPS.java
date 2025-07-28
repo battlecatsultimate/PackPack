@@ -10,10 +10,10 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyDPSHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -25,9 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyDPS extends TimedConstraintCommand {
+    private final ConfigHolder config;
 
-    public EnemyDPS(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, long time) {
+    public EnemyDPS(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, @Nullable IDHolder idHolder, long time) {
         super(role, lang, idHolder, time, StaticStore.COMMAND_ENEMYDPS_ID, false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -103,10 +109,10 @@ public class EnemyDPS extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(enemies.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
+                if(enemies.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = enemies.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(enemies.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -123,7 +129,7 @@ public class EnemyDPS extends TimedConstraintCommand {
 
                             TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                            StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, magnification, lang));
+                            StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, u.getId(), ch.getId(), res, name, config.searchLayout, treasure, magnification, lang));
                         }
                     });
                 } else {
@@ -135,7 +141,7 @@ public class EnemyDPS extends TimedConstraintCommand {
 
                             TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                            StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, u.getId(), ch.getId(), res, treasure, magnification, lang));
+                            StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, u.getId(), ch.getId(), res, name, config.searchLayout, treasure, magnification, lang));
                         }
                     });
                 }
@@ -302,7 +308,7 @@ public class EnemyDPS extends TimedConstraintCommand {
     private List<String> accumulateData(List<Enemy> enemies) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= enemies.size())
                 break;
 

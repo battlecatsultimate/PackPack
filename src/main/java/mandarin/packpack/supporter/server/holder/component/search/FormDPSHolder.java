@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
@@ -27,8 +26,8 @@ public class FormDPSHolder extends SearchHolder {
 
     private final TreasureHolder t;
 
-    public FormDPSHolder(ArrayList<Form> form, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, Level lv, boolean talent, boolean isTreasure, TreasureHolder t, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, message, lang);
+    public FormDPSHolder(ArrayList<Form> form, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder config, Level lv, boolean talent, boolean isTreasure, TreasureHolder t, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, keyword, config.searchLayout, lang);
 
         this.form = form;
         this.config = config;
@@ -40,21 +39,50 @@ public class FormDPSHolder extends SearchHolder {
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page +1); i++) {
+        for(int i = chunk * page; i < chunk * (page +1); i++) {
             if(i >= form.size())
                 break;
 
             Form f = form.get(i);
 
-            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+            String text = null;
 
-            if(MultiLangCont.get(f, lang) != null)
-                fname += MultiLangCont.get(f, lang);
+            switch(textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
 
-            data.add(fname);
+                        String name = StaticStore.safeMultiLangGet(f, lang);
+
+                        if (name != null && !name.isBlank()) {
+                            text += " " + name;
+                        }
+                    } else {
+                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "`";
+
+                        String name = StaticStore.safeMultiLangGet(f, lang);
+
+                        if (name == null || name.isBlank()) {
+                            name = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        }
+
+                        text += " " + name;
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(f, lang);
+
+                    if (text == null) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+            }
+
+            data.add(text);
         }
 
         return data;

@@ -3582,7 +3582,11 @@ public class EntityHandler {
         }
     }
 
-    public static void showComboEmbed(MessageChannel ch, Message reference, Combo c, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showComboEmbed(Object sender, Message reference, Combo c, CommonStatic.Lang.Locale lang, boolean editMode) throws Exception {
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+
+
         String comboLink = generateComboImage(c);
 
         EmbedBuilder e = new EmbedBuilder();
@@ -3609,8 +3613,12 @@ public class EntityHandler {
 
         if (comboLink != null) {
             e.setImage(comboLink);
+        }
 
+        if (sender instanceof MessageChannel ch) {
             Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(e.build()));
+        } else if (sender instanceof IMessageEditCallback event) {
+
         }
     }
 

@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -20,20 +21,18 @@ import java.util.Map;
 
 public class ComboMessageHolder extends SearchHolder {
     private final ArrayList<Combo> combo;
-    private final Message fMsg;
 
-    public ComboMessageHolder(ArrayList<Combo> combo, Message author, String userID, String channelID, Message message, Message fMsg, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, message, lang);
+    public ComboMessageHolder(ArrayList<Combo> combo, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, keyword, layout, lang);
 
         this.combo = combo;
-        this.fMsg = fMsg;
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1) ; i++) {
+        for(int i = chunk * page; i < chunk * (page + 1) ; i++) {
             if(i >= combo.size())
                 break;
 
@@ -60,17 +59,10 @@ public class ComboMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = event.getChannel();
-
         int id = parseDataToInt(event);
 
-        message.delete().queue();
-
-        if(fMsg != null)
-            fMsg.delete().queue();
-
         try {
-            EntityHandler.showComboEmbed(ch, getAuthorMessage(), combo.get(id), lang);
+            EntityHandler.showComboEmbed(event, getAuthorMessage(), combo.get(id), lang, true);
 
             User u = event.getUser();
 
@@ -95,7 +87,6 @@ public class ComboMessageHolder extends SearchHolder {
 
     @Override
     public void onExpire() {
-        if(fMsg != null)
-            fMsg.delete().queue();
+
     }
 }

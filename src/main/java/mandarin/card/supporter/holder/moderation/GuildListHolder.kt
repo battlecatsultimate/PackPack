@@ -2,15 +2,15 @@ package mandarin.card.supporter.holder.moderation
 
 import common.CommonStatic
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -74,7 +74,7 @@ class GuildListHolder(author: Message, userID: String, channelID: String, messag
 
         val guilds = jda.guilds
 
-        for (i in page * SearchHolder.PAGE_CHUNK until min(guilds.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+        for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(guilds.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             val g = guilds[i]
 
             builder.append(i + 1).append(". ").append(g.name).append(" - ").append(g.id).append("\n")
@@ -88,10 +88,10 @@ class GuildListHolder(author: Message, userID: String, channelID: String, messag
 
         val guilds = jda.guilds
 
-        if (guilds.size > SearchHolder.PAGE_CHUNK) {
+        if (guilds.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            val totalPage = ceil(guilds.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
+            val totalPage = ceil(guilds.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize).toInt()
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

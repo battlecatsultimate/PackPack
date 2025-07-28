@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.calculation.NumericalResult;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SolutionHolder;
 import net.dv8tion.jda.api.entities.User;
@@ -29,8 +30,15 @@ import java.util.regex.Pattern;
 public class Solve extends TimedConstraintCommand {
     private static final int numberOfElements = 5000;
 
-    public Solve(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, long time) {
+    private final ConfigHolder config;
+
+    public Solve(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, @Nullable IDHolder idHolder, long time) {
         super(role, lang, idHolder, time, StaticStore.COMMAND_SOLVE_ID, false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -242,7 +250,7 @@ public class Solve extends TimedConstraintCommand {
 
         replyToMessageSafely(ch, summary + sb, loader.getMessage(), a -> a.setComponents(getComponents(solutions)), msg -> {
             if(solutions.size() > 5) {
-                StaticStore.putHolder(u.getId(), new SolutionHolder(loader.getMessage(), u.getId(), ch.getId(), msg, summary, targetRanges, solutions, lang));
+                StaticStore.putHolder(u.getId(), new SolutionHolder(loader.getMessage(), u.getId(), ch.getId(), msg, config.searchLayout, summary, targetRanges, solutions, lang));
             }
         });
     }

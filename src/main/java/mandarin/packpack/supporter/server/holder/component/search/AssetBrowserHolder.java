@@ -6,6 +6,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -27,8 +28,8 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     private final List<VFile> files = new ArrayList<>();
 
-    public AssetBrowserHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull VFile vf, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, message, lang);
+    public AssetBrowserHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder.SearchLayout layout, @Nonnull VFile vf, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, "",  layout, lang);
 
         this.vf = vf;
 
@@ -42,18 +43,24 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> result = new ArrayList<>();
 
         if(!vf.getName().equals("org")) {
-            if(onText) {
-                result.add(LangID.getStringByID("assetBrowser.parentFolder", lang));
-            } else {
-                result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
+            switch (textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        result.add(LangID.getStringByID("assetBrowser.parentFolder", lang));
+                    } else {
+                        result.add(EmojiStore.FOLDERUP.getFormatted() + " " + LangID.getStringByID("assetBrowser.parentFolder", lang));
+                    }
+                }
+                case LIST_LABEL -> result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
+                case LIST_DESCRIPTION -> result.add(null);
             }
         }
 
-        for(int i = page * PAGE_CHUNK; i < (page + 1) * PAGE_CHUNK; i++) {
+        for(int i = page * chunk; i < (page + 1) * chunk; i++) {
             if(i >= files.size()) {
                 break;
             }
@@ -61,33 +68,43 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             VFile vf = files.get(i);
 
             if(vf.getData() == null) {
-                if(!onText) {
-                    result.add(EmojiStore.FOLDER.getFormatted() + "\\\\" + vf.getName().replace("_", "＿"));
-                } else {
-                    result.add(vf.getName().replace("_", "＿"));
+                switch (textType) {
+                    case TEXT -> {
+                        if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                            result.add(vf.getName());
+                        } else {
+                            result.add(EmojiStore.FOLDERUP.getFormatted() + " " + vf.getName().replace("_", "\\_"));
+                        }
+                    }
+                    case LIST_LABEL -> result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
+                    case LIST_DESCRIPTION -> result.add(null);
                 }
             } else {
-                String name = "";
+                String[] nameData = vf.getName().split("\\.");
 
-                if (!onText) {
-                    String[] nameData = vf.getName().split("\\.");
+                Emoji emoji = switch (nameData[1]) {
+                    case "png" -> EmojiStore.PNG;
+                    case "csv" -> EmojiStore.CSV;
+                    case "tsv" -> EmojiStore.TSV;
+                    case "json" -> EmojiStore.JSON;
+                    case "ini" -> EmojiStore.INI;
+                    case "imgcut" -> EmojiStore.IMGCUT;
+                    case "mamodel" -> EmojiStore.MAMODEL;
+                    case "maanim" -> EmojiStore.MAANIM;
+                    default -> EmojiStore.FILE;
+                };
 
-                    Emoji emoji = switch (nameData[1]) {
-                        case "png" -> EmojiStore.PNG;
-                        case "csv" -> EmojiStore.CSV;
-                        case "tsv" -> EmojiStore.TSV;
-                        case "json" -> EmojiStore.JSON;
-                        case "ini" -> EmojiStore.INI;
-                        case "imgcut" -> EmojiStore.IMGCUT;
-                        case "mamodel" -> EmojiStore.MAMODEL;
-                        case "maanim" -> EmojiStore.MAANIM;
-                        default -> EmojiStore.FILE;
-                    };
-
-                    name += emoji.getFormatted() + "\\\\";
+                switch (textType) {
+                    case TEXT -> {
+                        if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                            result.add(vf.getName());
+                        } else {
+                            result.add(emoji.getFormatted() + " " + vf.getName().replace("_", "\\_"));
+                        }
+                    }
+                    case LIST_LABEL -> result.add(emoji.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
+                    case LIST_DESCRIPTION -> result.add(null);
                 }
-
-                result.add(name + vf.getName().replace("_", "＿"));
             }
         }
 
@@ -104,7 +121,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             id--;
         }
 
-        if(id - page * PAGE_CHUNK == -1)
+        if(id - page * chunk == -1)
             throw new IllegalStateException("E/AssetBrowserHolder::onSelected - Invalid ID found : -1");
 
         VFile file = files.get(id);
@@ -161,7 +178,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
     }
 
     @Override
-    public void finish(GenericComponentInteractionCreateEvent event) {
+    public void finish(GenericComponentInteractionCreateEvent event, int index) {
         int id = parseDataToInt(event);
 
         if(!vf.getName().equals("org"))
@@ -169,7 +186,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
         VFile file;
 
-        if(id - page * PAGE_CHUNK == -1) {
+        if(id - page * chunk == -1) {
             file = vf.getParent();
         } else {
             file = files.get(id);
@@ -181,7 +198,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             updateVFile();
             apply(event);
         } else {
-            super.finish(event);
+            super.finish(event, index);
         }
     }
 
@@ -200,12 +217,11 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
         files.sort(this);
     }
 
-    @Override
     protected String getPage() {
         StringBuilder builder = new StringBuilder(LangID.getStringByID("assetBrowser.currentPath", lang).replace("_", vf.getPath()))
                 .append("\n\n```md\n");
 
-        List<String> data = accumulateListData(true);
+        List<String> data = accumulateTextData(TextType.TEXT);
 
         builder.append(LangID.getStringByID("ui.search.selectData", lang));
 
@@ -214,17 +230,17 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
                 if(i == 0) {
                     builder.append(data.get(i)).append("\n");
                 } else {
-                    builder.append(page * PAGE_CHUNK + i).append(". ").append(data.get(i)).append("\n");
+                    builder.append(page * chunk + i).append(". ").append(data.get(i)).append("\n");
                 }
             } else {
-                builder.append(page * PAGE_CHUNK + i + 1).append(". ").append(data.get(i)).append("\n");
+                builder.append(page * chunk + i + 1).append(". ").append(data.get(i)).append("\n");
             }
         }
 
-        if(files.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = files.size() / SearchHolder.PAGE_CHUNK;
+        if(files.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = files.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-            if(files.size() % SearchHolder.PAGE_CHUNK != 0)
+            if(files.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                 totalPage++;
 
             builder.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");

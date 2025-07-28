@@ -5,20 +5,20 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
@@ -128,7 +128,7 @@ class SlotMachinePackImportHolder(author: Message, userID: String, channelID: St
             .append(" This can be useful if you want to put whole card pack, this will reduce tediousness of creating card pack from scratch\n")
             .append("### List of Card Packs\n")
 
-        for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.cardPacks.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+        for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(CardData.cardPacks.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             builder.append(i + 1).append(". ").append(CardData.cardPacks[i].packName).append("\n")
         }
 
@@ -143,7 +143,7 @@ class SlotMachinePackImportHolder(author: Message, userID: String, channelID: St
         if (CardData.cardPacks.isEmpty()) {
             options.add(SelectOption.of("A", "A"))
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.cardPacks.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(CardData.cardPacks.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 val emoji = if (EmojiStore.PACK[CardData.cardPacks[i]]?.isNotEmpty() == true) {
                     EmojiStore.PACK[CardData.cardPacks[i]]?.random()
                 } else {
@@ -156,10 +156,10 @@ class SlotMachinePackImportHolder(author: Message, userID: String, channelID: St
 
         result.add(ActionRow.of(StringSelectMenu.create("pack").addOptions(options).setDisabled(CardData.cardPacks.isEmpty()).setPlaceholder("Select Card Pack To Be Imported").build()))
 
-        if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.cardPacks.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(CardData.cardPacks.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

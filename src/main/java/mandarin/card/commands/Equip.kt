@@ -84,15 +84,15 @@ class Equip : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val dataSize = roles.size
 
-        var totPage = dataSize / 3
+        var totalPage = dataSize / 3
 
         if (dataSize % 3 != 0)
-            totPage++
+            totalPage++
 
         if (dataSize > 3) {
             val buttons = ArrayList<Button>()
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
 
@@ -100,7 +100,7 @@ class Equip : Command(CommonStatic.Lang.Locale.EN, true) {
 
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
             }
 

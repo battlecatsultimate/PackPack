@@ -7,15 +7,15 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder.getTotalPage
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import kotlin.math.min
 
 class ManageBanner : Command(CommonStatic.Lang.Locale.EN, false) {
@@ -35,7 +35,7 @@ class ManageBanner : Command(CommonStatic.Lang.Locale.EN, false) {
         if (CardData.banners.isEmpty()) {
             builder.append("No banner\n```")
         } else {
-            for (i in 0 until min(CardData.banners.size, SearchHolder.PAGE_CHUNK)) {
+            for (i in 0 until min(CardData.banners.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 builder.append(i + 1).append(". ").append(CardData.banners[i].name).append("\n")
             }
 
@@ -51,7 +51,7 @@ class ManageBanner : Command(CommonStatic.Lang.Locale.EN, false) {
         val options = ArrayList<SelectOption>()
 
         if (CardData.banners.isNotEmpty()) {
-            for (i in 0 until min(CardData.banners.size, SearchHolder.PAGE_CHUNK)) {
+            for (i in 0 until min(CardData.banners.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 options.add(SelectOption.of(CardData.banners[i].name, i.toString()))
             }
 
@@ -64,7 +64,7 @@ class ManageBanner : Command(CommonStatic.Lang.Locale.EN, false) {
 
         val totalPage = getTotalPage(CardData.banners.size)
 
-        if (CardData.banners.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.banners.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if(totalPage > 10) {

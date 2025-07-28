@@ -3,20 +3,20 @@ package mandarin.card.supporter.holder.moderation
 import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.components.selections.SelectOption
-import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -123,9 +123,9 @@ class ManualRollSelectHolder(author: Message, userID: String, channelID: String,
 
         val packOptions = ArrayList<SelectOption>()
 
-        val size = min(CardData.cardPacks.size, SearchHolder.PAGE_CHUNK * (page + 1))
+        val size = min(CardData.cardPacks.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize * (page + 1))
 
-        for (i in page * SearchHolder.PAGE_CHUNK until size) {
+        for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until size) {
             packOptions.add(SelectOption.of(CardData.cardPacks[i].packName, CardData.cardPacks[i].uuid))
         }
 
@@ -136,9 +136,9 @@ class ManualRollSelectHolder(author: Message, userID: String, channelID: String,
 
         result.add(ActionRow.of(packs))
 
-        if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.cardPacks.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
-            val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(CardData.cardPacks.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

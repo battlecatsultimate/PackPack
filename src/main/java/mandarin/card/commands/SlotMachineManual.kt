@@ -8,15 +8,15 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.components.actionrow.ActionRow
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.UserSnowflake
 import java.util.concurrent.CountDownLatch
 import kotlin.math.ceil
 import kotlin.math.min
@@ -104,7 +104,7 @@ class SlotMachineManual : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val options = ArrayList<SelectOption>()
 
-        for (i in 0 until min(possibleSlotMachines.size, SearchHolder.PAGE_CHUNK)) {
+        for (i in 0 until min(possibleSlotMachines.size, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             val option = SelectOption.of(possibleSlotMachines[i].name, i.toString())
 
             options.add(option)
@@ -112,10 +112,10 @@ class SlotMachineManual : Command(CommonStatic.Lang.Locale.EN, true) {
 
         result.add(ActionRow.of(StringSelectMenu.create("slot").addOptions(options).setPlaceholder("Select Slot Machine To Roll").build()))
 
-        if (possibleSlotMachines.size > SearchHolder.PAGE_CHUNK) {
+        if (possibleSlotMachines.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            val totalPage = ceil(possibleSlotMachines.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(possibleSlotMachines.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())

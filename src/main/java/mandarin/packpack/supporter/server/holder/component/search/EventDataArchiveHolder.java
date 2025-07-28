@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -17,18 +18,21 @@ public class EventDataArchiveHolder extends SearchHolder {
     private final List<File> files;
     private final String fileName;
 
-    public EventDataArchiveHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, List<File> files, String fileName, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, message, lang);
+    public EventDataArchiveHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder.SearchLayout layout, List<File> files, String fileName, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, "", layout, lang);
 
         this.files = files;
         this.fileName = fileName;
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
+        if (textType == TextType.LIST_DESCRIPTION)
+            return null;
+
         List<String> result = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < Math.min(files.size(), PAGE_CHUNK * (page + 1)); i++) {
+        for(int i = chunk * page; i < Math.min(files.size(), chunk * (page + 1)); i++) {
             if (i == 0) {
                 result.add(LangID.getStringByID("eventArchive.currentEvent", lang));
             } else {

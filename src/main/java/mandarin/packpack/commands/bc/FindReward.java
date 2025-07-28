@@ -18,7 +18,6 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FindRewardMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageInfoMessageHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -119,10 +118,10 @@ public class FindReward extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(stages.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = stages.size() / SearchHolder.PAGE_CHUNK;
+                if(stages.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = stages.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(stages.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(stages.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -137,10 +136,8 @@ public class FindReward extends TimedConstraintCommand {
 
                     TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, u.getId(), ch.getId(), res,  "", treasure, configData, lang));
+                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, u.getId(), ch.getId(), res,  rewardName, config.searchLayout, "", treasure, configData, lang));
                 });
-
-
             }
         } else {
             StringBuilder sb = new StringBuilder(LangID.getStringByID("findReward.several.reward", lang).replace("_", validateName(rewardName)))
@@ -153,10 +150,10 @@ public class FindReward extends TimedConstraintCommand {
                 sb.append(i+1).append(". ").append(data.get(i)).append("\n");
             }
 
-            if(rewards.size() > SearchHolder.PAGE_CHUNK) {
-                int totalPage = rewards.size() / SearchHolder.PAGE_CHUNK;
+            if(rewards.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                int totalPage = rewards.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                if(rewards.size() % SearchHolder.PAGE_CHUNK != 0)
+                if(rewards.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                     totalPage++;
 
                 sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -171,7 +168,7 @@ public class FindReward extends TimedConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(msg, u.getId(), ch.getId(), res, rewards, rewardName, chance, amount, configData, treasure, lang));
+                StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(msg, u.getId(), ch.getId(), res, rewardName, config.searchLayout, rewards, chance, amount, configData, treasure, lang));
             });
 
             disableTimer();
@@ -272,7 +269,7 @@ public class FindReward extends TimedConstraintCommand {
     private List<String> accumulateReward(List<Integer> rewards) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= rewards.size())
                 break;
 
@@ -293,7 +290,7 @@ public class FindReward extends TimedConstraintCommand {
     private List<String> accumulateStage(List<Stage> stage, boolean onText) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= stage.size())
                 break;
 

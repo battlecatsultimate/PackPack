@@ -4,11 +4,20 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.modal.CustomRoleNameModalHolder;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -18,15 +27,6 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
-import net.dv8tion.jda.api.components.selections.SelectOption;
-import net.dv8tion.jda.api.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.components.textinput.TextInput;
-import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 
 import javax.annotation.Nonnull;
@@ -231,7 +231,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
         if (holder.ID.isEmpty()) {
             builder.append("- ").append(LangID.getStringByID("data.none", lang));
         } else {
-            int i = page * SearchHolder.PAGE_CHUNK + 1;
+            int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize + 1;
 
             for (String name : holder.ID.keySet()) {
                 String id = holder.ID.get(name);
@@ -252,8 +252,8 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                 i++;
             }
 
-            if (holder.ID.size() > SearchHolder.PAGE_CHUNK) {
-                int totalPage = (int) Math.ceil(1.0 * holder.ID.size() / SearchHolder.PAGE_CHUNK);
+            if (holder.ID.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                int totalPage = (int) Math.ceil(1.0 * holder.ID.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
                 builder.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
             }
@@ -328,8 +328,8 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                 )
         );
 
-        if (holder.ID.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(1.0 * holder.ID.size() / SearchHolder.PAGE_CHUNK);
+        if (holder.ID.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(1.0 * holder.ID.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             List<Button> buttons = new ArrayList<>();
 

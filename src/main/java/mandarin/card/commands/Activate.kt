@@ -7,6 +7,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
@@ -38,7 +39,7 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val bannerOptions = ArrayList<SelectOption>()
 
-        for (i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+        for (i in 0 until min(dataSize, ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
             bannerOptions.add(SelectOption.of(banners[i].name, i.toString()).withEmoji(if (banners[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF))
         }
 
@@ -48,7 +49,7 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val totalPage = SearchHolder.getTotalPage(dataSize)
 
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
+        if (dataSize > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if (totalPage > 10) {
@@ -80,7 +81,7 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val banners = CardData.banners
 
-        for (i in 0 until min(SearchHolder.PAGE_CHUNK, CardData.banners.size)) {
+        for (i in 0 until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize, CardData.banners.size)) {
             builder.append("**")
                 .append(banners[i].name)
                 .append("** : ")

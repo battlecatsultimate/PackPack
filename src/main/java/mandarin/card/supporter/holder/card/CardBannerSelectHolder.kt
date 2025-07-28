@@ -4,19 +4,19 @@ import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.max
 import kotlin.math.min
 
@@ -113,7 +113,7 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
         if (CardData.banners.isEmpty()) {
             builder.append("- No banner")
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.banners.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(CardData.banners.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 val banner = CardData.banners[i]
 
                 val switch = if (banner in card.banner) {
@@ -137,7 +137,7 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
         val options = ArrayList<SelectOption>()
 
         if (CardData.banners.isNotEmpty()) {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(CardData.banners.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(CardData.banners.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 val banner = CardData.banners[i]
 
                 val switch = if (banner in card.banner) {
@@ -158,7 +158,7 @@ class CardBannerSelectHolder(author: Message, userID: String, channelID: String,
 
         val totalPage = getTotalPage(CardData.banners.size)
 
-        if (CardData.banners.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.banners.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if(totalPage > 10) {

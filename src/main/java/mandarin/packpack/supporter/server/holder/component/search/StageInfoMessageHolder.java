@@ -2,13 +2,14 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -29,8 +30,8 @@ public class StageInfoMessageHolder extends SearchHolder {
     private final TreasureHolder treasure;
     private final StageInfo.StageInfoConfig configData;
 
-    public StageInfoMessageHolder(List<Stage> stage, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String additionalContent, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, message, lang);
+    public StageInfoMessageHolder(List<Stage> stage, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, String additionalContent, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, message, keyword, layout, lang);
 
         this.stage = stage;
 
@@ -41,10 +42,10 @@ public class StageInfoMessageHolder extends SearchHolder {
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1); i++) {
+        for(int i = chunk * page; i < chunk * (page + 1); i++) {
             if(i >= stage.size())
                 break;
 
@@ -54,42 +55,47 @@ public class StageInfoMessageHolder extends SearchHolder {
 
             String name = "";
 
-            if(onText) {
-                if(mc != null) {
-                    String mcn = MultiLangCont.get(mc, lang);
+            String fullName = "";
 
-                    if(mcn == null || mcn.isBlank())
-                        mcn = mc.getSID();
+            if (mc != null) {
+                String mcName = StaticStore.safeMultiLangGet(mc, lang);
 
-                    name += mcn+" - ";
-                } else {
-                    name += "Unknown - ";
+                if (mcName == null || mcName.isBlank()) {
+                    mcName = DataToString.getMapCode(mc);
                 }
-            }
 
-            String stmn = MultiLangCont.get(stm, lang);
-
-            if(stm.id != null) {
-                if(stmn == null || stmn.isBlank())
-                    stmn = Data.trio(stm.id.id);
+                fullName += mcName + " - ";
             } else {
-                if(stmn == null || stmn.isBlank())
-                    stmn = "Unknown";
+                fullName += "Unknown - ";
             }
 
-            name += stmn+" - ";
+            String stmName = StaticStore.safeMultiLangGet(stm, lang);
 
-            String stn = MultiLangCont.get(st, lang);
-
-            if(st.id != null) {
-                if(stn == null || stn.isBlank())
-                    stn = Data.trio(st.id.id);
-            } else {
-                if(stn == null || stn.isBlank())
-                    stn = "Unknown";
+            if (stmName == null || stmName.isBlank()) {
+                stmName = Data.trio(stm.id.id);
             }
 
-            name += stn;
+            fullName += stmName + " - ";
+
+            String stName = StaticStore.safeMultiLangGet(st, lang);
+
+            if (stName == null || stName.isBlank()) {
+                stName = Data.trio(st.id.id);
+            }
+
+            fullName += stName;
+
+            switch (textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        name = fullName;
+                    } else {
+                        name = "`" + DataToString.getStageCode(st) + "` " + fullName;
+                    }
+                }
+                case LIST_DESCRIPTION -> name = DataToString.getStageCode(st);
+                case LIST_LABEL -> name = fullName;
+            }
 
             data.add(name);
         }
@@ -123,10 +129,5 @@ public class StageInfoMessageHolder extends SearchHolder {
     @Override
     public int getDataSize() {
         return stage.size();
-    }
-
-    @Override
-    protected String getPage() {
-        return additionalContent + super.getPage();
     }
 }

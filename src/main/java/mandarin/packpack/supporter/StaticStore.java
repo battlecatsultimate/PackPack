@@ -416,7 +416,7 @@ public class StaticStore {
             JsonObject set = new JsonObject();
 
             set.addProperty("key", key);
-            set.add("val", holder.jsonfy());
+            set.add("val", holder.toJson());
 
             arr.add(set);
         }
@@ -556,7 +556,7 @@ public class StaticStore {
 
             if(set.has("key") && set.has("val")) {
                 String key = set.get("key").getAsString();
-                ConfigHolder val = ConfigHolder.parseJson(set.get("val").getAsJsonObject());
+                ConfigHolder val = ConfigHolder.fromJson(set.get("val").getAsJsonObject());
 
                 map.put(key, val);
             }

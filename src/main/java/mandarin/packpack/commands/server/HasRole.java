@@ -6,17 +6,17 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.HasRolePageHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.buttons.Button;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -107,7 +107,7 @@ public class HasRole extends ConstraintCommand {
 
         builder.append("\n\n");
 
-        int size = Math.min(members.size(), SearchHolder.PAGE_CHUNK);
+        int size = Math.min(members.size(), ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
         for (int i = 0; i < size; i++) {
             Member m = members.get(i);
@@ -119,8 +119,8 @@ public class HasRole extends ConstraintCommand {
             }
         }
 
-        if (members.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(members.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+        if (members.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(members.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             builder.append("\n\n").append(LangID.getStringByID("hasRole.embed.page", lang).formatted(1, totalPage));
         }
@@ -137,8 +137,8 @@ public class HasRole extends ConstraintCommand {
     private List<MessageTopLevelComponent> getComponents(List<Member> members) {
         List<MessageTopLevelComponent> result = new ArrayList<>();
 
-        if (members.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = (int) Math.ceil(members.size() * 1.0 / SearchHolder.PAGE_CHUNK);
+        if (members.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = (int) Math.ceil(members.size() * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             List<Button> buttons = new ArrayList<>();
 

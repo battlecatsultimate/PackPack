@@ -5,8 +5,15 @@ import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -15,13 +22,6 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.components.selections.SelectOption
-import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import kotlin.math.max
 import kotlin.math.min
 
@@ -139,22 +139,22 @@ class ExcludeChannelHolder(author: Message, userID: String, channelID: String, m
     private fun getComponents(guild: Guild) : List<MessageTopLevelComponent> {
         val result = ArrayList<MessageTopLevelComponent>()
 
-        if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK) {
-            var totalPage = CardData.excludedCatFoodChannel.size / SearchHolder.PAGE_CHUNK
+        if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            var totalPage = CardData.excludedCatFoodChannel.size / ConfigHolder.SearchLayout.COMPACTED.chunkSize
 
-            if (CardData.excludedCatFoodChannel.size % SearchHolder.PAGE_CHUNK != 0)
+            if (CardData.excludedCatFoodChannel.size % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                 totalPage++
 
             val pages = ArrayList<Button>()
 
-            if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK * 10) {
+            if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
             }
 
             pages.add(Button.of(ButtonStyle.SECONDARY,"prev", "Previous Page", EmojiStore.PREVIOUS).withDisabled(page - 1 < 0))
             pages.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).withDisabled(page + 1 >= totalPage))
 
-            if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK * 10) {
+            if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize * 10) {
                 pages.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage))
             }
 
@@ -174,9 +174,9 @@ class ExcludeChannelHolder(author: Message, userID: String, channelID: String, m
         if (CardData.excludedCatFoodChannel.isNotEmpty()) {
             val options = ArrayList<SelectOption>()
 
-            val size = min(CardData.excludedCatFoodChannel.size, (page + 1) * SearchHolder.PAGE_CHUNK)
+            val size = min(CardData.excludedCatFoodChannel.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
-            for (m in page * SearchHolder.PAGE_CHUNK until size) {
+            for (m in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until size) {
                 val channel = guild.getGuildChannelById(CardData.excludedCatFoodChannel[m])
 
                 if (channel != null) {
@@ -210,16 +210,16 @@ class ExcludeChannelHolder(author: Message, userID: String, channelID: String, m
         if (CardData.excludedCatFoodChannel.isEmpty())
             return builder.append("- **No Channels**").toString()
         else {
-            val size = min(CardData.excludedCatFoodChannel.size, (page + 1) * SearchHolder.PAGE_CHUNK)
+            val size = min(CardData.excludedCatFoodChannel.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
-            for (m in page * SearchHolder.PAGE_CHUNK until size) {
+            for (m in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until size) {
                 builder.append(m + 1).append(". <#").append(CardData.excludedCatFoodChannel[m]).append(">\n")
             }
 
-            if (CardData.excludedCatFoodChannel.size > SearchHolder.PAGE_CHUNK) {
-                var totalPage = CardData.excludedCatFoodChannel.size / SearchHolder.PAGE_CHUNK
+            if (CardData.excludedCatFoodChannel.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                var totalPage = CardData.excludedCatFoodChannel.size / ConfigHolder.SearchLayout.COMPACTED.chunkSize
 
-                if (CardData.excludedCatFoodChannel.size % SearchHolder.PAGE_CHUNK != 0)
+                if (CardData.excludedCatFoodChannel.size % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                     totalPage++
 
                 builder.append("\n").append("Page : ").append(1).append("/").append(totalPage)

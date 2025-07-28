@@ -13,10 +13,10 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.ComboFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.ComboMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -28,8 +28,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CatCombo extends TimedConstraintCommand {
-    public CatCombo(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
+    private final ConfigHolder config;
+
+    public CatCombo(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id) {
         super(role, lang, id, TimeUnit.SECONDS.toMillis(5), StaticStore.COMMAND_COMBO_ID, false);
+
+        this.config = config;
     }
 
     @Override
@@ -51,7 +55,7 @@ public class CatCombo extends TimedConstraintCommand {
                 disableTimer();
                 replyToMessageSafely(ch, LangID.getStringByID("combo.failed.noCombo", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(combos.size() == 1) {
-                EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang);
+                EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
             } else {
                 disableTimer();
 
@@ -63,10 +67,10 @@ public class CatCombo extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(combos.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = combos.size() / SearchHolder.PAGE_CHUNK;
+                if(combos.size() > config.searchLayout.chunkSize) {
+                    int totalPage = combos.size() / config.searchLayout.chunkSize;
 
-                    if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(combos.size() % config.searchLayout.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -80,7 +84,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), res, null, lang));
+                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), res, cName, config.searchLayout, lang));
                     }
                 });
             }
@@ -98,7 +102,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                     replyToMessageSafely(ch, LangID.getStringByID("combo.failed.noCombo", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
                 } else if(combos.size() == 1) {
-                    EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang);
+                    EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
                 } else {
                     disableTimer();
 
@@ -110,10 +114,10 @@ public class CatCombo extends TimedConstraintCommand {
                         sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                     }
 
-                    if(combos.size() > SearchHolder.PAGE_CHUNK) {
-                        int totalPage = combos.size() / SearchHolder.PAGE_CHUNK;
+                    if(combos.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                        int totalPage = combos.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                        if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
+                        if(combos.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                             totalPage++;
 
                         sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -127,7 +131,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                             Message msg = loader.getMessage();
 
-                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), res, null, lang));
+                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), res, cName, config.searchLayout, lang));
                         }
                     });
                 }
@@ -140,10 +144,10 @@ public class CatCombo extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(forms.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = forms.size() / SearchHolder.PAGE_CHUNK;
+                if(forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -157,7 +161,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, u.getId(), ch.getId(), res, lang, cName, name));
+                        StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, u.getId(), ch.getId(), res, lang, cName, name, config.searchLayout));
                     }
                 });
             }
@@ -219,7 +223,7 @@ public class CatCombo extends TimedConstraintCommand {
 
     private List<String> accumulateCombo(List<Combo> combos) {
         List<String> data = new ArrayList<>();
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= combos.size())
                 break;
 
@@ -247,7 +251,7 @@ public class CatCombo extends TimedConstraintCommand {
     private List<String> accumulateUnit(List<Form> forms) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= forms.size())
                 break;
 

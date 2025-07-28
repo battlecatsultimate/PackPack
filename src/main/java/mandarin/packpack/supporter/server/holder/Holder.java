@@ -4,14 +4,14 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
 import org.jcodec.api.NotSupportedException;
 
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ public abstract class Holder {
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
 
     public static int getTotalPage(int size) {
-        return (int) Math.ceil(size * 1.0 / SearchHolder.PAGE_CHUNK);
+        return (int) Math.ceil(size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize);
     }
 
     public static int getTotalPage(int size, int chunk) {

@@ -3094,6 +3094,7 @@
             "confirm" : "Confirm",
             "dps" : "DPS Graph",
             "no" : "No",
+            "select" : "Select",
             "yes" : "Yes"
         },
         "search" : {
@@ -3103,11 +3104,11 @@
             "expired" : "搜尋時間已超時",
             "moreSpecific" : "無數據/需要更具體的名字",
             "next" : "下一頁",
-            "page" : "\nPage : %d/%d",
+            "page" : "Page : %d/%d",
             "previous" : "上一頁",
-            "selectData" : "選擇數據\n\n",
+            "selectData" : "選擇數據",
             "selectList" : "選擇列表項以呈現數據",
-            "severalResult" : "使用_搜尋而找到幾個相關的結果...\n",
+            "severalResult" : "Searching with %s, %d results have been found...",
             "old" : {
                 "page" : {
                     "cancel" : "\n\"c\" to cancel searching process",

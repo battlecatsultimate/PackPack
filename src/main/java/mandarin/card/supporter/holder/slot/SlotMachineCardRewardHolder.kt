@@ -12,23 +12,23 @@ import mandarin.card.supporter.slot.SlotEmojiContainer
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.modals.Modal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -202,7 +202,7 @@ class SlotMachineCardRewardHolder(
         actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.filter { c -> c !== content && c is SlotPlaceHolderContent }.any { c -> c.emoji?.name == e.name && c.emoji?.id == e.id } })
 
         if (actualEmojis.isNotEmpty()) {
-            val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
+            val totalPage = getTotalPage(actualEmojis.size)
 
             if (totalPage <= page) {
                 page = totalPage - 1
@@ -292,7 +292,7 @@ class SlotMachineCardRewardHolder(
         if (actualEmojis.isEmpty()) {
             emojiOption.add(SelectOption.of("A", "A"))
         } else {
-            for (i in page * SearchHolder.PAGE_CHUNK until min(actualEmojis.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(actualEmojis.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 val e = actualEmojis[i]
 
                 emojiOption.add(SelectOption.of(e.name, i.toString()).withEmoji(e).withDescription(e.id).withDefault(e.name == content.emoji?.name && e.id == content.emoji?.id))
@@ -301,10 +301,10 @@ class SlotMachineCardRewardHolder(
 
         result.add(ActionRow.of(StringSelectMenu.create("emoji").addOptions(emojiOption).setPlaceholder("Select Emoji").setDisabled(actualEmojis.isEmpty()).build()))
 
-        if (actualEmojis.size > SearchHolder.PAGE_CHUNK) {
+        if (actualEmojis.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
-            val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(actualEmojis.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

@@ -3,18 +3,18 @@ package mandarin.card.supporter.holder
 import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
@@ -108,7 +108,7 @@ class CommandLockHolder(author: Message, userID: String, channelID: String, mess
     private fun getContents() : String {
         val builder = StringBuilder("Select command to lock/unlock\n\n")
 
-        for (i in SearchHolder.PAGE_CHUNK * page until min(SearchHolder.PAGE_CHUNK * (page + 1), classes.size)) {
+        for (i in ConfigHolder.SearchLayout.COMPACTED.chunkSize * page until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize * (page + 1), classes.size)) {
             val locked = if (classes[i] in CardData.lockedCommands) {
                 EmojiStore.SWITCHOFF.formatted + " [Locked]"
             } else {
@@ -126,7 +126,7 @@ class CommandLockHolder(author: Message, userID: String, channelID: String, mess
 
         val commandOptions = ArrayList<SelectOption>()
 
-        for (i in page * SearchHolder.PAGE_CHUNK until min(SearchHolder.PAGE_CHUNK * (page + 1), classes.size)) {
+        for (i in page * ConfigHolder.SearchLayout.COMPACTED.chunkSize until min(ConfigHolder.SearchLayout.COMPACTED.chunkSize * (page + 1), classes.size)) {
             val locked = if (classes[i] in CardData.lockedCommands) {
                 EmojiStore.SWITCHOFF
             } else {
@@ -143,7 +143,7 @@ class CommandLockHolder(author: Message, userID: String, channelID: String, mess
 
         val totalPage = getTotalPage(classes.size)
 
-        if (classes.size > SearchHolder.PAGE_CHUNK) {
+        if (classes.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
 
             if (totalPage > 10) {

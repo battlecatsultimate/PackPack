@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -35,8 +36,8 @@ public class FindRewardMessageHolder extends SearchHolder {
     private final TreasureHolder treasure;
     private final StageInfo.StageInfoConfig configData;
 
-    public FindRewardMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, List<Integer> rewards, String keyword, double chance, int amount, StageInfo.StageInfoConfig configData, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
-        super(author, userID, channelID, msg, lang);
+    public FindRewardMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, String keyword, ConfigHolder.SearchLayout layout, List<Integer> rewards, double chance, int amount, StageInfo.StageInfoConfig configData, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
+        super(author, userID, channelID, msg, keyword, layout, lang);
 
         this.rewards = rewards;
         this.keyword = keyword;
@@ -49,22 +50,46 @@ public class FindRewardMessageHolder extends SearchHolder {
     }
 
     @Override
-    public List<String> accumulateListData(boolean onText) {
+    public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1); i++) {
+        for(int i = chunk * page; i < chunk * (page + 1); i++) {
             if (i >= rewards.size())
                 break;
 
-            String rname = Data.trio(rewards.get(i)) + " ";
+            String text = null;
 
-            String name = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i), lang);
+            switch (textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(rewards.get(i));
 
-            if (name != null && !name.isBlank()) {
-                rname += name;
+                        String rewardName = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i), lang);
+
+                        if (rewardName != null && !rewardName.isBlank()) {
+                            text += " " + rewardName;
+                        }
+                    } else {
+                        text = "`" + Data.trio(rewards.get(i)) + "`";
+
+                        String rewardName = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i), lang);
+
+                        if (rewardName == null || rewardName.isBlank())
+                            rewardName = Data.trio(rewards.get(i));
+
+                        text += " " + rewardName;
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i), lang);
+
+                    if (text == null || text.isBlank())
+                        text = Data.trio(rewards.get(i));
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(rewards.get(i));
             }
 
-            data.add(rname);
+            data.add(text);
         }
 
         return data;
@@ -107,11 +132,8 @@ public class FindRewardMessageHolder extends SearchHolder {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(stages.size() > PAGE_CHUNK) {
-                    int totalPage = stages.size() / PAGE_CHUNK;
-
-                    if(stages.size() % PAGE_CHUNK != 0)
-                        totalPage++;
+                if(stages.size() > chunk) {
+                    int totalPage = getTotalPage(stages.size(), chunk);
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
                 }
@@ -120,7 +142,7 @@ public class FindRewardMessageHolder extends SearchHolder {
 
                 Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).queue(res -> {
                     if(res != null) {
-                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, userID, ch.getId(), res, "", treasure, configData, lang));
+                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, userID, ch.getId(), res, keyword, layout, "", treasure, configData, lang));
                     }
                 });
 
@@ -139,7 +161,7 @@ public class FindRewardMessageHolder extends SearchHolder {
     private List<String> accumulateStage(List<Stage> stage, boolean onText) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= stage.size())
                 break;
 

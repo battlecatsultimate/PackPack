@@ -15,7 +15,6 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.FormButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormStatMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -171,10 +170,10 @@ public class FormStat extends ConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(forms.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = forms.size() / SearchHolder.PAGE_CHUNK;
+                if(forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -187,7 +186,7 @@ public class FormStat extends ConstraintCommand {
 
                     TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, loader.getNullableMessage(), u.getId(), ch.getId(), res, config, treasure, configData, lang));
+                    StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, loader.getNullableMessage(), u.getId(), ch.getId(), res, name, config, treasure, configData, lang));
                 };
 
                 if (loader.fromMessage) {
@@ -521,7 +520,7 @@ public class FormStat extends ConstraintCommand {
     private List<String> accumulateListData(List<Form> forms) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= forms.size())
                 break;
 

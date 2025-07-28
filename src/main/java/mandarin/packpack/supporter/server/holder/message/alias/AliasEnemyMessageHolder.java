@@ -7,7 +7,7 @@ import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
@@ -231,10 +231,10 @@ public class AliasEnemyMessageHolder extends MessageHolder {
             sb.append(i+1).append(". ").append(ename).append("\n");
         }
 
-        if(enemy.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = enemy.size() / SearchHolder.PAGE_CHUNK;
+        if(enemy.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+            int totalPage = enemy.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-            if(enemy.size() % SearchHolder.PAGE_CHUNK != 0)
+            if(enemy.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                 totalPage++;
 
             sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));

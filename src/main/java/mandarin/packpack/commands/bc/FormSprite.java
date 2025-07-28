@@ -10,9 +10,9 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormSpriteMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -27,8 +27,15 @@ public class FormSprite extends TimedConstraintCommand {
     private static final int PARAM_UDI = 4;
     private static final int PARAM_EDI = 8;
 
-    public FormSprite(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, long time) {
+    private final ConfigHolder config;
+
+    public FormSprite(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_FORMSPRITE_ID, false);
+
+        if (config == null)
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
+        else
+            this.config = config;
     }
 
     @Override
@@ -72,10 +79,10 @@ public class FormSprite extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(forms.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = forms.size() / SearchHolder.PAGE_CHUNK;
+                if(forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
+                    int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
 
-                    if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
+                    if(forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
                         totalPage++;
 
                     sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
@@ -92,7 +99,7 @@ public class FormSprite extends TimedConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new FormSpriteMessageHolder(forms, msg, u.getId(), ch.getId(), res, mode, lang));
+                    StaticStore.putHolder(u.getId(), new FormSpriteMessageHolder(forms, msg, u.getId(), ch.getId(), res, search, config.searchLayout, mode, lang));
                 });
 
                 disableTimer();
@@ -190,7 +197,7 @@ public class FormSprite extends TimedConstraintCommand {
     private List<String> accumulateData(List<Form> forms) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
             if(i >= forms.size())
                 break;
 

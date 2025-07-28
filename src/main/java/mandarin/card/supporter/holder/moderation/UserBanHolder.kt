@@ -3,17 +3,17 @@ package mandarin.card.supporter.holder.moderation
 import common.CommonStatic
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import net.dv8tion.jda.api.components.MessageTopLevelComponent
-import net.dv8tion.jda.api.components.buttons.Button
-import net.dv8tion.jda.api.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -135,7 +135,7 @@ class UserBanHolder(author: Message, userID: String, channelID: String, message:
         if (CardData.bannedUser.isEmpty()) {
             builder.append("- No Banned Users")
         } else {
-            for (i in (page * SearchHolder.PAGE_CHUNK) until min(CardData.bannedUser.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            for (i in (page * ConfigHolder.SearchLayout.COMPACTED.chunkSize) until min(CardData.bannedUser.size, (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize)) {
                 builder.append(i + 1).append(". <@").append(CardData.bannedUser[i]).append("> [").append(CardData.bannedUser[i]).append("]\n")
             }
         }
@@ -153,9 +153,9 @@ class UserBanHolder(author: Message, userID: String, channelID: String, message:
                 .build()
         ))
 
-        if (CardData.bannedUser.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.bannedUser.size > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
             val buttons = ArrayList<Button>()
-            val totalPage = ceil(CardData.bannedUser.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
+            val totalPage = ceil(CardData.bannedUser.size * 1.0 / ConfigHolder.SearchLayout.COMPACTED.chunkSize).toInt()
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
