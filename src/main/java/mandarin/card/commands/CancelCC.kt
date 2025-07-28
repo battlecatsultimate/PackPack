@@ -12,7 +12,7 @@ class CancelCC : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val inventory = Inventory.getInventory(loader.user.idLong)
 
-        if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE) {
+        if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE) {
             replyToMessageSafely(loader.channel, "You currently don't own CC!", loader.message) { a -> a }
 
             return
