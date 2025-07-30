@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -296,6 +297,54 @@ public abstract class Command {
                 .setAllowedMentions(new ArrayList<>());
 
         action = function.apply(action);
+
+        if(event instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) event).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) event, Permission.MESSAGE_HISTORY)) {
+                action.mentionRepliedUser(false).queue(hook -> hook.retrieveOriginal().queue(onSuccess));
+            } else {
+                action.queue(hook -> hook.retrieveOriginal().queue(onSuccess));
+            }
+        } else {
+            action.mentionRepliedUser(false).queue(hook -> hook.retrieveOriginal().queue(onSuccess));
+        }
+    }
+
+    public static void replyToMessageSafely(GenericCommandInteractionEvent event, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
+        List<MessageTopLevelComponent> c = new ArrayList<>();
+
+        c.add(component);
+        c.addAll(Arrays.stream(components).toList());
+
+        ReplyCallbackAction action = event.deferReply()
+                .setComponents(c)
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>());
+
+        if(event instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) event).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) event, Permission.MESSAGE_HISTORY)) {
+                action.mentionRepliedUser(false).queue(hook -> hook.retrieveOriginal().queue());
+            } else {
+                action.queue(hook -> hook.retrieveOriginal().queue());
+            }
+        } else {
+            action.mentionRepliedUser(false).queue(hook -> hook.retrieveOriginal().queue());
+        }
+    }
+
+    public static void replyToMessageSafely(GenericCommandInteractionEvent event, Consumer<Message> onSuccess, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
+        List<MessageTopLevelComponent> c = new ArrayList<>();
+
+        c.add(component);
+        c.addAll(Arrays.stream(components).toList());
+
+        ReplyCallbackAction action = event.deferReply()
+                .setComponents(c)
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>());
 
         if(event instanceof GuildMessageChannel) {
             Guild g = ((GuildMessageChannel) event).getGuild();

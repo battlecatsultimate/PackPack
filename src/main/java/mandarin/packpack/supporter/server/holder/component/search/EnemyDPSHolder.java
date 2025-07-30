@@ -15,15 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyDPSHolder extends SearchHolder {
-    private final ArrayList<Enemy> form;
+    private final ArrayList<Enemy> enemies;
     private final int magnification;
 
     private final TreasureHolder t;
 
-    public EnemyDPSHolder(ArrayList<Enemy> form, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder t, int magnification, CommonStatic.Lang.Locale lang) {
+    public EnemyDPSHolder(ArrayList<Enemy> enemies, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder t, int magnification, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
-        this.form = form;
+        this.enemies = enemies;
         this.magnification = magnification;
         this.t = t;
     }
@@ -33,10 +33,10 @@ public class EnemyDPSHolder extends SearchHolder {
         List<String> data = new ArrayList<>();
 
         for(int i = chunk * page; i < chunk * (page +1); i++) {
-            if(i >= form.size())
+            if(i >= enemies.size())
                 break;
 
-            Enemy e = form.get(i);
+            Enemy e = enemies.get(i);
 
             String text = null;
 
@@ -85,9 +85,9 @@ public class EnemyDPSHolder extends SearchHolder {
         message.delete().queue();
 
         try {
-            Enemy f = form.get(index);
+            Enemy e = enemies.get(index);
 
-            EntityHandler.showEnemyDPS(ch, getAuthorMessage(), f, t, magnification, false, lang);
+            EntityHandler.showEnemyDPS(ch, getAuthorMessage(), e, t, magnification, false, false, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/EnemyDPSHolder::onSelected - Failed to perform showing enemy embed");
         }
@@ -95,6 +95,6 @@ public class EnemyDPSHolder extends SearchHolder {
 
     @Override
     public int getDataSize() {
-        return form.size();
+        return enemies.size();
     }
 }

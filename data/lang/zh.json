@@ -1260,7 +1260,7 @@
     "enemyStat" : {
         "source" : "Source of Icon : battlecats-db.com",
         "fail" : {
-            "noEnemy" : "Searching with _, but no such enemy found!"
+            "noEnemy" : "Searching with %s, but no such enemy found!"
         }
     },
     "event" : {

@@ -565,7 +565,7 @@ public class AssetManager {
                 if(rect.height % 2 == 1)
                     rect.height++;
 
-                CountDownLatch renderWaiter = new CountDownLatch(2);
+                CountDownLatch renderWaiter = new CountDownLatch(1);
 
                 StaticStore.renderManager.createRenderer(AssetManager.ICON_SIZE, AssetManager.ICON_SIZE, folder, r -> {
                     r.queue(g -> {

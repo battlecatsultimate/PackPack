@@ -1260,7 +1260,7 @@
     "enemyStat" : {
         "source" : "アイコンのソース : battlecats-db.com",
         "fail" : {
-            "noEnemy" : "_で検索しましたが、そのような敵は存在しません!"
+            "noEnemy" : "%sで検索しましたが、そのような敵は存在しません!"
         }
     },
     "event" : {

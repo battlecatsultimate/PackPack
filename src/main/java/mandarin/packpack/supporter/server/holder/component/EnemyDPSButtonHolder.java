@@ -67,6 +67,6 @@ public class EnemyDPSButtonHolder extends ComponentHolder {
 
     @Override
     public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
-        EntityHandler.showEnemyDPS(event, hasAuthorMessage() ? getAuthorMessage() : null, e, t, configData.magnification[1], true, lang);
+        EntityHandler.showEnemyDPS(event, hasAuthorMessage() ? getAuthorMessage() : null, e, t, configData.magnification[1], true, true, lang);
     }
 }

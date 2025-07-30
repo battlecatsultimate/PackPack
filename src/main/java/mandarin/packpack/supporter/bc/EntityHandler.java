@@ -40,8 +40,10 @@ import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -4323,12 +4325,10 @@ public class EntityHandler {
                     Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
                 }
             }
-
-
         }
     }
 
-    public static void showEnemyDPS(Object sender, @Nullable Message reference, Enemy e, TreasureHolder treasureSetting, int magnification, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showEnemyDPS(Object sender, @Nullable Message reference, Enemy e, TreasureHolder treasureSetting, int magnification, boolean editMode, boolean withButton, CommonStatic.Lang.Locale lang) throws Exception {
         int adjustedMagnification;
 
         if (magnification <= 0) {
@@ -4672,79 +4672,77 @@ public class EntityHandler {
         if (graphLink == null) {
             if (editMode) {
                 if (sender instanceof Message msg) {
-                    msg.editMessage(LangID.getStringByID("formDPS.failed.unknown", lang))
-                            .setEmbeds()
-                            .setComponents()
-                            .setFiles()
+                    msg.editMessageComponents(TextDisplay.of(LangID.getStringByID("formDPS.failed.unknown", lang)))
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("formDPS.failed.unknown", lang))
-                            .setEmbeds()
-                            .setComponents()
-                            .setFiles()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("formDPS.failed.unknown", lang)))
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 }
             }
         } else {
-            EmbedBuilder spec = new EmbedBuilder();
+            List<ContainerChildComponent> children = new ArrayList<>();
 
             String name = MultiLangCont.get(e, lang);
 
             if(name == null || name.isBlank())
                 name = Data.trio(e.id.id);
 
-            String desc = String.format(LangID.getStringByID("enemyDPS.graph.magnification", lang), adjustedMagnification);
+            String iconLink = StaticStore.assetManager.getEnemyIcon(e);
+
+            if (iconLink == null)
+                return;
+
+            String desc = LangID.getStringByID("enemyDPS.graph.magnification", lang).formatted(adjustedMagnification);
 
             if (treasureSetting.differentFromGlobal()) {
                 desc += "\n\n" + LangID.getStringByID("data.unit.treasure", lang);
             }
 
-            spec.setTitle(String.format(LangID.getStringByID("formDPS.graph.title", lang), name));
+            children.add(Section.of(
+                    Thumbnail.fromUrl(iconLink),
+                    TextDisplay.of(
+                            "## " + LangID.getStringByID("formDPS.graph.title", lang).formatted(name) + "\n" +
+                                    desc
+                    )
+            ));
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-            if (!desc.isBlank()) {
-                spec.setDescription(desc);
+            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(graphLink)));
+
+            if (withButton) {
+                children.add(Separator.create(false, Separator.Spacing.SMALL));
+                children.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
             }
 
-            spec.setColor(StaticStore.rainbow[0]);
-
-            String iconLink = generateIcon(e);
-
-            spec.setImage(graphLink);
-            spec.setThumbnail(iconLink);
+            Container container = Container.of(children).withAccentColor(StaticStore.rainbow[0]);
 
             if (editMode) {
-                List<MessageTopLevelComponent> components = new ArrayList<>();
-
-                components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
-
                 if (sender instanceof Message msg) {
-                    msg.editMessage("")
-                            .setEmbeds(spec.build())
-                            .setComponents(components)
-                            .setFiles()
+                    msg.editMessageComponents(container)
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                     event.deferEdit()
-                            .setContent("")
-                            .setEmbeds(spec.build())
-                            .setComponents(components)
-                            .setFiles()
+                            .setComponents(container)
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 }
             } else {
                 if (sender instanceof MessageChannel ch) {
-                    Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
+                    Command.replyToMessageSafely(ch, reference, container);
                 } else if (sender instanceof GenericCommandInteractionEvent event) {
-                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
+                    Command.replyToMessageSafely(event, container);
                 }
             }
         }

@@ -1260,7 +1260,7 @@
     "enemyStat" : {
         "source" : "아이콘 소스 : battlecats-db.com",
         "fail" : {
-            "noEnemy" : "_로 검색을 시도해 보았지만, 해당 적을 찾지 못했습니다!"
+            "noEnemy" : "%s 검색어로 검색을 시도해 보았지만, 해당 적을 찾지 못했습니다!"
         }
     },
     "event" : {
