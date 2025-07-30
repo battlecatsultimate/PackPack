@@ -285,34 +285,6 @@ public class EnemyDPS extends TimedConstraintCommand {
         return result;
     }
 
-    private List<String> accumulateData(List<Enemy> enemies) {
-        List<String> data = new ArrayList<>();
-
-        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
-            if(i >= enemies.size())
-                break;
-
-            Enemy e = enemies.get(i);
-
-            String ename;
-
-            if(e.id != null) {
-                ename = Data.trio(e.id.id)+" ";
-            } else {
-                ename = " ";
-            }
-
-            String name = StaticStore.safeMultiLangGet(e, lang);
-
-            if(name != null)
-                ename += name;
-
-            data.add(ename);
-        }
-
-        return data;
-    }
-
     public List<String> accumulateTextData(List<Enemy> enemies, SearchHolder.TextType textType) {
         List<String> data = new ArrayList<>();
 
