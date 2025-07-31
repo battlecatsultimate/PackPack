@@ -293,7 +293,7 @@ public class AssetManager {
                     return null;
                 }
 
-                EAnimD<?> anim = f.getEAnim(AnimU.UType.WALK);
+                EAnimD<?> anim = f.getEAnim(AnimU.UType.IDLE);
 
                 anim.setTime(0);
 
@@ -511,7 +511,7 @@ public class AssetManager {
 
                 String id = StaticStore.ENEMY_MODEL_ICON.formatted(Data.trio(e.id.id), hashCode);
 
-                EAnimD<?> anim = e.getEAnim(AnimU.UType.WALK);
+                EAnimD<?> anim = e.getEAnim(AnimU.UType.IDLE);
 
                 anim.setTime(0);
 
