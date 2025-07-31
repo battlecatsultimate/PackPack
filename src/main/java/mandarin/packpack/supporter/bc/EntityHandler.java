@@ -1191,7 +1191,7 @@ public class EntityHandler {
         }
 
         if (configData.showExtraStage) {
-            String exData = DataToString.getEXStage(st, lang);
+            String exData = DataToString.getEXStage(st, lang, false);
 
             if(exData != null) {
                 spec.addField(LangID.getStringByID("data.stage.misc.exStage", lang), exData, false);

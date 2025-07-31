@@ -1,6 +1,9 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
+import common.util.stage.MapColc;
+import common.util.stage.Stage;
+import common.util.stage.StageMap;
 import mandarin.packpack.supporter.*;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
@@ -385,6 +388,18 @@ public class PackBot {
             }
 
             StaticStore.initialized = true;
+
+            for (MapColc mc : MapColc.values()) {
+                for (StageMap map : mc.maps) {
+                    for (Stage st : map.list) {
+                        String ex = DataToString.getEXStage(st, CommonStatic.Lang.Locale.EN, true);
+
+                        if (ex != null) {
+                            System.out.println(DataToString.getStageCode(st) + " :\n" + ex);
+                        }
+                    }
+                }
+            }
         }
     }
 

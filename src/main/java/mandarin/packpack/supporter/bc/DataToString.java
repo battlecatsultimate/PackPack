@@ -2489,7 +2489,7 @@ public class DataToString extends Data {
         return map + " - " + stage;
     }
 
-    public static String getEXStage(Stage st, CommonStatic.Lang.Locale lang) {
+    public static String getEXStage(Stage st, CommonStatic.Lang.Locale lang, boolean withCode) {
         if(!(st.info instanceof DefStageInfo info) || (!info.exConnection && info.exStages == null)) {
             return null;
         }
@@ -2508,7 +2508,15 @@ public class DataToString extends Data {
                 Stage s = sm.list.get(i);
 
                 if(s != null) {
-                    sb.append(df.format(info.exChance * 1.0 / n)).append("% | ").append(getMapStageName(s, lang));
+                    String name;
+
+                    if (withCode) {
+                        name = getStageCode(s);
+                    } else {
+                        name = getMapStageName(s, lang);
+                    }
+
+                    sb.append(df.format(info.exChance * 1.0 / n)).append("% | ").append(name);
 
                     if(i < info.exStageIDMax)
                         sb.append("\n");
@@ -2516,7 +2524,15 @@ public class DataToString extends Data {
             }
         } else {
             for(int i = 0; i < info.exStages.length; i++) {
-                sb.append(df.format(info.exChances[i])).append("% | ").append(getMapStageName(info.exStages[i], lang));
+                String name;
+
+                if (withCode) {
+                    name = getStageCode(info.exStages[i]);
+                } else {
+                    name = getMapStageName(info.exStages[i], lang);
+                }
+
+                sb.append(df.format(info.exChances[i])).append("% | ").append(name);
 
                 if(i < info.exStages.length - 1)
                     sb.append("\n");
