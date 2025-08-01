@@ -438,7 +438,7 @@
         "ability" : "能力",
         "active" : "Active",
         "all" : "所有",
-        "attackTime" : "攻擊頻率",
+        "attackTime" : "攻擊週期",
         "attackType" : "攻擊種類",
         "backswing" : "攻擊後搖",
         "comma" : "、",
@@ -464,7 +464,7 @@
             "barrierBreaker" : "破壞護盾",
             "baseDestroyer" : "善於攻城",
             "behemothSlayer" : "超獸特效",
-            "blastAttack" : "Blast Attack",
+            "blastAttack" : "爆波攻擊",
             "colossusSlayer" : "超生命體特效",
             "conjure" : "召喚",
             "counterSurge" : "烈波反擊",
@@ -479,7 +479,7 @@
             "insaneDamage" : "極度傷害",
             "insanelyTough" : "超耐打",
             "invincibility" : "攻擊無效",
-            "kb" : "打飛",
+            "kb" : "打飛敵人",
             "massiveDamage" : "超大傷害",
             "metal" : "鋼鐵",
             "metalKiller" : "鋼鐵殺手",
@@ -504,10 +504,10 @@
             "witchKiller" : "終結魔女",
             "zombieKiller" : "終結不死",
             "description" : {
-                "colossusSlayer" : " (受到0.7倍傷害 / 造成1.6倍傷害)",
-                "evaAngelKiller" : " (受到0.2倍傷害 / 造成5倍傷害)",
-                "sageSlayer" : " (受到0.5倍傷害 / 造成1.2倍傷害 / Bypass Resists)",
-                "witchKiller" : " (受到0.1倍傷害 / 造成5倍傷害)",
+                "colossusSlayer" : " (受到0.7倍傷害、造成1.6倍傷害)",
+                "evaAngelKiller" : " (受到0.2倍傷害、造成5倍傷害)",
+                "sageSlayer" : " (受到0.5倍傷害、造成1.2倍傷害、無視控場耐性)",
+                "witchKiller" : " (受到0.1倍傷害、造成5倍傷害)",
                 "insaneDamage" : {
                     "normal" : " (造成5~6倍傷害)",
                     "withTreasure" : " (造成5~6倍<%s倍>傷害)"
@@ -525,13 +525,13 @@
                     "withTreasure" : " (受到0.25~0.2倍<%s倍>傷害)"
                 },
                 "strong" : {
-                    "normal" : " (受到0.5~0.4倍傷害 / 造成1.5~1.8倍傷害)",
-                    "withTreasure" : " (受到0.5~0.4倍<%s倍>傷害 / 造成1.5~1.8倍<%s倍>傷害)"
+                    "normal" : " (受到0.5~0.4倍傷害、造成1.5~1.8倍傷害)",
+                    "withTreasure" : " (受到0.5~0.4倍<%s倍>傷害、造成1.5~1.8倍<%s倍>傷害)"
                 }
             },
             "immunities" : {
                 "bossWave" : "免疫魔王震波",
-                "blastAttack" : "Imu. Blast Attack",
+                "blastAttack" : "爆波傷害無效",
                 "curse" : "詛咒無效",
                 "freeze" : "動作停止無效",
                 "kb" : "打飛無效",
@@ -630,112 +630,112 @@
             "area" : "範圍"
         },
         "combo" : {
-            "combo" : "Combo",
+            "combo" : "聯組",
             "accountant" : {
-                "description" : "Increases money drop from enemies by %d%%",
-                "title" : "Accounting Combo"
+                "description" : "敵人掉落金錢提升%d%%",
+                "title" : "會計能力"
             },
             "attack" : {
-                "description" : "攻擊力增加%d%%",
-                "title" : "攻擊力連組"
+                "description" : "角色攻擊力提升%d%%",
+                "title" : "攻擊力"
             },
             "baseHealth" : {
-                "description" : "Increases base health by %d%%",
-                "title" : "Base Health Combo"
+                "description" : "城堡耐久提升%d%%",
+                "title" : "城堡耐久力"
             },
             "cannonCharge" : {
-                "description" : "Reduces cannon charging time by %df (%ss)",
-                "title" : "Cannon Charge Time Combo"
+                "description" : "充能時間減少%df（%s秒）",
+                "title" : "貓咪砲充電速度"
             },
             "cannonDamage" : {
-                "description" : "Increases cannon damage by %d%%",
-                "title" : "Cannon Attack Combo"
+                "description" : "貓咪砲攻擊力提升%d%%",
+                "title" : "貓咪砲攻擊力"
             },
             "cooldown" : {
-                "description" : "Decrease cooldown by %df (%ss)",
-                "title" : "Cooldown Combo"
+                "description" : "角色生產時間縮短%df（%s秒）",
+                "title" : "研究力"
             },
             "critical" : {
-                "description" : "會心一擊機率增加%d%%",
-                "title" : "“會心一擊”連組"
+                "description" : "會心一擊機率提升%d%%加成",
+                "title" : "會心一擊"
             },
             "efficiency" : {
-                "description" : "Increase money increase per frame by %d%%",
-                "title" : "Worker Cat Efficiency Combo"
+                "description" : "金錢增加的速度提升%d%%",
+                "title" : "工作狂貓工作效率"
             },
             "evaAngelKiller" : {
-                "description" : "Increase ability effect by %d%% (Receives damage %sx / Deals damage %sx)",
-                "title" : "Ability Combo : EVA Killer"
+                "description" : "「終結使徒」的效果提升%d%%（受到%s倍傷害、造成%s倍傷害)",
+                "title" : "「終結使徒」的效果"
             },
             "freeze" : {
-                "description" : "動作停止時長增加%d%%",
-                "title" : "”使動作停止“連組"
+                "description" : "動作停止時長提升%d%%",
+                "title" : "動作停止"
             },
             "health" : {
-                "description" : "體力增加%d%%",
-                "title" : "體力連組"
+                "description" : "角色體力提升%d%%",
+                "title" : "體力"
             },
             "initialCharge" : {
-                "description" : "Starts battle with cannon %d%% charged",
-                "title" : "Cannon Initial Charge Combo"
+                "description" : "開始關卡時貓咪砲充能至%d%%",
+                "title" : "初期貓咪砲能量值"
             },
             "initialMoney" : {
-                "description" : "Starts battle with %d money",
-                "title" : "Initial Money Combo"
+                "description" : "開始關卡時持有%d元",
+                "title" : "初期所持金額"
             },
             "kb" : {
-                "description" : "擊退距離增加%d%%",
-                "title" : "”打飛敵人“連組"
+                "description" : "打飛距離提升%d%%",
+                "title" : "能打飛"
             },
             "massiveDamage" : {
-                "description" : "超大傷害能力增加%d%%（攻擊倍數 %s ~ %s倍）",
-                "title" : "“超大傷害”連組"
+                "description" : "超大傷害能力提升%d%%（造成%s~%s倍傷害攻擊）",
+                "title" : "超大傷害"
             },
             "resistant" : {
-                "description" : "很耐打能力增加%d%%（受到傷害倍數%s ~ %s倍）",
-                "title" : "”很耐打“連組"
+                "description" : "很耐打能力提升%d%%（受到%s~%s倍傷害）",
+                "title" : "很耐打"
             },
             "size" : {
-                "l" : "L",
-                "m" : "M",
-                "sm" : "Sm",
-                "xl" : "XL"
+                "l" : "大",
+                "m" : "中",
+                "sm" : "小",
+                "xl" : "究極"
             },
             "slow" : {
-                "description" : "緩速時長增加%d%%",
-                "title" : "”緩速“連組"
+                "description" : "動作變慢時長提升%d%%",
+                "title" : "使動作變慢"
             },
             "speed" : {
-                "description" : "移動速度增加%d%%",
+                "description" : "角色移動速度提升%d%%",
                 "title" : "移動速度"
             },
             "strengthen" : {
-                "description" : "攻擊力上升倍數增加%d%%",
-                "title" : "“攻擊力上升”連組"
+                "description" : "攻擊力上升倍率提升%d%%加成",
+                "title" : "攻擊力上升"
             },
             "strong" : {
-                "description" : "善於攻擊能力增加%d%%（受到傷害倍數%s ~ %s倍 / 攻擊倍數 %s ~ %s倍）",
-                "title" : "”善於攻擊“連組"
+                "description" : "善於攻擊能力提升%d%%（受到%s~%s倍傷害、造成%s~%s倍傷害）",
+                "title" : "善於攻擊"
             },
             "study" : {
-                "description" : "Increases earned XP by %d%%",
-                "title" : "Study Combo"
+                "description" : "關卡掉落XP提升%d%%",
+                "title" : "學習力"
             },
             "wallet" : {
-                "description" : "Increase wallet size by %d%%",
-                "title" : "Wallet Size Combo"
+                "description" : "錢包容量提升%d%%",
+                "title" : "工作狂貓錢包"
             },
             "weaken" : {
-                "description" : "攻擊力下降時長增加%d%%",
-                "title" : "“攻擊力下降”連組"
+                "description" : "攻擊力下降時長提升%d%%",
+                "title" : "攻擊力下降"
             },
             "witchKiller" : {
-                "description" : "Increase ability effect by %d%% (Receives damage %sx / Deals damage %sx)",
-                "title" : "Ability Combo : Witch Killer"
+                "description" : "「終結魔女」的效果提升%d%%（受到%s倍傷害、造成%s倍傷害)",
+                "title" : "「終結魔女」的效果"
             },
             "worker" : {
-                "description" : "Starts battle with level %d worker cat",
-                "title" : "Worker Cat Combo"
+                "description" : "開始關卡時工作狂貓等級提升至等級%d",
+                "title" : "初期工作狂貓等級"
             }
         },
         "compact" : {
@@ -765,17 +765,17 @@
             "basePercentage" : "城堡剩餘體力聯動",
             "castle" : "城堡",
             "continuable" : "可接關",
-            "cyclones" : "旋風關卡",
+            "cyclones" : "漩渦關卡",
             "difficulty" : "難易度",
             "enemy" : "敵人",
             "enemyLimit" : "敵方出擊上限",
             "energy" : "統率力",
-            "guardBarrier" : "Guard Barrier",
+            "guardBarrier" : "城堡屏障",
             "infinite" : "無限",
             "isBoss" : "為魔王",
-            "killCount" : "貓魂召喚數",
+            "killCount" : "貓咪陣亡總數",
             "layer" : "層",
-            "length" : "關卡總長",
+            "length" : "關卡寬度",
             "loop1" : "循環1",
             "loop2" : "循環2",
             "magnification" : "強化倍率",
@@ -1058,73 +1058,73 @@
         },
         "treasure" : {
             "cotc" : {
-                "crystal" : "CotC Crystal Treasure",
-                "title" : "Cats of the Cosmos Treasures",
+                "crystal" : "宇宙篇水晶寶物",
+                "title" : "宇宙篇寶物",
                 "alien" : {
-                    "text" : "Enigma Fruit (Alien Enemy Treasure)",
-                    "ui" : "Enigma Fruit"
+                    "text" : "異星果實（對異星戰士特殊能力）",
+                    "ui" : "異星果實"
                 },
                 "metal" : {
-                    "text" : "Titanium Fruit (Metal Enemy Treasure)",
-                    "ui" : "Titanium Fruit"
+                    "text" : "鋼鐵果實（對鋼鐵敵人特殊能力）",
+                    "ui" : "鋼鐵果實"
                 },
                 "study" : {
-                    "text" : "Neutrino (Study Treasure 2)",
-                    "ui" : "Neutrino"
+                    "text" : "微中子（學習力）",
+                    "ui" : "微中子"
                 },
                 "zombie" : {
-                    "text" : "Antimatter Fruit (Zombie Enemy Treasure)",
-                    "ui" : "Antimatter Fruit "
+                    "text" : "異界果實（對不死生物特殊能力）",
+                    "ui" : "異界果實 "
                 }
             },
             "eoc" : {
-                "title" : "Empire of Cats Treasures",
+                "title" : "世界篇寶物",
                 "accountant" : {
-                    "text" : "Super Register (Accountant Treasure)",
-                    "ui" : "Super Register"
+                    "text" : "無敵收銀機（會計力）",
+                    "ui" : "無敵收銀機"
                 },
                 "damage" : {
-                    "text" : "Legendary Cat Sword (Unit Attack Treasure)",
-                    "ui" : "Legendary Cat Sword"
+                    "text" : "傳説的貓咪神劍（角色攻擊力）",
+                    "ui" : "傳説的貓咪神劍"
                 },
                 "health" : {
-                    "text" : "Legendary Cat Shield (Unit Heath Treasure)",
-                    "ui" : "Legendary Cat Shield"
+                    "text" : "傳説的貓之盾（角色體力）",
+                    "ui" : "傳説的貓之盾"
                 },
                 "research" : {
-                    "text" : "Relativity Clock (Research Treasure)",
-                    "ui" : "Relativity Clock"
+                    "text" : "時間縮短鐘（研究力）",
+                    "ui" : "時間縮短鐘"
                 },
                 "study" : {
-                    "text" : "Philosopher's Stone (Study Treasure)",
-                    "ui" : "Philosopher's Stone"
+                    "text" : "賢者之石（學習力）",
+                    "ui" : "賢者之石"
                 }
             },
             "itf" : {
-                "crystal" : "ItF Crystal Treasure",
-                "title" : "Into the Future Treasures",
+                "crystal" : "未來篇水晶寶物",
+                "title" : "未來篇寶物",
                 "angel" : {
-                    "text" : "Heaven's Fruit (Angel Enemy Treasure)",
-                    "ui" : "Heaven's Fruit"
+                    "text" : "天界果實（對天使敵人特殊能力）",
+                    "ui" : "天界果實"
                 },
                 "black" : {
-                    "text" : "Void Fruit (Black Enemy Treasure)",
-                    "ui" : "Void Fruit"
+                    "text" : "暗黑果實（對黑色敵人特殊能力）",
+                    "ui" : "暗黑果實"
                 },
                 "floating" : {
-                    "text" : "Sky Fruit (Floating Enemy Treasure)",
-                    "ui" : "Sky Fruit"
+                    "text" : "飛翔果實（對漂浮敵人特殊能力）",
+                    "ui" : "飛翔果實"
                 },
                 "red" : {
-                    "text" : "Blood Fruit (Red Enemy Treasure)",
-                    "ui" : "Blood Fruit"
+                    "text" : "紅血果實（對紅色敵人特殊能力）",
+                    "ui" : "紅血果實"
                 }
             },
             "upgrades" : {
-                "accountant" : "Accountant Level",
-                "research" : "Research Level",
-                "study" : "Study Level",
-                "title" : "Basic Upgrades"
+                "accountant" : "會計力",
+                "research" : "研究力",
+                "study" : "學習力",
+                "title" : "能力值"
             }
         },
         "unit" : {
@@ -1160,8 +1160,8 @@
     "date" : {
         "year" : "年",
         "day" : {
-            "plural" : " 日 ",
-            "singular" : " 日 "
+            "plural" : "日",
+            "singular" : "日"
         },
         "dayOfWeek" : {
             "friday" : "星期五",
@@ -1174,8 +1174,8 @@
             "weekend" : "週末"
         },
         "hour" : {
-            "plural" : " 小時 ",
-            "singular" : " 小時 "
+            "plural" : "時",
+            "singular" : "時"
         },
         "minute" : {
             "lowercase" : {
@@ -1183,8 +1183,8 @@
                 "singular" : "分"
             },
             "uppercase" : {
-                "plural" : " 分 ",
-                "singular" : " 分 "
+                "plural" : "分",
+                "singular" : "分"
             }
         },
         "monthOfYear" : {
@@ -1202,8 +1202,8 @@
             "september" : "9月"
         },
         "second" : {
-            "plural" : " 秒 ",
-            "singular" : " 秒 "
+            "plural" : "秒",
+            "singular" : "秒"
         }
     },
     "differentiate" : {
@@ -1278,8 +1278,8 @@
         },
         "gachaCode" : {
             "5capsules" : {
-                "code" : "5",
-                "fullName" : "5 Capsules"
+                "code" : "5連優惠",
+                "fullName" : "500罐頭可進行5連抽"
             },
             "grandon" : {
                 "code" : "土龍鑽",
@@ -1504,8 +1504,8 @@
             "35030" : "Come-Back Stamp",
             "35031" : "Come-Back Stamp",
             "35032" : "Come-Back Stamp",
-            "35033" : "Summer Break Survival Stamp",
-            "35034" : "Evangelion Collab Stamp",
+            "35033" : "14.5 「貓咪的暑假 野外生存」活動紀念登入章",
+            "35034" : "14.5 「福音戰士」合作活動紀念登入章（17天）",
             "rankingDojo" : "排行賽會場：_"
         },
         "permanentSchedule" : {
@@ -2403,9 +2403,9 @@
     "printEvent" : {
         "timeZone" : "正在上傳以時區UTC_為基礎的活動資訊",
         "tooLong" : {
-            "gacha" : "由於轉蛋資料較多，正在上傳文件",
-            "item" : "由於物品/販賣資料較多，正在上傳文件",
-            "sale" : "由於活動資料過多，正在上傳原始文件"
+            "gacha" : "由於轉蛋數據較多，正在上傳文件",
+            "item" : "由於物品/販賣數據較多，正在上傳文件",
+            "sale" : "由於活動數據過多，正在上傳文件"
         }
     },
     "rPlot" : {
@@ -3022,23 +3022,23 @@
     "treasure" : {
         "adjusted" : "成功調整其他等級/寶物設定",
         "canceled" : "已取消寶藏設定",
-        "expired" : "寶物設定已終止：超時",
+        "expired" : "寶物設定已終止：操作逾時",
         "finished" : "成功更改個人寶物數據",
         "adjust" : {
-            "CotC" : "Adjust Cats of the Cosmos Treasures",
-            "EoC" : "Adjust Empire of Cats Treasures",
-            "ItF" : "Adjust Into the Future Treasures",
-            "basicLevels" : "Adjust Basic Levels"
+            "CotC" : "更改宇宙篇寶物倍率",
+            "EoC" : "更改世界篇寶物倍率",
+            "ItF" : "更改未來篇寶物倍率",
+            "basicLevels" : "更改能力值等級"
         },
         "done" : {
-            "CotC" : "成功設定宇宙篇寶物設定，請看上面的結果",
-            "EoC" : "成功設定世界篇寶物設定，請看上面的結果",
-            "ItF" : "成功設定未來篇寶物設定，請看上面的結果",
-            "basicLevel" : "成功設定基本升級，請看上面的結果"
+            "CotC" : "成功設置宇宙篇寶物倍率，結果如上",
+            "EoC" : "成功設置世界篇寶物倍率，結果如上",
+            "ItF" : "成功設置未來篇寶物倍率，結果如上",
+            "basicLevel" : "成功設置更改能力值等級，結果如上"
         },
         "failed" : {
             "notNumber" : "%s：請輸入數字",
-            "outOfRange" : "%s：數據範圍不對，範圍應該在%d到%d範圍以內"
+            "outOfRange" : "%s：數據不在範圍內，應為%d至%d"
         },
         "range" : {
             "level" : " [Lv.%d ~ Lv.%d]",
@@ -3051,14 +3051,14 @@
                 "study" : "請輸入學習力等級"
             },
             "treasure" : {
-                "accountant" : "請輸入會計力寶物設定",
+                "accountant" : "請輸入會計力寶物數據",
                 "alien" : "請輸入異星敵人寶物數據",
                 "angel" : "請輸入天使敵人寶物數據",
-                "attack" : "請輸入攻擊力寶物設定",
+                "attack" : "請輸入攻擊力寶物數據",
                 "black" : "請輸入黑色敵人寶物數據",
                 "cotcCrystal" : "請輸入宇宙篇水晶數據",
                 "floating" : "請輸入漂浮敵人寶物數據",
-                "health" : "請輸入體力寶物設定",
+                "health" : "請輸入體力寶物數據",
                 "itfCrystal" : "請輸入未來篇水晶數據",
                 "metal" : "請輸入鋼鐵敵人寶物數據",
                 "red" : "請輸入紅色敵人寶物數據",
@@ -3066,7 +3066,7 @@
                 "zombie" : "請輸入不死敵人寶物數據",
                 "study" : {
                     "cotc" : "請輸入宇宙篇學習力寶物數據",
-                    "eoc" : "請輸入會計力寶物設定"
+                    "eoc" : "請輸入會計力寶物數據"
                 }
             }
         },
@@ -3076,21 +3076,21 @@
         }
     },
     "ui" : {
-        "confirmExpired" : "Confirmation expired",
+        "confirmExpired" : "確認操作逾時",
         "button" : {
-            "back" : "Back",
-            "cancel" : "Cancel",
-            "close" : "Close",
-            "confirm" : "Confirm",
-            "dps" : "DPS Graph",
-            "no" : "No",
-            "yes" : "Yes"
+            "back" : "返回",
+            "cancel" : "取消",
+            "close" : "關閉",
+            "confirm" : "確認",
+            "dps" : "DPS圖表",
+            "no" : "否",
+            "yes" : "是"
         },
         "search" : {
             "10Next" : "後十頁",
             "10Previous" : "前十頁",
             "canceled" : "已取消搜尋",
-            "expired" : "搜尋時間已超時",
+            "expired" : "搜尋操作逾時",
             "moreSpecific" : "無數據/需要更具體的名字",
             "next" : "下一頁",
             "page" : "\nPage : %d/%d",
