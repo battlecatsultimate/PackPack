@@ -271,35 +271,6 @@ public class EnemyImage extends TimedConstraintCommand {
         return result.toString().trim();
     }
 
-    private String getModeName(int mode, int max) {
-        switch (mode) {
-            case 1 -> {
-                return LangID.getStringByID("data.animation.mode.idle", lang);
-            }
-            case 2 -> {
-                return LangID.getStringByID("data.animation.mode.attack", lang);
-            }
-            case 3 -> {
-                return LangID.getStringByID("formImage.mode.kb", lang);
-            }
-            case 4 -> {
-                if (max == 5)
-                    return LangID.getStringByID("data.animation.mode.enter", lang);
-                else
-                    return LangID.getStringByID("formImage.mode.burrowDown", lang);
-            }
-            case 5 -> {
-                return LangID.getStringByID("formImage.mode.burrowMove", lang);
-            }
-            case 6 -> {
-                return LangID.getStringByID("formImage.mode.burrowUp", lang);
-            }
-            default -> {
-                return LangID.getStringByID("data.animation.mode.walk", lang);
-            }
-        }
-    }
-
     private String getSearchKeyword(String command) {
         String result = filterCommand(command);
 
