@@ -35,7 +35,7 @@ public abstract class ModalHolder extends Holder {
         for(int i = 0; i < mappings.size(); i++) {
             ModalMapping mapping = mappings.get(i);
 
-            if(mapping.getId().equals(key)) {
+            if(mapping.getCustomId().equals(key)) {
                 return mapping.getAsString();
             }
         }
@@ -45,7 +45,7 @@ public abstract class ModalHolder extends Holder {
                 .append(" found in this mappings\n\nMapping : [\n");
 
         for(int i = 0; i < mappings.size(); i++) {
-            builder.append(mappings.get(i).getId())
+            builder.append(mappings.get(i).getCustomId())
                     .append(" [")
                     .append(mappings.get(i).getType())
                     .append("] -> ")

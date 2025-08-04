@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class EnemyAnimMessageHolder extends SearchHolder {
-    private final ArrayList<Enemy> enemy;
+    private final ArrayList<Enemy> enemies;
 
     private final int mode;
     private final int frame;
@@ -35,11 +35,12 @@ public class EnemyAnimMessageHolder extends SearchHolder {
     private final boolean gifMode;
 
     private final String command;
+    private final StringBuilder primary;
 
-    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
+    public EnemyAnimMessageHolder(ArrayList<Enemy> enemies, Message author, String userID, String channelID, Message message, StringBuilder primary, String keyword, ConfigHolder.SearchLayout layout, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
-        this.enemy = enemy;
+        this.enemies = enemies;
 
         this.mode = mode;
         this.frame = frame;
@@ -50,6 +51,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
         this.gifMode = gifMode;
 
         this.command = author.getContentRaw();
+        this.primary = primary;
     }
 
     @Override
@@ -57,10 +59,10 @@ public class EnemyAnimMessageHolder extends SearchHolder {
         List<String> data = new ArrayList<>();
 
         for (int i = chunk * page; i < chunk * (page + 1); i++) {
-            if (i >= enemy.size())
+            if (i >= enemies.size())
                 break;
 
-            Enemy e = enemy.get(i);
+            Enemy e = enemies.get(i);
 
             String text = null;
 
@@ -107,7 +109,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
         MessageChannel ch = event.getChannel();
 
         try {
-            Enemy e = enemy.get(index);
+            Enemy e = enemies.get(index);
 
             if(EnemyGif.forbidden.contains(e.id.id)) {
                 ch.sendMessage(LangID.getStringByID("data.animation.gif.dummy", lang)).queue();
@@ -131,7 +133,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                                 g = null;
                             }
 
-                            EntityHandler.generateEnemyAnim(e, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode, () -> {
+                            EntityHandler.generateEnemyAnim(e, ch, getAuthorMessage(), primary, g == null ? 0 : g.getBoostTier().getKey(), mode, transparent, debug, frame, lang, raw, gifMode, () -> {
                                 if(!StaticStore.conflictedAnimation.isEmpty()) {
                                     StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
                                     StaticStore.conflictedAnimation.clear();
@@ -204,6 +206,6 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
     @Override
     public int getDataSize() {
-        return enemy.size();
+        return enemies.size();
     }
 }

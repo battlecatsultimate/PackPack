@@ -31,6 +31,8 @@ import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.GLGraphics;
 import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.lang3.SystemUtils;
@@ -928,14 +930,15 @@ public class ImageDrawing {
         return mp4;
     }
 
-    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, CommonStatic.Lang.Locale lang) throws Exception {
+    public static File drawAnimGif(EAnimD<?> anim, Message msg, StringBuilder primary, float siz, boolean performance, boolean transparent, boolean debug, int limit, CommonStatic.Lang.Locale lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
             boolean res = temp.mkdirs();
 
             if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                StaticStore.logger.uploadLog("W/ImageDrawing::drawAnimGif - Can't create folder : " + temp.getAbsolutePath());
+
                 return null;
             }
         }
@@ -968,7 +971,7 @@ public class ImageDrawing {
         for(float i = 0; i < Math.min(frame, 300); i += performance ? 0.5f : 1f) {
             anim.setTime(i);
 
-            ArrayList<int[][]> rects = new ArrayList<>();
+            ArrayList<int[][]> rectangles = new ArrayList<>();
             ArrayList<P> centers = new ArrayList<>();
 
             for(int j = 0; j < anim.getOrder().length; j++) {
@@ -993,7 +996,7 @@ public class ImageDrawing {
                 if(Math.abs(result[1][0]-result[0][0]) >= (1000 * siz * 0.5) || Math.abs(result[1][1] - result[2][1]) >= (1000 * siz * 0.5))
                     continue;
 
-                rects.add(result);
+                rectangles.add(result);
                 centers.add(getter.center);
 
                 int oldX = rect.x;
@@ -1014,7 +1017,7 @@ public class ImageDrawing {
                 rect.height = Math.round(Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height));
             }
 
-            rectFrames.add(rects);
+            rectFrames.add(rectangles);
             centerFrames.add(centers);
         }
 
@@ -1030,22 +1033,24 @@ public class ImageDrawing {
             ratio = 1f;
         }
 
-        String cont = LangID.getStringByID("data.animation.gif.analyzingBox", lang)+ "\n"
-                + LangID.getStringByID("data.animation.gif.analysis.result", lang).replace("_WWW_", String.valueOf(rect.width))
-                .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
-                .replace("_YYY_", String.valueOf(rect.x))+"\n";
+        final StringBuilder secondary = new StringBuilder(primary);
+
+        secondary.append(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).append("\n")
+                .append(LangID.getStringByID("data.animation.gif.analysis.result", lang).formatted(rect.width, rect.height, rect.x, rect.y)).append("\n");
 
         if(ratio != 1.0) {
-            cont += LangID.getStringByID("data.animation.gif.analysis.adjust.gif", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n";
+            secondary.append(LangID.getStringByID("data.animation.gif.analysis.adjust.gif", lang).formatted(DataToString.df.format(ratio * 100.0))).append("\n\n");
         } else {
-            cont += LangID.getStringByID("data.animation.gif.analysis.canGo", lang)+"\n";
+            secondary.append(LangID.getStringByID("data.animation.gif.analysis.canGo", lang)).append("\n\n");
         }
 
-        cont += LangID.getStringByID("data.animation.gif.analysis.final", lang).replace("_WWW_", String.valueOf((int) (ratio * rect.width)))
-                .replace("_HHH_", String.valueOf((int) (ratio * rect.height))).replace("_XXX_", String.valueOf((int) (ratio * rect.x)))
-                .replace("_YYY_", String.valueOf((int) (ratio * rect.y)));
+        secondary.append(LangID.getStringByID("data.animation.gif.analysis.final", lang).formatted((int) (ratio * rect.width), (int) (ratio * rect.height), (int) (ratio * rect.x), (int) (ratio * rect.y))).append("\n\n");
 
-        msg.editMessage(cont).queue();
+        msg.editMessageComponents(TextDisplay.of(secondary.toString()))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
 
         rect.x = (int) (ratio * rect.x);
         rect.y = (int) (ratio * rect.y);
@@ -1066,7 +1071,6 @@ public class ImageDrawing {
         CountDownLatch waiter = new CountDownLatch(1);
 
         int finalFrame = frame;
-        String finalCont = cont;
 
         StaticStore.renderManager.createRenderer(rect.width, rect.height, targetFolder, connector -> {
             for(float i = 0; i < Math.min(finalFrame, 300); i += performance ? 0.5f : 1f) {
@@ -1074,21 +1078,28 @@ public class ImageDrawing {
 
                 connector.queue(g -> {
                     if(System.currentTimeMillis() - current[0] >= 1000) {
-                        String content = finalCont +"\n\n";
-
                         String prog = DataToString.df.format(finalF * 100.0 / finalFrame);
                         String eta = getETA(start, System.currentTimeMillis(), finalF, performance ? finalFrame * 2 : finalFrame);
                         String ind = String.valueOf(finalF);
                         String len = String.valueOf(finalFrame);
 
-                        content += LangID.getStringByID("data.animation.background.progress", lang)
-                                .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
-                                .replace("_LLL_", len)
-                                .replace("_BBB_", getProgressBar(finalF, finalFrame))
-                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+                        String progressBar = LangID.getStringByID("data.animation.background.progress", lang)
+                                .formatted(
+                                        " ".repeat(Math.max(0, len.length() - ind.length())) + ind,
+                                        len,
+                                        getProgressBar(finalF, finalFrame),
+                                        " ".repeat(Math.max(0, 6 - prog.length())) + prog,
+                                        " ".repeat(Math.max(0, 6 - eta.length())) + eta
+                                );
 
-                        msg.editMessage(content).queue();
+                        msg.editMessageComponents(
+                                TextDisplay.of(secondary.toString()),
+                                Separator.create(false, Separator.Spacing.LARGE),
+                                Container.of(TextDisplay.of(progressBar))
+                                ).useComponentsV2()
+                                .setAllowedMentions(new ArrayList<>())
+                                .mentionRepliedUser(false)
+                                .queue();
 
                         current[0] = System.currentTimeMillis();
                     }
@@ -1097,8 +1108,10 @@ public class ImageDrawing {
 
                     g.setStroke(1.5f, GLGraphics.LineEndMode.VERTICAL);
 
-                    g.setColor(54,57,63,255);
-                    g.fillRect(0, 0, rect.width, rect.height);
+                    if (!transparent) {
+                        g.setColor(54,57,63,255);
+                        g.fillRect(0, 0, rect.width, rect.height);
+                    }
 
                     if(debug) {
                         int rectIndex = (int) (performance ? finalF * 2f : finalF);
@@ -1130,16 +1143,25 @@ public class ImageDrawing {
 
             return Unit.INSTANCE;
         }, null, () -> {
-            String content = finalCont + "\n\n"+
-                    LangID.getStringByID("data.animation.background.progress", lang)
-                            .replace("_PPP_", String.valueOf(finalFrame))
-                            .replace("_LLL_", String.valueOf(finalFrame))
-                            .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
-                            .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "     0") + "\n"+
-                    LangID.getStringByID("data.animation.gif.uploading.gif", lang);
+            String progressBar = LangID.getStringByID("data.animation.background.progress", lang)
+                    .formatted(
+                            String.valueOf(finalFrame),
+                            finalFrame,
+                            getProgressBar(finalFrame, finalFrame),
+                            "100.00",
+                            "     0"
+                    );
 
-            msg.editMessage(content).queue();
+            msg.editMessageComponents(
+                    TextDisplay.of(secondary.toString()),
+                    Separator.create(false, Separator.Spacing.LARGE),
+                    Container.of(TextDisplay.of(progressBar)),
+                    Separator.create(false, Separator.Spacing.LARGE),
+                    TextDisplay.of(LangID.getStringByID("data.animation.gif.processing.gif", lang))
+                    ).useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
 
             try {
                 ProcessBuilder builder = new ProcessBuilder(

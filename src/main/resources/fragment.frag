@@ -36,7 +36,7 @@ void main()
 
         if (addMode)
         {
-            color.a = (color.r + color.g + color.b) / 3.0;
+            color.a = color.a * (color.r + color.g + color.b) / 3.0;
         }
 
         FragColor = color * alpha;

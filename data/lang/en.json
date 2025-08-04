@@ -587,7 +587,7 @@
             },
             "gif" : {
                 "analyzingBox" : "Analyzing Boxes...",
-                "cached" : "Bringing cached image link\n%s",
+                "cached" : "Bringing cached image link",
                 "converting" : "Converting PNGs to MP4...",
                 "dummy" : "Currently, this data is dummy, so generating gif is blocked for this",
                 "ignoring" : "Ignoring -raw param because user isn't dev",
@@ -597,11 +597,11 @@
                 },
                 "analysis" : {
                     "canGo" : "Can go with current result",
-                    "final" : "Final Result : W = _WWW_px | H = _HHH_px | X = _XXX_ | Y = _YYY_",
-                    "result" : "Result : W = _WWW_px | H = _HHH_px | X = _XXX_ | Y = _YYY_",
+                    "final" : "Final Result : W = %dpx | H = %dpx | X = %d | Y = %d",
+                    "result" : "Result : W = %dpx | H = %dpx | X = %d | Y = %d",
                     "adjust" : {
-                        "gif" : "GIF size is adjusted to _% relative to raw size",
-                        "mp4" : "MP4 size is adjusted to _% relative to raw size"
+                        "gif" : "GIF size is adjusted to %s%% relative to raw size",
+                        "mp4" : "MP4 size is adjusted to %s%% relative to raw size"
                     }
                 },
                 "failed" : {
@@ -612,17 +612,29 @@
                     "unknown" : "Failed to perform command..."
                 },
                 "length" : {
-                    "default" : "Length : _f",
-                    "withLimit" : "Length : _f (Limiting to -f)"
+                    "default" : "Length : %df",
+                    "withLimit" : "Length : %df (Limiting to %df)"
                 },
                 "making" : {
                     "gif" : "Making GIF : _%",
                     "png" : "Making PNG files\n\n"
                 },
+                "processing" : {
+                    "gif" : "Processing gif...",
+                    "mp4" : "Processing mp4"
+                },
+                "result" : {
+                    "fileSize" : "File Size : %s",
+                    "mode" : "Mode : %s",
+                    "time" : {
+                        "processing" : "Processing Time : %ssec",
+                        "total" : "Total Time : %ssec"
+                    }
+                },
                 "uploaded" : {
-                    "catbox" : "Uploaded gif to catbox (%s)\nTime : %.2gsec | Total Time : %.2gsec",
-                    "default" : "Done : Time = _TTT_ sec (_FFF_)",
-                    "imgur" : "Uploaded gif to imgur (_FFF_)\nTime : _TTT_sec | Total Time : _ttt_sec"
+                    "catbox" : "Uploaded gif to catbox (%s)\nTime : %ssec | Total Time : %ssec",
+                    "default" : "Done : Time = %ssec (%s)",
+                    "imgur" : "Uploaded gif to imgur (%s)\nTime : %ssec | Total Time : %ssec"
                 },
                 "uploading" : {
                     "gif" : "Uploading gif...",

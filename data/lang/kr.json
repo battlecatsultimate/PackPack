@@ -587,7 +587,7 @@
             },
             "gif" : {
                 "analyzingBox" : "경계 분석중...",
-                "cached" : "저장된 이미지 링크를 가져옵니다\n%s",
+                "cached" : "저장된 이미지 링크를 가져옵니다",
                 "converting" : "PNG 파일들을 MP4 파일로 변환 중...",
                 "dummy" : "현재, 이 데이터는 더미로 존재합니다. 따라서 gif 생성을 취소합니다",
                 "ignoring" : "유저가 개발자가 아니므로 -raw 인자를 무시합니다",
@@ -597,11 +597,11 @@
                 },
                 "analysis" : {
                     "canGo" : "현재 크기로 계속할 수 있습니다",
-                    "final" : "최종 결과 : 넓이 = _WWW_px | 높이 = _HHH_px | X = _XXX_ | Y = _YYY_",
-                    "result" : "결과 : 넓이 = _WWW_px | 높이 = _HHH_px | X = _XXX_ | Y = _YYY_",
+                    "final" : "최종 결과 : 넓이 = %dpx | 높이 = %dpx | X = %d | Y = %d",
+                    "result" : "결과 : 넓이 = %dpx | 높이 = %dpx | X = %d | Y = %d",
                     "adjust" : {
-                        "gif" : "GIF 크기가 원본 크기의 _% 로 조정됩니다",
-                        "mp4" : "MP4 크기가 원본 크기의 _% 로 조정됩니다"
+                        "gif" : "GIF 크기가 원본 크기의 %s%% 로 조정됩니다",
+                        "mp4" : "MP4 크기가 원본 크기의 %s%% 로 조정됩니다"
                     }
                 },
                 "failed" : {
@@ -612,17 +612,29 @@
                     "unknown" : "명령어 수행 실패..."
                 },
                 "length" : {
-                    "default" : "길이 : _f",
-                    "withLimit" : "길이 : _f (-f 로 제한)"
+                    "default" : "길이 : %df",
+                    "withLimit" : "길이 : %df (%df 로 제한)"
                 },
                 "making" : {
                     "gif" : "GIF 생성 중 : _%",
                     "png" : "PNG 파일들 생성 중 : _%"
                 },
+                "processing" : {
+                    "gif" : "gif 처리 중...",
+                    "mp4" : "mp4 처리 중..."
+                },
+                "result" : {
+                    "fileSize" : "파일크기 : %s",
+                    "mode" : "모드 : %s",
+                    "time" : {
+                        "processing" : "처리 시간 : %s초",
+                        "total" : "총 시간 : %s초"
+                    }
+                },
                 "uploaded" : {
-                    "catbox" : "Catbox로 gif 업로드 성공 (%s)\n수행 시간 : %.2g초 | 총 수행 시간 : %.2g초",
-                    "default" : "완성 : 시간 = _TTT_초 (_FFF_)",
-                    "imgur" : "Imgur로 gif 업로드 성공 (_FFF_)\n수행 시간 : _TTT_초 | 총 수행 시간 : _ttt_초"
+                    "catbox" : "Catbox로 gif 업로드 성공 (%s)\n수행 시간 : %s초 | 총 수행 시간 : %s초",
+                    "default" : "완성 : 시간 = %s초 (%s)",
+                    "imgur" : "Imgur로 gif 업로드 성공 (%s)\n수행 시간 : %s초 | 총 수행 시간 : %s초"
                 },
                 "uploading" : {
                     "gif" : "GIF 업로드 중...",

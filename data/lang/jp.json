@@ -587,7 +587,7 @@
             },
             "gif" : {
                 "analyzingBox" : "アナライズしています...",
-                "cached" : "画像のリンク表示\n%s",
+                "cached" : "画像のリンク表示",
                 "converting" : "PNGをMP4に変換しています...",
                 "dummy" : "Currently, this data is dummy, so generating gif is blocked for this",
                 "ignoring" : "ユーザーが開発者ではないため、-raw を無視します",
@@ -597,11 +597,11 @@
                 },
                 "analysis" : {
                     "canGo" : "現在の結果でOK",
-                    "final" : "最終結果 : W = _WWW_px | H = _HHH_px | X = _XXX_ | Y = _YYY_",
-                    "result" : "結果 : W = _WWW_px | H = _HHH_px | X = _XXX_ | Y = _YYY_",
+                    "final" : "最終結果 : W = %dpx | H = %dpx | X = %d | Y = %d",
+                    "result" : "結果 : W = %dpx | H = %dpx | X = %d | Y = %d",
                     "adjust" : {
-                        "gif" : "GIFのサイズは_%に調整されました。",
-                        "mp4" : "MP4のサイズは_%に調整されました。"
+                        "gif" : "GIFのサイズは%s%%に調整されました。",
+                        "mp4" : "MP4のサイズは%s%%に調整されました。"
                     }
                 },
                 "failed" : {
@@ -612,17 +612,29 @@
                     "unknown" : "コマンドを実行するのに失敗しました..."
                 },
                 "length" : {
-                    "default" : "長さ : _f",
-                    "withLimit" : "長さ : _f (Limiting to -f)"
+                    "default" : "長さ : %df",
+                    "withLimit" : "長さ : %df (Limiting to %df)"
                 },
                 "making" : {
                     "gif" : "GIFファイルの生成中 : _%",
                     "png" : "PNGファイルの生成中 : _%"
                 },
+                "processing" : {
+                    "gif" : "Processing gif...",
+                    "mp4" : "Processing mp4"
+                },
+                "result" : {
+                    "fileSize" : "File Size : %s",
+                    "mode" : "Mode : %s",
+                    "time" : {
+                        "processing" : "Processing Time : %ssec",
+                        "total" : "Total Time : %ssec"
+                    }
+                },
                 "uploaded" : {
-                    "catbox" : "gifをcatboxにアップロードしています... (%s)\n時間 : %.2g秒 | トータル : %.2g秒",
-                    "default" : "完了 : 時間 = _TTT_ 秒 (_FFF_)",
-                    "imgur" : "gifをimgurにアップロードしています... (_FFF_)\n時間 : _TTT_秒 | トータル : _ttt_秒"
+                    "catbox" : "gifをcatboxにアップロードしています... (%s)\n時間 : %s秒 | トータル : %s秒",
+                    "default" : "完了 : 時間 = %s秒 (%s)",
+                    "imgur" : "gifをimgurにアップロードしています... (%s)\n時間 : %s秒 | トータル : %s秒"
                 },
                 "uploading" : {
                     "gif" : "gifをアップロードしています...",

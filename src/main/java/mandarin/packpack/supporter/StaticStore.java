@@ -1026,6 +1026,9 @@ public class StaticStore {
     }
 
     public static void deleteFile(File f, boolean selfDelete) {
+        if (f == null)
+            return;
+
         if(f.isFile()) {
             try {
                 boolean res = Files.deleteIfExists(f.toPath());
