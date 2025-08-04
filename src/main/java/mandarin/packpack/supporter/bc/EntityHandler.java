@@ -2328,7 +2328,7 @@ public class EntityHandler {
         int filteredMode = Math.max(0, Math.min(enemy.anim.anims.length - 1, mode));
 
         if (!debug && limit <= 0) {
-            String id = generateID(enemy, filteredMode);
+            String id = generateID(enemy, filteredMode, transparent);
 
             String link = StaticStore.imgur.get(id, gif, raw);
 
@@ -2537,7 +2537,7 @@ public class EntityHandler {
             GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
 
             if (chan instanceof GuildMessageChannel gc) {
-                gc.sendMessage(generateID(enemy, filteredMode))
+                gc.sendMessage(generateID(enemy, filteredMode, transparent))
                         .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                         .queue(m -> {
                             for (int i = 0; i < m.getAttachments().size(); i++) {
@@ -2550,7 +2550,7 @@ public class EntityHandler {
                                 }
                             }
 
-                            cacheImage(enemy, filteredMode, m);
+                            cacheImage(enemy, filteredMode, transparent, m);
 
                             onSuccess.run();
 
@@ -5566,11 +5566,11 @@ public class EntityHandler {
             return LangID.getStringByID("formSprite.icon.enemyDisplay", lang);
     }
 
-    private static void cacheImage(Enemy e, int mode, Message msg) {
+    private static void cacheImage(Enemy e, int mode, boolean transparent, Message msg) {
         if(e.id == null)
             return;
 
-        String id = generateID(e, mode);
+        String id = generateID(e, mode, transparent);
 
         List<Message.Attachment> att = msg.getAttachments();
 
@@ -5594,11 +5594,15 @@ public class EntityHandler {
         }
     }
 
-    private static String generateID(Enemy e, int mode) {
+    private static String generateID(Enemy e, int mode, boolean transparent) {
         if(e.id == null)
             return "";
 
-        return "E - "+e.id.pack+" - "+Data.trio(e.id.id)+" - "+Data.trio(mode);
+        if (transparent) {
+            return "E - "+e.id.pack+" - "+Data.trio(e.id.id)+" - "+Data.trio(mode)+" - TRANSPARENT";
+        } else {
+            return "E - "+e.id.pack+" - "+Data.trio(e.id.id)+" - "+Data.trio(mode);
+        }
     }
 
     private static String generateID(Form f, int mode) {
