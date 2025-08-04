@@ -384,7 +384,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         return result.toString().trim();
     }
 
-    public List<String> accumulateTextData(List<Enemy> enemies, SearchHolder.TextType textType) {
+    private List<String> accumulateTextData(List<Enemy> enemies, SearchHolder.TextType textType) {
         List<String> data = new ArrayList<>();
 
         for (int i = 0; i < config.searchLayout.chunkSize; i++) {
@@ -445,7 +445,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         return result;
     }
 
-    public Container getComponents(List<Enemy> enemies, int dataSize, String keyword) {
+    private Container getComponents(List<Enemy> enemies, int dataSize, String keyword) {
         int totalPage = Holder.getTotalPage(dataSize, config.searchLayout.chunkSize);
 
         List<ContainerChildComponent> children = new ArrayList<>();
