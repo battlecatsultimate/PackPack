@@ -1260,10 +1260,22 @@
     },
     "enemyImage" : {
         "fail" : {
-            "noParameter" : "Эта команда требует ещё один аргумент! : [Название Врага]"
+            "noParameter" : "Эта команда требует ещё один аргумент! : [Название Врага]",
+            "unknown" : "Unknown problem happened while rendering the image"
+        },
+        "result" : {
+            "frame" : "Frame : %df",
+            "mode" : "Mode : %s"
         }
     },
     "enemySprite" : {
+        "result" : {
+            "type" : "Type : %s",
+            "spriteType" : {
+                "sprite" : "Sprite",
+                "ui" : "UI Icon"
+            }
+        },
         "failed" : {
             "invalidEnemy" : "Не могу получить ID врага, прерываю команду",
             "invalidMode" : "Враг не имеет _"

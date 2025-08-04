@@ -1260,10 +1260,22 @@
     },
     "enemyImage" : {
         "fail" : {
-            "noParameter" : "This command requires one more parameter! : [Enemy Name]"
+            "noParameter" : "This command requires one more parameter! : [Enemy Name]",
+            "unknown" : "Unknown problem happened while rendering the image"
+        },
+        "result" : {
+            "frame" : "Frame : %df",
+            "mode" : "Mode : %s"
         }
     },
     "enemySprite" : {
+        "result" : {
+            "type" : "Type : %s",
+            "spriteType" : {
+                "sprite" : "Sprite",
+                "ui" : "UI Icon"
+            }
+        },
         "failed" : {
             "invalidEnemy" : "Can't get enemy ID, aborting command",
             "invalidMode" : "This enemy doesn't have _"

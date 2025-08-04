@@ -1260,10 +1260,22 @@
     },
     "enemyImage" : {
         "fail" : {
-            "noParameter" : "해당 명령어는 하나의 정보를 더 요구합니다! : [적 이름]"
+            "noParameter" : "해당 명령어는 하나의 정보를 더 요구합니다! : [적 이름]",
+            "unknown" : "이미지를 랜더링하는 중 알 수 없는 오류가 발생하였습니다"
+        },
+        "result" : {
+            "frame" : "프레임 : %df",
+            "mode" : "모드 : %s"
         }
     },
     "enemySprite" : {
+        "result" : {
+            "type" : "타입 : %s",
+            "spriteType" : {
+                "sprite" : "스프라이트",
+                "ui" : "UI 아이콘"
+            }
+        },
         "failed" : {
             "invalidEnemy" : "적 ID를 불러오는데 실패했습니다",
             "invalidMode" : "해당 적은 _ 데이터를 가지고 있지 않습니다"

@@ -1260,10 +1260,22 @@
     },
     "enemyImage" : {
         "fail" : {
-            "noParameter" : "このコマンドはもう一つ引数が必要です! : [敵の名前]"
+            "noParameter" : "このコマンドはもう一つ引数が必要です! : [敵の名前]",
+            "unknown" : "Unknown problem happened while rendering the image"
+        },
+        "result" : {
+            "frame" : "Frame : %df",
+            "mode" : "Mode : %s"
         }
     },
     "enemySprite" : {
+        "result" : {
+            "type" : "Type : %s",
+            "spriteType" : {
+                "sprite" : "Sprite",
+                "ui" : "UI Icon"
+            }
+        },
         "failed" : {
             "invalidEnemy" : "敵のIDを取得できません、コマンドを中止します。",
             "invalidMode" : "この敵は _ を持っていません。"
