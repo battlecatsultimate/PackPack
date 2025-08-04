@@ -515,11 +515,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 String label = labels.get(i);
                 String description;
 
-                if (descriptions == null) {
-                    description = null;
-                } else {
-                    description = descriptions.get(i);
-                }
+                description = descriptions.get(i);
 
                 SelectOption option = SelectOption.of(label, String.valueOf(i));
 
