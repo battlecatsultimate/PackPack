@@ -7,21 +7,20 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnemySpriteMessageHolder extends SearchHolder {
-    private final ArrayList<Enemy> enemy;
+    private final ArrayList<Enemy> enemies;
 
     private final int mode;
 
-    public EnemySpriteMessageHolder(ArrayList<Enemy> enemy, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, CommonStatic.Lang.Locale lang) {
+    public EnemySpriteMessageHolder(ArrayList<Enemy> enemies, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
-        this.enemy = enemy;
+        this.enemies = enemies;
         this.mode = mode;
     }
 
@@ -29,11 +28,8 @@ public class EnemySpriteMessageHolder extends SearchHolder {
     public List<String> accumulateTextData(TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for (int i = chunk * page; i < chunk * (page + 1); i++) {
-            if (i >= enemy.size())
-                break;
-
-            Enemy e = enemy.get(i);
+        for (int i = chunk * page; i < Math.min(enemies.size(), chunk * (page + 1)); i++) {
+            Enemy e = enemies.get(i);
 
             String text = null;
 
@@ -77,21 +73,17 @@ public class EnemySpriteMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
-        MessageChannel ch = event.getChannel();
-
         try {
-            Enemy e = enemy.get(index);
+            Enemy e = enemies.get(index);
 
-            EntityHandler.getEnemySprite(e, ch, getAuthorMessage(), mode, lang);
+            EntityHandler.generateEnemySprite(e, event, getAuthorMessage(), mode, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/EnemySpriteMessageHolder::onSelected - Failed to upload enemy sprite/icon");
         }
-
-        message.delete().queue();
     }
 
     @Override
     public int getDataSize() {
-        return enemy.size();
+        return enemies.size();
     }
 }

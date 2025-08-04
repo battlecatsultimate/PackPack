@@ -966,10 +966,10 @@ class SlotMachine {
 
                 if (currencySum <= input && cardsResult.isEmpty()) {
                     builder.setDescription("### 😔 You lost the slot machine... 😔")
-                        .setColor(StaticStore.rainbow[0])
+                        .setColor(StaticStore.rainbow[StaticStore.RED])
                 } else {
                     builder.setDescription("## 🎰 You won the slot machine!!! 🎰")
-                        .setColor(StaticStore.rainbow[3])
+                        .setColor(StaticStore.rainbow[StaticStore.GREEN])
                 }
 
                 builder.addField("Result", emojis.toString(), false)
@@ -992,12 +992,16 @@ class SlotMachine {
                     cardsResult.forEach { c ->
                         var line = ""
 
-                        val cardEmoji = if (c.tier == CardData.Tier.ULTRA) {
-                            Emoji.fromUnicode("✨").formatted
-                        } else if (c.tier == CardData.Tier.LEGEND) {
-                            EmojiStore.ABILITY["LEGEND"]?.formatted
-                        } else {
-                            ""
+                        val cardEmoji = when (c.tier) {
+                            CardData.Tier.ULTRA -> {
+                                Emoji.fromUnicode("✨").formatted
+                            }
+                            CardData.Tier.LEGEND -> {
+                                EmojiStore.ABILITY["LEGEND"]?.formatted
+                            }
+                            else -> {
+                                ""
+                            }
                         }
 
                         line += "- $cardEmoji"
@@ -1022,6 +1026,8 @@ class SlotMachine {
                             builder.addField("Cards" + if (amount == 1) "" else " $amount", cards.toString(), false)
 
                             cards.clear()
+
+                            amount++
                         }
 
                         cards.append(line).append("\n")
@@ -1060,7 +1066,7 @@ class SlotMachine {
                         }
                     }
 
-                    var embeds = ArrayList<MessageEmbed>()
+                    val embeds = ArrayList<MessageEmbed>()
 
                     links.forEachIndexed { index, link ->
                         if (index == 0) {
@@ -1083,10 +1089,7 @@ class SlotMachine {
                     return
                 }
 
-                val availableSkins = cardsResult.toSet()
-                    .filter { c -> inventory.equippedSkins.containsKey(c) }
-                    .map { c -> inventory.equippedSkins[c] }
-                    .filterNotNull()
+                val availableSkins = cardsResult.toSet().filter { c -> inventory.equippedSkins.containsKey(c) }.mapNotNull { c -> inventory.equippedSkins[c] }
 
                 if (availableSkins.isEmpty()) {
                     message.editMessage("")
@@ -1139,7 +1142,7 @@ class SlotMachine {
 
             val builder = EmbedBuilder()
                 .setDescription("### 😔 You lost the slot machine... 😔")
-                .setColor(StaticStore.rainbow[0])
+                .setColor(StaticStore.rainbow[StaticStore.RED])
 
             val point = if (totalSequenceStacks <= 1)
                 "Point"

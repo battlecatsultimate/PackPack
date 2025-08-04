@@ -162,13 +162,13 @@ public class EntityHandler {
         int c;
 
         if(f.fid == 0)
-            c = StaticStore.rainbow[4];
+            c = StaticStore.rainbow[StaticStore.BLUE];
         else if(f.fid == 1)
-            c = StaticStore.rainbow[3];
+            c = StaticStore.rainbow[StaticStore.GREEN];
         else if(f.fid == 2)
-            c = StaticStore.rainbow[2];
+            c = StaticStore.rainbow[StaticStore.YELLOW];
         else
-            c = StaticStore.rainbow[0];
+            c = StaticStore.rainbow[StaticStore.RED];
 
         String desc = "";
 
@@ -503,13 +503,13 @@ public class EntityHandler {
         int c;
 
         if(form.fid == 0)
-            c = StaticStore.rainbow[4];
+            c = StaticStore.rainbow[StaticStore.BLUE];
         else if(form.fid == 1)
-            c = StaticStore.rainbow[3];
+            c = StaticStore.rainbow[StaticStore.GREEN];
         else if(form.fid == 2)
-            c = StaticStore.rainbow[2];
+            c = StaticStore.rainbow[StaticStore.YELLOW];
         else
-            c = StaticStore.rainbow[0];
+            c = StaticStore.rainbow[StaticStore.RED];
 
         spec.setColor(c);
 
@@ -588,7 +588,7 @@ public class EntityHandler {
 
         EmbedBuilder spec = new EmbedBuilder();
 
-        int c = StaticStore.rainbow[0];
+        int c = StaticStore.rainbow[StaticStore.RED];
 
         int[] mag;
 
@@ -3338,7 +3338,7 @@ public class EntityHandler {
 
         children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
 
-        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[0]);
+        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
 
         if (sender instanceof MessageChannel ch) {
             Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(img, true), container);
@@ -3494,11 +3494,26 @@ public class EntityHandler {
         f.anim.unload();
     }
 
-    public static void getEnemySprite(Enemy e, MessageChannel ch, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void generateEnemySprite(Enemy e, Object sender, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
         if(e.id == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("enemySprite.failed.invalidEnemy", lang), reference, a -> a);
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, TextDisplay.of(LangID.getStringByID("enemySprite.failed.invalidEnemy", lang)));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("enemySprite.failed.invalidEnemy", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            }
+
             return;
         }
+
+        String icon = StaticStore.assetManager.getEnemyIcon(e);
+
+        if (icon == null)
+            return;
 
         File temp = new File("./temp");
 
@@ -3521,13 +3536,22 @@ public class EntityHandler {
 
         FakeImage img = switch (mode) {
             case 0 -> e.anim.getNum();
-            case 1 -> e.anim.getUni().getImg();
             case 3 -> e.anim.getEdi().getImg();
             default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
         };
 
         if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("formSprite.failed.invalidMode", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, TextDisplay.of(LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang))));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang))))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            }
+
             return;
         }
 
@@ -3549,15 +3573,50 @@ public class EntityHandler {
 
         waiter.await();
 
-        String fName = StaticStore.safeMultiLangGet(e, lang);
+        e.anim.unload();
 
-        if(fName == null || fName.isBlank()) {
-            fName = Data.trio(e.id.id);
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        String enemyName = StaticStore.safeMultiLangGet(e, lang);
+
+        if (enemyName == null || enemyName.isBlank()) {
+            enemyName = Data.trio(e.id.id);
+        } else {
+            enemyName += " [" + Data.trio(e.id.id) + "]";
         }
 
-        Command.sendMessageWithFile(ch, LangID.getStringByID("formSprite.uploaded", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
+        String spriteType = switch (mode) {
+            case 0 -> LangID.getStringByID("enemySprite.result.spriteType.sprite", lang);
+            case 3 -> LangID.getStringByID("enemySprite.result.spriteType.ui", lang);
+            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
+        };
 
-        e.anim.unload();
+        children.add(Section.of(
+                Thumbnail.fromUrl(icon),
+                TextDisplay.of("## " + enemyName),
+                TextDisplay.of(LangID.getStringByID("enemySprite.result.type", lang).formatted(spriteType))
+        ));
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(image))));
+
+        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
+
+        if (sender instanceof MessageChannel ch) {
+            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(image, true), container);
+        } else if (sender instanceof IMessageEditCallback event) {
+            event.deferEdit()
+                    .setComponents(container)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(unused -> StaticStore.deleteFile(image, true), err -> {
+                        StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::generateEnemySprite - Failed to upload enemy sprite");
+
+                        StaticStore.deleteFile(image, true);
+                    });
+        }
     }
 
     public static void getSoulSprite(Soul s, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws Exception {
@@ -3722,10 +3781,10 @@ public class EntityHandler {
         children.add(MediaGallery.of(MediaGalleryItem.fromUrl(comboLink)));
 
         int color = switch (c.lv) {
-            case 0 -> StaticStore.rainbow[4];
-            case 1 -> StaticStore.rainbow[3];
-            case 2 -> StaticStore.rainbow[2];
-            default -> StaticStore.rainbow[0];
+            case 0 -> StaticStore.rainbow[StaticStore.BLUE];
+            case 1 -> StaticStore.rainbow[StaticStore.GREEN];
+            case 2 -> StaticStore.rainbow[StaticStore.YELLOW];
+            default -> StaticStore.rainbow[StaticStore.RED];
         };
 
         Container container = Container.of(children).withAccentColor(color);
@@ -4384,13 +4443,13 @@ public class EntityHandler {
             int c;
 
             if(f.fid == 0)
-                c = StaticStore.rainbow[4];
+                c = StaticStore.rainbow[StaticStore.BLUE];
             else if(f.fid == 1)
-                c = StaticStore.rainbow[3];
-            else if (f.fid == 2)
-                c = StaticStore.rainbow[2];
+                c = StaticStore.rainbow[StaticStore.GREEN];
+            else if(f.fid == 2)
+                c = StaticStore.rainbow[StaticStore.YELLOW];
             else
-                c = StaticStore.rainbow[0];
+                c = StaticStore.rainbow[StaticStore.RED];
 
             String iconLink = generateIcon(f);
 
@@ -4833,7 +4892,7 @@ public class EntityHandler {
                 children.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
             }
 
-            Container container = Container.of(children).withAccentColor(StaticStore.rainbow[0]);
+            Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
 
             if (editMode) {
                 if (sender instanceof Message msg) {

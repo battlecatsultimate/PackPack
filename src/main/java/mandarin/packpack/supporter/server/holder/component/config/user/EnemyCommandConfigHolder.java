@@ -117,7 +117,7 @@ public class EnemyCommandConfigHolder extends ComponentHolder {
 
         String iconLink = StaticStore.assetManager.uploadIf("CONFIG-EMBED-ENEMY-ICON", new File("./data/bot/defaultAssets/enemyIconExample.png"));
 
-        builder.setColor(StaticStore.rainbow[0]);
+        builder.setColor(StaticStore.rainbow[StaticStore.RED]);
         builder.setThumbnail(iconLink);
 
         if (config.compact) {

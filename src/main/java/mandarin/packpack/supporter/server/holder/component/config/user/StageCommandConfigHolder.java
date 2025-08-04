@@ -166,7 +166,7 @@ public class StageCommandConfigHolder extends ComponentHolder {
         EmbedBuilder builder = new EmbedBuilder();
 
         builder.setTitle(LangID.getStringByID("config.command.embed.stage.title", lang));
-        builder.setColor(StaticStore.rainbow[0]);
+        builder.setColor(StaticStore.rainbow[StaticStore.RED]);
 
         TreasureHolder treasure = StaticStore.treasure.getOrDefault(userID, TreasureHolder.global);
 

@@ -168,8 +168,21 @@ public class StaticStore {
             CommonStatic.Lang.Locale.TH
     };
 
-    public static final int[] rainbow = {rgb(217, 65, 68), rgb(217, 128, 65), rgb(224, 213, 85)
-    , rgb(118, 224, 85), rgb(85, 169, 224), rgb(185, 85, 224)};
+    public static final int[] rainbow = {
+            rgb(217, 65, 68),   // Red
+            rgb(217, 128, 65),  // Orange
+            rgb(224, 213, 85),  // Yellow
+            rgb(118, 224, 85),  // Green
+            rgb(85, 169, 224),  // Blue
+            rgb(185, 85, 224)   // Purple
+    };
+
+    public static final int RED = 0;
+    public static final int ORANGE = 1;
+    public static final int YELLOW = 2;
+    public static final int GREEN = 3;
+    public static final int BLUE = 4;
+    public static final int PURPLE = 5;
 
     public static final int[] grade = {
         rgb(204,124,84),

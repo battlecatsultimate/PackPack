@@ -110,7 +110,7 @@ public class ConfigUnitEmbedHolder extends ServerConfigHolder {
         String iconLink = StaticStore.assetManager.uploadIf("CONFIG-EMBED-UNIT-ICON", new File("./data/bot/defaultAssets/iconExample.png"));
 
         builder.setThumbnail(iconLink);
-        builder.setColor(StaticStore.rainbow[2]);
+        builder.setColor(StaticStore.rainbow[StaticStore.YELLOW]);
 
         if (holder.config.compact) {
             builder.setTitle(LangID.getStringByID("config.command.embed.unit.title", lang) + " [123-456]");

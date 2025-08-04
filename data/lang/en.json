@@ -1269,6 +1269,13 @@
         }
     },
     "enemySprite" : {
+        "result" : {
+            "type" : "Type : %s",
+            "spriteType" : {
+                "sprite" : "Sprite",
+                "ui" : "UI Icon"
+            }
+        },
         "failed" : {
             "invalidEnemy" : "Can't get enemy ID, aborting command",
             "invalidMode" : "This enemy doesn't have _"
