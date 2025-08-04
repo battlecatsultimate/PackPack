@@ -1260,7 +1260,12 @@
     },
     "enemyImage" : {
         "fail" : {
-            "noParameter" : "This command requires one more parameter! : [Enemy Name]"
+            "noParameter" : "This command requires one more parameter! : [Enemy Name]",
+            "unknown" : "Unknown problem happened while rendering the image"
+        },
+        "result" : {
+            "frame" : "Frame : %df",
+            "mode" : "Mode : %s"
         }
     },
     "enemySprite" : {

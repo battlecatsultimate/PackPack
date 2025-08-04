@@ -10,11 +10,10 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import java.util.ArrayList;
@@ -106,15 +105,16 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
-        MessageChannel ch = event.getChannel();
-
         try {
             Enemy e = enemies.get(index);
 
             if(EnemyGif.forbidden.contains(e.id.id)) {
-                ch.sendMessage(LangID.getStringByID("data.animation.gif.dummy", lang)).queue();
-
-                message.delete().queue();
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("data.animation.gif.dummy", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
 
                 return;
             }
@@ -125,15 +125,9 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                 if (timeBoolean == null || timeBoolean.canDo) {
                     new Thread(() -> {
                         try {
-                            Guild g;
+                            Guild g = event.getGuild();
 
-                            if(ch instanceof GuildChannel) {
-                                g = event.getGuild();
-                            } else {
-                                g = null;
-                            }
-
-                            EntityHandler.generateEnemyAnim(e, ch, getAuthorMessage(), primary, g == null ? 0 : g.getBoostTier().getKey(), mode, transparent, debug, frame, lang, raw, gifMode, () -> {
+                            EntityHandler.generateEnemyAnim(e, message, getAuthorMessage(), primary, g == null ? 0 : g.getBoostTier().getKey(), mode, transparent, debug, frame, lang, raw, gifMode, () -> {
                                 if(!StaticStore.conflictedAnimation.isEmpty()) {
                                     StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
                                     StaticStore.conflictedAnimation.clear();
@@ -164,7 +158,12 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                         }
                     }).start();
                 } else {
-                    ch.sendMessage(LangID.getStringByID("bot.denied.reason.cooldown", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("bot.denied.reason.cooldown", lang).formatted(DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
                 }
             } else {
                 User u = event.getUser();
@@ -174,18 +173,23 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                         long time = StaticStore.timeLimit.get(u.getId()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
 
                         if (System.currentTimeMillis() - time > 10000) {
-                            EntityHandler.generateEnemyImage(e, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+                            EntityHandler.generateEnemyImage(e, event, getAuthorMessage(), debug, transparent, frame, mode, lang);
 
                             StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                         } else {
-                            ch.sendMessage(LangID.getStringByID("bot.command.timeLimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
+                            event.deferEdit()
+                                    .setComponents(TextDisplay.of(LangID.getStringByID("bot.command.timeLimit", lang).formatted(DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))))
+                                    .useComponentsV2()
+                                    .setAllowedMentions(new ArrayList<>())
+                                    .mentionRepliedUser(false)
+                                    .queue();
                         }
                     } else if (StaticStore.timeLimit.containsKey(u.getId())) {
-                        EntityHandler.generateEnemyImage(e, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+                        EntityHandler.generateEnemyImage(e, event, getAuthorMessage(), debug, transparent, frame, mode, lang);
 
                         StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                     } else {
-                        EntityHandler.generateEnemyImage(e, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+                        EntityHandler.generateEnemyImage(e, event, getAuthorMessage(), debug, transparent, frame, mode, lang);
 
                         Map<String, Long> memberLimit = new HashMap<>();
 
@@ -200,8 +204,6 @@ public class EnemyAnimMessageHolder extends SearchHolder {
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/EnemyAnimMessageHolder::onSelected - Failed to handle enemy image/animation holder");
         }
-
-        message.delete().queue();
     }
 
     @Override
