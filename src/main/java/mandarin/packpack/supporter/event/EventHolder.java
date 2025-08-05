@@ -1047,7 +1047,7 @@ public class EventHolder extends EventFactor {
         };
 
         if (sixDigit) {
-            return version / 1000 * 100 + version % 1000;
+            return version / 10;
         } else {
             return version;
         }
