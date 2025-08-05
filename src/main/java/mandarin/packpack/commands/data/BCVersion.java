@@ -47,7 +47,7 @@ public class BCVersion extends ConstraintCommand {
         long subMinor = version % 10;
 
         if (subMinor != 0) {
-            return main + "." + major + "." + subMinor;
+            return main + "." + major + "." + minor + "_" + subMinor;
         } else {
             return main + "." + major + "." + minor;
         }
