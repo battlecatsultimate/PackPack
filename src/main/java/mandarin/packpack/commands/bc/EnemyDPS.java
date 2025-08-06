@@ -90,7 +90,7 @@ public class EnemyDPS extends TimedConstraintCommand {
 
         if(name.isBlank()) {
             if (loader.fromMessage) {
-                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("formStat.fail.noName", lang)));
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formStat.fail.noName", lang));
             } else {
                 replyToMessageSafely(loader.getInteractionEvent(), TextDisplay.of(LangID.getStringByID("formStat.fail.noName", lang)));
             }
@@ -107,7 +107,7 @@ public class EnemyDPS extends TimedConstraintCommand {
                 EntityHandler.showEnemyDPS(sender, m, enemies.getFirst(), treasure, magnification, false, false, lang);
             } else if(enemies.isEmpty()) {
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(name))));
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(name)));
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), TextDisplay.of(LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(name))));
                 }

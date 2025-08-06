@@ -68,7 +68,7 @@ public class CatCombo extends TimedConstraintCommand {
             if(combos.isEmpty()) {
                 disableTimer();
 
-                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(name, cName, lang)))));
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(name, cName, lang))));
             } else if(combos.size() == 1) {
                 EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
             } else {
@@ -86,14 +86,14 @@ public class CatCombo extends TimedConstraintCommand {
             if(forms.isEmpty()) {
                 disableTimer();
 
-                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(name, cName, lang)))));
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(name, cName, lang))));
             } else if(forms.size() == 1) {
                 ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.getFirst(), cName, lang);
 
                 if(combos.isEmpty()) {
                     disableTimer();
 
-                    replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(name, cName, lang)))));
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(name, cName, lang))));
                 } else if(combos.size() == 1) {
                     EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
                 } else {

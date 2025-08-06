@@ -3285,7 +3285,7 @@ public class EntityHandler {
 
         if (img == null) {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)));
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
             } else if (sender instanceof IMessageEditCallback event) {
                 event.deferEdit()
                         .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
@@ -3312,7 +3312,7 @@ public class EntityHandler {
 
         if (icon == null) {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)));
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
             } else if (sender instanceof IMessageEditCallback event) {
                 event.deferEdit()
                         .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
@@ -3349,7 +3349,7 @@ public class EntityHandler {
                     .setAllowedMentions(new ArrayList<>())
                     .mentionRepliedUser(false)
                     .queue(unused -> StaticStore.deleteFile(img, true), e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send enemhy image");
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send enemy image");
 
                         StaticStore.deleteFile(img, true);
                     });
@@ -3497,7 +3497,7 @@ public class EntityHandler {
     public static void generateEnemySprite(Enemy e, Object sender, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
         if(e.id == null) {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, TextDisplay.of(LangID.getStringByID("enemySprite.failed.invalidEnemy", lang)));
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemySprite.failed.invalidEnemy", lang));
             } else if (sender instanceof IMessageEditCallback event) {
                 event.deferEdit()
                         .setComponents(TextDisplay.of(LangID.getStringByID("enemySprite.failed.invalidEnemy", lang)))
@@ -3542,7 +3542,7 @@ public class EntityHandler {
 
         if(img == null) {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, TextDisplay.of(LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang))));
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang)));
             } else if (sender instanceof IMessageEditCallback event) {
                 event.deferEdit()
                         .setComponents(TextDisplay.of(LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang))))

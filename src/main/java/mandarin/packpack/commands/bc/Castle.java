@@ -189,7 +189,7 @@ public class Castle extends ConstraintCommand {
             String[] list = loader.getContent().split(" ");
 
             if (list.length < 2) {
-                replyToMessageSafely(loader.getChannel(), loader.getMessage(), TextDisplay.of(LangID.getStringByID("castle.fail.noParameter", lang)));
+                replyToMessageSafely(loader.getChannel(), loader.getMessage(), LangID.getStringByID("castle.fail.noParameter", lang));
 
                 return;
             }
@@ -199,7 +199,7 @@ public class Castle extends ConstraintCommand {
             String[] messages = loader.getContent().split(" ", startIndex + 1);
 
             if (messages.length <= startIndex) {
-                replyToMessageSafely(loader.getChannel(), loader.getMessage(), TextDisplay.of(LangID.getStringByID("castle.fail.noID", lang).formatted(holder == null ? StaticStore.globalPrefix : holder.config.prefix)));
+                replyToMessageSafely(loader.getChannel(), loader.getMessage(), LangID.getStringByID("castle.fail.noID", lang).formatted(holder == null ? StaticStore.globalPrefix : holder.config.prefix));
 
                 return;
             }
@@ -209,7 +209,7 @@ public class Castle extends ConstraintCommand {
             if (StaticStore.isNumeric(msg)) {
                 id = StaticStore.safeParseInt(msg);
             } else {
-                replyToMessageSafely(loader.getChannel(), loader.getMessage(), TextDisplay.of(LangID.getStringByID("castle.fail.notNumber", lang)));
+                replyToMessageSafely(loader.getChannel(), loader.getMessage(), LangID.getStringByID("castle.fail.notNumber", lang));
 
                 return;
             }

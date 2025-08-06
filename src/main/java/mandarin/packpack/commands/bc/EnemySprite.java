@@ -61,12 +61,12 @@ public class EnemySprite extends TimedConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if (contents.length == 1) {
-            replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("enemyImage.fail.noParameter", lang)));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyImage.fail.noParameter", lang));
         } else {
             String search = filterCommand(loader.getContent());
 
             if (search.isBlank()) {
-                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("enemyImage.fail.noParameter", lang)));
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyImage.fail.noParameter", lang));
 
                 return;
             }
@@ -74,7 +74,7 @@ public class EnemySprite extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if (enemies.isEmpty()) {
-                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(loader.getContent()))));
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(loader.getContent())));
 
                 disableTimer();
             } else if (enemies.size() == 1) {

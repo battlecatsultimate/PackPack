@@ -124,7 +124,7 @@ public class Background extends TimedConstraintCommand {
                 String[] msg = loader.getContent().split(" ");
 
                 if(msg.length == 1) {
-                    replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("background.fail.noParameter", lang)));
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("background.fail.noParameter", lang));
 
                     return;
                 }
@@ -132,7 +132,7 @@ public class Background extends TimedConstraintCommand {
                 id = getID(loader.getContent());
 
                 if(id == -1) {
-                    replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("background.fail.noParameter", lang)));
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("background.fail.noParameter", lang));
 
                     return;
                 }
@@ -156,7 +156,7 @@ public class Background extends TimedConstraintCommand {
             if(bg == null) {
                 int[] size = getBGSize();
 
-                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("background.fail.invalidID", lang).formatted(size[0], size[1])));
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("background.fail.invalidID", lang).formatted(size[0], size[1]));
 
                 return;
             }

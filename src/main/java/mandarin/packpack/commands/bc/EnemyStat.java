@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -110,9 +111,9 @@ public class EnemyStat extends ConstraintCommand {
 
         if (name.isBlank()) {
             if (loader.fromMessage) {
-                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formStat.fail.noName", lang));
             } else {
-                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noName", lang), a -> a);
+                replyToMessageSafely(loader.getInteractionEvent(), TextDisplay.of(LangID.getStringByID("formStat.fail.noName", lang)));
             }
         } else {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(name, lang);
@@ -133,7 +134,7 @@ public class EnemyStat extends ConstraintCommand {
                 EntityHandler.showEnemyEmb(enemies.getFirst(), sender, m, treasure, configData, false, lang, msg -> StaticStore.putHolder(loader.getUser().getId(), new EnemyButtonHolder(m, loader.getUser().getId(), ch.getId(), msg, enemies.getFirst(), treasure, configData, lang)));
             } else if(enemies.isEmpty()) {
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(name)), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(name)), loader.getMessage(), a -> a);
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(name)), a -> a);
                 }

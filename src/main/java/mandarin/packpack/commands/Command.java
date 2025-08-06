@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -187,17 +188,17 @@ public abstract class Command {
         }
     }
 
-    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components) {
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, String content) {
         if (ch instanceof GuildMessageChannel gc) {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
             } else {
-                ch.sendMessageComponents(components).useComponentsV2().queue();
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().queue();
             }
         } else {
-            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
         }
     }
 
@@ -215,20 +216,6 @@ public abstract class Command {
         }
     }
 
-    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components, Consumer<Message> onSuccess) {
-        if (ch instanceof GuildMessageChannel gc) {
-            Guild g = gc.getGuild();
-
-            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
-            } else {
-                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess);
-            }
-        } else {
-            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
-        }
-    }
-
     public static void replyToMessageSafely(MessageChannel ch, Message reference, Consumer<Message> onSuccess, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
         if (ch instanceof GuildMessageChannel gc) {
             Guild g = gc.getGuild();
@@ -240,20 +227,6 @@ public abstract class Command {
             }
         } else {
             ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
-        }
-    }
-
-    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
-        if (ch instanceof GuildMessageChannel gc) {
-            Guild g = gc.getGuild();
-
-            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
-            } else {
-                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess, onError);
-            }
-        } else {
-            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
         }
     }
 

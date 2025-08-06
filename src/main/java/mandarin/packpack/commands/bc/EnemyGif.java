@@ -81,7 +81,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         String[] list = loader.getContent().split(" ");
 
         if(list.length < 2) {
-            replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("enemyImage.fail.noParameter", lang)));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyImage.fail.noParameter", lang));
 
             disableTimer();
 
@@ -99,7 +99,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         String search = filterCommand(loader.getContent());
 
         if(search.isBlank()) {
-            replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("enemyImage.fail.noParameter", lang)));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyImage.fail.noParameter", lang));
 
             disableTimer();
 
@@ -109,7 +109,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
         if(enemies.isEmpty()) {
-            replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(loader.getContent()))));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(loader.getContent())));
 
             disableTimer();
         } else if(enemies.size() == 1) {
@@ -124,7 +124,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             int frame = getFrame(loader.getContent());
 
             if(forbidden.contains(enemy.id.id)) {
-                replyToMessageSafely(ch, loader.getMessage(), TextDisplay.of(LangID.getStringByID("data.animation.gif.dummy", lang)));
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("data.animation.gif.dummy", lang));
 
                 return;
             }
