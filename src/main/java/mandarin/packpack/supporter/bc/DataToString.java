@@ -1529,20 +1529,20 @@ public class DataToString extends Data {
                 );
             }
 
-            if (l.stageLimit.unitSpeedLimit != -1 && l.stageLimit.enemySpeedLimit != -1) {
+            if (l.stageLimit.unitSpeedOverride != -1 && l.stageLimit.enemySpeedOverride != -1) {
                 res.add(
                         LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.both", lang).formatted(l.stageLimit.unitSpeedLimit, l.stageLimit.enemySpeedLimit)
+                                LangID.getStringByID("data.stage.limit.speed.description.both", lang).formatted(l.stageLimit.unitSpeedOverride, l.stageLimit.enemySpeedOverride)
                 );
-            } else if (l.stageLimit.unitSpeedLimit != -1) {
+            } else if (l.stageLimit.unitSpeedOverride != -1) {
                 res.add(
                         LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.unit", lang).formatted(l.stageLimit.unitSpeedLimit)
+                                LangID.getStringByID("data.stage.limit.speed.description.unit", lang).formatted(l.stageLimit.unitSpeedOverride)
                 );
-            } else if (l.stageLimit.enemySpeedLimit != -1) {
+            } else if (l.stageLimit.enemySpeedOverride != -1) {
                 res.add(
                         LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.enemy", lang).formatted(l.stageLimit.enemySpeedLimit)
+                                LangID.getStringByID("data.stage.limit.speed.description.enemy", lang).formatted(l.stageLimit.enemySpeedOverride)
                 );
             }
         }
@@ -3047,7 +3047,7 @@ public class DataToString extends Data {
         int maxLevel = StaticStore.safeParseInt(data[2 + index * 14 + 1]);
         int traitID = StaticStore.safeParseInt(data[1]);
 
-        List<Trait> traits = Trait.convertType(traitID);
+        List<Trait> traits = Trait.bitmaskToTrait(traitID);
 
         if(talentText.containsKey(abilityID)) {
             talentName = LangID.getStringByID(talentText.get(abilityID), lang);

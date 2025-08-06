@@ -4073,31 +4073,31 @@ public class EntityHandler {
 
                     switch (i) {
                         case 0, 4 -> {
-                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[2]);
+                            blastWidth = BigDecimal.valueOf(Data.EXPLOSION_RANGE[2]);
 
                             if (i == 0) {
-                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] - Data.BLAST_RANGE[2] / 2);
+                                blastOffset = BigDecimal.valueOf(-Data.EXPLOSION_RANGE[0] / 2 - Data.EXPLOSION_RANGE[1] - Data.EXPLOSION_RANGE[2] / 2);
                             } else {
-                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] + Data.BLAST_RANGE[2] / 2);
+                                blastOffset = BigDecimal.valueOf(Data.EXPLOSION_RANGE[0] / 2 + Data.EXPLOSION_RANGE[1] + Data.EXPLOSION_RANGE[2] / 2);
                             }
 
-                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
+                            blastMultiplier = BigDecimal.valueOf(Data.EXPLOSION_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
                         }
                         case 1, 3 -> {
-                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[1]);
+                            blastWidth = BigDecimal.valueOf(Data.EXPLOSION_RANGE[1]);
 
                             if (i == 1) {
-                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] / 2);
+                                blastOffset = BigDecimal.valueOf(-Data.EXPLOSION_RANGE[0] / 2 - Data.EXPLOSION_RANGE[1] / 2);
                             } else {
-                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] / 2);
+                                blastOffset = BigDecimal.valueOf(Data.EXPLOSION_RANGE[0] / 2 + Data.EXPLOSION_RANGE[1] / 2);
                             }
 
-                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
+                            blastMultiplier = BigDecimal.valueOf(Data.EXPLOSION_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
                         }
                         case 2 -> {
-                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[0]);
+                            blastWidth = BigDecimal.valueOf(Data.EXPLOSION_RANGE[0]);
                             blastOffset = BigDecimal.ZERO;
-                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
+                            blastMultiplier = BigDecimal.valueOf(Data.EXPLOSION_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
                         }
                         default -> throw new IllegalStateException("E/EntityHandler::showEnemyDPS - Invalid blast index %d".formatted(i));
                     }
@@ -4657,31 +4657,31 @@ public class EntityHandler {
 
                     switch (i) {
                         case 0, 4 -> {
-                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[2]);
+                            blastWidth = BigDecimal.valueOf(Data.EXPLOSION_RANGE[2]);
 
                             if (i == 0) {
-                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] - Data.BLAST_RANGE[2] / 2);
+                                blastOffset = BigDecimal.valueOf(-Data.EXPLOSION_RANGE[0] / 2 - Data.EXPLOSION_RANGE[1] - Data.EXPLOSION_RANGE[2] / 2);
                             } else {
-                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] + Data.BLAST_RANGE[2] / 2);
+                                blastOffset = BigDecimal.valueOf(Data.EXPLOSION_RANGE[0] / 2 + Data.EXPLOSION_RANGE[1] + Data.EXPLOSION_RANGE[2] / 2);
                             }
 
-                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
+                            blastMultiplier = BigDecimal.valueOf(Data.EXPLOSION_MULTIPLIER[2]).divide(BigDecimal.valueOf(100), Equation.context);
                         }
                         case 1, 3 -> {
-                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[1]);
+                            blastWidth = BigDecimal.valueOf(Data.EXPLOSION_RANGE[1]);
 
                             if (i == 1) {
-                                blastOffset = BigDecimal.valueOf(-Data.BLAST_RANGE[0] / 2 - Data.BLAST_RANGE[1] / 2);
+                                blastOffset = BigDecimal.valueOf(-Data.EXPLOSION_RANGE[0] / 2 - Data.EXPLOSION_RANGE[1] / 2);
                             } else {
-                                blastOffset = BigDecimal.valueOf(Data.BLAST_RANGE[0] / 2 + Data.BLAST_RANGE[1] / 2);
+                                blastOffset = BigDecimal.valueOf(Data.EXPLOSION_RANGE[0] / 2 + Data.EXPLOSION_RANGE[1] / 2);
                             }
 
-                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
+                            blastMultiplier = BigDecimal.valueOf(Data.EXPLOSION_MULTIPLIER[1]).divide(BigDecimal.valueOf(100), Equation.context);
                         }
                         case 2 -> {
-                            blastWidth = BigDecimal.valueOf(Data.BLAST_RANGE[0]);
+                            blastWidth = BigDecimal.valueOf(Data.EXPLOSION_RANGE[0]);
                             blastOffset = BigDecimal.ZERO;
-                            blastMultiplier = BigDecimal.valueOf(Data.BLAST_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
+                            blastMultiplier = BigDecimal.valueOf(Data.EXPLOSION_MULTIPLIER[0]).divide(BigDecimal.valueOf(100), Equation.context);
                         }
                         default -> throw new IllegalStateException("E/EntityHandler::showEnemyDPS - Invalid blast index %d".formatted(i));
                     }
