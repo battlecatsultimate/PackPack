@@ -14,23 +14,17 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
-import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class StageInfoButtonHolder extends ComponentHolder {
     private Stage st;
@@ -203,34 +197,11 @@ public class StageInfoButtonHolder extends ComponentHolder {
     }
 
     private void disableButtons() {
-        if(configData.isCompact) {
-            message.editMessageComponents()
-                    .mentionRepliedUser(false)
-                    .queue();
-        } else {
-            ArrayList<MessageTopLevelComponent> components = new ArrayList<>();
-
-            for (MessageTopLevelComponent layout : message.getComponents()) {
-                if (!(layout instanceof ActionRow row))
-                    continue;
-
-                List<ActionRowChildComponentUnion> itemComponents = new ArrayList<>();
-
-                for (ActionRowChildComponentUnion i : row.getComponents()) {
-                    if (i instanceof Button button) {
-                        itemComponents.add((ActionRowChildComponentUnion) button.asDisabled());
-                    } else if (i instanceof SelectMenu selectMenu) {
-                        itemComponents.add((ActionRowChildComponentUnion) selectMenu.asDisabled());
-                    }
-                }
-
-                components.add(ActionRow.of(itemComponents));
-            }
-
-            message.editMessageComponents(components)
-                    .mentionRepliedUser(false)
-                    .queue();
-        }
+        message.editMessageComponents(expireButton(message, configData.isCompact))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
     }
 
     @Override

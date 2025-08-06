@@ -774,8 +774,8 @@
             "healthKb" : "体力-KB",
             "idDifficultyLevel" : "ID - 難易度 - レベル",
             "limitContinuableLength" : "敵上限 - コンティニュー - 長さ",
-            "minimumRespawn" : "最小リスポーン : _RRR_",
-            "musicBackgroundCastle" : "音楽 [<_BBB_%] - 背景 - 城"
+            "minimumRespawn" : "最小リスポーン : %s",
+            "musicBackgroundCastle" : "音楽 [<%d%%] - 背景 - 城"
         },
         "enemy" : {
             "barrier" : "バリア",
@@ -1671,12 +1671,12 @@
             "invalidAmount" : "報酬の数は０より大きくなければいけません!",
             "invalidChance" : "チャンスは0より大きく100以下でなければいけません!",
             "noName" : "報酬名を指定して下さい!",
-            "noReward" : "_ で検索しましたが、そのような報酬は見つかりませんでした!",
-            "noStage" : "_ で検索しましたが、そのような報酬があるステージは見つかりませんでした!"
+            "noReward" : "%s で検索しましたが、そのような報酬は見つかりませんでした!",
+            "noStage" : "%s で検索しましたが、そのような報酬があるステージは見つかりませんでした!"
         },
         "several" : {
-            "reward" : "_ で検索した結果、いくつかの報酬が見つかりました...\n\n",
-            "stage" : "_ で検索した結果、いくつかのステージが見つかりました..."
+            "reward" : "%s で検索した結果、いくつかの報酬が見つかりました...\n\n",
+            "stage" : "%s で検索した結果、いくつかのステージが見つかりました..."
         }
     },
     "findStage" : {

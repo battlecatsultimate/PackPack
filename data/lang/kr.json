@@ -774,8 +774,8 @@
             "healthKb" : "체력 - 히트백",
             "idDifficultyLevel" : "ID - 난이도 - 레벨",
             "limitContinuableLength" : "최대 적 - 컨티뉴 - 길이",
-            "minimumRespawn" : "최소 리스폰 : _RRR_",
-            "musicBackgroundCastle" : "음악 [<_BBB_%] - 배경 - 성"
+            "minimumRespawn" : "최소 리스폰 : %s",
+            "musicBackgroundCastle" : "음악 [<%d%%] - 배경 - 성"
         },
         "enemy" : {
             "barrier" : "베리어",
@@ -1671,12 +1671,12 @@
             "invalidAmount" : "보상의 양은 0보다 커야 합니다!",
             "invalidChance" : "확률은 0보다 크고, 100 이하여야 합니다!",
             "noName" : "보상 이름을 제공해줘야 합니다!",
-            "noReward" : "_ 보상 이름으로 검색해보았지만, 해당하는 보상을 찾지 못했습니다!",
-            "noStage" : "_ 보상 이름으로 검색해보았지만, 해당하는 보상을 가지는 스테이지를 찾지 못했습니다!"
+            "noReward" : "%s 보상 이름으로 검색해보았지만, 해당하는 보상을 찾지 못했습니다!",
+            "noStage" : "%s 보상 이름으로 검색해보았지만, 해당하는 보상을 가지는 스테이지를 찾지 못했습니다!"
         },
         "several" : {
-            "reward" : "_ 보상 이름으로 검색한 결과, 여러 종류의 결과가 존재합니다...\n\n",
-            "stage" : "_ 보상 이름으로 검색한 결과, 여러 종류의 스테이지가 존재합니다...\n\n"
+            "reward" : "%s 보상 이름으로 검색한 결과, 여러 종류의 결과가 존재합니다...\n\n",
+            "stage" : "%s 보상 이름으로 검색한 결과, 여러 종류의 스테이지가 존재합니다...\n\n"
         }
     },
     "findStage" : {

@@ -1028,12 +1028,7 @@ public class EntityHandler {
 
         String schemeLink = generateScheme(st, configData.isFrame, lang, configData.star, stmMagnification, holder);
 
-        EmbedBuilder spec = new EmbedBuilder();
-
-        if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).diff == -1)
-            spec.setColor(new Color(217, 217, 217).getRGB());
-        else
-            spec.setColor(DataToString.getDifficultyColor(((DefStageInfo) st.info).diff));
+        List<ContainerChildComponent> children = new ArrayList<>();
 
         String name = "";
 
@@ -1070,54 +1065,53 @@ public class EntityHandler {
 
         name += stName;
 
-        spec.setTitle(name);
+        String title = "### " + name;
 
-        if(holder.differentFromGlobal()) {
-            spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
+        if (!additionalContent.isBlank()) {
+            title += "\n" + additionalContent;
         }
 
-        if(configData.isCompact) {
-            spec.addField(LangID.getStringByID("data.compact.idDifficultyLevel", lang), DataToString.getIdDifficultyLevel(st, sta, lang), false);
+        if (holder.differentFromGlobal()) {
+            title += "\n" + LangID.getStringByID("data.unit.treasure", lang);
+        }
 
-            String secondField = DataToString.getEnergyBaseXP(st, holder, lang);
+        children.add(TextDisplay.of(title));
 
-            if(secondField.contains("!!drink!!")) {
-                secondField = secondField.replace("!!drink!!", "");
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.idDifficultyLevel", lang) + "**\n" +
+                        DataToString.getIdDifficultyLevel(st, sta, lang)
+        ));
 
-                spec.addField(LangID.getStringByID("data.compact.cataminBaseXP", lang), secondField, false);
-            } else {
-                spec.addField(LangID.getStringByID("data.compact.energyBaseXP", lang), secondField, false);
-            }
+        String secondField = DataToString.getEnergyBaseXP(st, holder, lang);
 
-            spec.addField(LangID.getStringByID("data.compact.limitContinuableLength", lang), DataToString.getEnemyContinuableLength(st, lang), false);
-            spec.addField(LangID.getStringByID("data.compact.musicBackgroundCastle", lang).replace("_BBB_", String.valueOf(st.mush)), DataToString.getMusciBackgroundCastle(st, lang), false);
-            spec.addField(LangID.getStringByID("data.stage.guardBarrier", lang), DataToString.getBossGuard(st, lang), false);
-            spec.setFooter(LangID.getStringByID("data.compact.minimumRespawn", lang).replace("_RRR_", DataToString.getMinSpawn(st, configData.isFrame)));
+        if(secondField.contains("!!drink!!")) {
+            secondField = secondField.replace("!!drink!!", "");
+
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.compact.cataminBaseXP", lang) + "**\n" +
+                            secondField
+            ));
         } else {
-            spec.addField(LangID.getStringByID("data.id", lang), DataToString.getStageCode(st), true);
-            spec.addField(LangID.getStringByID("data.unit.level", lang), DataToString.getStar(st, sta), true);
-
-            String energy = DataToString.getEnergy(st, lang);
-
-            if(energy.endsWith("!!drink!!")) {
-                spec.addField(LangID.getStringByID("data.stage.catamin.title", lang), energy.replace("!!drink!!", ""), true);
-            } else {
-                spec.addField(LangID.getStringByID("data.stage.energy", lang), energy, true);
-            }
-
-            spec.addField(LangID.getStringByID("data.stage.baseHealth", lang), DataToString.getBaseHealth(st), true);
-            spec.addField(LangID.getStringByID("data.stage.xp", lang), DataToString.getXP(st, holder), true);
-            spec.addField(LangID.getStringByID("data.stage.difficulty", lang), DataToString.getDifficulty(st, lang), true);
-            spec.addField(LangID.getStringByID("data.stage.continuable", lang), DataToString.getContinuable(st, lang), true);
-            spec.addField(LangID.getStringByID("data.stage.music", lang), DataToString.getMusic(st, lang), true);
-            spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
-            spec.addField(LangID.getStringByID("data.stage.enemyLimit", lang), DataToString.getMaxEnemy(st), true);
-            spec.addField(LangID.getStringByID("data.stage.background", lang), DataToString.getBackground(st, lang),true);
-            spec.addField(LangID.getStringByID("data.stage.castle", lang), DataToString.getCastle(st, lang), true);
-            spec.addField(LangID.getStringByID("data.stage.length", lang), DataToString.getLength(st), true);
-            spec.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), DataToString.getMinSpawn(st, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.stage.guardBarrier", lang), DataToString.getBossGuard(st, lang), true);
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.compact.energyBaseXP", lang) + "**\n" +
+                            secondField
+            ));
         }
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.limitContinuableLength", lang) + "**\n" +
+                        DataToString.getEnemyContinuableLength(st, lang)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.musicBackgroundCastle", lang).formatted(st.mush) + "**\n" +
+                        DataToString.getMusciBackgroundCastle(st, lang)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.stage.guardBarrier", lang) + "**\n" +
+                        DataToString.getBossGuard(st, lang)
+        ));
 
         ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), configData.isFrame, lang);
 
@@ -1131,7 +1125,10 @@ public class EntityHandler {
                     sb.append("\n");
             }
 
-            spec.addField(LangID.getStringByID("data.stage.limit.title", lang), sb.toString(), false);
+            children.add(TextDisplay.of(
+                    "**" +  LangID.getStringByID("data.stage.limit.title", lang) + "**\n" +
+                            sb
+            ));
         }
 
         if(configData.showMiscellaneous) {
@@ -1143,12 +1140,15 @@ public class EntityHandler {
                 for(int i = 0; i < misc.size(); i++) {
                     stringBuilder.append("- ").append(misc.get(i));
 
-                    if(i < misc.size() - 1) {
+                    if (i < misc.size() - 1) {
                         stringBuilder.append("\n");
                     }
                 }
 
-                spec.addField(LangID.getStringByID("data.stage.misc.title", lang), stringBuilder.toString(), false);
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.stage.misc.title", lang) + "**\n" +
+                                stringBuilder
+                ));
             }
         }
 
@@ -1156,7 +1156,10 @@ public class EntityHandler {
             String exData = DataToString.getEXStage(st, lang, false);
 
             if(exData != null) {
-                spec.addField(LangID.getStringByID("data.stage.misc.exStage", lang), exData, false);
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.stage.misc.exStage", lang) + "**\n" +
+                                exData
+                ));
             }
         }
 
@@ -1164,36 +1167,53 @@ public class EntityHandler {
             String materials = DataToString.getMaterialDrop(st, sta, lang);
 
             if(materials != null) {
-                spec.addField(LangID.getStringByID("data.stage.material.title", lang), materials, false);
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.stage.material.title", lang) + "**\n" +
+                                materials
+                ));
             }
         }
 
         if (configData.showDropInfo) {
             String drops = DataToString.getRewards(st, lang);
+            String score = DataToString.getScoreDrops(st, lang);
 
             if(drops != null) {
                 if(drops.endsWith("!!number!!")) {
-                    spec.addField(LangID.getStringByID("data.stage.reward.type.number", lang), drops.replace("!!number!!", ""), false);
+                    children.add(TextDisplay.of(
+                            "**" + LangID.getStringByID("data.stage.reward.type.number", lang) + "**\n" +
+                                    drops.replace("!!number!!", "")
+                    ));
                 } else if(drops.endsWith("!!noFail!!")) {
-                    spec.addField(LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang), drops.replace("!!noFail!!", ""), false);
+                    children.add(TextDisplay.of(
+                            "**" + LangID.getStringByID("data.stage.reward.type.chance.guaranteed", lang) + "**\n" +
+                                    drops.replace("!!noFail!!", "")
+                    ));
                 } else {
-                    spec.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), drops, false);
+                    children.add(TextDisplay.of(
+                            "**" + LangID.getStringByID("data.stage.reward.type.chance.normal", lang) + "**\n" +
+                                    drops
+                    ));
                 }
             }
 
-            String score = DataToString.getScoreDrops(st, lang);
-
             if(score != null) {
-                spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.stage.reward.type.score", lang) + "**\n" +
+                                score
+                ));
             }
         }
 
         if(schemeLink != null) {
-            spec.addField(LangID.getStringByID("data.stage.scheme", lang), "** **", false);
-            spec.setImage(schemeLink);
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
+            children.add(TextDisplay.of("**" + LangID.getStringByID("data.stage.scheme", lang) + "**"));
+            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(schemeLink)));
         }
 
-        List<MessageTopLevelComponent> components = new ArrayList<>();
+        children.add(TextDisplay.of("-# " + LangID.getStringByID("data.compact.minimumRespawn", lang).formatted(DataToString.getMinSpawn(st, configData.isFrame))));
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
         ArrayList<Button> buttons = new ArrayList<>();
 
@@ -1212,10 +1232,12 @@ public class EntityHandler {
             buttons.add(Button.secondary("lineup", LangID.getStringByID("stageInfo.button.fixedLineup", lang)).withEmoji(EmojiStore.ABILITY.get("LINEUP")));
         }
 
-        components.add(ActionRow.of(buttons));
+        children.add(ActionRow.of(buttons));
 
         if (switchable && st.getCont().list.size() != 1 && st.id != null) {
-            components.add(ActionRow.of(
+            children.add(Separator.create(false, Separator.Spacing.SMALL));
+
+            children.add(ActionRow.of(
                     Button.secondary("prev", LangID.getStringByID("stageInfo.button.previousStage", lang)).withEmoji(EmojiStore.PREVIOUS).withDisabled(st.id.id - 1 < 0),
                     Button.secondary("next", LangID.getStringByID("stageInfo.button.nextStage", lang)).withEmoji(EmojiStore.NEXT).withDisabled(st.id.id + 1 >= st.getCont().list.size())
             ));
@@ -1236,33 +1258,36 @@ public class EntityHandler {
                 stageList.add(SelectOption.of(stageName, String.valueOf(i)).withDescription(DataToString.getStageCode(stage)).withDefault(st.id.id == i));
             }
 
-            components.add(ActionRow.of(StringSelectMenu.create("stage").addOptions(stageList).build()));
+            children.add(ActionRow.of(StringSelectMenu.create("stage").addOptions(stageList).build()));
         }
+
+        Container container;
+
+        if (st.info instanceof DefStageInfo info && info.diff != -1)
+            container = Container.of(children).withAccentColor(DataToString.getDifficultyColor(info.diff));
+        else
+            container = Container.of(children);
 
         if (editMode) {
             if (sender instanceof Message msg) {
-                msg.editMessage(additionalContent)
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
-                        .setFiles()
+                msg.editMessageComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(onSuccess);
             } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
-                        .setContent(additionalContent)
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
-                        .setFiles()
+                        .setComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(hook -> hook.retrieveOriginal().queue(onSuccess));
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, additionalContent, reference, a -> a.setEmbeds(spec.build()).setComponents(components), onSuccess);
+                Command.replyToMessageSafely(ch, reference, onSuccess, container);
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, additionalContent, a -> a.setEmbeds(spec.build()).setComponents(components), onSuccess);
+                Command.replyToMessageSafely(event, onSuccess, container);
             }
         }
     }

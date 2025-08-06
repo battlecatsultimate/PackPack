@@ -774,8 +774,8 @@
             "healthKb" : "Health - Knockbacks",
             "idDifficultyLevel" : "ID - Difficulty - Level",
             "limitContinuableLength" : "Enemy Limit - Continuable - Length",
-            "minimumRespawn" : "Minimum Respawn : _RRR_",
-            "musicBackgroundCastle" : "Music [<_BBB_%] - Background - Castle"
+            "minimumRespawn" : "Minimum Respawn : %s",
+            "musicBackgroundCastle" : "Music [<%d%%] - Background - Castle"
         },
         "enemy" : {
             "barrier" : "護盾",
@@ -1673,12 +1673,12 @@
             "invalidAmount" : "Amount of reward must be higher than 0!",
             "invalidChance" : "Chance must be higher than 0, and smaller or same than 100!",
             "noName" : "You have to provide reward name!",
-            "noReward" : "Searching with _, but no such reward found!",
-            "noStage" : "Searching with _, but no such stage with this reward found!"
+            "noReward" : "Searching with %s, but no such reward found!",
+            "noStage" : "Searching with %s, but no such stage with this reward found!"
         },
         "several" : {
-            "reward" : "Searching with _, and several rewards found...\n\n",
-            "stage" : "Searching with _, and several stages found..."
+            "reward" : "Searching with %s, and several rewards found...\n\n",
+            "stage" : "Searching with %s, and several stages found..."
         }
     },
     "findStage" : {

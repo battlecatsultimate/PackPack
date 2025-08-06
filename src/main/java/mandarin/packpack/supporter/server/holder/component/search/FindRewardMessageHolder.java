@@ -9,12 +9,14 @@ import common.util.stage.StageMap;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -101,14 +103,17 @@ public class FindRewardMessageHolder extends SearchHolder {
         Message author = getAuthorMessage();
 
         try {
-            message.delete().queue();
-
             List<Stage> stages = EntityFilter.findStageByReward(rewards.get(index), chance, amount);
 
             if(stages.isEmpty()) {
-                ch.sendMessage(LangID.getStringByID("findReward.failed.noStage", lang).replace("_", validateName(keyword))).queue();
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("findReward.failed.noStage", lang).formatted(validateName(keyword))))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
             } else if(stages.size() == 1) {
-                EntityHandler.showStageEmb(stages.getFirst(), ch, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
@@ -122,29 +127,12 @@ public class FindRewardMessageHolder extends SearchHolder {
                     StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, treasure, configData, false, lang));
                 });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("findReward.several.reward", lang).replace("_", validateName(keyword))).append("```md\n");
-
-                List<String> data = accumulateStage(stages, true);
-
-                for(int i = 0; i < data.size(); i++) {
-                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
-                }
-
-                if(stages.size() > chunk) {
-                    int totalPage = getTotalPage(stages.size(), chunk);
-
-                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
-                }
-
-                sb.append("```");
-
-                Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).queue(res -> {
-                    if(res != null) {
-                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, userID, ch.getId(), res, keyword, layout, "", treasure, configData, lang));
-                    }
-                });
-
-
+                event.deferEdit()
+                        .setComponents(Command.getSearchComponents(stages.size(), LangID.getStringByID("findReward.several.reward", lang).formatted(validateName(keyword)), stages, this::accumulateStageTextData, layout, lang))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue(hook -> hook.retrieveOriginal().queue(msg -> StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, userID, ch.getId(), msg, keyword, layout, "", treasure, configData, lang))));
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FindRewardMessageHolder::onSelected - Failed to perform interaction");
@@ -156,55 +144,60 @@ public class FindRewardMessageHolder extends SearchHolder {
         return rewards.size();
     }
 
-    private List<String> accumulateStage(List<Stage> stage, boolean onText) {
+    private List<String> accumulateStageTextData(List<Stage> stages, SearchHolder.TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
-            if(i >= stage.size())
-                break;
-
-            Stage st = stage.get(i);
+        for(int i = 0; i < Math.min(stages.size(), layout.chunkSize); i++) {
+            Stage st = stages.get(i);
             StageMap stm = st.getCont();
             MapColc mc = stm.getCont();
 
+            if (stm.id == null || st.id == null)
+                continue;
+
             String name = "";
 
-            if(onText) {
-                if(mc != null) {
-                    String mcn = MultiLangCont.get(mc, lang);
+            String fullName = "";
 
-                    if(mcn == null || mcn.isBlank())
-                        mcn = mc.getSID();
+            if (mc != null) {
+                String mcName = StaticStore.safeMultiLangGet(mc, lang);
 
-                    name += mcn+" - ";
-                } else {
-                    name += "Unknown - ";
+                if (mcName == null || mcName.isBlank()) {
+                    mcName = DataToString.getMapCode(mc);
                 }
-            }
 
-            String stmn = MultiLangCont.get(stm, lang);
-
-            if(stm.id != null) {
-                if(stmn == null || stmn.isBlank())
-                    stmn = Data.trio(stm.id.id);
+                fullName += mcName + " - ";
             } else {
-                if(stmn == null || stmn.isBlank())
-                    stmn = "Unknown";
+                fullName += "Unknown - ";
             }
 
-            name += stmn+" - ";
+            String stmName = StaticStore.safeMultiLangGet(stm, lang);
 
-            String stn = MultiLangCont.get(st, lang);
-
-            if(st.id != null) {
-                if(stn == null || stn.isBlank())
-                    stn = Data.trio(st.id.id);
-            } else {
-                if(stn == null || stn.isBlank())
-                    stn = "Unknown";
+            if (stmName == null || stmName.isBlank()) {
+                stmName = Data.trio(stm.id.id);
             }
 
-            name += stn;
+            fullName += stmName + " - ";
+
+            String stName = StaticStore.safeMultiLangGet(st, lang);
+
+            if (stName == null || stName.isBlank()) {
+                stName = Data.trio(st.id.id);
+            }
+
+            fullName += stName;
+
+            switch (textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        name = fullName;
+                    } else {
+                        name = "`" + DataToString.getStageCode(st) + "` " + fullName;
+                    }
+                }
+                case LIST_DESCRIPTION -> name = DataToString.getStageCode(st);
+                case LIST_LABEL -> name = fullName;
+            }
 
             data.add(name);
         }

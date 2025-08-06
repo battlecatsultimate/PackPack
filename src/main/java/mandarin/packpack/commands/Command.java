@@ -1,6 +1,7 @@
 package mandarin.packpack.commands;
 
 import common.CommonStatic;
+import kotlin.jvm.functions.Function2;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.RecordableThread;
@@ -9,13 +10,19 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -98,6 +105,107 @@ public abstract class Command {
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
 
         return m.setComponents(rows);
+    }
+
+    public static <T> Container getSearchComponents(int dataSize, String summary, List<T> data, Function2<List<T>, SearchHolder.TextType, List<String>> generator, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
+        int totalPage = Holder.getTotalPage(dataSize, layout.chunkSize);
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        children.add(TextDisplay.of(summary));
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        List<String> text = generator.invoke(data, SearchHolder.TextType.TEXT);
+
+        switch (layout) {
+            case FANCY_BUTTON -> {
+                for (int i = 0; i < text.size(); i++) {
+                    children.add(Section.of(Button.secondary(LangID.getStringByID("ui.button.select", lang), String.valueOf(i)), TextDisplay.of(text.get(i))));
+                }
+            }
+            case FANCY_LIST -> {
+                for (int i = 0; i < text.size(); i++) {
+                    children.add(TextDisplay.of(text.get(i)));
+
+                    if (i < text.size() - 1) {
+                        children.add(Separator.create(false, Separator.Spacing.SMALL));
+                    }
+                }
+            }
+            case COMPACTED -> {
+                StringBuilder builder = new StringBuilder();
+
+                for (int i = 0; i < text.size(); i++) {
+                    builder.append(i + 1).append(". ").append(text.get(i));
+
+                    if (i < text.size() - 1) {
+                        builder.append("\n");
+                    }
+                }
+
+                children.add(TextDisplay.of("```md\n" + builder + "\n```"));
+            }
+        }
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(TextDisplay.of(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)));
+
+        if(dataSize > layout.chunkSize) {
+            List<Button> buttons = new ArrayList<>();
+
+            if(totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+            }
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
+
+            if(totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
+            }
+
+            children.add(ActionRow.of(buttons));
+        }
+
+        if (layout == ConfigHolder.SearchLayout.COMPACTED || layout == ConfigHolder.SearchLayout.FANCY_LIST) {
+            List<SelectOption> options = new ArrayList<>();
+
+            List<String> labels = generator.invoke(data, SearchHolder.TextType.LIST_LABEL);
+            List<String> descriptions = generator.invoke(data, SearchHolder.TextType.LIST_DESCRIPTION);
+
+            for(int i = 0; i < labels.size(); i++) {
+                String label = labels.get(i);
+                String description;
+
+                if (descriptions == null) {
+                    description = null;
+                } else {
+                    description = descriptions.get(i);
+                }
+
+                SelectOption option = SelectOption.of(label, String.valueOf(i));
+
+                String[] elements = label.split("\\\\\\\\");
+
+                if(elements.length == 2 && elements[0].matches("<:\\S+?:\\d+>")) {
+                    option = option.withEmoji(Emoji.fromFormatted(elements[0])).withLabel(elements[1]);
+                }
+
+                if (description != null)
+                    option = option.withDescription(description);
+
+                options.add(option);
+            }
+
+            children.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
+        }
+
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        children.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
+
+        return Container.of(children);
     }
 
     public static ReplyCallbackAction registerSearchComponents(ReplyCallbackAction m, int dataSize, List<String> data, CommonStatic.Lang.Locale lang) {

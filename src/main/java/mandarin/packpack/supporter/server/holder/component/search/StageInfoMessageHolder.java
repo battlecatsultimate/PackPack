@@ -23,17 +23,17 @@ import java.util.List;
 import java.util.Map;
 
 public class StageInfoMessageHolder extends SearchHolder {
-    private final List<Stage> stage;
+    private final List<Stage> stages;
 
     private final String additionalContent;
 
     private final TreasureHolder treasure;
     private final StageInfo.StageInfoConfig configData;
 
-    public StageInfoMessageHolder(List<Stage> stage, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, String additionalContent, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+    public StageInfoMessageHolder(List<Stage> stages, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, String additionalContent, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
-        this.stage = stage;
+        this.stages = stages;
 
         this.additionalContent = additionalContent;
 
@@ -46,10 +46,10 @@ public class StageInfoMessageHolder extends SearchHolder {
         List<String> data = new ArrayList<>();
 
         for(int i = chunk * page; i < chunk * (page + 1); i++) {
-            if(i >= stage.size())
+            if(i >= stages.size())
                 break;
 
-            Stage st = stage.get(i);
+            Stage st = stages.get(i);
             StageMap stm = st.getCont();
             MapColc mc = stm.getCont();
 
@@ -116,8 +116,8 @@ public class StageInfoMessageHolder extends SearchHolder {
         }
 
         try {
-            EntityHandler.showStageEmb(stage.get(index), event, hasAuthorMessage() ? getAuthorMessage() : null, additionalContent, treasure, configData, true, true, lang, msg ->
-                StaticStore.putHolder(userID, new StageInfoButtonHolder(stage.get(index), hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, msg, treasure, configData, true, lang))
+            EntityHandler.showStageEmb(stages.get(index), event, hasAuthorMessage() ? getAuthorMessage() : null, additionalContent, treasure, configData, true, true, lang, msg ->
+                StaticStore.putHolder(userID, new StageInfoButtonHolder(stages.get(index), hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, msg, treasure, configData, true, lang))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/StageInfoMessageHolder::onSelected - Failed to upload stage embed");
@@ -126,6 +126,6 @@ public class StageInfoMessageHolder extends SearchHolder {
 
     @Override
     public int getDataSize() {
-        return stage.size();
+        return stages.size();
     }
 }
