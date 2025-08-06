@@ -765,17 +765,17 @@
             }
         },
         "compact" : {
-            "attackTimings" : "공격 시간 : 선딜 -> 후딜 -> 공격 간격",
-            "cataminBaseXP" : "고양이 드링크 - 성 체력 - XP",
-            "costCooldownSpeed" : "코스트 - 쿨타임 - 속도",
-            "damageDPS" : "<_TTT_> 공격력 [DPS]",
-            "dropBarrierSpeed" : "드롭 - 베리어 - 속도",
-            "energyBaseXP" : "에너지 - 성 체력 - XP",
-            "healthKb" : "체력 - 히트백",
-            "idDifficultyLevel" : "ID - 난이도 - 레벨",
-            "limitContinuableLength" : "최대 적 - 컨티뉴 - 길이",
+            "attackTimings" : "공격 시간 : 선딜 -> 후딜 -> 공격 간격",
+            "cataminBaseXP" : "고양이 드링크 - 성 체력 - XP",
+            "costCooldownSpeed" : "코스트 - 쿨타임 - 속도",
+            "damageDPS" : "<_TTT_> 공격력 [DPS]",
+            "dropBarrierSpeed" : "드롭 - 베리어 - 속도",
+            "energyBaseXP" : "에너지 - 성 체력 - XP",
+            "healthKb" : "체력 - 히트백",
+            "idDifficultyLevel" : "ID - 난이도 - 레벨",
+            "limitContinuableLength" : "최대 적 - 컨티뉴 - 길이",
             "minimumRespawn" : "최소 리스폰 : _RRR_",
-            "musicBackgroundCastle" : "음악 [<_BBB_%] - 배경 - 성"
+            "musicBackgroundCastle" : "음악 [<_BBB_%] - 배경 - 성"
         },
         "enemy" : {
             "barrier" : "베리어",

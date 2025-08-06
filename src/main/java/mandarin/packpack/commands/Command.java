@@ -308,6 +308,25 @@ public abstract class Command {
         }
     }
 
+    public static void replyToMessageSafely(GenericCommandInteractionEvent event, String content) {
+        ReplyCallbackAction action = event.deferReply()
+                .setComponents(TextDisplay.of(content))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>());
+
+        if(event instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) event).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) event, Permission.MESSAGE_HISTORY)) {
+                action.mentionRepliedUser(false).queue(hook -> hook.retrieveOriginal().queue());
+            } else {
+                action.queue(hook -> hook.retrieveOriginal().queue());
+            }
+        } else {
+            action.mentionRepliedUser(false).queue(hook -> hook.retrieveOriginal().queue());
+        }
+    }
+
     public static void replyToMessageSafely(GenericCommandInteractionEvent event, Consumer<Message> onSuccess, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
         List<MessageTopLevelComponent> c = new ArrayList<>();
 

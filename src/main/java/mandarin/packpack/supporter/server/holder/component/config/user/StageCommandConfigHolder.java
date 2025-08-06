@@ -175,10 +175,10 @@ public class StageCommandConfigHolder extends ComponentHolder {
         }
 
         if (config.compact) {
-            String idDifficultyLevel = "ID-123-456 - ★1 - " + EmojiStore.CROWN_ON.getFormatted() + EmojiStore.CROWN_OFF.getFormatted().repeat(3) + " (100%)";
-            String energyBaseXP = "100 - 10000 - 1000";
-            String limitContinuableLength = "10 - " + LangID.getStringByID("data.true", lang) + " - 3000";
-            String musicBackgroundCastle = "033 - 000 - 000";
+            String idDifficultyLevel = "ID-123-456 - ★1 - " + EmojiStore.CROWN_ON.getFormatted() + EmojiStore.CROWN_OFF.getFormatted().repeat(3) + " (100%)";
+            String energyBaseXP = "100 - 10000 - 1000";
+            String limitContinuableLength = "10 - " + LangID.getStringByID("data.true", lang) + " - 3000";
+            String musicBackgroundCastle = "033 - 000 - 000";
             String guardBarrier = LangID.getStringByID("data.active", lang);
 
             builder.addField(LangID.getStringByID("data.compact.idDifficultyLevel", lang), idDifficultyLevel, false);

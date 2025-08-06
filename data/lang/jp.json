@@ -765,17 +765,17 @@
             }
         },
         "compact" : {
-            "attackTimings" : "攻撃頻度  : 攻撃感知～攻撃発生 -> 攻撃発生～攻撃終了 -> 攻撃終了～移動",
-            "cataminBaseXP" : "ネコビタン - 城体力 - XP",
+            "attackTimings" : "攻撃頻度  : 攻撃感知～攻撃発生 -> 攻撃発生～攻撃終了 -> 攻撃終了～移動",
+            "cataminBaseXP" : "ネコビタン - 城体力 - XP",
             "costCooldownSpeed" : "お金 - 再生産 - 速度",
-            "damageDPS" : "<_TTT_> 攻撃力 [DPS]",
-            "dropBarrierSpeed" : "ドロップ - バリア - 速度",
-            "energyBaseXP" : "統率力 - 城体力 - XP",
+            "damageDPS" : "<_TTT_> 攻撃力 [DPS]",
+            "dropBarrierSpeed" : "ドロップ - バリア - 速度",
+            "energyBaseXP" : "統率力 - 城体力 - XP",
             "healthKb" : "体力-KB",
-            "idDifficultyLevel" : "ID - 難易度 - レベル",
-            "limitContinuableLength" : "敵上限 - コンティニュー - 長さ",
+            "idDifficultyLevel" : "ID - 難易度 - レベル",
+            "limitContinuableLength" : "敵上限 - コンティニュー - 長さ",
             "minimumRespawn" : "最小リスポーン : _RRR_",
-            "musicBackgroundCastle" : "音楽 [<_BBB_%] - 背景 - 城"
+            "musicBackgroundCastle" : "音楽 [<_BBB_%] - 背景 - 城"
         },
         "enemy" : {
             "barrier" : "バリア",

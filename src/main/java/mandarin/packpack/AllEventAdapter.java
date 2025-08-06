@@ -54,6 +54,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -279,6 +280,24 @@ public class AllEventAdapter extends ListenerAdapter {
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildMemberUpdate - Error happened");
+        }
+    }
+
+    @Override
+    public void onMessageUpdate(@NotNull MessageUpdateEvent event) {
+        if (event.getMessage().getAuthor().getIdLong() != event.getJDA().getSelfUser().getIdLong()) {
+            return;
+        }
+
+        for (HolderHub hub : StaticStore.holders.values()) {
+            if (hub.messageHolder != null)
+                hub.messageHolder.handleMessageUpdated(event.getMessage());
+
+            if (hub.componentHolder != null)
+                hub.componentHolder.handleMessageUpdated(event.getMessage());
+
+            if (hub.modalHolder != null)
+                hub.modalHolder.handleMessageUpdated(event.getMessage());
         }
     }
 

@@ -765,17 +765,17 @@
             }
         },
         "compact" : {
-            "attackTimings" : "Время атаки : Подготовительный замах -> Завершающий замах -> TBA",
-            "cataminBaseXP" : "Котомин - Здоровье Базы - Опыт",
-            "costCooldownSpeed" : "Стоимость - Перезарядка - Скорость",
-            "damageDPS" : "<_TTT_> Атака [DPS]",
-            "dropBarrierSpeed" : "Дроп - Барьер - Скорость",
-            "energyBaseXP" : "Энергия - Здоровье Базы - Опыт",
-            "healthKb" : "Здоровье - Отталкиваний",
-            "idDifficultyLevel" : "ID - Сложность - Уровень",
-            "limitContinuableLength" : "Лимит Врагов - Продолжение - Длина",
+            "attackTimings" : "Время атаки : Подготовительный замах -> Завершающий замах -> TBA",
+            "cataminBaseXP" : "Котомин - Здоровье Базы - Опыт",
+            "costCooldownSpeed" : "Стоимость - Перезарядка - Скорость",
+            "damageDPS" : "<_TTT_> Атака [DPS]",
+            "dropBarrierSpeed" : "Дроп - Барьер - Скорость",
+            "energyBaseXP" : "Энергия - Здоровье Базы - Опыт",
+            "healthKb" : "Здоровье - Отталкиваний",
+            "idDifficultyLevel" : "ID - Сложность - Уровень",
+            "limitContinuableLength" : "Лимит Врагов - Продолжение - Длина",
             "minimumRespawn" : "Минимальный Респавн : _RRR_",
-            "musicBackgroundCastle" : "Музыка [<_BBB_%] - Фон - Замок"
+            "musicBackgroundCastle" : "Музыка [<_BBB_%] - Фон - Замок"
         },
         "enemy" : {
             "barrier" : "Барьер",

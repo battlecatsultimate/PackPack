@@ -201,17 +201,6 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getTitle(Enemy e, CommonStatic.Lang.Locale lang) {
-        if(e == null)
-            return "";
-
-        if(MultiLangCont.get(e, lang) == null) {
-            return Data.trio(e.id.id);
-        } else {
-            return MultiLangCont.get(e, lang);
-        }
-    }
-
     public static String getRarity(int type, CommonStatic.Lang.Locale lang) {
         String rarity;
 
@@ -2554,7 +2543,7 @@ public class DataToString extends Data {
         if(name.isBlank())
             name = getID(f.uid.id, f.fid);
         else
-            name += " [" + getID(f.uid.id, f.fid) + "]";
+            name += " [" + getID(f.uid.id, f.fid) + "]";
 
         String rarity;
 
@@ -2588,14 +2577,14 @@ public class DataToString extends Data {
             withTreasure = getHP(f, lv, talent, lvs, true, t);
 
         if(withTreasure.isBlank() || normal.equals(withTreasure)) {
-            return normal + " - " + getHitback(f, talent, lvs);
+            return normal + " - " + getHitback(f, talent, lvs);
         } else {
-            return normal + " <" + withTreasure + ">" + " - " + getHitback(f, talent, lvs);
+            return normal + " <" + withTreasure + ">" + " - " + getHitback(f, talent, lvs);
         }
     }
 
     public static String getHealthHitback(MaskEnemy e, int m) {
-        return getHP(e, m) + " - " + getHitback(e);
+        return getHP(e, m) + " - " + getHitback(e);
     }
 
     public static String getCompactAtk(MaskUnit f, boolean talent, UnitLevel lv, Level lvs, boolean treasure, TreasureHolder t) {
@@ -2613,18 +2602,18 @@ public class DataToString extends Data {
         String withTreasure;
 
         if (du.rawAtkData().length > 1) {
-            normal = getTotalAtk(lv, du, talent, lvs, false, t) + " " + getCompactAtks(du, talent, lv, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
+            normal = getTotalAtk(lv, du, talent, lvs, false, t) + " " + getCompactAtks(du, talent, lv, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
 
             if(treasure) {
-                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " " + getCompactAtks(du, talent, lv, lvs, true, t) + " [" + getDPS(f, lv, talent, lvs, true, t) + "]";
+                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " " + getCompactAtks(du, talent, lv, lvs, true, t) + " [" + getDPS(f, lv, talent, lvs, true, t) + "]";
             } else {
                 withTreasure = "";
             }
         } else {
-            normal = getTotalAtk(lv, du, talent, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
+            normal = getTotalAtk(lv, du, talent, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
 
             if(treasure) {
-                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " [" + getDPS(f, lv, talent, lvs, true, t) + "]";
+                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " [" + getDPS(f, lv, talent, lvs, true, t) + "]";
             } else {
                 withTreasure = "";
             }
@@ -2642,9 +2631,9 @@ public class DataToString extends Data {
             return "";
 
         if(e.rawAtkData().length > 1)
-            return getTotalAtk(e, m) + " " + getCompactAtks(e, m) + " [" + getDPS(e, m) + "]";
+            return getTotalAtk(e, m) + " " + getCompactAtks(e, m) + " [" + getDPS(e, m) + "]";
         else
-            return getTotalAtk(e, m) + " [" + getDPS(e, m) + "]";
+            return getTotalAtk(e, m) + " [" + getDPS(e, m) + "]";
     }
 
     private static String getCompactAtks(MaskUnit du, boolean talent, UnitLevel lv, Level lvs, boolean treasure, TreasureHolder t) {
@@ -2736,50 +2725,31 @@ public class DataToString extends Data {
     }
 
     public static String getCompactAtkTimings(MaskUnit f, boolean talent, Level lv, boolean isFrame) {
-        return getAtkTime(f, talent, isFrame, lv) + " : " + getPre(f, isFrame) + " -> " + getPost(f, isFrame) + " -> " + getTBA(f, talent, lv, isFrame);
+        return getAtkTime(f, talent, isFrame, lv) + " : " + getPre(f, isFrame) + " -> " + getPost(f, isFrame) + " -> " + getTBA(f, talent, lv, isFrame);
     }
 
     public static String getCompactAtkTimings(MaskEnemy e, boolean isFrame) {
-        return getAtkTime(e, isFrame) + " : " + getPre(e, isFrame) + " -> " + getPost(e, isFrame) + " -> " + getTBA(e, isFrame);
+        return getAtkTime(e, isFrame) + " : " + getPre(e, isFrame) + " -> " + getPost(e, isFrame) + " -> " + getTBA(e, isFrame);
     }
 
     public static String getCostCooldownSpeed(MaskUnit f, boolean isFrame, boolean talent, Level lvs, TreasureHolder t) {
-        return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs, t) + " - " + getSpeed(f, talent, lvs);
+        return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs, t) + " - " + getSpeed(f, talent, lvs);
     }
 
     public static String getDropBarrierSpeed(MaskEnemy e, TreasureHolder t, CommonStatic.Lang.Locale lang) {
-        return getDrop(e, t) + " - " + getBarrier(e, lang) + " - " + getSpeed(e);
-    }
-
-    public static String getCompactTitle(Enemy e, CommonStatic.Lang.Locale lang) {
-        if(e == null)
-            return "";
-
-        String name = MultiLangCont.get(e, lang);
-
-        if(name == null || name.isBlank()) {
-            name = e.names.toString();
-        }
-
-        if(name.isBlank()) {
-            name = getID(e.id.id);
-        } else {
-            name += " [" + getID(e.id.id) + "]";
-        }
-
-        return name;
+        return getDrop(e, t) + " - " + getBarrier(e, lang) + " - " + getSpeed(e);
     }
 
     public static String getIdDifficultyLevel(Stage st, int star, CommonStatic.Lang.Locale lang) {
-        return getStageCode(st) +" - " + getDifficulty(st, lang) + " - " + getStar(st, star);
+        return getStageCode(st) +" - " + getDifficulty(st, lang) + " - " + getStar(st, star);
     }
 
     public static String getEnergyBaseXP(Stage st, TreasureHolder t, CommonStatic.Lang.Locale lang) {
-        return getEnergy(st, lang) + " - " + getBaseHealth(st) + " - " + getXP(st, t);
+        return getEnergy(st, lang) + " - " + getBaseHealth(st) + " - " + getXP(st, t);
     }
 
     public static String getEnemyContinuableLength(Stage st, CommonStatic.Lang.Locale lang) {
-        return getMaxEnemy(st) + " - " + getContinuable(st, lang) + " - " + getLength(st);
+        return getMaxEnemy(st) + " - " + getContinuable(st, lang) + " - " + getLength(st);
     }
 
     public static String getMusciBackgroundCastle(Stage st, CommonStatic.Lang.Locale lang) {
@@ -2789,7 +2759,7 @@ public class DataToString extends Data {
             result += "->" + getMusic1(st, lang);
         }
 
-        return result + " - " + getBackground(st, lang) + " - " + getCastle(st, lang);
+        return result + " - " + getBackground(st, lang) + " - " + getCastle(st, lang);
     }
 
     public static String getMaterialDrop(Stage st, int star, CommonStatic.Lang.Locale lang) {

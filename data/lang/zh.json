@@ -765,17 +765,17 @@
             }
         },
         "compact" : {
-            "attackTimings" : "Attack Time : Foreswing -> Backswing -> TBA",
-            "cataminBaseXP" : "Catamin - Base Health - XP",
-            "costCooldownSpeed" : "Cost - Cooldown - Speed",
-            "damageDPS" : "<_TTT_> Attack [DPS]",
-            "dropBarrierSpeed" : "Drop - Barrier - Speed",
-            "energyBaseXP" : "Energy - Base Health - XP",
-            "healthKb" : "Health - Knockbacks",
-            "idDifficultyLevel" : "ID - Difficulty - Level",
-            "limitContinuableLength" : "Enemy Limit - Continuable - Length",
+            "attackTimings" : "Attack Time : Foreswing -> Backswing -> TBA",
+            "cataminBaseXP" : "Catamin - Base Health - XP",
+            "costCooldownSpeed" : "Cost - Cooldown - Speed",
+            "damageDPS" : "<_TTT_> Attack [DPS]",
+            "dropBarrierSpeed" : "Drop - Barrier - Speed",
+            "energyBaseXP" : "Energy - Base Health - XP",
+            "healthKb" : "Health - Knockbacks",
+            "idDifficultyLevel" : "ID - Difficulty - Level",
+            "limitContinuableLength" : "Enemy Limit - Continuable - Length",
             "minimumRespawn" : "Minimum Respawn : _RRR_",
-            "musicBackgroundCastle" : "Music [<_BBB_%] - Background - Castle"
+            "musicBackgroundCastle" : "Music [<_BBB_%] - Background - Castle"
         },
         "enemy" : {
             "barrier" : "護盾",

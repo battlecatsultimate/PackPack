@@ -583,12 +583,11 @@ public class EntityHandler {
         return false;
     }
 
-    public static void showEnemyEmb(Enemy e, Object sender, @Nullable Message reference, TreasureHolder holder, EnemyStat.EnemyStatConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
-        String iconLink = generateIcon(e);
+    public static void showEnemyEmb(Enemy e, Object sender, @Nullable Message reference, TreasureHolder holder, EnemyStat.EnemyStatConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) {
+        String iconLink = StaticStore.assetManager.getEnemyIcon(e);
 
-        EmbedBuilder spec = new EmbedBuilder();
-
-        int c = StaticStore.rainbow[StaticStore.RED];
+        if (iconLink == null)
+            return;
 
         int[] mag;
 
@@ -616,44 +615,59 @@ public class EntityHandler {
                 mag[i] = (int) Math.round(mag[i] * (e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier()));
         }
 
-        spec.setColor(c);
-        spec.setThumbnail(iconLink);
+        List<ContainerChildComponent> children = new ArrayList<>();
 
-        if(holder.differentFromGlobal()) {
-            spec.setDescription(LangID.getStringByID("data.unit.treasure", lang));
-        }
+        String enemyName = StaticStore.safeMultiLangGet(e, lang);
 
-        if(configData.isCompact) {
-            spec.setTitle(DataToString.getCompactTitle(e, lang));
-
-            spec.addField(LangID.getStringByID("data.enemy.magnification", lang), DataToString.getMagnification(mag, 100), false);
-            spec.addField(LangID.getStringByID("data.compact.healthKb", lang), DataToString.getHealthHitback(e.de, mag[0]), false);
-            spec.addField(LangID.getStringByID("data.compact.dropBarrierSpeed", lang), DataToString.getDropBarrierSpeed(e.de, holder, lang), true);
-            spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
-            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(e.de, configData.isFrame), false);
-            spec.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", DataToString.getSiMu(e.de, lang)), DataToString.getCompactAtk(e.de, mag[1]), false);
-            spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), false);
+        if (enemyName == null || enemyName.isBlank()) {
+            enemyName = Data.trio(e.id.id);
         } else {
-            spec.setTitle(DataToString.getTitle(e, lang));
-
-            spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(e.id.id), true);
-            spec.addField(LangID.getStringByID("data.enemy.magnification", lang), DataToString.getMagnification(mag, 100), true);
-            spec.addField(LangID.getStringByID("data.hp", lang), DataToString.getHP(e.de, mag[0]), true);
-            spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(e.de), true);
-            spec.addField(LangID.getStringByID("data.enemy.barrier", lang), DataToString.getBarrier(e.de, lang), true);
-            spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(e.de), true);
-            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(e.de, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(e.de, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(e.de, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(e.de, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.enemy.drop", lang), DataToString.getDrop(e.de, holder), true);
-            spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
-            spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(e.de, lang), true);
-            spec.addField(LangID.getStringByID("data.dps", lang), DataToString.getDPS(e.de, mag[1]), true);
-            spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(e.de, lang), true);
-            spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(e.de, mag[1]), true);
-            spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(e.de, true, lang), true);
+            enemyName += " [" + Data.trio(e.id.id) + "]";
         }
+
+        String title = "### " + enemyName;
+
+        if (holder.differentFromGlobal()) {
+            title += "\n" + LangID.getStringByID("data.unit.treasure", lang);
+        }
+
+        children.add(Section.of(
+                Thumbnail.fromUrl(iconLink),
+                TextDisplay.of(title),
+                TextDisplay.of(
+                        "**" + LangID.getStringByID("data.enemy.magnification", lang) + "**\n" +
+                                DataToString.getMagnification(mag, 100)
+                ),
+                TextDisplay.of(
+                        "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                                DataToString.getHealthHitback(e.de, mag[0])
+                )
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.dropBarrierSpeed", lang) + "**\n" +
+                        DataToString.getDropBarrierSpeed(e.de, holder, lang)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + DataToString.getRangeTitle(e.de, lang) + "**\n" +
+                        DataToString.getRange(e.de)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.attackTimings", lang) + "**\n" +
+                        DataToString.getCompactAtkTimings(e.de, configData.isFrame)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.damageDPS", lang).formatted(DataToString.getSiMu(e.de, lang)) + "**\n" +
+                        DataToString.getCompactAtk(e.de, mag[1])
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.trait", lang) + "**\n" +
+                        DataToString.getTrait(e.de, true, lang)
+        ));
 
         List<String> abilities = Interpret.getAbi(e.de, true, lang, null, null);
         abilities.addAll(Interpret.getProc(e.de, !configData.isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
@@ -695,17 +709,23 @@ public class EntityHandler {
             res = sb.toString();
         }
 
-        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.ability", lang) + "**\n" +
+                        res
+        ));
 
         if(configData.showEnemyDescription) {
             String explanation = DataToString.getDescription(e, lang);
 
             if(explanation != null) {
-                spec.addField(LangID.getStringByID("data.enemy.description", lang), explanation, false);
+                children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.enemy.description", lang) + "**\n" +
+                                "```" + explanation + "```"
+                ));
             }
         }
-
-        spec.setFooter(LangID.getStringByID("enemyStat.source", lang));
 
         Consumer<Message> finisher = msg -> {
             e.anim.unload();
@@ -713,92 +733,34 @@ public class EntityHandler {
             onSuccess.accept(msg);
         };
 
-        List<MessageTopLevelComponent> components = new ArrayList<>();
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-        components.add(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("📈"))));
+        children.add(ActionRow.of(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("📈"))));
+
+        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
 
         if (editMode) {
             if (sender instanceof Message msg) {
-                msg.editMessage("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
-                        .setFiles()
+                msg.editMessageComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(finisher);
             } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
-                        .setContent("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
-                        .setFiles()
+                        .setComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(hook -> hook.retrieveOriginal().queue(finisher));
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()).setComponents(components), finisher);
+                Command.replyToMessageSafely(ch, reference, finisher, container);
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()).setComponents(components), finisher);
+                Command.replyToMessageSafely(event, finisher, container);
             }
         }
-    }
-
-    private static String generateIcon(Enemy e) throws Exception {
-        String cacheID = StaticStore.ENEMY_ICON.formatted(Data.trio(e.id.id));
-
-        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
-
-        if (cacheLink != null)
-            return cacheLink;
-
-        File temp = new File("./temp");
-
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return null;
-            }
-        }
-
-        File img = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-        if(img == null)
-            return null;
-
-        FakeImage image;
-
-        if(e.anim.getEdi() != null && e.anim.getEdi().getImg() != null)
-            image = e.anim.getEdi().getImg();
-        else
-            return null;
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        StaticStore.renderManager.createRenderer(image.getWidth(), image.getHeight(), temp, connector -> {
-            connector.queue(g -> {
-                g.drawImage(image, 0f, 0f);
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> img, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
-
-        StaticStore.deleteFile(img, true);
-
-        return cacheLink;
     }
 
     private static String generateIcon(Form f) throws Exception {

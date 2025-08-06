@@ -105,9 +105,9 @@ public class ConfigEnemyEmbedHolder extends ServerConfigHolder {
         if (holder.config.compact) {
             builder.setTitle(LangID.getStringByID("config.command.embed.enemy.title", lang) + " [123]");
 
-            String healthKb = "10000 - 10";
-            String dropBarrierSpeed = "1000 - " + LangID.getStringByID("data.none", lang) + " - 10";
-            String attackTimings = (holder.config.useFrame ? "100f" : "100s") + " : " + (holder.config.useFrame ? "50f" : "50s") + " -> " + (holder.config.useFrame ? "20f" : "20s") + " -> " + (holder.config.useFrame ? "50f" : "50s");
+            String healthKb = "10000 - 10";
+            String dropBarrierSpeed = "1000 - " + LangID.getStringByID("data.none", lang) + " - 10";
+            String attackTimings = (holder.config.useFrame ? "100f" : "100s") + " : " + (holder.config.useFrame ? "50f" : "50s") + " -> " + (holder.config.useFrame ? "20f" : "20s") + " -> " + (holder.config.useFrame ? "50f" : "50s");
             String damageDPS = "123456 [123456]";
 
             builder.addField(LangID.getStringByID("data.enemy.magnification", lang), "100%", false);

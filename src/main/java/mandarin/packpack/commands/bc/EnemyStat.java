@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.ConstraintCommand;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -12,14 +13,26 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyStatMessageHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -134,52 +147,27 @@ public class EnemyStat extends ConstraintCommand {
                 EntityHandler.showEnemyEmb(enemies.getFirst(), sender, m, treasure, configData, false, lang, msg -> StaticStore.putHolder(loader.getUser().getId(), new EnemyButtonHolder(m, loader.getUser().getId(), ch.getId(), msg, enemies.getFirst(), treasure, configData, lang)));
             } else if(enemies.isEmpty()) {
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(name)), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(name)));
                 } else {
-                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).replace("_", getSearchKeyword(name)), a -> a);
+                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(name)));
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(name)));
-
-                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
-
-                List<String> data = accumulateData(enemies);
-
-                for(int i = 0; i < data.size(); i++) {
-                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
-                }
-
-                if(enemies.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-                    int totalPage = enemies.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-                    if(enemies.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                        totalPage++;
-
-                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
-                }
-
-                sb.append("```");
-
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                    replyToMessageSafely(ch, loader.getMessage(), msg -> {
                         User u = loader.getUser();
-
-                        Message msg = loader.getMessage();
 
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, name, config.searchLayout, treasure, configData, lang));
-                    });
+                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), msg, name, config.searchLayout, treasure, configData, lang));
+                    }, getComponents(enemies, enemies.size(), name));
                 } else {
-                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                    replyToMessageSafely(loader.getInteractionEvent(), msg -> {
                         User u = loader.getUser();
-
-                        Message msg = loader.getNullableMessage();
 
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, u.getId(), ch.getId(), res, name, config.searchLayout, treasure, configData, lang));
-                    });
+                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, loader.getNullableMessage(), u.getId(), ch.getId(), msg, name, config.searchLayout, treasure, configData, lang));
+                    }, getComponents(enemies, enemies.size(), name));
                 }
             }
         }
@@ -410,34 +398,6 @@ public class EnemyStat extends ConstraintCommand {
         return result;
     }
 
-    private List<String> accumulateData(List<Enemy> enemies) {
-        List<String> data = new ArrayList<>();
-
-        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
-            if(i >= enemies.size())
-                break;
-
-            Enemy e = enemies.get(i);
-
-            String enemyName;
-
-            if(e.id != null) {
-                enemyName = Data.trio(e.id.id)+" ";
-            } else {
-                enemyName = " ";
-            }
-
-            String name = StaticStore.safeMultiLangGet(e, lang);
-
-            if(name != null)
-                enemyName += name;
-
-            data.add(enemyName);
-        }
-
-        return data;
-    }
-
     private String getSearchKeyword(String name) {
         String result = name;
 
@@ -445,5 +405,150 @@ public class EnemyStat extends ConstraintCommand {
             result = result.substring(0, 1500) + "...";
 
         return result;
+    }
+
+    public List<String> accumulateTextData(List<Enemy> enemies, SearchHolder.TextType textType) {
+        List<String> data = new ArrayList<>();
+
+        for (int i = 0; i < Math.min(enemies.size(), config.searchLayout.chunkSize); i++) {
+            Enemy e = enemies.get(i);
+
+            if (e.id == null)
+                continue;
+
+            String text = null;
+
+            switch(textType) {
+                case TEXT -> {
+                    if (config.searchLayout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(e.id.id);
+
+                        String name = StaticStore.safeMultiLangGet(e, lang);
+
+                        if (name != null && !name.isBlank()) {
+                            text += " " + name;
+                        }
+                    } else {
+                        text = "`" + Data.trio(e.id.id) + "`";
+
+                        String name = StaticStore.safeMultiLangGet(e, lang);
+
+                        if (name == null || name.isBlank()) {
+                            name = Data.trio(e.id.id);
+                        }
+
+                        text += " " + name;
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(e, lang);
+
+                    if (text == null) {
+                        text = Data.trio(e.id.id);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(e.id.id);
+            }
+
+            data.add(text);
+        }
+
+        return data;
+    }
+
+    private Container getComponents(List<Enemy> enemies, int dataSize, String keyword) {
+        int totalPage = Holder.getTotalPage(dataSize, config.searchLayout.chunkSize);
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+        List<String> data = accumulateTextData(enemies, SearchHolder.TextType.TEXT);
+
+        children.add(TextDisplay.of(LangID.getStringByID("ui.search.severalResult", lang).formatted(keyword, dataSize)));
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        switch (config.searchLayout) {
+            case FANCY_BUTTON -> {
+                for (int i = 0; i < data.size(); i++) {
+                    children.add(Section.of(Button.secondary(LangID.getStringByID("ui.button.select", lang), String.valueOf(i)), TextDisplay.of(data.get(i))));
+                }
+            }
+            case FANCY_LIST -> {
+                for (int i = 0; i < data.size(); i++) {
+                    children.add(TextDisplay.of(data.get(i)));
+
+                    if (i < data.size() - 1) {
+                        children.add(Separator.create(false, Separator.Spacing.SMALL));
+                    }
+                }
+            }
+            case COMPACTED -> {
+                StringBuilder builder = new StringBuilder();
+
+                for (int i = 0; i < data.size(); i++) {
+                    builder.append(i + 1).append(". ").append(data.get(i));
+
+                    if (i < data.size() - 1) {
+                        builder.append("\n");
+                    }
+                }
+
+                children.add(TextDisplay.of("```md\n" + builder + "\n```"));
+            }
+        }
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(TextDisplay.of(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)));
+
+        if (dataSize > config.searchLayout.chunkSize) {
+            List<Button> buttons = new ArrayList<>();
+
+            if (totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+            }
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
+
+            if (totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
+            }
+
+            children.add(ActionRow.of(buttons));
+        }
+
+        if (config.searchLayout == ConfigHolder.SearchLayout.COMPACTED || config.searchLayout == ConfigHolder.SearchLayout.FANCY_LIST) {
+            List<SelectOption> options = new ArrayList<>();
+
+            List<String> labels = accumulateTextData(enemies, SearchHolder.TextType.LIST_LABEL);
+            List<String> descriptions = accumulateTextData(enemies, SearchHolder.TextType.LIST_DESCRIPTION);
+
+            for (int i = 0; i < labels.size(); i++) {
+                String label = labels.get(i);
+                String description;
+
+                description = descriptions.get(i);
+
+                SelectOption option = SelectOption.of(label, String.valueOf(i));
+
+                String[] elements = label.split("\\\\\\\\");
+
+                if (elements.length == 2 && elements[0].matches("<:\\S+?:\\d+>")) {
+                    option = option.withEmoji(Emoji.fromFormatted(elements[0])).withLabel(elements[1]);
+                }
+
+                if (description != null)
+                    option = option.withDescription(description);
+
+                options.add(option);
+            }
+
+            children.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("ui.search.selectList", lang)).build()));
+        }
+
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        children.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
+
+        return Container.of(children);
     }
 }

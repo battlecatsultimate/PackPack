@@ -133,9 +133,9 @@ public class UnitCommandConfigHolder extends ComponentHolder {
         if (config.compact) {
             builder.setTitle(LangID.getStringByID("config.command.embed.unit.title", lang) + " [123-456]");
 
-            String healthKb = "10000 - 5";
-            String costCooldownSpeed = "5000 - " + (config.useFrame ? "100f" : "100s") + " - 10";
-            String attackTimings = (config.useFrame ? "100f" : "100s") + " : " + (config.useFrame ? "50f" : "50s") + " -> " + (config.useFrame ? "20f" : "20s") + " -> " + (config.useFrame ? "50f" : "50s");
+            String healthKb = "10000 - 5";
+            String costCooldownSpeed = "5000 - " + (config.useFrame ? "100f" : "100s") + " - 10";
+            String attackTimings = (config.useFrame ? "100f" : "100s") + " : " + (config.useFrame ? "50f" : "50s") + " -> " + (config.useFrame ? "20f" : "20s") + " -> " + (config.useFrame ? "50f" : "50s");
             String damageDPS = "123456 [123456]";
 
             builder.addField(LangID.getStringByID("data.unit.level", lang), String.valueOf(config.defLevel), false);

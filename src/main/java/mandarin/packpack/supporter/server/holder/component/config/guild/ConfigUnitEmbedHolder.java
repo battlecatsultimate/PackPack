@@ -115,9 +115,9 @@ public class ConfigUnitEmbedHolder extends ServerConfigHolder {
         if (holder.config.compact) {
             builder.setTitle(LangID.getStringByID("config.command.embed.unit.title", lang) + " [123-456]");
 
-            String healthKb = "10000 - 5";
-            String costCooldownSpeed = "5000 - " + (holder.config.useFrame ? "100f" : "100s") + " - 10";
-            String attackTimings = (holder.config.useFrame ? "100f" : "100s") + " : " + (holder.config.useFrame ? "50f" : "50s") + " -> " + (holder.config.useFrame ? "20f" : "20s") + " -> " + (holder.config.useFrame ? "50f" : "50s");
+            String healthKb = "10000 - 5";
+            String costCooldownSpeed = "5000 - " + (holder.config.useFrame ? "100f" : "100s") + " - 10";
+            String attackTimings = (holder.config.useFrame ? "100f" : "100s") + " : " + (holder.config.useFrame ? "50f" : "50s") + " -> " + (holder.config.useFrame ? "20f" : "20s") + " -> " + (holder.config.useFrame ? "50f" : "50s");
             String damageDPS = "123456 [123456]";
 
             builder.addField(LangID.getStringByID("data.unit.level", lang), String.valueOf(holder.config.defLevel), false);
