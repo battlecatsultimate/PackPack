@@ -135,150 +135,194 @@ object CardBot : ListenerAdapter() {
                 try {
                     val currentTime = CardData.getUnixEpochTime()
 
-                    if (notifier == 2) {
-                        notifier = 1
+                    try {
+                        if (notifier == 2) {
+                            notifier = 1
 
-                        Notification.handlePackSlotNotification()
+                            Notification.handlePackSlotNotification()
 
-                        RecordableThread.handleExpiration()
-                    } else {
-                        notifier++
+                            RecordableThread.handleExpiration()
+                        } else {
+                            notifier++
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to send pack/slot machine notification")
                     }
 
-                    if (collectorMonitor == 30 && !test) {
-                        collectorMonitor = 1
+                    try {
+                        if (collectorMonitor == 30 && !test) {
+                            collectorMonitor = 1
 
-                        Notification.handleCollectorRoleNotification(client)
-                    } else {
-                        collectorMonitor++
+                            Notification.handleCollectorRoleNotification(client)
+                        } else {
+                            collectorMonitor++
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to send LC notification")
                     }
 
-                    if (!test && backup == 360) {
-                        backup = 1
+                    try {
+                        if (!test && backup == 360) {
+                            backup = 1
 
-                        val link = StaticStore.backup.uploadBackup(Logger.BotInstance.CARD_DEALER)
+                            val link = StaticStore.backup.uploadBackup(Logger.BotInstance.CARD_DEALER)
 
-                        if (link.isNotBlank()) {
-                            client.retrieveUserById(StaticStore.MANDARIN_SMELL)
-                                .queue {user ->
-                                    user.openPrivateChannel().queue { pv ->
+                            if (link.isNotBlank()) {
+                                client.retrieveUserById(StaticStore.MANDARIN_SMELL)
+                                    .queue {user ->
+                                        user.openPrivateChannel().queue { pv ->
+                                            pv.sendMessage("Sending backup : $link").queue()
+                                        }
+                                    }
+
+                                client.retrieveUserById(ServerData.get("gid")).queue { user ->
+                                    user.openPrivateChannel().queue {pv ->
                                         pv.sendMessage("Sending backup : $link").queue()
                                     }
                                 }
-
-                            client.retrieveUserById(ServerData.get("gid")).queue { user ->
-                                user.openPrivateChannel().queue {pv ->
-                                    pv.sendMessage("Sending backup : $link").queue()
-                                }
                             }
+                        } else {
+                            backup++
                         }
-                    } else {
-                        backup++
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to send backup files to developers")
                     }
 
-                    if (!forceReplace) {
-                        saveCardData()
+                    try {
+                        if (!forceReplace) {
+                            saveCardData()
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to save data")
                     }
 
-                    LogSession.syncSession()
+                    try {
+                        LogSession.syncSession()
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to sync log session")
+                    }
 
-                    if (!test) {
-                        val g = client.getGuildById(CardData.guild)
+                    try {
+                        if (!test) {
+                            val g = client.getGuildById(CardData.guild)
 
-                        if (g != null) {
-                            val forum = g.getForumChannelById(CardData.tradingPlace)
+                            if (g != null) {
+                                val forum = g.getForumChannelById(CardData.tradingPlace)
 
-                            if (forum != null) {
-                                ArrayList(CardData.sessions).forEach { session ->
-                                    val ch = forum.threadChannels.find { ch -> ch.idLong == session.postID }
+                                if (forum != null) {
+                                    ArrayList(CardData.sessions).forEach { session ->
+                                        val ch = forum.threadChannels.find { ch -> ch.idLong == session.postID }
 
-                                    if (ch != null) {
-                                        val timeStamp = Timestamp.valueOf(ch.timeCreated.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
+                                        if (ch != null) {
+                                            val timeStamp = Timestamp.valueOf(ch.timeCreated.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
 
-                                        if (currentTime - timeStamp.time >= CardData.TRADE_EXPIRATION_TIME) {
-                                            session.expire(ch)
+                                            if (currentTime - timeStamp.time >= CardData.TRADE_EXPIRATION_TIME) {
+                                                session.expire(ch)
+                                            }
+                                        } else {
+                                            session.expire()
                                         }
-                                    } else {
-                                        session.expire()
                                     }
                                 }
                             }
                         }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to expire old trading sessions")
                     }
 
                     val jda = client.shards.firstOrNull()
 
-                    CardData.auctionSessions.removeIf { auction ->
-                        if (!auction.opened)
-                            return@removeIf false
-
-                        val ended = auction.autoClose && auction.autoCloseTime > 0L && auction.lastBidTime > 0L && currentTime >= auction.lastBidTime + auction.autoCloseTime
-
-                        if (ended) {
-                            val result = auction.closeSession(jda?.selfUser?.idLong ?: 0L, true)
-
-                            val ch = auction.getAuctionChannel() ?: return@removeIf result.isEmpty()
-
-                            if (result.isNotEmpty()) {
-                                val mention = if (test) {
-                                    "<@${StaticStore.MANDARIN_SMELL}>"
-                                } else {
-                                    "<@&${CardData.dealer}>"
-                                }
-
-                                ch.sendMessage("Tried to auto close the auction due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}, but failed\n\n$result\n\nPinging $mention for manual close").queue()
-
+                    try {
+                        CardData.auctionSessions.removeIf { auction ->
+                            if (!auction.opened)
                                 return@removeIf false
-                            } else {
-                                ch.sendMessage("Auction has been auto-closed due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}").queue()
 
-                                val successMessage = StringBuilder()
+                            val ended = auction.autoClose && auction.autoCloseTime > 0L && auction.lastBidTime > 0L && currentTime >= auction.lastBidTime + auction.autoCloseTime
 
-                                if (auction.author != -1L)
-                                    successMessage.append("<@").append(auction.author).append(">, ")
+                            if (ended) {
+                                val result = auction.closeSession(jda?.selfUser?.idLong ?: 0L, true)
 
-                                successMessage.append("<@").append(auction.getMostBidMember()).append("> Check your inventory")
+                                val ch = auction.getAuctionChannel() ?: return@removeIf result.isEmpty()
 
-                                ch.sendMessage(successMessage).queue()
+                                if (result.isNotEmpty()) {
+                                    val mention = if (test) {
+                                        "<@${StaticStore.MANDARIN_SMELL}>"
+                                    } else {
+                                        "<@&${CardData.dealer}>"
+                                    }
+
+                                    ch.sendMessage("Tried to auto close the auction due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}, but failed\n\n$result\n\nPinging $mention for manual close").queue()
+
+                                    return@removeIf false
+                                } else {
+                                    ch.sendMessage("Auction has been auto-closed due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}").queue()
+
+                                    val successMessage = StringBuilder()
+
+                                    if (auction.author != -1L)
+                                        successMessage.append("<@").append(auction.author).append(">, ")
+
+                                    successMessage.append("<@").append(auction.getMostBidMember()).append("> Check your inventory")
+
+                                    ch.sendMessage(successMessage).queue()
+                                }
+                            }
+
+                            return@removeIf ended
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to close auction sessions")
+                    }
+
+                    try {
+                        if (inviteLocked) {
+                            val g = client.getGuildById(CardData.guild)
+
+                            if (g != null && !g.isInvitesDisabled) {
+                                g.manager.setInvitesDisabled(true).queue(null) { e ->
+                                    StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to pause invite links")
+                                }
                             }
                         }
-
-                        return@removeIf ended
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to keep invite lock the server")
                     }
 
-                    if (inviteLocked) {
-                        val g = client.getGuildById(CardData.guild)
+                    try {
+                        val f = Runtime.getRuntime().freeMemory()
+                        val t = Runtime.getRuntime().totalMemory()
+                        val m = Runtime.getRuntime().maxMemory()
 
-                        if (g != null && !g.isInvitesDisabled) {
-                            g.manager.setInvitesDisabled(true).queue(null) { e ->
-                                StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to pause invite links")
+                        val percentage = 100.0 * (t - f) / m
+
+                        if (percentage >= 90.0) {
+                            StaticStore.logger.uploadLog("Warning : Memory is at danger, above 90% (${DataToString.df.format(percentage)}%)")
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to check memory space status")
+                    }
+
+                    try {
+                        if (CardData.getUnixEpochTime() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
+                            val banner = StaticStore.bannerHolder.pickBanner()
+
+                            if (banner != null) {
+                                client.shards.firstOrNull()?.selfUser?.manager?.setBanner(Icon.from(banner.bannerFile))?.queue()
+
+                                client.setActivity(Activity.playing("$statusText | Banner by ${banner.author}"))
                             }
                         }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to replace banner to different one")
                     }
 
-                    val f = Runtime.getRuntime().freeMemory()
-                    val t = Runtime.getRuntime().totalMemory()
-                    val m = Runtime.getRuntime().maxMemory()
-
-                    val percentage = 100.0 * (t - f) / m
-
-                    if (percentage >= 90.0) {
-                        StaticStore.logger.uploadLog("Warning : Memory is at danger, above 90% (${DataToString.df.format(percentage)}%)")
+                    try {
+                        Logger.writeLog(Logger.BotInstance.CARD_DEALER)
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to write remaining log to file")
                     }
-
-                    if (CardData.getUnixEpochTime() - StaticStore.bannerHolder.lastUpdated >= TimeUnit.DAYS.toMillis(1)) {
-                        val banner = StaticStore.bannerHolder.pickBanner()
-
-                        if (banner != null) {
-                            client.shards.firstOrNull()?.selfUser?.manager?.setBanner(Icon.from(banner.bannerFile))?.queue()
-
-                            client.setActivity(Activity.playing("$statusText | Banner by ${banner.author}"))
-                        }
-                    }
-
-                    Logger.writeLog(Logger.BotInstance.CARD_DEALER)
                 } catch(e: Exception) {
-                    StaticStore.logger.uploadErrorLog(e, "CardBot::saver - Failed to perform background thread")
+                    StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to perform background thread")
                 }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1))
