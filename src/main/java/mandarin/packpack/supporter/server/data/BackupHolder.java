@@ -205,7 +205,12 @@ public class BackupHolder {
                     continue;
                 }
 
-                client.files().deleteV2("/" + parentFolder + "/" + backupFileName);
+                try {
+                    client.files().deleteV2("/" + parentFolder + "/" + backupFileName);
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to delete file from dropbox");
+                }
+
                 backupList.remove(timestamps.get(i));
             }
         }
