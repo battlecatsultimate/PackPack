@@ -4371,32 +4371,28 @@ public class EntityHandler {
         if (graphLink == null) {
             if (editMode) {
                 if (sender instanceof Message msg) {
-                    msg.editMessage(LangID.getStringByID("formDPS.failed.unknown", lang))
-                            .setComponents()
-                            .setEmbeds()
-                            .setFiles()
+                    msg.editMessageComponents(TextDisplay.of(LangID.getStringByID("formDPS.failed.unknown", lang)))
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("formDPS.failed.unknown", lang))
-                            .setComponents()
-                            .setEmbeds()
-                            .setFiles()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("formDPS.failed.unknown", lang)))
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 }
             } else {
                 if (sender instanceof MessageChannel ch) {
-                    Command.replyToMessageSafely(ch, LangID.getStringByID("formDPS.failed.unknown", lang), authorMessage, a -> a);
+                    Command.replyToMessageSafely(ch, authorMessage, LangID.getStringByID("formDPS.failed.unknown", lang));
                 } else if (sender instanceof GenericCommandInteractionEvent event) {
-                    Command.replyToMessageSafely(event, LangID.getStringByID("formDPS.failed.unknown", lang), a -> a);
+                    Command.replyToMessageSafely(event, LangID.getStringByID("formDPS.failed.unknown", lang));
                 }
             }
         } else {
-            EmbedBuilder spec = new EmbedBuilder();
+            List<ContainerChildComponent> children = new ArrayList<>();
 
             String name = MultiLangCont.get(f, lang);
 
@@ -4406,9 +4402,9 @@ public class EntityHandler {
             String desc;
 
             if (lv.getPlusLv() == 0) {
-                desc = String.format(LangID.getStringByID("formDPS.graph.description.default", lang), lv.getLv());
+                desc = LangID.getStringByID("formDPS.graph.description.default", lang).formatted(lv.getLv());
             } else {
-                desc = String.format(LangID.getStringByID("formDPS.graph.description.withPlus", lang), lv.getLv(), lv.getPlusLv());
+                desc = LangID.getStringByID("formDPS.graph.description.withPlus", lang).formatted(lv.getLv(), lv.getPlusLv());
             }
 
             if (talent && f.du.getPCoin() != null) {
@@ -4438,49 +4434,58 @@ public class EntityHandler {
             else
                 c = StaticStore.rainbow[StaticStore.RED];
 
-            String iconLink = generateIcon(f);
+            String iconLink = StaticStore.assetManager.getUnitIcon(f);
 
-            spec.setTitle(String.format(LangID.getStringByID("formDPS.graph.title", lang), name));
+            if (iconLink == null)
+                return;
 
             if (!desc.isBlank()) {
-                spec.setDescription(desc);
+                children.add(Section.of(
+                        Thumbnail.fromUrl(iconLink),
+                        TextDisplay.of(LangID.getStringByID("formDPS.graph.title", lang).formatted(name)),
+                        TextDisplay.of(desc)
+                ));
+            } else {
+                children.add(Section.of(
+                        Thumbnail.fromUrl(iconLink),
+                        TextDisplay.of(LangID.getStringByID("formDPS.graph.title", lang).formatted(name))
+                ));
             }
 
-            spec.setColor(c);
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-            spec.setImage(graphLink);
-            spec.setThumbnail(iconLink);
+            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(graphLink)));
 
             if (talent && f.du.getPCoin() != null) {
-                spec.setFooter(DataToString.getTalent(f.du, lv, lang));
+                children.add(TextDisplay.of("-# " + DataToString.getTalent(f.du, lv, lang)));
             }
 
             if (editMode) {
-                List<MessageTopLevelComponent> components = new ArrayList<>();
+                children.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+            }
 
-                components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+            Container container = Container.of(children).withAccentColor(c);
 
+            if (editMode) {
                 if (sender instanceof Message msg) {
-                    msg.editMessage("")
-                            .setEmbeds(spec.build())
-                            .setComponents(components)
+                    msg.editMessageComponents(container)
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                     event.deferEdit()
-                            .setContent("")
-                            .setEmbeds(spec.build())
-                            .setComponents(components)
+                            .setComponents(container)
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
                 }
             } else {
                 if (sender instanceof MessageChannel ch) {
-                    Command.replyToMessageSafely(ch, "", authorMessage, a -> a.setEmbeds(spec.build()));
+                    Command.replyToMessageSafely(ch, authorMessage, container);
                 } else if (sender instanceof GenericCommandInteractionEvent event) {
-                    Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
+                    Command.replyToMessageSafely(event, container);
                 }
             }
         }
