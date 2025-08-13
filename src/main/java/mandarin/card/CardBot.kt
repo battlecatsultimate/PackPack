@@ -443,39 +443,37 @@ object CardBot : ListenerAdapter() {
         else
             segments[0]
 
-        if (CardData.canPerformGlobalCommand(m, ch)) {
-            val command = when(firstSegment) {
-                "${globalPrefix}catfood",
-                "${globalPrefix}cf" -> {
-                    CatFood()
-                }
-                "${globalPrefix}transfercatfood",
-                "${globalPrefix}tcf" -> {
-                    TransferCatFood()
-                }
-                "${globalPrefix}rank" -> {
-                    Rank()
-                }
-                "${globalPrefix}shardrank",
-                "${globalPrefix}sr" -> {
-                    ShardRank()
-                }
-                "${globalPrefix}platinumshard",
-                "${globalPrefix}ps" -> {
-                    PlatinumShard()
-                }
-                else -> null
+        val globalCommand = when(firstSegment) {
+            "${globalPrefix}catfood",
+            "${globalPrefix}cf" -> {
+                CatFood()
             }
-
-            if (command != null && command.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
-                return
+            "${globalPrefix}transfercatfood",
+            "${globalPrefix}tcf" -> {
+                TransferCatFood()
             }
-
-            if (command != null) {
-                command.execute(event)
-
-                return
+            "${globalPrefix}rank" -> {
+                Rank()
             }
+            "${globalPrefix}shardrank",
+            "${globalPrefix}sr" -> {
+                ShardRank()
+            }
+            "${globalPrefix}platinumshard",
+            "${globalPrefix}ps" -> {
+                PlatinumShard()
+            }
+            else -> null
+        }
+
+        if (globalCommand != null && globalCommand.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
+            return
+        }
+
+        if (globalCommand != null) {
+            globalCommand.execute(event)
+
+            return
         }
 
         if (u.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
@@ -646,6 +644,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}rcc" -> RemoveCC()
             "${globalPrefix}removeecc",
             "${globalPrefix}recc" -> RemoveECC()
+            "${globalPrefix}sm" -> SendMessage()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 
