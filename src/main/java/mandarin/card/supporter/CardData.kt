@@ -10,15 +10,12 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel
-import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import java.awt.Color
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
 
 @Suppress("unused")
 object CardData {
@@ -166,14 +163,6 @@ object CardData {
     val managerPlace = ServerData.get("managerPlace")
 
     val skinCache = ServerData.get("skinCache")
-
-    private val globalCategory = arrayOf(
-        ServerData.get("bctcCategory"),
-        ServerData.get("bctcRaidCategory"),
-        ServerData.get("bctcDevelopmentCategory"),
-        ServerData.get("bctcgCategory"),
-        ServerData.get("eventCategory")
-    )
 
     const val MAX_CARD_TYPE = 10
     const val MAX_CAT_FOOD_SUGGESTION = 0
@@ -338,18 +327,6 @@ object CardData {
             is ThreadChannel -> ch.parentChannel.idLong in allowedChannel
             is PrivateChannel -> true
             else -> ch.idLong in allowedChannel
-        }
-    }
-
-    fun canPerformGlobalCommand(member: Member, channel: MessageChannel) : Boolean {
-        return member.id == StaticStore.MANDARIN_SMELL || hasAllPermission(member) || when (channel) {
-            is StandardGuildMessageChannel -> channel.parentCategoryId in globalCategory
-            is ThreadChannel -> {
-                val parent = channel.parentChannel
-
-                parent is StandardGuildChannel && parent.parentCategoryId in globalCategory
-            }
-            else -> false
         }
     }
 
