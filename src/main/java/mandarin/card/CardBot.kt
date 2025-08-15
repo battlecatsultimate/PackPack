@@ -67,6 +67,7 @@ object CardBot : ListenerAdapter() {
     private var notifier = 1
     private var collectorMonitor = 29
     private var backup = 360
+    private var ccEccRole = 60
 
     var locked = false
     var rollLocked = false
@@ -320,6 +321,56 @@ object CardBot : ListenerAdapter() {
                         Logger.writeLog(Logger.BotInstance.CARD_DEALER)
                     } catch (e: Exception) {
                         StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to write remaining log to file")
+                    }
+
+                    try {
+                        if (!test && ccEccRole == 60) {
+                            ccEccRole = 0
+
+                            val g = client.getGuildById(CardData.guild)
+
+                            if (g != null) {
+                                CardData.inventories.forEach { (id, inventory) ->
+                                    val snowflake = UserSnowflake.fromId(id)
+
+                                    g.retrieveMember(snowflake).queue { member ->
+                                        val roles = member.roles.map { r -> r.id }
+
+                                        if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE && CardData.cc !in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.cc }
+
+                                            if (role != null) {
+                                                g.addRoleToMember(snowflake, role).queue()
+                                            }
+                                        } else if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE && CardData.cc in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.cc }
+
+                                            if (role != null) {
+                                                g.removeRoleFromMember(snowflake, role).queue()
+                                            }
+                                        }
+
+                                        if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && CardData.ecc !in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                            if (role != null) {
+                                                g.addRoleToMember(snowflake, role).queue()
+                                            }
+                                        } else if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE && CardData.ecc in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                            if (role != null) {
+                                                g.removeRoleFromMember(snowflake, role).queue()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            ccEccRole++
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to check CC/ECC role from users")
                     }
                 } catch(e: Exception) {
                     StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to perform background thread")
