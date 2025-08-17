@@ -137,7 +137,7 @@ object CardBot : ListenerAdapter() {
                     val currentTime = CardData.getUnixEpochTime()
 
                     try {
-                        if (notifier == 2) {
+                        if (notifier >= 2) {
                             notifier = 1
 
                             Notification.handlePackSlotNotification()
@@ -151,7 +151,7 @@ object CardBot : ListenerAdapter() {
                     }
 
                     try {
-                        if (collectorMonitor == 30 && !test) {
+                        if (collectorMonitor >= 30 && !test) {
                             collectorMonitor = 1
 
                             Notification.handleCollectorRoleNotification(client)
@@ -163,7 +163,7 @@ object CardBot : ListenerAdapter() {
                     }
 
                     try {
-                        if (!test && backup == 360) {
+                        if (!test && backup >= 360) {
                             backup = 1
 
                             val link = StaticStore.backup.uploadBackup(Logger.BotInstance.CARD_DEALER)
@@ -324,8 +324,8 @@ object CardBot : ListenerAdapter() {
                     }
 
                     try {
-                        if (!test && ccEccRole == 60) {
-                            ccEccRole = 0
+                        if (!test && ccEccRole >= 60) {
+                            ccEccRole = 1
 
                             val g = client.getGuildById(CardData.guild)
 
