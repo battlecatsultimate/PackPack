@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.events.session.ShutdownEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -333,7 +334,7 @@ object CardBot : ListenerAdapter() {
                                 CardData.inventories.forEach { (id, inventory) ->
                                     val snowflake = UserSnowflake.fromId(id)
 
-                                    g.retrieveMember(snowflake).queue { member ->
+                                    g.retrieveMember(snowflake).queue({ member ->
                                         val roles = member.roles.map { r -> r.id }
 
                                         if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE && CardData.cc !in roles) {
@@ -363,7 +364,12 @@ object CardBot : ListenerAdapter() {
                                                 g.removeRoleFromMember(snowflake, role).queue()
                                             }
                                         }
-                                    }
+                                    }, { e ->
+                                        if (e is ErrorResponseException && e.errorCode == 10007)
+                                            return@queue
+
+                                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to retrieve member data with id of $id")
+                                    })
                                 }
                             }
                         } else {
