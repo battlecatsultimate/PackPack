@@ -415,7 +415,11 @@ class Inventory(private val id: Long) {
         }
 
         ccValidationWay = CCValidationWay.NONE
+        ccValidationReason = ""
+        ccValidationTime = 0L
         eccValidationWay = ECCValidationWay.NONE
+        eccValidationReason = ""
+        eccValidationTime = 0L
 
         val cc = g.roles.find { r -> r.id == CardData.cc } ?: return
         val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
@@ -441,6 +445,8 @@ class Inventory(private val id: Long) {
         }
 
         eccValidationWay = ECCValidationWay.NONE
+        eccValidationReason = ""
+        eccValidationTime = 0L
 
         val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
 
