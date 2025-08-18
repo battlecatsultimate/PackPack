@@ -4,6 +4,7 @@ import common.CommonStatic
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
@@ -98,6 +99,14 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
                 inventory.eccValidationTime = CardData.getUnixEpochTime()
 
                 CardBot.saveCardData()
+
+                val role = g.roles.find { role -> role.id == CardData.ecc }
+
+                if (role != null) {
+                    g.addRoleToMember(UserSnowflake.fromId(id), role).queue()
+                }
+
+                TransactionLogger.logECCAdd(id, m.idLong, inventory)
 
                 e.deferEdit()
                     .setContent("Successfully gave ECC to user <@$id> [$id] with reason of `Manual : $reason`!")

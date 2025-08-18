@@ -51,7 +51,7 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val inventory = Inventory.getInventory(memberID)
 
-        val builder = StringBuilder("## <@$memberID> CC/ECC Status\n### CC Status")
+        val builder = StringBuilder("## <@$memberID> CC/ECC Status\n### CC Status\n")
 
         if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE) {
             builder.append("- No CC\n")
@@ -64,10 +64,17 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
                 Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
                 Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
                 Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+                Inventory.CCValidationWay.MANUAL -> "Manual"
                 Inventory.CCValidationWay.NONE -> "None"
             }
 
             builder.append("**Validation Way**\n- ").append(way).append("\n")
+
+            builder.append("**CC Obtain Time**\n<t:").append(inventory.ccValidationTime / 1000).append(":F>\n")
+
+            if (inventory.ccValidationReason.isNotBlank()) {
+                builder.append("**Validation Reason**\n").append(inventory.ccValidationReason).append("\n")
+            }
             
             val ccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.CC }.keys
 
@@ -90,10 +97,18 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
                 Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
                 Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
                 Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+                Inventory.ECCValidationWay.CUSTOM_ROLE -> "Custom Role"
+                Inventory.ECCValidationWay.MANUAL -> "Manual"
                 Inventory.ECCValidationWay.NONE -> "None"
             }
 
             builder.append("**Validation Way**\n- ").append(way).append("\n")
+
+            builder.append("**ECC Obtain Time**\n<t:").append(inventory.eccValidationTime / 1000).append(":F>\n")
+
+            if (inventory.eccValidationReason.isNotBlank()) {
+                builder.append("**Validation Reason**\n").append(inventory.eccValidationReason).append("\n")
+            }
 
             val eccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.ECC }.keys
 
