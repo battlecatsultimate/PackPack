@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.requests.RestActionImpl
 import java.io.File
@@ -87,6 +88,9 @@ object CardBot : ListenerAdapter() {
         }
 
         RestActionImpl.setDefaultFailure { e ->
+            if (e is ErrorResponseException && e.errorCode == 10062)
+                return@setDefaultFailure
+
             StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task")
         }
 
@@ -112,6 +116,8 @@ object CardBot : ListenerAdapter() {
             GatewayIntent.MESSAGE_CONTENT,
             GatewayIntent.SCHEDULED_EVENTS
         )
+
+        builder.setMemberCachePolicy(MemberCachePolicy.ALL)
 
         val statusText = if (test) "B" else "A"
         val pickedBanner = StaticStore.bannerHolder.pickedBanner
@@ -330,46 +336,42 @@ object CardBot : ListenerAdapter() {
 
                             val g = client.getGuildById(CardData.guild)
 
-                            if (g != null) {
-                                CardData.inventories.forEach { (id, inventory) ->
-                                    val snowflake = UserSnowflake.fromId(id)
+                            g?.loadMembers()?.onSuccess { list ->
+                                list.forEach { member ->
+                                    if (!CardData.inventories.containsKey(member.idLong)) return@forEach
 
-                                    g.retrieveMember(snowflake).queue({ member ->
-                                        val roles = member.roles.map { r -> r.id }
+                                    val snowflake = UserSnowflake.fromId(member.idLong)
+                                    val inventory = Inventory.getInventory(member.idLong)
 
-                                        if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE && CardData.cc !in roles) {
-                                            val role = g.roles.find { r -> r.id == CardData.cc }
+                                    val roles = member.roles.map { r -> r.id }
 
-                                            if (role != null) {
-                                                g.addRoleToMember(snowflake, role).queue()
-                                            }
-                                        } else if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE && CardData.cc in roles) {
-                                            val role = g.roles.find { r -> r.id == CardData.cc }
+                                    if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE && CardData.cc !in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.cc }
 
-                                            if (role != null) {
-                                                g.removeRoleFromMember(snowflake, role).queue()
-                                            }
+                                        if (role != null) {
+                                            g.addRoleToMember(snowflake, role).queue()
                                         }
+                                    } else if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE && CardData.cc in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.cc }
 
-                                        if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && CardData.ecc !in roles) {
-                                            val role = g.roles.find { r -> r.id == CardData.ecc }
-
-                                            if (role != null) {
-                                                g.addRoleToMember(snowflake, role).queue()
-                                            }
-                                        } else if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE && CardData.ecc in roles) {
-                                            val role = g.roles.find { r -> r.id == CardData.ecc }
-
-                                            if (role != null) {
-                                                g.removeRoleFromMember(snowflake, role).queue()
-                                            }
+                                        if (role != null) {
+                                            g.removeRoleFromMember(snowflake, role).queue()
                                         }
-                                    }, { e ->
-                                        if (e is ErrorResponseException && e.errorCode == 10007)
-                                            return@queue
+                                    }
 
-                                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to retrieve member data with id of $id")
-                                    })
+                                    if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && CardData.ecc !in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                        if (role != null) {
+                                            g.addRoleToMember(snowflake, role).queue()
+                                        }
+                                    } else if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE && CardData.ecc in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                        if (role != null) {
+                                            g.removeRoleFromMember(snowflake, role).queue()
+                                        }
+                                    }
                                 }
                             }
                         } else {
