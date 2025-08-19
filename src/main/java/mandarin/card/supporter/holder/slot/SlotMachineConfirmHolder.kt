@@ -25,7 +25,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class SlotMachineConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean, private val yes: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var page = 0
@@ -50,7 +50,7 @@ class SlotMachineConfirmHolder(author: Message, userID: String, channelID: Strin
         when(event.componentId) {
             "roll" -> {
                 if (slotMachine.entryFee.minimumFee == slotMachine.entryFee.maximumFee) {
-                    if (slotMachine.entryFee.minimumFee == 0L) {
+                    if (slotMachine.entryFee.minimumFee == 0L || yes) {
                         event.deferEdit()
                             .setContent("Rolling...! 🎲")
                             .setComponents()
