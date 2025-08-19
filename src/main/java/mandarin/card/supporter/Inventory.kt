@@ -53,6 +53,7 @@ class Inventory(private val id: Long) {
     var eccValidationWay = ECCValidationWay.NONE
     var eccValidationReason = ""
     var eccValidationTime = 0L
+    var eccValidationRoleID = 0L
     var validationCards = HashMap<Card, Pair<ShareStatus, Int>>()
 
     var vanityRoles = ArrayList<CardData.Role>()
@@ -298,6 +299,7 @@ class Inventory(private val id: Long) {
         obj.addProperty("eccValidationWay", eccValidationWay.name)
         obj.addProperty("eccValidationReason", eccValidationReason)
         obj.addProperty("eccValidationTime", eccValidationTime)
+        obj.addProperty("eccValidationRoleID", eccValidationRoleID)
 
         val validationArray = JsonArray()
 
@@ -447,6 +449,7 @@ class Inventory(private val id: Long) {
         eccValidationWay = ECCValidationWay.NONE
         eccValidationReason = ""
         eccValidationTime = 0L
+        eccValidationRoleID = -1L
 
         val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
 
@@ -587,6 +590,10 @@ class Inventory(private val id: Long) {
                 inventory.eccValidationTime = obj.get("eccValidationTime").asLong
             } else if (inventory.eccValidationWay != ECCValidationWay.NONE) {
                 inventory.eccValidationTime = CardData.getUnixEpochTime()
+            }
+
+            if (obj.has("eccValidationRoleID")) {
+                inventory.eccValidationRoleID = obj.get("eccValidationRoleID").asLong
             }
 
             if (obj.has("validationCards")) {

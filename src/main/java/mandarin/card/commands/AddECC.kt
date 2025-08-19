@@ -64,12 +64,31 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
         val customRole = "-c" in contents
 
         if (customRole) {
+            val roleID = getCustomRoleID(contents)
+
+            if (roleID == -1L) {
+                replyToMessageSafely(loader.channel, "Please provide role ID or mention of it when adding ECC with tne validation way of Custom Role!", loader.message) { a -> a }
+
+                return
+            }
+
+            val role = g.roles.find { role -> role.idLong == roleID }
+
+            if (role == null) {
+                replyToMessageSafely(loader.channel, "Bot failed to find role with ID of <@&$roleID> [$roleID]. Maybe incorrect ID?", loader.message) { a -> a }
+
+                return
+            }
+
             replyToMessageSafely(loader.channel, "Are you sure you want to give <@$id> [$id] ECC?", loader.message, { a -> registerConfirmButtons(a, lang) }) { msg ->
                 StaticStore.putHolder(m.id, ConfirmPopUpHolder(loader.message, m.id, loader.channel.id, msg, { e ->
                     inventory.eccValidationWay = Inventory.ECCValidationWay.CUSTOM_ROLE
                     inventory.eccValidationTime = CardData.getUnixEpochTime()
+                    inventory.eccValidationRoleID = roleID
 
                     CardBot.saveCardData()
+
+                    TransactionLogger.logECCAdd(id, m.idLong, inventory)
 
                     e.deferEdit()
                         .setContent("Successfully gave ECC to user <@$id> [$id] with reason of `Custom Role`!")
@@ -149,6 +168,28 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
 
             if (StaticStore.isNumeric(content) || content.matches(Regex("<@\\d+>"))) {
                 return StaticStore.safeParseLong(content.replace(Regex("<@|>"), ""))
+            }
+        }
+
+        return -1L
+    }
+
+    private fun getCustomRoleID(contents: List<String>) : Long {
+        var roleFlag = false
+
+        contents.forEach { content ->
+            if (content == "-r")
+                return -1L
+
+            if (content == "-c")
+                roleFlag = true
+
+            if (roleFlag) {
+                if (StaticStore.isNumeric(content) || content.matches(Regex("<@&\\d+>"))) {
+                    return StaticStore.safeParseLong(content.replace(Regex("<@&|>"), ""))
+                } else {
+                    return -1L
+                }
             }
         }
 

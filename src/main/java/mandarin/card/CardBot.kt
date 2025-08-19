@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -336,41 +337,55 @@ object CardBot : ListenerAdapter() {
 
                             val g = client.getGuildById(CardData.guild)
 
-                            g?.loadMembers()?.onSuccess { list ->
-                                list.forEach { member ->
-                                    if (!CardData.inventories.containsKey(member.idLong)) return@forEach
+                            if (g != null) {
+                                g.loadMembers().onSuccess { list ->
+                                    list.forEach { member ->
+                                        if (!CardData.inventories.containsKey(member.idLong)) return@forEach
 
-                                    val snowflake = UserSnowflake.fromId(member.idLong)
-                                    val inventory = Inventory.getInventory(member.idLong)
+                                        val snowflake = UserSnowflake.fromId(member.idLong)
+                                        val inventory = Inventory.getInventory(member.idLong)
 
-                                    val roles = member.roles.map { r -> r.id }
+                                        val roles = member.roles.map { r -> r.id }
 
-                                    if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE && CardData.cc !in roles) {
-                                        val role = g.roles.find { r -> r.id == CardData.cc }
+                                        if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE && CardData.cc !in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.cc }
 
-                                        if (role != null) {
-                                            g.addRoleToMember(snowflake, role).queue()
+                                            if (role != null) {
+                                                g.addRoleToMember(snowflake, role).queue()
+                                            }
+                                        } else if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE && CardData.cc in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.cc }
+
+                                            if (role != null) {
+                                                g.removeRoleFromMember(snowflake, role).queue()
+                                            }
                                         }
-                                    } else if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE && CardData.cc in roles) {
-                                        val role = g.roles.find { r -> r.id == CardData.cc }
 
-                                        if (role != null) {
-                                            g.removeRoleFromMember(snowflake, role).queue()
+                                        if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && CardData.ecc !in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                            if (role != null) {
+                                                g.addRoleToMember(snowflake, role).queue()
+                                            }
+                                        } else if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE && CardData.ecc in roles) {
+                                            val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                            if (role != null) {
+                                                g.removeRoleFromMember(snowflake, role).queue()
+                                            }
                                         }
                                     }
+                                }
 
-                                    if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && CardData.ecc !in roles) {
-                                        val role = g.roles.find { r -> r.id == CardData.ecc }
+                                val roles = g.roles.map { role -> role.idLong }
 
-                                        if (role != null) {
-                                            g.addRoleToMember(snowflake, role).queue()
-                                        }
-                                    } else if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE && CardData.ecc in roles) {
-                                        val role = g.roles.find { r -> r.id == CardData.ecc }
+                                CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != -1L }.forEach { (id, inventory) ->
+                                    if (inventory.eccValidationRoleID !in roles) {
+                                        TransactionLogger.logECCCancel(id, g.selfMember.idLong, inventory)
 
-                                        if (role != null) {
-                                            g.removeRoleFromMember(snowflake, role).queue()
-                                        }
+                                        inventory.cancelECC(g, id)
+
+                                        Notification.handleECCRoleDisconnectedNotification(inventory, id)
                                     }
                                 }
                             }
@@ -753,6 +768,23 @@ object CardBot : ListenerAdapter() {
             hub.messageHolder?.handleMessageUpdated(event.message)
             hub.componentHolder?.handleMessageUpdated(event.message)
             hub.modalHolder?.handleMessageUpdated(event.message)
+        }
+    }
+
+    override fun onGuildMemberRoleRemove(event: GuildMemberRoleRemoveEvent) {
+        super.onGuildMemberRoleRemove(event)
+
+        val g = event.guild
+        val roles = event.roles.map { role -> role.idLong }
+
+        CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != -1L }.forEach { (id, inventory) ->
+            if (inventory.eccValidationRoleID in roles) {
+                TransactionLogger.logECCCancel(id, g.selfMember.idLong, inventory)
+
+                inventory.cancelECC(g, id)
+
+                Notification.handleECCRoleDisconnectedNotification(inventory, id)
+            }
         }
     }
 

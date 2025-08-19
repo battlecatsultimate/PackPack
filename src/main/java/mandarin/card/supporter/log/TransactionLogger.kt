@@ -1771,6 +1771,10 @@ object TransactionLogger {
             builder.addField("Validation Reason", inventory.eccValidationReason, false)
         }
 
+        if (inventory.eccValidationRoleID != -1L) {
+            builder.addField("Validation Role", "<@&${inventory.eccValidationRoleID}> [${inventory.eccValidationRoleID}]", false)
+        }
+
         builder.addField("User", "<@$user> [$user]", false)
         builder.addField("Way", "**$way**", false)
 
