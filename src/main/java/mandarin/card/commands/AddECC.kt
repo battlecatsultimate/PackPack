@@ -181,14 +181,19 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
             if (content == "-r")
                 return -1L
 
-            if (content == "-c")
+            if (content == "-c") {
                 roleFlag = true
 
+                return@forEach
+            }
+
             if (roleFlag) {
-                if (StaticStore.isNumeric(content) || content.matches(Regex("<@&\\d+>"))) {
-                    return StaticStore.safeParseLong(content.replace(Regex("<@&|>"), ""))
+                println(content.matches(Regex("<@&\\d+>")))
+
+                return if (StaticStore.isNumeric(content) || content.matches(Regex("<@&\\d+>"))) {
+                    StaticStore.safeParseLong(content.replace(Regex("<@&|>"), ""))
                 } else {
-                    return -1L
+                    -1L
                 }
             }
         }
