@@ -110,6 +110,10 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
                 builder.append("**Validation Reason**\n").append(inventory.eccValidationReason).append("\n")
             }
 
+            if (inventory.eccValidationRoleID != 0L) {
+                builder.append("**Validation Role**\n<@&").append(inventory.eccValidationRoleID).append("> [").append(inventory.eccValidationRoleID).append("]")
+            }
+
             val eccCardList = inventory.validationCards.filterValues { p -> p.first == Inventory.ShareStatus.ECC }.keys
 
             if (eccCardList.isNotEmpty()) {

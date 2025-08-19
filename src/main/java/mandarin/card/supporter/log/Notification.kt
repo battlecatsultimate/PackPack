@@ -180,4 +180,12 @@ object Notification {
             notificationChannel.sendMessage("<@$userID> This is test notification. You will receive all the notifications in here").queue()
         }
     }
+
+    fun handleECCRoleDisconnectedNotification(inventory: Inventory, owner: Long) {
+        val message = "<@$owner>, your ECC has been removed due to removal of your custom role ${inventory.eccValidationRoleID}. If this turned out to be false-positive, please contact card managers"
+
+        if (this::notificationChannel.isInitialized) {
+            notificationChannel.sendMessage(message).queue()
+        }
+    }
 }

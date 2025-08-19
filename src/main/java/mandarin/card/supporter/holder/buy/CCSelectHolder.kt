@@ -98,7 +98,7 @@ class CCSelectHolder(author: Message, userID: String, channelID: String, message
         val options = ArrayList<SelectOption>()
 
         Inventory.CCValidationWay.entries.forEach { v ->
-            if (v == Inventory.CCValidationWay.NONE)
+            if (v == Inventory.CCValidationWay.NONE || v == Inventory.CCValidationWay.MANUAL)
                 return@forEach
 
             val doable = if (Inventory.checkCCDoable(v, inventory).isBlank()) {

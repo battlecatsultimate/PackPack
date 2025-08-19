@@ -95,7 +95,7 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
         val options = ArrayList<SelectOption>()
 
         Inventory.ECCValidationWay.entries.forEach { v ->
-            if (v == Inventory.ECCValidationWay.NONE)
+            if (v == Inventory.ECCValidationWay.NONE || v == Inventory.ECCValidationWay.CUSTOM_ROLE || v == Inventory.ECCValidationWay.MANUAL)
                 return@forEach
 
             val doable = if (Inventory.checkECCDoable(v, inventory).isBlank()) {
