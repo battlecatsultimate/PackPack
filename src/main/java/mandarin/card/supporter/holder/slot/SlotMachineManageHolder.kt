@@ -231,20 +231,18 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
             EntitySelectMenu.create("roles", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder("Select Role To Add/Delete").setRequiredRange(0, SelectMenu.OPTIONS_MAX_AMOUNT).build()
         ))
 
-        result.add(ActionRow.of(
-            Button.secondary("removeRole", "Remove All Roles").withDisabled(slotMachine.roles.isEmpty())
-        ))
-
         if (new) {
             result.add(ActionRow.of(
                 Button.success("create", "Create").withEmoji(EmojiStore.CHECK).withDisabled(!slotMachine.valid),
-                Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
+                Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS),
+                Button.secondary("removeRole", "Remove All Roles").withDisabled(slotMachine.roles.isEmpty())
             ))
         } else {
             result.add(ActionRow.of(
                 Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(!slotMachine.valid),
                 Button.secondary("activate", "Activate").withEmoji(if (slotMachine.activate) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF).withDisabled(!slotMachine.valid),
-                Button.danger("delete", "Delete").withEmoji(EmojiStore.CROSS)
+                Button.danger("delete", "Delete").withEmoji(EmojiStore.CROSS),
+                Button.secondary("removeRole", "Remove All Roles").withDisabled(slotMachine.roles.isEmpty())
             ))
         }
 
