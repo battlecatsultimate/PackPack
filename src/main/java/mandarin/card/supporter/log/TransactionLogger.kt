@@ -1513,6 +1513,7 @@ object TransactionLogger {
             Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
             Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
             Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.MANUAL -> "Manual"
             Inventory.CCValidationWay.NONE -> "None"
         }
 
@@ -1524,6 +1525,7 @@ object TransactionLogger {
 
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
+        builder.addField("Obtain Time", "<t:${inventory.ccValidationTime / 1000}:F>", false)
 
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.CC || pair.first == Inventory.ShareStatus.BOTH }
 
@@ -1562,6 +1564,8 @@ object TransactionLogger {
             Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
             Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
             Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.CUSTOM_ROLE -> "Custom Role"
+            Inventory.ECCValidationWay.MANUAL -> "Manual"
             Inventory.ECCValidationWay.NONE -> "None"
         }
 
@@ -1573,6 +1577,7 @@ object TransactionLogger {
 
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
+        builder.addField("Obtain Time", "<t:${inventory.eccValidationTime / 1000}:F>", false)
 
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC || pair.first == Inventory.ShareStatus.BOTH }
 
@@ -1614,6 +1619,7 @@ object TransactionLogger {
             Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
             Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
             Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.MANUAL -> "Manual"
             Inventory.CCValidationWay.NONE -> "None"
         }
 
@@ -1631,6 +1637,12 @@ object TransactionLogger {
 
         if (manager != -1L) {
             builder.addField("Remover", "<@$manager> [$manager]", false)
+        }
+
+        builder.addField("Obtain Time", "<t:${inventory.ccValidationTime / 1000}:F>", false)
+
+        if (inventory.ccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.ccValidationReason, false)
         }
 
         builder.addField("Canceler", "<@$canceler> [$canceler]", false)
@@ -1658,6 +1670,8 @@ object TransactionLogger {
             Inventory.ECCValidationWay.T4_2 -> "2 Unique T4 Cards"
             Inventory.ECCValidationWay.SAME_T4_3 -> "3 Same T4 Cards"
             Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.CUSTOM_ROLE -> "Custom Role"
+            Inventory.ECCValidationWay.MANUAL -> "Manual"
             Inventory.ECCValidationWay.NONE -> "None"
         }
 
@@ -1677,6 +1691,12 @@ object TransactionLogger {
             builder.addField("Remover", "<@$manager> [$manager]", false)
         }
 
+        builder.addField("Obtain Time", "<t:${inventory.eccValidationTime / 1000}:F>", false)
+
+        if (inventory.eccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.eccValidationReason, false)
+        }
+
         builder.addField("Canceler", "<@$canceler> [$canceler]", false)
         builder.addField("Way", "**$way**", false)
 
@@ -1691,6 +1711,68 @@ object TransactionLogger {
                 }
             }, false)
         }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCCAdd(user: Long, manager: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = if (inventory.ccValidationWay == Inventory.CCValidationWay.MANUAL) {
+            "Manual"
+        } else {
+            throw IllegalStateException("E/TransactionLogger::logCCAdd - Invalid CC add reason : ${inventory.ccValidationWay}")
+        }
+
+        val builder = EmbedBuilder()
+
+        val description = "Manager <@$manager> added CC to user <@$user> with the way of `$way`"
+
+        builder.setTitle("CC Manually Added")
+            .setDescription(description)
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+        builder.addField("Obtain Time", "<t:${inventory.ccValidationTime / 1000}:F>", false)
+
+        if (inventory.ccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.ccValidationReason, false)
+        }
+
+        builder.addField("User", "<@$user> [$user]", false)
+        builder.addField("Way", "**$way**", false)
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logECCAdd(user: Long, manager: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = when(inventory.eccValidationWay) {
+            Inventory.ECCValidationWay.CUSTOM_ROLE -> "Custom Role"
+            Inventory.ECCValidationWay.MANUAL -> "Manual"
+            else -> throw IllegalStateException("E/TransactionLogger::logECCAdd - Invalid ECC add reason : ${inventory.eccValidationWay}")
+        }
+
+        val builder = EmbedBuilder()
+
+        val description = "Manager <@$manager> added ECC to user <@$user> with the way of `$way`"
+
+        builder.setTitle("ECC Manually Added")
+            .setDescription(description)
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+        builder.addField("Obtain Time", "<t:${inventory.eccValidationTime / 1000}:F>", false)
+
+        if (inventory.eccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.eccValidationReason, false)
+        }
+
+        builder.addField("User", "<@$user> [$user]", false)
+        builder.addField("Way", "**$way**", false)
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
     }

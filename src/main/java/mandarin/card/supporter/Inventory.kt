@@ -29,6 +29,7 @@ class Inventory(private val id: Long) {
         SEASONAL_15_COLLABORATION_12,
         T3_3,
         LEGENDARY_COLLECTOR,
+        MANUAL,
         NONE
     }
 
@@ -37,6 +38,8 @@ class Inventory(private val id: Long) {
         T4_2,
         SAME_T4_3,
         LEGENDARY_COLLECTOR,
+        CUSTOM_ROLE,
+        MANUAL,
         NONE
     }
 
@@ -45,7 +48,11 @@ class Inventory(private val id: Long) {
     var auctionQueued = PositiveMap<Card, Int>()
 
     var ccValidationWay = CCValidationWay.NONE
+    var ccValidationReason = ""
+    var ccValidationTime = 0L
     var eccValidationWay = ECCValidationWay.NONE
+    var eccValidationReason = ""
+    var eccValidationTime = 0L
     var validationCards = HashMap<Card, Pair<ShareStatus, Int>>()
 
     var vanityRoles = ArrayList<CardData.Role>()
@@ -286,7 +293,11 @@ class Inventory(private val id: Long) {
         obj.addProperty("platinumShard", platinumShard)
 
         obj.addProperty("ccValidationWay", ccValidationWay.name)
+        obj.addProperty("ccValidationReason", ccValidationReason)
+        obj.addProperty("ccValidationTime", ccValidationTime)
         obj.addProperty("eccValidationWay", eccValidationWay.name)
+        obj.addProperty("eccValidationReason", eccValidationReason)
+        obj.addProperty("eccValidationTime", eccValidationTime)
 
         val validationArray = JsonArray()
 
@@ -399,11 +410,16 @@ class Inventory(private val id: Long) {
             CCValidationWay.SEASONAL_15_COLLABORATION_12 -> {}
             CCValidationWay.T3_3 -> catFoods += 200000
             CCValidationWay.LEGENDARY_COLLECTOR -> {}
+            CCValidationWay.MANUAL -> {}
             CCValidationWay.NONE -> {}
         }
 
         ccValidationWay = CCValidationWay.NONE
+        ccValidationReason = ""
+        ccValidationTime = 0L
         eccValidationWay = ECCValidationWay.NONE
+        eccValidationReason = ""
+        eccValidationTime = 0L
 
         val cc = g.roles.find { r -> r.id == CardData.cc } ?: return
         val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
@@ -429,6 +445,8 @@ class Inventory(private val id: Long) {
         }
 
         eccValidationWay = ECCValidationWay.NONE
+        eccValidationReason = ""
+        eccValidationTime = 0L
 
         val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
 
@@ -547,8 +565,28 @@ class Inventory(private val id: Long) {
                 inventory.ccValidationWay = CCValidationWay.valueOf(obj.get("ccValidationWay").asString)
             }
 
+            if (obj.has("ccValidationReason")) {
+                inventory.ccValidationReason = obj.get("ccValidationReason").asString
+            }
+
+            if (obj.has("ccValidationTime")) {
+                inventory.ccValidationTime = obj.get("ccValidationTime").asLong
+            } else if (inventory.ccValidationWay != CCValidationWay.NONE) {
+                inventory.ccValidationTime = CardData.getUnixEpochTime()
+            }
+
             if (obj.has("eccValidationWay")) {
                 inventory.eccValidationWay = ECCValidationWay.valueOf(obj.get("eccValidationWay").asString)
+            }
+
+            if (obj.has("eccValidationReason")) {
+                inventory.eccValidationReason = obj.get("eccValidationReason").asString
+            }
+
+            if (obj.has("eccValidationTime")) {
+                inventory.eccValidationTime = obj.get("eccValidationTime").asLong
+            } else if (inventory.eccValidationWay != ECCValidationWay.NONE) {
+                inventory.eccValidationTime = CardData.getUnixEpochTime()
             }
 
             if (obj.has("validationCards")) {
@@ -634,7 +672,8 @@ class Inventory(private val id: Long) {
                         builder.append("- You aren't currently owning <@&${CardData.Role.LEGEND.id}>!")
                     }
                 }
-                CCValidationWay.NONE -> {
+                CCValidationWay.NONE,
+                CCValidationWay.MANUAL -> {
 
                 }
             }
@@ -679,7 +718,11 @@ class Inventory(private val id: Long) {
                         builder.append("- You don't have any T4 cards with amount of 3 or over!")
                     }
                 }
-                ECCValidationWay.NONE -> {}
+                ECCValidationWay.NONE,
+                ECCValidationWay.CUSTOM_ROLE,
+                ECCValidationWay.MANUAL -> {
+
+                }
             }
 
             return builder.toString()

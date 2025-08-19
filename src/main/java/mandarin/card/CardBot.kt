@@ -42,10 +42,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.events.session.ShutdownEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.requests.RestActionImpl
 import java.io.File
@@ -67,6 +69,7 @@ object CardBot : ListenerAdapter() {
     private var notifier = 1
     private var collectorMonitor = 29
     private var backup = 360
+    private var ccEccRole = 60
 
     var locked = false
     var rollLocked = false
@@ -85,6 +88,9 @@ object CardBot : ListenerAdapter() {
         }
 
         RestActionImpl.setDefaultFailure { e ->
+            if (e is ErrorResponseException && e.errorCode == 10062)
+                return@setDefaultFailure
+
             StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task")
         }
 
@@ -111,6 +117,8 @@ object CardBot : ListenerAdapter() {
             GatewayIntent.SCHEDULED_EVENTS
         )
 
+        builder.setMemberCachePolicy(MemberCachePolicy.ALL)
+
         val statusText = if (test) "B" else "A"
         val pickedBanner = StaticStore.bannerHolder.pickedBanner
 
@@ -136,7 +144,7 @@ object CardBot : ListenerAdapter() {
                     val currentTime = CardData.getUnixEpochTime()
 
                     try {
-                        if (notifier == 2) {
+                        if (notifier >= 2) {
                             notifier = 1
 
                             Notification.handlePackSlotNotification()
@@ -150,7 +158,7 @@ object CardBot : ListenerAdapter() {
                     }
 
                     try {
-                        if (collectorMonitor == 30 && !test) {
+                        if (collectorMonitor >= 30 && !test) {
                             collectorMonitor = 1
 
                             Notification.handleCollectorRoleNotification(client)
@@ -162,7 +170,7 @@ object CardBot : ListenerAdapter() {
                     }
 
                     try {
-                        if (!test && backup == 360) {
+                        if (!test && backup >= 360) {
                             backup = 1
 
                             val link = StaticStore.backup.uploadBackup(Logger.BotInstance.CARD_DEALER)
@@ -320,6 +328,57 @@ object CardBot : ListenerAdapter() {
                         Logger.writeLog(Logger.BotInstance.CARD_DEALER)
                     } catch (e: Exception) {
                         StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to write remaining log to file")
+                    }
+
+                    try {
+                        if (!test && ccEccRole >= 60) {
+                            ccEccRole = 1
+
+                            val g = client.getGuildById(CardData.guild)
+
+                            g?.loadMembers()?.onSuccess { list ->
+                                list.forEach { member ->
+                                    if (!CardData.inventories.containsKey(member.idLong)) return@forEach
+
+                                    val snowflake = UserSnowflake.fromId(member.idLong)
+                                    val inventory = Inventory.getInventory(member.idLong)
+
+                                    val roles = member.roles.map { r -> r.id }
+
+                                    if (inventory.ccValidationWay != Inventory.CCValidationWay.NONE && CardData.cc !in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.cc }
+
+                                        if (role != null) {
+                                            g.addRoleToMember(snowflake, role).queue()
+                                        }
+                                    } else if (inventory.ccValidationWay == Inventory.CCValidationWay.NONE && CardData.cc in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.cc }
+
+                                        if (role != null) {
+                                            g.removeRoleFromMember(snowflake, role).queue()
+                                        }
+                                    }
+
+                                    if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && CardData.ecc !in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                        if (role != null) {
+                                            g.addRoleToMember(snowflake, role).queue()
+                                        }
+                                    } else if (inventory.eccValidationWay == Inventory.ECCValidationWay.NONE && CardData.ecc in roles) {
+                                        val role = g.roles.find { r -> r.id == CardData.ecc }
+
+                                        if (role != null) {
+                                            g.removeRoleFromMember(snowflake, role).queue()
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            ccEccRole++
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to check CC/ECC role from users")
                     }
                 } catch(e: Exception) {
                     StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to perform background thread")
@@ -645,6 +704,10 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}removeecc",
             "${globalPrefix}recc" -> RemoveECC()
             "${globalPrefix}sm" -> SendMessage()
+            "${globalPrefix}addcc",
+            "${globalPrefix}acc" -> AddCC()
+            "${globalPrefix}addecc",
+            "${globalPrefix}aecc" -> AddECC()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 

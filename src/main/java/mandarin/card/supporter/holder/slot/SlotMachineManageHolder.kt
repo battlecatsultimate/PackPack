@@ -76,6 +76,13 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
 
                 applyResult()
             }
+            "removeRole" -> {
+                slotMachine.roles.clear()
+
+                event.deferReply().setContent("Successfully removed all roles! Check the result above").setEphemeral(true).queue()
+
+                applyResult()
+            }
             "name" -> {
                 val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Decide Slot Machine Name Here").setRequired(true).setRequiredRange(1, 50).build()
 
@@ -222,6 +229,10 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
 
         result.add(ActionRow.of(
             EntitySelectMenu.create("roles", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder("Select Role To Add/Delete").setRequiredRange(0, SelectMenu.OPTIONS_MAX_AMOUNT).build()
+        ))
+
+        result.add(ActionRow.of(
+            Button.secondary("removeRole", "Remove All Roles").withDisabled(slotMachine.roles.isEmpty())
         ))
 
         if (new) {

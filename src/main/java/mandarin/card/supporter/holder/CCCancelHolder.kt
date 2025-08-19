@@ -134,6 +134,7 @@ class CCCancelHolder(author: Message, userID: String, channelID: String, message
                     Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> 0
                     Inventory.CCValidationWay.T3_3 -> 200000
                     Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> 0
+                    Inventory.CCValidationWay.MANUAL -> 0
                     Inventory.CCValidationWay.NONE -> 0
                 }
 

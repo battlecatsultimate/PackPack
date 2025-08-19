@@ -262,6 +262,7 @@ class ECCValidationHolder(author: Message, userID: String, channelID: String, me
 
     private fun obtainECC(guild: Guild, event: IMessageEditCallback) {
         inventory.eccValidationWay = validationWay
+        inventory.eccValidationTime = CardData.getUnixEpochTime()
 
         seasonalCards.union(collaborationCards).union(t4Cards).forEach { c ->
             val pair = inventory.validationCards[c]
