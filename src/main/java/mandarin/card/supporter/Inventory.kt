@@ -449,7 +449,7 @@ class Inventory(private val id: Long) {
         eccValidationWay = ECCValidationWay.NONE
         eccValidationReason = ""
         eccValidationTime = 0L
-        eccValidationRoleID = -1L
+        eccValidationRoleID = 0L
 
         val ecc = g.roles.find { r -> r.id == CardData.ecc } ?: return
 

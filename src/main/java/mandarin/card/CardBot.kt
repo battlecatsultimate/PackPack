@@ -379,7 +379,7 @@ object CardBot : ListenerAdapter() {
 
                                 val roles = g.roles.map { role -> role.idLong }
 
-                                CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != -1L }.forEach { (id, inventory) ->
+                                CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != 0L }.forEach { (id, inventory) ->
                                     if (inventory.eccValidationRoleID !in roles) {
                                         TransactionLogger.logECCCancel(id, g.selfMember.idLong, inventory)
 
@@ -777,7 +777,7 @@ object CardBot : ListenerAdapter() {
         val g = event.guild
         val roles = event.roles.map { role -> role.idLong }
 
-        CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != -1L }.forEach { (id, inventory) ->
+        CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != 0L }.forEach { (id, inventory) ->
             if (inventory.eccValidationRoleID in roles) {
                 TransactionLogger.logECCCancel(id, g.selfMember.idLong, inventory)
 
