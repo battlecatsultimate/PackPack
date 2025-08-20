@@ -2,21 +2,19 @@ package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.anim.EAnimD;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
-import mandarin.packpack.supporter.bc.ImageDrawing;
+import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormAnimMessageHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
@@ -59,84 +57,52 @@ public class FormImage extends TimedConstraintCommand {
                 boolean res = temp.mkdirs();
 
                 if(!res) {
-                    System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                    StaticStore.logger.uploadLog("W/FormImage::doSomething - Can't create folder : " + temp.getAbsolutePath());
+
                     return;
                 }
             }
 
-            String search = filterCommand(loader.getContent());
+            String formName = filterCommand(loader.getContent());
 
-            if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formImage.fail.noParameter", lang), loader.getMessage(), a -> a);
+            if(formName.isBlank()) {
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formImage.fail.noParameter", lang));
+
                 disableTimer();
+
                 return;
             }
 
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(search, false, lang);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(formName, false, lang);
 
             if(forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formStat.fail.noUnit", lang).formatted(getSearchKeyword(loader.getContent())));
+
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(loader.getContent());
                 int mode = getMode(loader.getContent());
                 int frame = getFrame(loader.getContent());
 
+                boolean debug = (param & PARAM_DEBUG) > 0;
+                boolean transparent = (param & PARAM_TRANSPARENT) > 0;
+
                 forms.getFirst().anim.load();
 
-                if(mode >= forms.getFirst().anim.anims.length)
-                    mode = 0;
-
-                EAnimD<?> anim = forms.getFirst().anim.getEAnim(ImageDrawing.getAnimType(mode, forms.getFirst().anim.anims.length));
-
-                File img = ImageDrawing.drawAnimImage(anim, frame, 1f, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0));
-
-                forms.getFirst().anim.unload();
-
-                if(img != null) {
-                    String fName = MultiLangCont.get(forms.getFirst(), lang);
-
-                    if(fName == null || fName.isBlank())
-                        fName = forms.getFirst().names.toString();
-
-                    if(fName.isBlank())
-                        fName = LangID.getStringByID("data.stage.limit.unit", lang)+" "+ Data.trio(forms.getFirst().uid.id)+" "+Data.trio(forms.getFirst().fid);
-
-                    sendMessageWithFile(ch, LangID.getStringByID("formImage.result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.getFirst().anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", loader.getMessage());
-                }
+                EntityHandler.generateFormImage(forms.getFirst(), ch, loader.getMessage(), mode, frame, transparent, debug, lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
-
-                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
-
-                List<String> data = accumulateData(forms);
-
-                for(int i = 0; i < data.size(); i++) {
-                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
-                }
-
-                if(forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-                    int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-                    if(forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                        totalPage++;
-
-                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
-                }
-
-                sb.append("```");
-
-                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                replyToMessageSafely(ch, loader.getMessage(), msg -> {
                     int param = checkParameters(loader.getContent());
                     int mode = getMode(loader.getContent());
                     int frame = getFrame(loader.getContent());
 
+                    boolean debug = (param & PARAM_DEBUG) > 0;
+                    boolean transparent = (param & PARAM_TRANSPARENT) > 0;
+
                     User u = loader.getUser();
 
-                    Message msg = loader.getMessage();
-
-                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, u.getId(), ch.getId(), res, new StringBuilder(), search, config.searchLayout, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
-                });
+                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, new StringBuilder(), formName, config.searchLayout, mode, frame, transparent, debug, lang, false, false, false));
+                }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(formName, forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
 
                 disableTimer();
             }
@@ -302,52 +268,45 @@ public class FormImage extends TimedConstraintCommand {
         return result.toString().trim();
     }
 
-    private String getModeName(int mode, int max) {
-        switch (mode) {
-            case 1 -> {
-                return LangID.getStringByID("data.animation.mode.idle", lang);
-            }
-            case 2 -> {
-                return LangID.getStringByID("data.animation.mode.attack", lang);
-            }
-            case 3 -> {
-                return LangID.getStringByID("formImage.mode.kb", lang);
-            }
-            case 4 -> {
-                if (max == 5)
-                    return LangID.getStringByID("data.animation.mode.enter", lang);
-                else
-                    return LangID.getStringByID("formImage.mode.burrowDown", lang);
-            }
-            case 5 -> {
-                return LangID.getStringByID("formImage.mode.burrowMove", lang);
-            }
-            case 6 -> {
-                return LangID.getStringByID("formImage.mode.burrowUp", lang);
-            }
-            default -> {
-                return LangID.getStringByID("data.animation.mode.walk", lang);
-            }
-        }
-    }
-
-    private List<String> accumulateData(List<Form> forms) {
+    private List<String> accumulateTextData(List<Form> forms, SearchHolder.TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
-            if(i >= forms.size())
-                break;
-
+        for(int i = 0; i < Math.min(forms.size(), config.searchLayout.chunkSize); i++) {
             Form f = forms.get(i);
 
-            String formName = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+            String text = null;
 
-            String name = StaticStore.safeMultiLangGet(f, lang);
+            switch (textType) {
+                case TEXT -> {
+                    if (config.searchLayout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + " ";
 
-            if(name != null)
-                formName += name;
+                        if (StaticStore.safeMultiLangGet(f, lang) != null) {
+                            text += StaticStore.safeMultiLangGet(f, lang);
+                        }
+                    } else {
+                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "` ";
 
-            data.add(formName);
+                        String formName = StaticStore.safeMultiLangGet(f, lang);
+
+                        if (formName == null || formName.isBlank()) {
+                            formName = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        }
+
+                        text += "**" + formName + "**";
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(f, lang);
+
+                    if (text == null) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+            }
+
+            data.add(text);
         }
 
         return data;
