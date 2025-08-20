@@ -85,7 +85,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         try {
-            EntityHandler.showEnemyEmb(enemy.get(index), event, hasAuthorMessage() ? getAuthorMessage() : null, treasure, configData, true, lang, msg -> {
+            EntityHandler.generateEnemyEmbed(enemy.get(index), event, hasAuthorMessage() ? getAuthorMessage() : null, treasure, configData, true, lang, msg -> {
                 end(true);
 
                 StaticStore.putHolder(userID, new EnemyButtonHolder(hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, message, enemy.get(index), treasure, configData, lang));

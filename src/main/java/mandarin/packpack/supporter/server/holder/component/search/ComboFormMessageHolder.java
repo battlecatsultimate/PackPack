@@ -111,7 +111,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 }
 
                 try {
-                    EntityHandler.showComboEmbed(event, getAuthorMessage(), combos.getFirst(), lang, true);
+                    EntityHandler.generateComboEmbed(event, getAuthorMessage(), combos.getFirst(), lang, true);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/ComboFormMessageHolder::onSelected - Failed to upload combo embed");
                 }

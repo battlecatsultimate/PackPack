@@ -132,7 +132,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                EntityHandler.showEnemyEmb(enemies.getFirst(), sender, m, treasure, configData, false, lang, msg -> StaticStore.putHolder(loader.getUser().getId(), new EnemyButtonHolder(m, loader.getUser().getId(), ch.getId(), msg, enemies.getFirst(), treasure, configData, lang)));
+                EntityHandler.generateEnemyEmbed(enemies.getFirst(), sender, m, treasure, configData, false, lang, msg -> StaticStore.putHolder(loader.getUser().getId(), new EnemyButtonHolder(m, loader.getUser().getId(), ch.getId(), msg, enemies.getFirst(), treasure, configData, lang)));
             } else if(enemies.isEmpty()) {
                 if (loader.fromMessage) {
                     replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(enemyName)));

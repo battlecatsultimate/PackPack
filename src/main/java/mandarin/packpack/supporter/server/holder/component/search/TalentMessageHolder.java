@@ -108,7 +108,7 @@ public class TalentMessageHolder extends SearchHolder {
                 return;
             }
 
-            EntityHandler.showTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, trueForm, isFrame, true, lang);
+            EntityHandler.generateTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, trueForm, isFrame, true, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/TalentMessageHolder::onSelected - Failed to perform showing talent embed");
         }

@@ -196,7 +196,7 @@ public class ZeroFormAnalyzer extends ConstraintCommand {
 
             statReader.close();
 
-            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, imageLocal, level, !isSecond, null, trueForm, ImageDrawing.Mode.ZERO_FORM, uid, lang);
+            EntityHandler.generateUnitStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, imageLocal, level, !isSecond, null, trueForm, ImageDrawing.Mode.ZERO_FORM, uid, lang);
 
         } else {
             List<String> requiredFiles = new ArrayList<>();

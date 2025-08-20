@@ -116,7 +116,7 @@ public class StageInfoMessageHolder extends SearchHolder {
         }
 
         try {
-            EntityHandler.showStageEmb(stages.get(index), event, hasAuthorMessage() ? getAuthorMessage() : null, additionalContent, treasure, configData, true, true, lang, msg ->
+            EntityHandler.generateStageEmbed(stages.get(index), event, hasAuthorMessage() ? getAuthorMessage() : null, additionalContent, treasure, configData, true, true, lang, msg ->
                 StaticStore.putHolder(userID, new StageInfoButtonHolder(stages.get(index), hasAuthorMessage() ? getAuthorMessage() : null, userID, channelID, msg, treasure, configData, true, lang))
             );
         } catch (Exception e) {

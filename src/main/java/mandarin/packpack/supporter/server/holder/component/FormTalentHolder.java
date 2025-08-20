@@ -71,6 +71,6 @@ public class FormTalentHolder extends ComponentHolder {
 
     @Override
     public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
-        EntityHandler.showTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, f, configData.isFrame, true, lang);
+        EntityHandler.generateTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, f, configData.isFrame, true, lang);
     }
 }

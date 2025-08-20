@@ -137,7 +137,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                         .mentionRepliedUser(false)
                         .queue();
             } else if(stages.size() == 1) {
-                EntityHandler.showStageEmb(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
+                EntityHandler.generateStageEmbed(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {

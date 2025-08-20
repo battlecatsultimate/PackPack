@@ -150,7 +150,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 st = st.getCont().list.get(index);
 
                 try {
-                    EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
+                    EntityHandler.generateStageEmbed(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to switch stage to other stage");
                 }
@@ -164,7 +164,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 st = st.getCont().list.get(index);
 
                 try {
-                    EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
+                    EntityHandler.generateStageEmbed(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to switch stage to other stage");
                 }
@@ -178,7 +178,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 st = st.getCont().list.get(index);
 
                 try {
-                    EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
+                    EntityHandler.generateStageEmbed(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder::onEvent - Failed to switch stage to other stage");
                 }
@@ -206,6 +206,6 @@ public class StageInfoButtonHolder extends ComponentHolder {
 
     @Override
     public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
-        EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
+        EntityHandler.generateStageEmbed(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
     }
 }

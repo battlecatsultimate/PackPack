@@ -208,7 +208,7 @@ public class StatAnalyzer extends ConstraintCommand {
 
             statReader.close();
 
-            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, imageLocal, level, !isSecond, egg, trueForm, ImageDrawing.Mode.NORMAL, uid, lang);
+            EntityHandler.generateUnitStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, imageLocal, level, !isSecond, egg, trueForm, ImageDrawing.Mode.NORMAL, uid, lang);
         } else {
             List<String> requiredFiles = new ArrayList<>();
 

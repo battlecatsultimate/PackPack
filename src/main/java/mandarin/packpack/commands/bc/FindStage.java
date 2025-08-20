@@ -215,7 +215,7 @@ public class FindStage extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), "", treasure, configData, false, false, lang, result -> {
+                EntityHandler.generateStageEmbed(stages.getFirst(), ch, loader.getMessage(), "", treasure, configData, false, false, lang, result -> {
                     User u = loader.getUser();
 
                     Message msg = loader.getMessage();

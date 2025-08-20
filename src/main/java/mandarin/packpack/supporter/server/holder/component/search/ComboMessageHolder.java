@@ -105,7 +105,7 @@ public class ComboMessageHolder extends SearchHolder {
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         try {
-            EntityHandler.showComboEmbed(event, getAuthorMessage(), combo.get(index), lang, true);
+            EntityHandler.generateComboEmbed(event, getAuthorMessage(), combo.get(index), lang, true);
 
             User u = event.getUser();
 

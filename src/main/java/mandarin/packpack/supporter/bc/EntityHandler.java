@@ -111,7 +111,11 @@ public class EntityHandler {
         }
     }
 
-    public static void showUnitEmb(Form f, Object sender, @Nullable Message reference, ConfigHolder config, boolean trueFormPossible, TreasureHolder holder, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang, boolean addEmoji, boolean editMode, Consumer<Message> onSuccess) throws Exception {
+    // |-------------------------|
+    // |    Stat Embed : Main    |
+    // |-------------------------|
+
+    public static void generateUnitEmbed(Form f, Object sender, @Nullable Message reference, ConfigHolder config, boolean trueFormPossible, TreasureHolder holder, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang, boolean addEmoji, boolean editMode, Consumer<Message> onSuccess) throws Exception {
         int level = configData.lv.getLv();
         int plusLevel = configData.lv.getPlusLv();
 
@@ -442,148 +446,7 @@ public class EntityHandler {
         }
     }
 
-    public static void showTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
-        if(form.du == null)
-            throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
-
-        Form newForm;
-
-        if (form.du.getPCoin() == null) {
-            newForm = Arrays.stream(form.unit.forms)
-                    .filter(f -> f.fid >= 2)
-                    .filter(f -> f.du.getPCoin() != null)
-                    .findAny()
-                    .orElse(null);
-
-            if (newForm == null)
-                throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
-        } else {
-            newForm = form;
-        }
-
-        PCoin talent = newForm.du.getPCoin();
-
-        Level levels = new Level(talent.max.length);
-
-        for(int i = 0; i < talent.max.length; i++) {
-            levels.getTalents()[i] = 1;
-        }
-
-        MaskUnit improved = talent.improve(levels.getTalents());
-
-        EmbedBuilder spec = new EmbedBuilder();
-
-        String iconLink = generateIcon(form);
-
-        String unitName = MultiLangCont.get(form, lang);
-
-        if(unitName == null)
-            unitName = Data.trio(form.unit.id.id);
-
-        spec.setTitle(LangID.getStringByID("data.talent.embed.title", lang).replace("_", unitName));
-
-        for(int i = 0; i < talent.info.size(); i++) {
-            if(talent.info.get(i)[13] == 1) {
-                spec.setDescription(LangID.getStringByID("data.talent.superTalent.description", lang));
-
-                break;
-            }
-        }
-
-        for(int i = 0; i < talent.info.size(); i++) {
-            String title = DataToString.getTalentTitle(newForm.du, i, lang);
-            String desc = DataToString.getTalentExplanation(newForm.du, improved, i, isFrame, lang);
-
-            if(title.isBlank() || desc.isBlank())
-                continue;
-
-            spec.addField(title, desc, false);
-        }
-
-        int c;
-
-        if(form.fid == 0)
-            c = StaticStore.rainbow[StaticStore.BLUE];
-        else if(form.fid == 1)
-            c = StaticStore.rainbow[StaticStore.GREEN];
-        else if(form.fid == 2)
-            c = StaticStore.rainbow[StaticStore.YELLOW];
-        else
-            c = StaticStore.rainbow[StaticStore.RED];
-
-        spec.setColor(c);
-
-        if(iconLink != null)
-            spec.setThumbnail(iconLink);
-
-        spec.setFooter(DataToString.accumulateNpCost(talent, lang));
-
-        if (editMode) {
-            List<MessageTopLevelComponent> components = new ArrayList<>();
-
-            components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
-
-            if (sender instanceof Message msg) {
-                msg.editMessage("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-            } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
-                event.deferEdit()
-                        .setContent("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-            }
-        } else {
-            if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
-            } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
-            }
-        }
-
-
-    }
-
-    private static int[] handleTalent(Form f, Level lv, int[] t) {
-        int[] res = new int[t.length];
-        int[] talents = lv.getTalents();
-
-        for(int i = 0; i < t.length; i++) {
-            if(i >= talents.length && talents.length == 0)
-                res[i] = t[i];
-            else if(i < talents.length)
-                res[i] = Math.min(t[i], talents[i]);
-        }
-
-        if(f.du.getPCoin() != null) {
-            PCoin pc = f.du.getPCoin();
-
-            for(int i = 0; i < res.length; i++) {
-                if(pc.info.get(i)[13] == 1 && lv.getLv() + lv.getPlusLv() < 60) {
-                    res[i] = 0;
-                }
-            }
-        }
-
-        return res;
-    }
-
-    private static boolean talentExists(int[] t) {
-        for(int i = 0; i < t.length; i++) {
-            if (t[i] > 0)
-                return true;
-        }
-
-        return false;
-    }
-
-    public static void showEnemyEmb(Enemy e, Object sender, @Nullable Message reference, TreasureHolder holder, EnemyStat.EnemyStatConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) {
+    public static void generateEnemyEmbed(Enemy e, Object sender, @Nullable Message reference, TreasureHolder holder, EnemyStat.EnemyStatConfig configData, boolean editMode, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) {
         String iconLink = StaticStore.assetManager.getEnemyIcon(e);
 
         if (iconLink == null)
@@ -763,243 +626,7 @@ public class EntityHandler {
         }
     }
 
-    private static String generateIcon(Form f) throws Exception {
-        if(f.unit == null)
-            return null;
-
-        String code = switch (f.fid) {
-            case 0 -> "F";
-            case 1 -> "C";
-            case 2 -> "S";
-            case 3 -> "U";
-            default -> throw new IllegalStateException("E/EntityHandler::generateCatfruit - Invalid form id %d".formatted(f.fid));
-        };
-
-        String cacheID = StaticStore.UNIT_ICON.formatted(Data.trio(f.unit.id.id), code);
-
-        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
-
-        if (cacheLink != null) {
-            return cacheLink;
-        }
-
-        File temp = new File("./temp");
-
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return null;
-            }
-        }
-
-        File img = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-        if(img == null) {
-            return null;
-        }
-
-        FakeImage image;
-
-        if(f.anim.getUni() != null)
-            image = f.anim.getUni().getImg();
-        else if(f.anim.getEdi() != null)
-            image = f.anim.getEdi().getImg();
-        else
-            return null;
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        StaticStore.renderManager.createRenderer(image.getWidth(), image.getHeight(), temp, connector -> {
-            connector.queue(g -> {
-                g.drawImage(image, 0f, 0f);
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> img, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
-
-        StaticStore.deleteFile(img, true);
-
-        return cacheLink;
-    }
-
-    private static String generateCatfruit(Form f, CommonStatic.Lang.Locale lang) throws Exception {
-        String cacheID;
-
-        if (f.unit.info.hasZeroForm()) {
-            cacheID = StaticStore.UNIT_EVOLVE_ULTRA.formatted(Data.trio(f.unit.id.id), lang.name());
-        } else {
-            cacheID = StaticStore.UNIT_EVOLVE_TRUE.formatted(Data.trio(f.unit.id.id), lang.name());
-        }
-
-        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
-
-        if (cacheLink != null)
-            return cacheLink;
-
-        if(f.unit.info.evo == null)
-            return null;
-
-        File tmp = new File("./temp");
-
-        if(!tmp.exists()) {
-            boolean res = tmp.mkdirs();
-
-            if(!res) {
-                StaticStore.logger.uploadLog("W/EntityHandler::generateCatfruit - Failed to create temp folder");
-
-                return null;
-            }
-        }
-
-        File img = StaticStore.generateTempFile(tmp, "result", ".png", false);
-
-        if(img == null) {
-            return null;
-        }
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        float[] trueFormText = font.measureDimension(LangID.getStringByID("data.unit.trueForm", lang));
-        float[] ultraFormText = font.measureDimension(LangID.getStringByID("data.unit.ultraForm", lang));
-
-        int w = Math.round(Math.max(600f, trueFormText[2]));
-        float th = catFruitTextGap + trueFormText[3] + catFruitTextGap + 150f;
-
-        if (f.unit.info.zeroEvo != null) {
-            th += catFruitTextGap + ultraFormText[3] + catFruitTextGap + 150f;
-        }
-
-        int h = Math.round(th);
-
-        StaticStore.renderManager.createRenderer(w, h, tmp, connector -> {
-            connector.queue(g -> {
-                g.setFontModel(font);
-
-                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
-                g.setColor(47, 49, 54, 255);
-
-                g.fillRect(0, 0, w, h);
-
-                g.translate(0f, catFruitTextGap);
-
-                g.setColor(238, 238, 238, 255);
-                g.drawText(LangID.getStringByID("data.unit.trueForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
-
-                g.translate(0f, trueFormText[3] + catFruitTextGap);
-
-                g.setColor(238, 238, 238, 128);
-
-                g.drawRect(0, 0, 600, 150);
-
-                for(int i = 1; i < 6; i++) {
-                    g.drawLine(100 * i, 0, 100* i , 150);
-                }
-
-                g.drawLine(0, 100, 600, 100);
-
-                g.setColor(238, 238, 238, 255);
-
-                for(int i = 0; i < 6; i++) {
-                    if(i == 0) {
-                        VFile vf = VFile.get("./org/page/catfruit/xp.png");
-
-                        if(vf != null) {
-                            FakeImage icon = vf.getData().getImg();
-
-                            g.drawImage(icon, 510, 10, 80, 80);
-                            g.drawText(String.valueOf(f.unit.info.xp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                        }
-                    } else {
-                        if(f.unit.info.evo[i - 1][0] != 0) {
-                            VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.evo[i - 1][0]+"_f.png");
-
-                            if(vf != null) {
-                                FakeImage icon = vf.getData().getImg();
-
-                                g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
-                                g.drawText(String.valueOf(f.unit.info.evo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                            }
-                        }
-                    }
-                }
-
-                if (f.unit.info.zeroEvo != null) {
-                    g.translate(0f, 150 + catFruitTextGap);
-
-                    g.setColor(238, 238, 238, 255);
-                    g.drawText(LangID.getStringByID("data.unit.ultraForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
-
-                    g.translate(0f, ultraFormText[3] + catFruitTextGap);
-
-                    g.setColor(238, 238, 238, 128);
-
-                    g.drawRect(0, 0, 600, 150);
-
-                    for(int i = 1; i < 6; i++) {
-                        g.drawLine(100 * i, 0, 100* i , 150);
-                    }
-
-                    g.drawLine(0, 100, 600, 100);
-
-                    g.setColor(238, 238, 238, 255);
-
-                    for(int i = 0; i < 6; i++) {
-                        if(i == 0) {
-                            VFile vf = VFile.get("./org/page/catfruit/xp.png");
-
-                            if(vf != null) {
-                                FakeImage icon = vf.getData().getImg();
-
-                                g.drawImage(icon, 510, 10, 80, 80);
-                                g.drawText(String.valueOf(f.unit.info.zeroXp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                            }
-                        } else {
-                            if(f.unit.info.zeroEvo[i - 1][0] != 0) {
-                                VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.zeroEvo[i - 1][0]+"_f.png");
-
-                                if(vf != null) {
-                                    FakeImage icon = vf.getData().getImg();
-
-                                    g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
-                                    g.drawText(String.valueOf(f.unit.info.zeroEvo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> img, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
-
-        StaticStore.deleteFile(img, true);
-
-        return cacheLink;
-    }
-
-    public static void showStageEmb(Stage st, Object sender, @Nullable Message reference, String additionalContent, TreasureHolder holder, StageInfo.StageInfoConfig configData, boolean editMode, boolean switchable, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
+    public static void generateStageEmbed(Stage st, Object sender, @Nullable Message reference, String additionalContent, TreasureHolder holder, StageInfo.StageInfoConfig configData, boolean editMode, boolean switchable, CommonStatic.Lang.Locale lang, Consumer<Message> onSuccess) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1292,2596 +919,117 @@ public class EntityHandler {
         }
     }
 
-    public static void showFixedLineupData(Stage st, BattlePreset preset, IMessageEditCallback sender, CommonStatic.Lang.Locale lang) throws Exception {
-        String lineupLink = ImageDrawing.drawLineupImage(st, preset);
+    // |----------------------------------|
+    // |    Stat Embed : Miscellaneous    |
+    // |----------------------------------|
 
-        if (lineupLink == null) {
-            List<MessageTopLevelComponent> components = new ArrayList<>();
+    public static void generateTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
+        if(form.du == null)
+            throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
-            components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+        Form newForm;
 
-            sender.deferEdit()
-                    .setContent(LangID.getStringByID("data.stage.battlePreset.failed", lang))
-                    .setComponents(components)
-                    .setEmbeds()
-                    .mentionRepliedUser(false)
-                    .queue();
+        if (form.du.getPCoin() == null) {
+            newForm = Arrays.stream(form.unit.forms)
+                    .filter(f -> f.fid >= 2)
+                    .filter(f -> f.du.getPCoin() != null)
+                    .findAny()
+                    .orElse(null);
 
-            return;
+            if (newForm == null)
+                throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
+        } else {
+            newForm = form;
         }
+
+        PCoin talent = newForm.du.getPCoin();
+
+        Level levels = new Level(talent.max.length);
+
+        for(int i = 0; i < talent.max.length; i++) {
+            levels.getTalents()[i] = 1;
+        }
+
+        MaskUnit improved = talent.improve(levels.getTalents());
 
         EmbedBuilder spec = new EmbedBuilder();
 
-        spec.setTitle(LangID.getStringByID("data.stage.battlePreset.title", lang));
-        spec.setDescription(LangID.getStringByID("data.stage.battlePreset.description", lang));
-        spec.setColor(new Color(237, 81, 221));
+        String iconLink = generateIcon(form);
 
-        StringBuilder baseUpgradeDescription = new StringBuilder();
+        String unitName = MultiLangCont.get(form, lang);
 
-        for (int i = 0; i < 9; i++) {
-            int index;
-            String typeName;
+        if(unitName == null)
+            unitName = Data.trio(form.unit.id.id);
 
-            switch (i) {
-                case 0 -> {
-                    index = Data.LV_CATK;
-                    typeName = "cannonAttack";
-                }
-                case 1 -> {
-                    index = Data.LV_CRG;
-                    typeName = "cannonRange";
-                }
-                case 2 -> {
-                    index = Data.LV_RECH;
-                    typeName = "cannonCharge";
-                }
-                case 3 -> {
-                    index = Data.LV_WORK;
-                    typeName = "worker";
-                }
-                case 4 -> {
-                    index = Data.LV_WALT;
-                    typeName = "wallet";
-                }
-                case 5 -> {
-                    index = Data.LV_BASE;
-                    typeName = "baseHealth";
-                }
-                case 6 -> {
-                    index = Data.LV_RES;
-                    typeName = "research";
-                }
-                case 7 -> {
-                    index = Data.LV_ACC;
-                    typeName = "accountant";
-                }
-                case 8 -> {
-                    index = Data.LV_XP;
-                    typeName = "study";
-                }
-                default -> {
-                    index = -1;
-                    typeName = null;
-                }
-            }
+        spec.setTitle(LangID.getStringByID("data.talent.embed.title", lang).replace("_", unitName));
 
-            baseUpgradeDescription.append(
-                LangID.getStringByID("data.stage.battlePreset.baseUpgrade.format", lang)
-                        .formatted(LangID.getStringByID("data.stage.battlePreset.baseUpgrade.type." + typeName, lang), preset.tech[index])
-            ).append("\n");
-        }
+        for(int i = 0; i < talent.info.size(); i++) {
+            if(talent.info.get(i)[13] == 1) {
+                spec.setDescription(LangID.getStringByID("data.talent.superTalent.description", lang));
 
-        spec.addField(LangID.getStringByID("data.stage.battlePreset.baseUpgrade.title", lang), baseUpgradeDescription.toString(), false);
-
-        String formatted;
-
-        if (preset.cannonType == Data.BASE_H) {
-            formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.normal", lang).formatted(preset.bslv[0]);
-        } else {
-            String cannonName = switch (preset.cannonType) {
-                case Data.BASE_SLOW -> "slowBeam";
-                case Data.BASE_WALL ->  "ironWall";
-                case Data.BASE_STOP -> "thunderbolt";
-                case Data.BASE_WATER -> "waterblast";
-                case Data.BASE_GROUND -> "holyBlast";
-                case Data.BASE_BARRIER -> "breakerblast";
-                case Data.BASE_CURSE -> "curseblast";
-                default -> throw new IllegalStateException("E/EntityHandler::showFixedLineupData - Invalid cannon ID : %d found".formatted(preset.cannonType));
-            };
-
-            formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.special", lang).formatted(
-                    LangID.getStringByID("data.stage.battlePreset.cannonType.cannon." + cannonName, lang),
-                    preset.bslv[preset.cannonType],
-                    preset.bslv[0]
-            );
-        }
-
-        spec.addField(
-                LangID.getStringByID("data.stage.battlePreset.cannonType.title", lang),
-                formatted,
-                false
-        );
-
-        StringBuilder treasureBuilder = new StringBuilder();
-
-        if (preset.baseHealthBoost) {
-            treasureBuilder.append(LangID.getStringByID("data.stage.battlePreset.treasure.base", lang)).append("\n");
-        }
-
-        for (BattlePreset.ActivatedTreasure treasure : preset.activatedTreasures) {
-            String treasureName = switch (treasure) {
-                case EOC1 -> "EoC.1";
-                case EOC2 -> "EoC.2";
-                case EOC3 -> "EoC.3";
-                case ITF1 -> "ItF.1";
-                case ITF2 -> "ItF.2";
-                case ITF3 -> "ItF.3";
-                case COTC1 -> "CotC.1";
-                case COTC2 -> "CotC.2";
-                case COTC3 -> "CotC.3";
-                case BASE -> "base";
-            };
-
-            treasureBuilder.append(LangID.getStringByID("data.stage.battlePreset.treasure.format", lang).formatted(LangID.getStringByID("data.stage.battlePreset.treasure." + treasureName, lang))).append("\n");
-        }
-
-        spec.addField(LangID.getStringByID("data.stage.battlePreset.treasure.title", lang), treasureBuilder.toString(), false);
-
-        StringBuilder lineupBuilder = new StringBuilder();
-
-        for (int y = 0; y < 2; y++) {
-            for (int x = 0; x < 5; x++) {
-                Form form = preset.fs[y][x];
-
-                if (form == null)
-                    continue;
-
-                String formName = StaticStore.safeMultiLangGet(form, lang);
-
-                if (formName == null || formName.isBlank()) {
-                    formName = form.names.toString();
-                }
-
-                String idFormat = Data.trio(form.unit.id.id) + "-" + Data.trio(form.fid);
-
-                if (formName.isBlank()) {
-                    lineupBuilder.append("- ").append(idFormat).append("\n");
-                } else {
-                    lineupBuilder.append("- [").append(idFormat).append("] ").append(formName).append("\n");
-                }
+                break;
             }
         }
 
-        lineupBuilder.append(LangID.getStringByID("data.stage.battlePreset.lineup.description", lang));
+        for(int i = 0; i < talent.info.size(); i++) {
+            String title = DataToString.getTalentTitle(newForm.du, i, lang);
+            String desc = DataToString.getTalentExplanation(newForm.du, improved, i, isFrame, lang);
 
-        spec.addField(LangID.getStringByID("data.stage.battlePreset.lineup.title", lang), lineupBuilder.toString(), false);
-
-        spec.setImage(lineupLink);
-
-        spec.setFooter(LangID.getStringByID("data.stage.battlePreset.level", lang).formatted(Emoji.fromUnicode("👑").getFormatted(), preset.level + 1));
-
-        List<MessageTopLevelComponent> components = new ArrayList<>();
-
-        components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
-
-        sender.deferEdit()
-                .setEmbeds(spec.build())
-                .setComponents(components)
-                .setAllowedMentions(new ArrayList<>())
-                .mentionRepliedUser(false)
-                .queue();
-    }
-
-    private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int lv, int star, TreasureHolder holder) throws Exception {
-        String hash = Long.toHexString(StaticStore.getHashOfVariables(st.data, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
-
-        if (hash.length() < 5)
-            hash = "0".repeat(5 - hash.length()) + hash;
-        else
-            hash = hash.substring(0, 5);
-
-        String cacheID = StaticStore.STAGE_SCHEME.formatted(
-                DataToString.getMapCode(st.getCont().getCont()),
-                Data.trio(st.getCont().id.id),
-                Data.trio(st.id.id),
-                lv,
-                isFrame ? "FRAME" : "SECOND",
-                lang.name(),
-                hash
-        );
-
-        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
-
-        if (cacheLink != null)
-            return cacheLink;
-
-        File temp = new File("./temp/");
-
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return null;
-            }
-        }
-
-        File img = StaticStore.generateTempFile(temp, "scheme", ".png", false);
-
-        if(img == null) {
-            return null;
-        }
-
-        boolean needBoss = false;
-        boolean needRespect = false;
-        boolean needCount = false;
-
-        for(int i = st.data.datas.length - 1; i >= 0; i--) {
-            SCDef.Line line = st.data.datas[i];
-
-            if(!needBoss && line.boss != 0)
-                needBoss = true;
-
-            if(!needRespect && (line.spawn_0 < 0 || line.spawn_1 < 0))
-                needRespect = true;
-
-            if(!needCount && line.kill_count != 0)
-                needCount = true;
-        }
-
-        ArrayList<String> enemies = new ArrayList<>();
-        ArrayList<String> numbers = new ArrayList<>();
-        ArrayList<String> magnifications = new ArrayList<>();
-        ArrayList<String> isBoss = new ArrayList<>();
-        ArrayList<String> baseHealth = new ArrayList<>();
-        ArrayList<String> startRespawn = new ArrayList<>();
-        ArrayList<String> layers = new ArrayList<>();
-        ArrayList<String> respects = new ArrayList<>();
-        ArrayList<String> killCounts = new ArrayList<>();
-
-        for(int i = st.data.datas.length - 1; i >= 0; i--) {
-            SCDef.Line line = st.data.datas[i];
-
-            AbEnemy enemy = line.enemy.get();
-
-            if(enemy == null)
+            if(title.isBlank() || desc.isBlank())
                 continue;
 
-            int hp = line.multiple;
-            int atk = line.mult_atk;
-
-            if(enemy instanceof Enemy) {
-                String eName = MultiLangCont.get(enemy, lang);
-
-                if(eName == null || eName.isBlank())
-                    eName = ((Enemy) enemy).names.toString();
-
-                if(eName.isBlank())
-                    eName = DataToString.getPackName(((Enemy) enemy).id.pack, lang)+" - "+Data.trio(((Enemy) enemy).id.id);
-
-                enemies.add(eName);
-
-                if(((Enemy) enemy).de.getTraits().contains(UserProfile.getBCData().traits.get(Data.TRAIT_ALIEN)) && ((Enemy) enemy).de.getStar() == 0) {
-                    hp = (int) Math.round(hp * holder.getAlienMultiplier());
-                    atk = (int) Math.round(atk * holder.getAlienMultiplier());
-                } else if(((Enemy) enemy).de.getStar() == 1) {
-                    hp = (int) Math.round(hp * holder.getStarredAlienMultiplier());
-                    atk = (int) Math.round(atk * holder.getStarredAlienMultiplier());
-                }
-            } else if(enemy instanceof EneRand) {
-                String name = ((EneRand) enemy).name;
-
-                if(name == null || name.isBlank()) {
-                    name = DataToString.getPackName(((EneRand) enemy).id.pack, lang)+"-"+Data.trio(((EneRand) enemy).id.id);
-                }
-
-                enemies.add(name);
-            } else
-                continue;
-
-            String number;
-
-            if(line.number == 0)
-                number = LangID.getStringByID("data.stage.infinite", lang);
-            else
-                number = String.valueOf(line.number);
-
-            numbers.add(number);
-
-            int[] magnification;
-
-            if(st.getCont() != null && st.getCont().getCont() != null && st.getCont().getCont().getSID().equals("000003") && st.getCont().id.id == 9) {
-                magnification = new int[] {100, 100};
-            } else {
-
-                magnification = new int[] {hp, atk};
-            }
-
-            String mag = DataToString.getMagnification(magnification, star);
-
-            magnifications.add(mag);
-
-            String start;
-
-            if(line.spawn_1 == 0)
-                if(isFrame)
-                    start = Math.abs(line.spawn_0)+"f";
-                else
-                    start = df.format(Math.abs(line.spawn_0) / 30.0)+"s";
-            else {
-                int minSpawn = Math.abs(Math.min(line.spawn_0, line.spawn_1));
-                int maxSpawn = Math.abs(Math.max(line.spawn_0, line.spawn_1));
-
-                if(isFrame)
-                    start = minSpawn+"f ~ "+maxSpawn+"f";
-                else
-                    start = df.format(minSpawn/30.0)+"s ~ "+df.format(maxSpawn/30.0)+"s";
-            }
-
-            String respawn;
-
-            if(line.respawn_0 == line.respawn_1)
-                if(isFrame)
-                    respawn = line.respawn_0+"f";
-                else
-                    respawn = df.format(line.respawn_0/30.0)+"s";
-            else {
-                int minSpawn = Math.min(line.respawn_0, line.respawn_1);
-                int maxSpawn = Math.max(line.respawn_0, line.respawn_1);
-
-                if(isFrame)
-                    respawn = minSpawn+"f ~ "+maxSpawn+"f";
-                else
-                    respawn = df.format(minSpawn/30.0)+"s ~ "+df.format(maxSpawn/30.0)+"s";
-            }
-
-            String startResp = start+" ("+respawn+")";
-
-            startRespawn.add(startResp);
-
-            String baseHP;
-
-            if(st.trail) {
-                baseHP = String.valueOf(line.castle_0);
-            } else {
-                if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
-                    baseHP = line.castle_0+"%";
-                else {
-                    int minHealth = Math.min(line.castle_0, line.castle_1);
-                    int maxHealth = Math.max(line.castle_0, line.castle_1);
-
-                    baseHP = minHealth + " ~ " + maxHealth + "%";
-                }
-            }
-
-            baseHealth.add(baseHP);
-
-            String layer;
-
-            if(line.layer_0 != line.layer_1) {
-                int minLayer = Math.min(line.layer_0, line.layer_1);
-                int maxLayer = Math.max(line.layer_0, line.layer_1);
-
-                layer = minLayer + " ~ " + maxLayer;
-            } else {
-                layer = String.valueOf(line.layer_0);
-            }
-
-            layers.add(layer);
-
-            if(needBoss) {
-                String boss;
-
-                if(line.boss == 0)
-                    boss = "";
-                else if(line.boss == 1)
-                    boss = LangID.getStringByID("data.stage.boss.normal", lang);
-                else
-                    boss = LangID.getStringByID("data.stage.boss.shake", lang);
-
-                isBoss.add(boss);
-            }
-
-            if(needRespect) {
-                String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data.true", lang) : "";
-
-                respects.add(respect);
-            }
-
-            if(needCount) {
-                killCounts.add(String.valueOf(line.kill_count));
-            }
+            spec.addField(title, desc, false);
         }
-
-        double eMax = font.textWidth(LangID.getStringByID("data.stage.enemy", lang));
-        double nMax = font.textWidth(LangID.getStringByID("data.stage.number", lang));
-        double mMax = font.textWidth(LangID.getStringByID("data.enemy.magnification", lang));
-        double iMax = font.textWidth(LangID.getStringByID("data.stage.isBoss", lang));
-        double bMax = font.textWidth(LangID.getStringByID(st.trail ? "data.stage.totalDamage" : "data.stage.basePercentage", lang));
-        double sMax = font.textWidth(LangID.getStringByID("data.stage.start", lang));
-        double lMax = font.textWidth(LangID.getStringByID("data.stage.layer", lang));
-        double rMax = font.textWidth(LangID.getStringByID("data.stage.respectStart", lang));
-        double kMax = font.textWidth(LangID.getStringByID("data.stage.killCount", lang));
-
-        for(int i = 0; i < enemies.size(); i++) {
-            eMax = Math.max(eMax, font.textWidth(enemies.get(i)));
-
-            nMax = Math.max(nMax, font.textWidth(numbers.get(i)));
-
-            mMax = Math.max(mMax, font.textWidth(magnifications.get(i)));
-
-            bMax = Math.max(bMax, font.textWidth(baseHealth.get(i)));
-
-            sMax = Math.max(sMax, font.textWidth(startRespawn.get(i)));
-
-            lMax = Math.max(lMax, font.textWidth(layers.get(i)));
-
-            if(needBoss)
-                iMax = Math.max(iMax, font.textWidth(isBoss.get(i)));
-
-            if(needRespect)
-                rMax = Math.max(rMax, font.textWidth(respects.get(i)));
-
-            if(needCount)
-                kMax = Math.max(kMax, font.textWidth(killCounts.get(i)));
-        }
-
-        int xGap = 16;
-        int yGap = 10;
-
-        eMax += xGap + 93;
-        nMax += xGap;
-        mMax += xGap;
-        bMax += xGap;
-        sMax += xGap;
-        lMax += xGap;
-        rMax += xGap;
-        kMax += xGap;
-        iMax += xGap;
-
-        int ySeg = Math.round(Math.max(font.getMaxHeight() + yGap, 32 + yGap));
-
-        double dw = eMax + nMax + mMax + bMax + sMax + lMax;
-
-        if(needBoss)
-            dw += iMax;
-
-        if(needRespect)
-            dw += rMax;
-
-        if(needCount)
-            dw += kMax;
-
-        int w = (int) Math.round(dw);
-        int h = ySeg * (enemies.size() + 1);
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        double finalEMax = eMax;
-        double finalNMax = nMax;
-        double finalBMax = bMax;
-        double finalMMax = mMax;
-        double finalSMax = sMax;
-        double finalLMax = lMax;
-        double finalRMax = rMax;
-        double finalKMax = kMax;
-        double finalIMax = iMax;
-
-        boolean finalNeedRespect = needRespect;
-        boolean finalNeedCount = needCount;
-        boolean finalNeedBoss = needBoss;
-
-        StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
-            connector.queue(g -> {
-                g.setFontModel(font);
-
-                g.setColor(47, 49, 54, 255);
-                g.fillRect(0, 0, w, h);
-
-                g.setColor(54, 57, 63, 255);
-                g.fillRect(0, 0, w, ySeg);
-
-                g.setColor(32, 34, 37, 255);
-                g.setStroke(4f, GLGraphics.LineEndMode.VERTICAL);
-
-                g.drawRect(0, 0, w, h);
-
-                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
-
-                for(int i = 1; i < enemies.size() + 1; i++) {
-                    g.drawLine(0, ySeg * i, w, ySeg * i);
-                }
-
-                int x = (int) finalEMax;
-
-                g.drawLine(x, 0, x, h);
-
-                x += (int) finalNMax;
-
-                g.drawLine(x, 0, x, h);
-
-                x += (int) finalBMax;
-
-                g.drawLine(x, 0, x, h);
-
-                x += (int) finalMMax;
-
-                g.drawLine(x, 0, x, h);
-
-                x += (int) finalSMax;
-
-                g.drawLine(x, 0, x, h);
-
-                x += (int) finalLMax;
-
-                g.drawLine(x, 0, x, h);
-
-                if(finalNeedRespect) {
-                    x += (int) finalRMax;
-
-                    g.drawLine(x, 0, x, h);
-                }
-
-                if(finalNeedCount) {
-                    x += (int) finalKMax;
-
-                    g.drawLine(x, 0, x, h);
-                }
-
-                if(finalNeedBoss) {
-                    x += (int) finalIMax;
-
-                    g.drawLine(x, 0, x, h);
-                }
-
-                g.setColor(238, 238, 238, 255);
-
-                int initX = (int) (finalEMax / 2);
-
-                g.drawText(LangID.getStringByID("data.stage.enemy", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                initX += (int) (finalEMax / 2 + finalNMax / 2);
-
-                g.drawText(LangID.getStringByID("data.stage.number", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                initX += (int) (finalNMax / 2 + finalBMax / 2);
-
-                g.drawText(LangID.getStringByID(st.trail ? "data.stage.totalDamage" : "data.stage.basePercentage", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                initX += (int) (finalBMax / 2 + finalMMax / 2);
-
-                g.drawText(LangID.getStringByID("data.enemy.magnification", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                initX += (int) (finalMMax / 2 + finalSMax / 2);
-
-                g.drawText(LangID.getStringByID("data.stage.start", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                initX += (int) (finalSMax / 2 + finalLMax / 2);
-
-                g.drawText(LangID.getStringByID("data.stage.layer", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                initX += (int) (finalLMax / 2);
-
-                if(finalNeedRespect) {
-                    initX += (int) (finalRMax / 2);
-
-                    g.drawText(LangID.getStringByID("data.stage.respectStart", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                    initX += (int) (finalRMax / 2);
-                }
-
-                if(finalNeedCount) {
-                    initX += (int) (finalKMax / 2);
-
-                    g.drawText(LangID.getStringByID("data.stage.killCount", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-
-                    initX += (int) (finalKMax / 2);
-                }
-
-                if(finalNeedBoss) {
-                    initX += (int) (finalIMax / 2);
-
-                    g.drawText(LangID.getStringByID("data.stage.isBoss", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                }
-
-                for(int i = 0; i < enemies.size(); i++) {
-                    AbEnemy e = st.data.datas[st.data.datas.length - 1 - i].enemy.get();
-
-                    if(e != null) {
-                        FakeImage edi;
-
-                        if(e instanceof Enemy) {
-                            if(((Enemy) e).anim.getEdi() != null) {
-                                edi = ((Enemy) e).anim.getEdi().getImg();
-                            } else {
-                                edi = CommonStatic.getBCAssets().ico[0][0].getImg();
-                            }
-                        } else {
-                            edi = CommonStatic.getBCAssets().ico[0][0].getImg();
-                        }
-
-                        g.drawImage(edi, xGap / 2f, ySeg * (i + 1) + yGap / 2f);
-                    } else
-                        continue;
-
-                    int px = 93 + xGap / 2;
-                    int py = ySeg * (i + 2) - ySeg / 2;
-
-                    g.drawText(enemies.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                    px = (int) finalEMax + xGap / 2;
-
-                    g.drawText(numbers.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                    px += (int) finalNMax;
-
-                    g.drawText(baseHealth.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                    px += (int) finalBMax;
-
-                    g.drawText(magnifications.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                    px += (int) finalMMax;
-
-                    g.drawText(startRespawn.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                    px += (int) finalSMax;
-
-                    g.drawText(layers.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                    px += (int) finalLMax;
-
-                    if(finalNeedRespect) {
-                        g.drawText(respects.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                        px += (int) finalRMax;
-                    }
-
-                    if(finalNeedCount) {
-                        g.drawText(killCounts.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-
-                        px += (int) finalKMax;
-                    }
-
-                    if(finalNeedBoss) {
-                        g.drawText(isBoss.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
-                    }
-                }
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> img, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
-
-        StaticStore.deleteFile(img, true);
-
-        return cacheLink;
-    }
-
-    public static void generateFormImage(Form f, Object sender, Message reference, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang) throws Exception {
-        f.anim.load();
-
-        if(mode >= f.anim.anims.length)
-            mode = 0;
-
-        EAnimD<?> anim = f.anim.getEAnim(ImageDrawing.getAnimType(mode, f.anim.anims.length));
-
-        File img = ImageDrawing.drawAnimImage(anim, frame, 1f, transparent, debug);
-
-        f.anim.unload();
-
-        if (img == null) {
-            if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
-            } else if (sender instanceof IMessageEditCallback event) {
-                event.deferEdit()
-                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-            }
-
-            return;
-        }
-
-        String icon = StaticStore.assetManager.getUnitIcon(f);
-
-        if (icon == null) {
-            if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
-            } else if (sender instanceof IMessageEditCallback event) {
-                event.deferEdit()
-                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-            }
-
-            return;
-        }
-
-        List<ContainerChildComponent> children = new ArrayList<>();
-
-        String formName = StaticStore.safeMultiLangGet(f, lang);
-
-        if (formName == null || formName.isBlank()) {
-            formName = Data.trio(f.uid.id) + " - " + Data.trio(f.fid);
-        } else {
-            formName += " [" + Data.trio(f.uid.id) + " - " + Data.trio(f.fid) + "]";
-        }
-
-        children.add(Section.of(
-                Thumbnail.fromUrl(icon),
-                TextDisplay.of("## " + formName),
-                TextDisplay.of(
-                        LangID.getStringByID("formImage.result.mode", lang).formatted(getModeName(mode, f.anim.anims.length, lang)) + "\n" +
-                                LangID.getStringByID("formImage.result.frame", lang).formatted(frame)
-                )
-        ));
-
-        children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
 
         int c;
 
-        if(f.fid == 0)
+        if(form.fid == 0)
             c = StaticStore.rainbow[StaticStore.BLUE];
-        else if(f.fid == 1)
+        else if(form.fid == 1)
             c = StaticStore.rainbow[StaticStore.GREEN];
-        else if(f.fid == 2)
+        else if(form.fid == 2)
             c = StaticStore.rainbow[StaticStore.YELLOW];
         else
             c = StaticStore.rainbow[StaticStore.RED];
 
-        Container container = Container.of(children).withAccentColor(c);
+        spec.setColor(c);
 
-        if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(img, true), e -> {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to upload form image");
+        if(iconLink != null)
+            spec.setThumbnail(iconLink);
 
-                StaticStore.deleteFile(img, true);
-            }, container);
-        } else if (sender instanceof IMessageEditCallback event) {
-            event.deferEdit()
-                    .setComponents(container)
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue(unused -> StaticStore.deleteFile(img, true), e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to upload form image");
+        spec.setFooter(DataToString.accumulateNpCost(talent, lang));
 
-                        StaticStore.deleteFile(img, true);
-                    });
-        }
-    }
+        if (editMode) {
+            List<MessageTopLevelComponent> components = new ArrayList<>();
 
-    private static String getModeName(int mode, int max, CommonStatic.Lang.Locale lang) {
-        switch (mode) {
-            case 1 -> {
-                return LangID.getStringByID("data.animation.mode.idle", lang);
-            }
-            case 2 -> {
-                return LangID.getStringByID("data.animation.mode.attack", lang);
-            }
-            case 3 -> {
-                return LangID.getStringByID("formImage.mode.kb", lang);
-            }
-            case 4 -> {
-                if (max == 5)
-                    return LangID.getStringByID("data.animation.mode.enter", lang);
-                else
-                    return LangID.getStringByID("formImage.mode.burrowDown", lang);
-            }
-            case 5 -> {
-                return LangID.getStringByID("formImage.mode.burrowMove", lang);
-            }
-            case 6 -> {
-                return LangID.getStringByID("formImage.mode.burrowUp", lang);
-            }
-            default -> {
-                return LangID.getStringByID("data.animation.mode.walk", lang);
-            }
-        }
-    }
+            components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
 
-    public static void generateFormAnim(Form f, Object sender, Message reference, StringBuilder primary, int booster, int mode, boolean transparent, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) throws Exception {
-        if(f.unit == null || f.unit.id == null) {
-            onFail.run();
-
-            return;
-        }
-
-        f.anim.load();
-
-        int filteredMode = Math.max(0, Math.min(f.anim.anims.length - 1, mode));
-
-        if(!debug && limit <= 0) {
-            String id = generateID(f, mode, transparent);
-
-            String link = StaticStore.imgur.get(id, gif, raw);
-
-            if(link != null) {
-                primary.append(LangID.getStringByID("data.animation.gif.cached", lang));
-
-                List<ContainerChildComponent> children = new ArrayList<>();
-
-                String formName = StaticStore.safeMultiLangGet(f, lang);
-
-                if (formName == null || formName.isBlank()) {
-                    formName = Data.trio(f.uid.id) + " - " + Data.trio(f.fid);
-                } else {
-                    formName += " [" + Data.trio(f.uid.id) + " - " + Data.trio(f.fid) + "]";
-                }
-
-                String iconLink = StaticStore.assetManager.getUnitIcon(f);
-
-                if (iconLink == null) {
-                    StaticStore.logger.uploadLog("E/EntityHandler::generateFormAnim - Failed to generate form model icon for enemy of " + formName);
-
-                    return;
-                }
-
-                String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, f.anim.anims.length, lang)) + "\n\n" +
-                        primary;
-
-                children.add(Section.of(Thumbnail.fromUrl(iconLink), TextDisplay.of("## " + formName), TextDisplay.of(summary)));
-                children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-                children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
-
-                Container container = Container.of(children);
-
-                if (sender instanceof MessageChannel ch) {
-                    Command.replyToMessageSafely(ch, reference, container);
-                } else if (sender instanceof Message message) {
-                    message.editMessageComponents(container)
-                            .useComponentsV2()
-                            .setAllowedMentions(new ArrayList<>())
-                            .mentionRepliedUser(false)
-                            .queue();
-                }
-
-                onFail.run();
-
-                return;
-            }
-        }
-
-        ShardManager client;
-
-        if (sender instanceof MessageChannel ch) {
-            client = ch.getJDA().getShardManager();
-        } else if (sender instanceof IMessageEditCallback event) {
-            client = event.getJDA().getShardManager();
-        } else {
-            return;
-        }
-
-        if (client == null)
-            return;
-
-        EAnimD<?> anim = f.getEAnim(getAnimType(filteredMode, f.anim.anims.length));
-
-        if (limit > 0) {
-            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit)).append("\n\n");
-        } else if (!raw && anim.len() >= 300) {
-            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300)).append("\n\n");
-        } else {
-            primary.append(LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len())).append("\n\n");
-        }
-
-        CommonStatic.getConfig().ref = false;
-
-        TextDisplay text = TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.analyzingBox", lang));
-
-        CountDownLatch messageCountdown = new CountDownLatch(1);
-        AtomicReference<Message> atomicMessage = new AtomicReference<>();
-
-        if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, msg -> {
-                atomicMessage.set(msg);
-
-                messageCountdown.countDown();
-            }, e -> {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to send initial message");
-
-                messageCountdown.countDown();
-            }, text);
-        } else {
-            ((IMessageEditCallback) sender).deferEdit()
-                    .setComponents(text)
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue(hook -> hook.retrieveOriginal().queue(msg -> {
-                        atomicMessage.set(msg);
-
-                        messageCountdown.countDown();
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to send initial message");
-
-                        messageCountdown.countDown();
-                    }), e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to send initial message");
-
-                        messageCountdown.countDown();
-                    });
-        }
-
-        messageCountdown.await();
-
-        Message message = atomicMessage.get();
-
-        if (message == null)
-            return;
-
-        long start = System.currentTimeMillis();
-
-        File img;
-
-        long max;
-
-        if (debug || limit > 0)
-            max = getBoosterFileLimit(booster) * 1024L * 1024L;
-        else
-            max = 8 * 1024 * 1024;
-
-        if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, message, 1f, false, debug, limit, lang);
-        } else {
-            img = ImageDrawing.drawAnimGif(anim, message, new StringBuilder(), 1f, false, transparent, debug, limit, lang);
-        }
-
-        primary.append(LangID.getStringByID("data.animation.gif.uploading.gif", lang)).append("\n\n");
-
-        message.editMessageComponents(TextDisplay.of(primary.toString()))
-                .useComponentsV2()
-                .setAllowedMentions(new ArrayList<>())
-                .mentionRepliedUser(false)
-                .queue();
-
-        f.anim.unload();
-
-        long processEnd = System.currentTimeMillis();
-
-        if (img == null) {
-            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.gif.failed.gif", lang)))
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue();
-
-            onFail.run();
-
-            return;
-        }
-
-        String link = null;
-
-        if (img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-            primary.append(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).append("\n\n");
-
-            try {
-                link = StaticStore.imgur.uploadFile(img);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload to file to imgur");
-
-                StaticStore.deleteFile(img, true);
-
-                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.imgur", lang)))
-                        .useComponentsV2()
+            if (sender instanceof Message msg) {
+                msg.editMessage("")
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
-
-                return;
-            }
-        } else if (img.length() >= max && img.length() < 200 * 1024 * 1024) {
-            primary.append(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).append("\n\n");
-
-            try {
-                link = StaticStore.imgur.uploadCatbox(img);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload animation to cat box");
-
-                StaticStore.deleteFile(img, true);
-
-                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.catbox", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-
-                return;
-            }
-        } else if (img.length() >= max) {
-            message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.tooBig", lang)))
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue();
-
-            StaticStore.deleteFile(img, true);
-
-            onSuccess.run();
-
-            return;
-        } else if (img.length() < max && !debug && limit <= 0) {
-            CountDownLatch countdown = new CountDownLatch(1);
-            AtomicReference<String> atomicLink = new AtomicReference<>();
-
-            GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
-
-            if (chan instanceof GuildMessageChannel gc) {
-                gc.sendMessage(generateID(f, filteredMode, transparent))
-                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                        .queue(m -> {
-                            for (int i = 0; i < m.getAttachments().size(); i++) {
-                                Message.Attachment at = m.getAttachments().get(i);
-
-                                if (at.getFileName().startsWith("result.")) {
-                                    atomicLink.set(at.getUrl());
-
-                                    break;
-                                }
-                            }
-
-                            cacheImage(f, filteredMode, transparent, m);
-
-                            onSuccess.run();
-
-                            countdown.countDown();
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display enemy anim");
-
-                            StaticStore.deleteFile(img, true);
-
-                            countdown.countDown();
-                        });
-
-                countdown.await();
-
-                link = atomicLink.get();
-
-                if (link == null) {
-                    message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
-                            .useComponentsV2()
-                            .setAllowedMentions(new ArrayList<>())
-                            .mentionRepliedUser(false)
-                            .queue();
-
-                    return;
-                }
-            } else {
-                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-
-                return;
-            }
-        }
-
-        List<ContainerChildComponent> children = new ArrayList<>();
-
-        String title = StaticStore.safeMultiLangGet(f, lang);
-
-        if (title == null || title.isBlank()) {
-            title = Data.trio(f.uid.id) + " - " + Data.trio(f.fid);
-        } else {
-            title += " [" + Data.trio(f.uid.id) + " - " + Data.trio(f.fid) + "]";
-        }
-
-        String limitText;
-
-        if (limit > 0) {
-            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit);
-        } else if (!raw && anim.len() >= 300) {
-            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300);
-        } else {
-            limitText = LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len());
-        }
-
-        String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, f.anim.anims.length, lang)) + "\n" +
-                limitText + "\n\n" +
-                LangID.getStringByID("data.animation.gif.result.fileSize", lang).formatted(getFileSize(img)) + "\n" +
-                LangID.getStringByID("data.animation.gif.result.time.processing", lang).formatted(DataToString.df.format((processEnd - start) / 1000.0));
-
-        if (link != null) {
-            long totalEnd = System.currentTimeMillis();
-
-            summary += "\n" + LangID.getStringByID("data.animation.gif.result.time.total", lang).formatted(DataToString.df.format((totalEnd - start) / 1000.0));
-        }
-
-        String thumbnailLink = StaticStore.assetManager.getUnitIcon(f);
-
-        if (thumbnailLink != null) {
-            children.add(Section.of(Thumbnail.fromUrl(thumbnailLink), TextDisplay.of("## " + title), TextDisplay.of(summary)));
-        } else {
-            children.add(TextDisplay.of("## " + title));
-            children.add(TextDisplay.of(summary));
-        }
-
-        children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-        if (link == null) {
-            children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
-        } else {
-            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
-        }
-
-        message.editMessageComponents(Container.of(children))
-                .useComponentsV2()
-                .setAllowedMentions(new ArrayList<>())
-                .mentionRepliedUser(false)
-                .queue(m -> {
-                    StaticStore.deleteFile(img, true);
-
-                    onSuccess.run();
-                }, e -> {
-                    StaticStore.deleteFile(img, true);
-
-                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload rendered enemy animation");
-                });
-    }
-
-    public static void generateEnemyAnim(Enemy enemy, Object sender, Message reference, StringBuilder primary, int booster, int mode, boolean transparent, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) throws Exception {
-        if (enemy.id == null) {
-            onFail.run();
-
-            return;
-        }
-
-        enemy.anim.load();
-        
-        int filteredMode = Math.max(0, Math.min(enemy.anim.anims.length - 1, mode));
-
-        if (!debug && limit <= 0) {
-            String id = generateID(enemy, filteredMode, transparent);
-
-            String link = StaticStore.imgur.get(id, gif, raw);
-
-            if (link != null) {
-                primary.append(LangID.getStringByID("data.animation.gif.cached", lang));
-
-                List<ContainerChildComponent> children = new ArrayList<>();
-
-                String enemyName = StaticStore.safeMultiLangGet(enemy, lang);
-
-                if (enemyName == null || enemyName.isBlank()) {
-                    enemyName = Data.trio(enemy.id.id);
-                } else {
-                    enemyName += " [" + Data.trio(enemy.id.id) + "]";
-                }
-
-                String iconLink = StaticStore.assetManager.getEnemyIcon(enemy);
-
-                if (iconLink == null) {
-                    StaticStore.logger.uploadLog("E/EntityHandler::generateEnemyAnim - Failed to generate enemy model icon for enemy of " + enemyName);
-
-                    return;
-                }
-
-                String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, enemy.anim.anims.length, lang)) + "\n\n" +
-                        primary;
-
-                children.add(Section.of(Thumbnail.fromUrl(iconLink), TextDisplay.of("## " + enemyName), TextDisplay.of(summary)));
-                children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-                children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
-
-                Container container = Container.of(children);
-
-                if (sender instanceof MessageChannel ch) {
-                    Command.replyToMessageSafely(ch, reference, container);
-                } else if (sender instanceof Message message) {
-                    message.editMessageComponents(container)
-                            .useComponentsV2()
-                            .setAllowedMentions(new ArrayList<>())
-                            .mentionRepliedUser(false)
-                            .queue();
-                }
-
-                onFail.run();
-
-                return;
-            }
-        }
-
-        ShardManager client;
-
-        if (sender instanceof MessageChannel ch) {
-            client = ch.getJDA().getShardManager();
-        } else if (sender instanceof IMessageEditCallback event) {
-            client = event.getJDA().getShardManager();
-        } else {
-            return;
-        }
-
-        if (client == null)
-            return;
-
-        EAnimD<?> anim = enemy.getEAnim(getAnimType(filteredMode, enemy.anim.anims.length));
-
-        if (limit > 0) {
-            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit)).append("\n\n");
-        } else if (!raw && anim.len() >= 300) {
-            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300)).append("\n\n");
-        } else {
-            primary.append(LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len())).append("\n\n");
-        }
-
-        CommonStatic.getConfig().ref = false;
-
-        TextDisplay text = TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.analyzingBox", lang));
-
-        CountDownLatch messageCountdown = new CountDownLatch(1);
-        AtomicReference<Message> atomicMessage = new AtomicReference<>();
-
-        if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, msg -> {
-                atomicMessage.set(msg);
-
-                messageCountdown.countDown();
-            }, e -> {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send initial message");
-
-                messageCountdown.countDown();
-            }, text);
-        } else {
-            ((IMessageEditCallback) sender).deferEdit()
-                    .setComponents(text)
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue(hook -> hook.retrieveOriginal().queue(msg -> {
-                        atomicMessage.set(msg);
-
-                        messageCountdown.countDown();
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send initial message");
-
-                        messageCountdown.countDown();
-                    }));
-        }
-
-        messageCountdown.await();
-
-        Message message = atomicMessage.get();
-
-        if (message == null)
-            return;
-
-        long start = System.currentTimeMillis();
-
-        File img;
-
-        long max;
-
-        if (debug || limit > 0)
-            max = getBoosterFileLimit(booster) * 1024L * 1024;
-        else
-            max = 8 * 1024 * 1024;
-
-        if (raw) {
-            img = ImageDrawing.drawAnimMp4(anim, message, 1f, false, debug, limit, lang);
-        } else {
-            img = ImageDrawing.drawAnimGif(anim, message, primary, 1f, false, transparent, debug, limit, lang);
-        }
-
-        primary.append(LangID.getStringByID("data.animation.gif.uploading.gif", lang)).append("\n\n");
-
-        message.editMessageComponents(TextDisplay.of(primary.toString()))
-                .useComponentsV2()
-                .setAllowedMentions(new ArrayList<>())
-                .mentionRepliedUser(false)
-                .queue();
-
-        enemy.anim.unload();
-
-        long processEnd = System.currentTimeMillis();
-
-        if (img == null) {
-            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.gif.failed.gif", lang)))
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue();
-
-            onFail.run();
-
-            return;
-        }
-
-        String link = null;
-
-        if (img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-            primary.append(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).append("\n\n");
-
-            try {
-                link = StaticStore.imgur.uploadFile(img);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload to file to imgur");
-
-                StaticStore.deleteFile(img, true);
-
-                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.imgur", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-
-                return;
-            }
-        } else if (img.length() >= max && img.length() < 200 * 1024 * 1024) {
-            primary.append(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).append("\n\n");
-
-            try {
-                link = StaticStore.imgur.uploadCatbox(img);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to upload animation to cat box");
-
-                StaticStore.deleteFile(img, true);
-
-                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.catbox", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-
-                return;
-            }
-        } else if (img.length() >= max) {
-            message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.tooBig", lang)))
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue();
-
-            StaticStore.deleteFile(img, true);
-
-            onSuccess.run();
-
-            return;
-        } else if (img.length() < max && !debug && limit <= 0) {
-            CountDownLatch countdown = new CountDownLatch(1);
-            AtomicReference<String> atomicLink = new AtomicReference<>();
-
-            GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
-
-            if (chan instanceof GuildMessageChannel gc) {
-                gc.sendMessage(generateID(enemy, filteredMode, transparent))
-                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                        .queue(m -> {
-                            for (int i = 0; i < m.getAttachments().size(); i++) {
-                                Message.Attachment at = m.getAttachments().get(i);
-
-                                if (at.getFileName().startsWith("result.")) {
-                                    atomicLink.set(at.getUrl());
-
-                                    break;
-                                }
-                            }
-
-                            cacheImage(enemy, filteredMode, transparent, m);
-
-                            onSuccess.run();
-
-                            countdown.countDown();
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
-
-                            StaticStore.deleteFile(img, true);
-
-                            countdown.countDown();
-                        });
-
-                countdown.await();
-
-                link = atomicLink.get();
-
-                if (link == null) {
-                    message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
-                            .useComponentsV2()
-                            .setAllowedMentions(new ArrayList<>())
-                            .mentionRepliedUser(false)
-                            .queue();
-
-                    return;
-                }
-            } else {
-                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-
-                return;
-            }
-        }
-
-        List<ContainerChildComponent> children = new ArrayList<>();
-
-        String title = StaticStore.safeMultiLangGet(enemy, lang);
-
-        if (title == null || title.isBlank()) {
-            title = Data.trio(enemy.id.id);
-        } else {
-            title += " [" + Data.trio(enemy.id.id) + "]";
-        }
-
-        String limitText;
-
-        if (limit > 0) {
-            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit);
-        } else if (!raw && anim.len() >= 300) {
-            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300);
-        } else {
-            limitText = LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len());
-        }
-
-        String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, enemy.anim.anims.length, lang)) + "\n" +
-                limitText + "\n\n" +
-                LangID.getStringByID("data.animation.gif.result.fileSize", lang).formatted(getFileSize(img)) + "\n" +
-                LangID.getStringByID("data.animation.gif.result.time.processing", lang).formatted(DataToString.df.format((processEnd - start) / 1000.0));
-
-        if (link != null) {
-            long totalEnd = System.currentTimeMillis();
-
-            summary += "\n" + LangID.getStringByID("data.animation.gif.result.time.total", lang).formatted(DataToString.df.format((totalEnd - start) / 1000.0));
-        }
-
-        String thumbnailLink = StaticStore.assetManager.getEnemyIcon(enemy);
-
-        if (thumbnailLink != null) {
-            children.add(Section.of(Thumbnail.fromUrl(thumbnailLink), TextDisplay.of("## " + title), TextDisplay.of(summary)));
-        } else {
-            children.add(TextDisplay.of("## " + title));
-            children.add(TextDisplay.of(summary));
-        }
-
-        children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-        if (link == null) {
-            children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
-        } else {
-            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
-        }
-
-        message.editMessageComponents(Container.of(children))
-                .useComponentsV2()
-                .setAllowedMentions(new ArrayList<>())
-                .mentionRepliedUser(false)
-                .queue(m -> {
-                    StaticStore.deleteFile(img, true);
-
-                    onSuccess.run();
-                }, e -> {
-                    StaticStore.deleteFile(img, true);
-
-                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to upload rendered enemy animation");
-                });
-    }
-
-    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, boolean performance, CommonStatic.Lang.Locale lang, boolean debug, int limit, boolean raw, int index) {
-        boolean mix = mixer.mix();
-
-        if(!mix) {
-            ch.sendMessage("Failed to mix Anim").queue();
-            return;
-        }
-
-        EAnimD<?> anim = mixer.getAnim(index);
-
-        if(anim == null) {
-            ch.sendMessage("Failed to generate anim instance").queue();
-            return;
-        }
-
-        ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(anim.len()))).queue();
-
-        CommonStatic.getConfig().ref = false;
-
-        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
-            try {
-                if(msg == null)
-                    return;
-
-                long start = System.currentTimeMillis();
-
-                File img;
-
-                if(raw) {
-                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, performance, debug, limit, lang);
-                } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, new StringBuilder(), 1f, performance, false, debug, limit, lang);
-                }
-
-                long end = System.currentTimeMillis();
-
-                String time = DataToString.df.format((end - start)/1000.0);
-
-                if(img == null) {
-                    ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
-                } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-                    if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                        ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
-                            if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                });
-
-                                return;
-                            }
-
-                            String link;
-
-                            try {
-                                link = StaticStore.imgur.uploadFile(img);
-                            } catch (Exception e) {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to upload animation file to imgur");
-
-                                return;
-                            }
-
-                            if(link == null) {
-                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
-                                        .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        }, e -> {
-                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        });
-                            } else {
-                                long finalEnd = System.currentTimeMillis();
-
-                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                                        .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        }, e -> {
-                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        });
-                            }
-                        });
-                    } else if(img.length() < 200 * 1024 * 1024) {
-                        ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).queue(m -> {
-                            if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                });
-
-                                return;
-                            }
-
-                            String link;
-
-                            try {
-                                link = StaticStore.imgur.uploadCatbox(img);
-                            } catch (Exception e) {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to upload animation file to cat box");
-
-                                return;
-                            }
-
-                            if(link == null) {
-                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.catbox", lang))
-                                        .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        }, e -> {
-                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        });
-                            } else {
-                                long finalEnd = System.currentTimeMillis();
-
-                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.catbox", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                                        .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        }, e -> {
-                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                            if(img.exists() && !img.delete()) {
-                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                            }
-                                        });
-                            }
-                        });
-                    }
-                } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-                    ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to generate mixed anim");
-
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
-                                }
-                            });
-                }
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to generate animation");
-            }
-        });
-    }
-
-    public static void generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, boolean performance, CommonStatic.Lang.Locale lang, Runnable onFail, Runnable onSuccess) {
-        boolean mix = mixer.mix();
-
-        if(!mix) {
-            ch.sendMessage("Failed to mix Anim").queue();
-
-            onFail.run();
-
-            return;
-        }
-
-        CommonStatic.getConfig().ref = false;
-
-        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
-            if(msg == null) {
-                onFail.run();
-
-                return;
-            }
-
-            long start = System.currentTimeMillis();
-
-            File img;
-
-            try {
-                img = ImageDrawing.drawBCAnim(mixer, msg, 1f, performance, lang);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC animation");
-
-                return;
-            }
-
-            long end = System.currentTimeMillis();
-
-            String time = DataToString.df.format((end - start) / 1000.0);
-
-            if(img == null) {
-                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
-            } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < 200 * 1024 * 1024) {
-                ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
-                    if(m == null) {
-                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang))
-                                .queue(message -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                                    }
-                                });
-
-                        onSuccess.run();
-
-                        return;
-                    }
-
-                    String link;
-
-                    try {
-                        link = StaticStore.imgur.uploadFile(img);
-                    } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "EntityHandler::generateAnim - Failed to upload animation to imgur");
-
-                        return;
-                    }
-
-                    if(link == null) {
-                        m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
-                                .queue(message -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                                    }
-                                });
-                    } else {
-                        long finalEnd = System.currentTimeMillis();
-
-                        m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                                .queue(message -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                                    }
-                                });
-                    }
-
-                    onSuccess.run();
-                });
-            } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-                ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                        .addFiles(FileUpload.fromData(img, "result.mp4"))
-                        .queue(message -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                            }
-                        });
-
-                onSuccess.run();
-            }
-        });
-    }
-
-    public static void generateBGAnim(CommandLoader loader, Background bg, CommonStatic.Lang.Locale lang) throws Exception {
-        AtomicReference<Message> atomicMessage = new AtomicReference<>();
-        CountDownLatch countdown = new CountDownLatch(1);
-
-        if (loader.fromMessage) {
-            loader.getChannel().sendMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.prepare", lang)))
-                    .useComponentsV2()
-                    .setMessageReference(loader.getMessage())
-                    .mentionRepliedUser(false)
-                    .queue(message -> {
-                        atomicMessage.set(message);
-
-                        countdown.countDown();
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
-
-                        countdown.countDown();
-                    });
-        } else {
-            loader.getInteractionEvent().deferReply()
-                    .setComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.prepare", lang)))
-                    .useComponentsV2()
-                    .mentionRepliedUser(false)
-                    .queue(hook ->
-                        hook.retrieveOriginal().queue(message -> {
-                            atomicMessage.set(message);
-
-                            countdown.countDown();
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
-
-                            countdown.countDown();
-                        })
-                    , e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
-
-                        countdown.countDown();
-                    });
-        }
-
-        countdown.await();
-
-        Message message = atomicMessage.get();
-
-        if (message == null)
-            return;
-
-        ShardManager client = loader.getClient().getShardManager();
-
-        if (client == null)
-            return;
-
-        long start = System.currentTimeMillis();
-
-        File result;
-
-        try {
-            result = ImageDrawing.drawBGAnimEffect(bg, message, lang);
-        } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate bg animation");
-
-            return;
-        }
-
-        long end = System.currentTimeMillis();
-
-        if(result == null) {
-            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.failed", lang)))
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue();
-        } else if(result.length() >= 8 * 1024 * 1024) {
-            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.fileTooBig", lang).formatted(getFileSize(result))))
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue();
-        } else {
-            GuildChannel channel = client.getGuildChannelById(StaticStore.MISCARCHIVE);
-
-            if(channel instanceof MessageChannel) {
-                String size = getFileSize(result);
-
-                ((MessageChannel) channel).sendMessage("BG - "+Data.trio(bg.id.id))
-                        .addFiles(FileUpload.fromData(result, "result.mp4"))
-                        .queue(m -> {
-                            StaticStore.deleteFile(result, true);
-
-                            for(int i = 0; i < m.getAttachments().size(); i++) {
-                                Message.Attachment at = m.getAttachments().get(i);
-
-                                if(at.getFileName().startsWith("result.")) {
-                                    List<ContainerChildComponent> children = new ArrayList<>();
-
-                                    children.add(TextDisplay.of(LangID.getStringByID("background.result.title", lang)));
-
-                                    children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-                                    children.add(TextDisplay.of(
-                                            LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
-                                                    LangID.getStringByID("background.result.fileSize", lang).formatted(size) + "\n" +
-                                                    LangID.getStringByID("background.result.renderingTime", lang).formatted(DataToString.df.format((end - start) / 1000.0))
-                                    ));
-
-                                    children.add(MediaGallery.of(MediaGalleryItem.fromUrl(at.getUrl())));
-
-                                    Container container = Container.of(children);
-
-                                    message.editMessageComponents(container)
-                                            .useComponentsV2()
-                                            .setAllowedMentions(new ArrayList<>())
-                                            .mentionRepliedUser(false)
-                                            .queue();
-
-                                    StaticStore.imgur.put("BG - " + Data.trio(bg.id.id), at.getUrl(), true);
-                                }
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate BG anim");
-
-                            if(result.exists() && !result.delete()) {
-                                StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
-                            }
-                        });
-            }
-        }
-    }
-
-    public static void generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
-        if(s.getID() == null) {
-            onFail.run();
-
-            return;
-        }
-
-        else if(!debug && limit <= 0) {
-            String id = "SOUL - " + Data.trio(s.getID().id);
-
-            String link = StaticStore.imgur.get(id, gif, raw);
-
-            if(link != null) {
-                ch.sendMessage(LangID.getStringByID("data.animation.gif.cached", lang).replace("_", link)).queue();
-
-                onFail.run();
-
-                return;
-            }
-        }
-
-        ShardManager client = ch.getJDA().getShardManager();
-
-        if (client == null)
-            return;
-
-        s.anim.load();
-
-        EAnimD<?> anim = s.anim.getEAnim(AnimU.UType.SOUL);
-
-        if(limit > 0)  {
-            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
-        } else if(!raw && anim.len() >= 300) {
-            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
-        } else {
-            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(anim.len()))).queue();
-        }
-
-        CommonStatic.getConfig().ref = false;
-
-        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
-            if(msg == null) {
-                onFail.run();
-
-                return;
-            }
-
-            long start = System.currentTimeMillis();
-
-            File img;
-
-            long max;
-
-            if(debug || limit > 0)
-                max = getBoosterFileLimit(booster) * 1024L * 1024L;
-            else
-                max = 8 * 1024 * 1024;
-
-            try {
-                if(raw) {
-                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, false, debug, limit, lang);
-                } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, new StringBuilder(), 1f, false, false, debug, limit, lang);
-                }
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to generate soul animation");
-
-                return;
-            }
-
-            s.anim.unload();
-
-            long end = System.currentTimeMillis();
-
-            String time = DataToString.df.format((end - start) / 1000.0);
-
-            if(img == null) {
-                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
-
-                onFail.run();
-            } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.alternative.imgur", lang), reference, a -> a, m -> {
-                    if(m == null) {
-                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        });
-
-                        onFail.run();
-
-                        return;
-                    }
-
-                    String link;
-
-                    try {
-                        link = StaticStore.imgur.uploadFile(img);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    if(link == null) {
-                        m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang)).queue(message -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        });
-                    } else {
-                        if(!debug && limit <= 0) {
-                            String id = "SOUL - " + Data.trio(s.getID().id);
-
-                            StaticStore.imgur.put(id, link, raw);
-                        }
-
-                        long finalEnd = System.currentTimeMillis();
-
-                        m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                                .queue(message -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                });
-
-                        GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
-
-                        if(chan instanceof GuildMessageChannel) {
-                            ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id) + "\n\n"+link).queue();
-                        }
-                    }
-
-                    onSuccess.run();
-                });
-            } else if(img.length() < max) {
-                if(debug || limit > 0) {
-                    Command.sendMessageWithFile(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
-                } else {
-                    GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
-
-                    if(chan instanceof GuildMessageChannel) {
-                        String siz = getFileSize(img);
-
-                        ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id))
-                                .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                                .queue(m -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-
-                                    for(int i = 0; i < m.getAttachments().size(); i++) {
-                                        Message.Attachment at = m.getAttachments().get(i);
-
-                                        if(at.getFileName().startsWith("result.")) {
-                                            Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
-
-                                            StaticStore.imgur.put("SOUL - " + Data.trio(s.getID().id), at.getUrl(), raw);
-                                        }
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                });
-                    }
-                }
-
-                onSuccess.run();
-            }
-        });
-    }
-
-    public static void generateEnemyImage(Enemy enemy, Object sender, Message reference, boolean debug, boolean transparent, int frame, int mode, CommonStatic.Lang.Locale lang) throws Exception {
-        enemy.anim.load();
-
-        mode = Math.max(0, Math.min(mode, enemy.anim.anims.length - 1));
-
-        EAnimD<?> anim = enemy.getEAnim(ImageDrawing.getAnimType(mode, enemy.anim.anims.length));
-
-        File img = ImageDrawing.drawAnimImage(anim, frame, 1f, transparent, debug);
-
-        enemy.anim.unload();
-
-        if (img == null) {
-            if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
-            } else if (sender instanceof IMessageEditCallback event) {
+            } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
-                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
-                        .useComponentsV2()
+                        .setContent("")
+                        .setEmbeds(spec.build())
+                        .setComponents(components)
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
             }
-
-            return;
-        }
-
-        List<ContainerChildComponent> children = new ArrayList<>();
-
-        String enemyName = StaticStore.safeMultiLangGet(enemy, lang);
-
-        if (enemyName == null || enemyName.isBlank()) {
-            enemyName = Data.trio(enemy.id.id);
         } else {
-            enemyName += " [" + Data.trio(enemy.id.id) + "]";
-        }
-
-        String icon = StaticStore.assetManager.getEnemyIcon(enemy);
-
-        if (icon == null) {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
-            } else if (sender instanceof IMessageEditCallback event) {
-                event.deferEdit()
-                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-            }
-
-            return;
-        }
-
-        children.add(Section.of(
-                Thumbnail.fromUrl(icon),
-                TextDisplay.of("## " + enemyName),
-                TextDisplay.of(
-                        LangID.getStringByID("enemyImage.result.mode", lang).formatted(getModeName(mode, enemy.anim.anims.length, lang)) + "\n" +
-                        LangID.getStringByID("enemyImage.result.frame", lang).formatted(frame)
-                )
-        ));
-
-        children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
-
-        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
-
-        if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(img, true), container);
-        } else if (sender instanceof IMessageEditCallback event) {
-            event.deferEdit()
-                    .setComponents(container)
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue(unused -> StaticStore.deleteFile(img, true), e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send enemy image");
-
-                        StaticStore.deleteFile(img, true);
-                    });
-        }
-    }
-
-    private static String getFileSize(File f) {
-        String[] unit = {"B", "KB", "MB"};
-
-        double size = f.length();
-
-        for (String s : unit) {
-            if (size < 1024) {
-                return DataToString.df.format(size) + s;
-            } else {
-                size /= 1024.0;
-            }
-        }
-
-        return DataToString.df.format(size)+unit[2];
-    }
-
-    private static void cacheImage(Form f, int mode, boolean transparent, Message msg) {
-        if(f.unit == null || f.unit.id == null)
-            return;
-
-        String id = generateID(f, mode, transparent);
-
-        List<Message.Attachment> att = msg.getAttachments();
-
-        if(att.isEmpty())
-            return;
-
-        for(Message.Attachment a : att) {
-            if (a.getFileName().equals("result.gif")) {
-                String link = a.getUrl();
-
-                StaticStore.imgur.put(id, link, false);
-
-                return;
-            } else if(a.getFileName().equals("result.mp4")) {
-                String link = a.getUrl();
-
-                StaticStore.imgur.put(id, link, true);
-
-                return;
+                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
+            } else if (sender instanceof GenericCommandInteractionEvent event) {
+                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
             }
         }
     }
 
-    public static void getFormSprite(Form f, MessageChannel ch, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
-        if(f.unit == null || f.unit.id == null) {
-            ch.sendMessage(LangID.getStringByID("formSprite.failed.invalidUnit", lang)).queue();
-            return;
-        }
-
-        File temp = new File("./temp");
-
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return;
-            }
-        }
-
-        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-        if(image == null) {
-            return;
-        }
-
-        f.anim.load();
-
-        FakeImage img;
-
-        switch (mode) {
-            case 0 -> img = f.anim.getNum();
-            case 1 -> img = f.anim.getUni().getImg();
-            case 2 -> {
-                if (f.unit.getCont() instanceof PackData.DefPack) {
-                    String code;
-
-                    if (f.fid == 0)
-                        code = "f";
-                    else if (f.fid == 1)
-                        code = "c";
-                    else if (f.fid == 2)
-                        code = "s";
-                    else
-                        code = "u";
-
-                    VFile vf = VFile.get("./org/unit/" + Data.trio(f.unit.id.id) + "/" + code + "/udi" + Data.trio(f.unit.id.id) + "_" + code + ".png");
-
-                    if (vf != null) {
-                        img = vf.getData().getImg();
-                    } else {
-                        img = null;
-                    }
-                } else {
-                    img = null;
-                }
-            }
-            case 3 -> img = f.anim.getEdi().getImg();
-            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
-        }
-
-        if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("formSprite.failed.invalidMode", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
-            return;
-        }
-
-        FakeImage result = img;
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        StaticStore.renderManager.createRenderer(result.getWidth(), result.getHeight(), temp, connector -> {
-            connector.queue(g -> {
-                g.drawImage(result, 0f, 0f);
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        String fName = StaticStore.safeMultiLangGet(f, lang);
-
-        if(fName == null || fName.isBlank()) {
-            fName = Data.trio(f.unit.id.id)+"-"+Data.trio(f.fid);
-        }
-
-        Command.sendMessageWithFile(ch, LangID.getStringByID("formSprite.uploaded", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
-
-        f.anim.unload();
-    }
-
-    public static void generateEnemySprite(Enemy e, Object sender, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
-        if(e.id == null) {
-            if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemySprite.failed.invalidEnemy", lang));
-            } else if (sender instanceof IMessageEditCallback event) {
-                event.deferEdit()
-                        .setComponents(TextDisplay.of(LangID.getStringByID("enemySprite.failed.invalidEnemy", lang)))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-            }
-
-            return;
-        }
-
-        String icon = StaticStore.assetManager.getEnemyIcon(e);
-
-        if (icon == null)
-            return;
-
-        File temp = new File("./temp");
-
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return;
-            }
-        }
-
-        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-        if(image == null) {
-            return;
-        }
-
-        e.anim.load();
-
-        FakeImage img = switch (mode) {
-            case 0 -> e.anim.getNum();
-            case 3 -> e.anim.getEdi().getImg();
-            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
-        };
-
-        if(img == null) {
-            if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang)));
-            } else if (sender instanceof IMessageEditCallback event) {
-                event.deferEdit()
-                        .setComponents(TextDisplay.of(LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang))))
-                        .useComponentsV2()
-                        .setAllowedMentions(new ArrayList<>())
-                        .mentionRepliedUser(false)
-                        .queue();
-            }
-
-            return;
-        }
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
-            connector.queue(g -> {
-                g.drawImage(img, 0f, 0f);
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        e.anim.unload();
-
-        List<ContainerChildComponent> children = new ArrayList<>();
-
-        String enemyName = StaticStore.safeMultiLangGet(e, lang);
-
-        if (enemyName == null || enemyName.isBlank()) {
-            enemyName = Data.trio(e.id.id);
-        } else {
-            enemyName += " [" + Data.trio(e.id.id) + "]";
-        }
-
-        String spriteType = switch (mode) {
-            case 0 -> LangID.getStringByID("enemySprite.result.spriteType.sprite", lang);
-            case 3 -> LangID.getStringByID("enemySprite.result.spriteType.ui", lang);
-            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
-        };
-
-        children.add(Section.of(
-                Thumbnail.fromUrl(icon),
-                TextDisplay.of("## " + enemyName),
-                TextDisplay.of(LangID.getStringByID("enemySprite.result.type", lang).formatted(spriteType))
-        ));
-
-        children.add(Separator.create(true, Separator.Spacing.LARGE));
-
-        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(image))));
-
-        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
-
-        if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(image, true), container);
-        } else if (sender instanceof IMessageEditCallback event) {
-            event.deferEdit()
-                    .setComponents(container)
-                    .useComponentsV2()
-                    .setAllowedMentions(new ArrayList<>())
-                    .mentionRepliedUser(false)
-                    .queue(unused -> StaticStore.deleteFile(image, true), err -> {
-                        StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::generateEnemySprite - Failed to upload enemy sprite");
-
-                        StaticStore.deleteFile(image, true);
-                    });
-        }
-    }
-
-    public static void getSoulSprite(Soul s, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws Exception {
-        if(s.getID() == null) {
-            ch.sendMessage(LangID.getStringByID("soul.failed.noSoul", lang)).queue();
-
-            return;
-        }
-
-        File temp = new File("./temp");
-
-        if(!temp.exists() && !temp.mkdirs()) {
-            StaticStore.logger.uploadLog("W/EntityHandler::getSoulSprite - Failed to create folder : " + temp.getAbsolutePath());
-
-            return;
-        }
-
-        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-        if(image == null)
-            return;
-
-        s.anim.load();
-
-        FakeImage img = s.anim.getNum();
-
-        if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noSoul", lang), reference, a -> a);
-
-            return;
-        }
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
-            connector.queue(g -> {
-                g.drawImage(img, 0f, 0f);
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        Command.sendMessageWithFile(
-                ch,
-                LangID.getStringByID("soulImage.success", lang).replace("_", Data.trio(s.getID().id)),
-                image,
-                reference
-        );
-
-        s.anim.unload();
-    }
-
-    public static void showMedalEmbed(int id, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws  Exception {
-        String medalName = "./org/page/medal/medal_"+Data.trio(id);
-
-        if(id <= 13 && lang != CommonStatic.Lang.Locale.JP) {
-            medalName += "_"+getLocaleName(lang);
-        } else if(id == 90 && lang != CommonStatic.Lang.Locale.JP) {
-            medalName += "_en";
-        }
-
-        medalName += ".png";
-
-        VFile vf = VFile.get(medalName);
-
-        if(vf == null)
-            Command.replyToMessageSafely(ch, LangID.getStringByID("medal.failed.noImage", lang), reference, a -> a);
-        else {
-            String cacheID = StaticStore.MEDAL_ICON.formatted(Data.trio(id), lang.name());
-            String cacheLink = StaticStore.assetManager.getAsset(cacheID);
-
-            if (cacheLink == null) {
-                File temp = new File("./temp");
-
-                if(!temp.exists() && !temp.mkdirs()) {
-                    StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
-                    return;
-                }
-
-                File image = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-                if(image == null) {
-                    return;
-                }
-
-                FakeImage img = vf.getData().getImg();
-
-                CountDownLatch waiter = new CountDownLatch(1);
-
-                StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
-                    connector.queue(g -> {
-                        g.drawImage(img, 0f, 0f);
-
-                        return kotlin.Unit.INSTANCE;
-                    });
-
-                    return kotlin.Unit.INSTANCE;
-                }, progress -> image, () -> {
-                    waiter.countDown();
-
-                    return kotlin.Unit.INSTANCE;
-                });
-
-                waiter.await();
-
-                cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
-
-                StaticStore.deleteFile(image, true);
-            }
-
-            EmbedBuilder e = new EmbedBuilder();
-
-            String name = StaticStore.MEDNAME.getCont(id, lang);
-            String desc = StaticStore.MEDEXP.getCont(id, lang);
-
-            if(StaticStore.medalData != null) {
-                JsonObject obj = StaticStore.medalData.getAsJsonArray().get(id).getAsJsonObject();
-
-                int grade = obj.get("grade").getAsInt();
-
-                e.setColor(StaticStore.grade[grade]);
-            }
-
-            e.addField(name, desc, false);
-            e.setImage(cacheLink);
-
-            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(e.build()));
-        }
-    }
-
-    public static void showComboEmbed(Object sender, Message reference, Combo c, CommonStatic.Lang.Locale lang, boolean editMode) throws Exception {
+    public static void generateComboEmbed(Object sender, Message reference, Combo c, CommonStatic.Lang.Locale lang, boolean editMode) throws Exception {
         String comboLink = generateComboImage(c);
 
         if (comboLink == null)
@@ -3894,13 +1042,13 @@ public class EntityHandler {
         if (comboName == null || comboName.isBlank()) {
             comboName = "Combo " + c.name;
         }
-        
+
         children.add(TextDisplay.of("## " + comboName));
         children.add(Separator.create(true, Separator.Spacing.LARGE));
-        
+
         children.add(TextDisplay.of("**" + DataToString.getComboType(c, lang) + "**"));
         children.add(Separator.create(false, Separator.Spacing.SMALL));
-        
+
         children.add(TextDisplay.of(DataToString.getComboDescription(c, lang)));
         children.add(Separator.create(false, Separator.Spacing.SMALL));
 
@@ -5050,134 +2198,1744 @@ public class EntityHandler {
         }
     }
 
-    private static String getProcHash(Data.Proc proc) throws Exception {
-        Class<?> cls = proc.getClass();
+    public static void generateFixedLineupData(Stage st, BattlePreset preset, IMessageEditCallback sender, CommonStatic.Lang.Locale lang) throws Exception {
+        String lineupLink = ImageDrawing.drawLineupImage(st, preset);
 
-        Field[] fields = cls.getDeclaredFields();
+        if (lineupLink == null) {
+            List<MessageTopLevelComponent> components = new ArrayList<>();
 
-        long hash = 0L;
+            components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
 
-        for (int i = 0; i < fields.length; i++) {
-            Field f = fields[i];
+            sender.deferEdit()
+                    .setContent(LangID.getStringByID("data.stage.battlePreset.failed", lang))
+                    .setComponents(components)
+                    .setEmbeds()
+                    .mentionRepliedUser(false)
+                    .queue();
 
-            Object obj = f.get(proc);
-
-            if (obj == null)
-                continue;
-
-            hash += StaticStore.getHashOfVariables(obj, new ArrayList<>());
+            return;
         }
 
-        String hashCode = Long.toHexString(hash);
+        EmbedBuilder spec = new EmbedBuilder();
 
-        if (hashCode.length() < 5) {
-            return "0".repeat(5 - hashCode.length()) + hashCode.toUpperCase(Locale.ENGLISH);
+        spec.setTitle(LangID.getStringByID("data.stage.battlePreset.title", lang));
+        spec.setDescription(LangID.getStringByID("data.stage.battlePreset.description", lang));
+        spec.setColor(new Color(237, 81, 221));
+
+        StringBuilder baseUpgradeDescription = new StringBuilder();
+
+        for (int i = 0; i < 9; i++) {
+            int index;
+            String typeName;
+
+            switch (i) {
+                case 0 -> {
+                    index = Data.LV_CATK;
+                    typeName = "cannonAttack";
+                }
+                case 1 -> {
+                    index = Data.LV_CRG;
+                    typeName = "cannonRange";
+                }
+                case 2 -> {
+                    index = Data.LV_RECH;
+                    typeName = "cannonCharge";
+                }
+                case 3 -> {
+                    index = Data.LV_WORK;
+                    typeName = "worker";
+                }
+                case 4 -> {
+                    index = Data.LV_WALT;
+                    typeName = "wallet";
+                }
+                case 5 -> {
+                    index = Data.LV_BASE;
+                    typeName = "baseHealth";
+                }
+                case 6 -> {
+                    index = Data.LV_RES;
+                    typeName = "research";
+                }
+                case 7 -> {
+                    index = Data.LV_ACC;
+                    typeName = "accountant";
+                }
+                case 8 -> {
+                    index = Data.LV_XP;
+                    typeName = "study";
+                }
+                default -> {
+                    index = -1;
+                    typeName = null;
+                }
+            }
+
+            baseUpgradeDescription.append(
+                LangID.getStringByID("data.stage.battlePreset.baseUpgrade.format", lang)
+                        .formatted(LangID.getStringByID("data.stage.battlePreset.baseUpgrade.type." + typeName, lang), preset.tech[index])
+            ).append("\n");
+        }
+
+        spec.addField(LangID.getStringByID("data.stage.battlePreset.baseUpgrade.title", lang), baseUpgradeDescription.toString(), false);
+
+        String formatted;
+
+        if (preset.cannonType == Data.BASE_H) {
+            formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.normal", lang).formatted(preset.bslv[0]);
         } else {
-            return hashCode.substring(0, 5).toUpperCase(Locale.ENGLISH);
+            String cannonName = switch (preset.cannonType) {
+                case Data.BASE_SLOW -> "slowBeam";
+                case Data.BASE_WALL ->  "ironWall";
+                case Data.BASE_STOP -> "thunderbolt";
+                case Data.BASE_WATER -> "waterblast";
+                case Data.BASE_GROUND -> "holyBlast";
+                case Data.BASE_BARRIER -> "breakerblast";
+                case Data.BASE_CURSE -> "curseblast";
+                default -> throw new IllegalStateException("E/EntityHandler::showFixedLineupData - Invalid cannon ID : %d found".formatted(preset.cannonType));
+            };
+
+            formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.special", lang).formatted(
+                    LangID.getStringByID("data.stage.battlePreset.cannonType.cannon." + cannonName, lang),
+                    preset.bslv[preset.cannonType],
+                    preset.bslv[0]
+            );
+        }
+
+        spec.addField(
+                LangID.getStringByID("data.stage.battlePreset.cannonType.title", lang),
+                formatted,
+                false
+        );
+
+        StringBuilder treasureBuilder = new StringBuilder();
+
+        if (preset.baseHealthBoost) {
+            treasureBuilder.append(LangID.getStringByID("data.stage.battlePreset.treasure.base", lang)).append("\n");
+        }
+
+        for (BattlePreset.ActivatedTreasure treasure : preset.activatedTreasures) {
+            String treasureName = switch (treasure) {
+                case EOC1 -> "EoC.1";
+                case EOC2 -> "EoC.2";
+                case EOC3 -> "EoC.3";
+                case ITF1 -> "ItF.1";
+                case ITF2 -> "ItF.2";
+                case ITF3 -> "ItF.3";
+                case COTC1 -> "CotC.1";
+                case COTC2 -> "CotC.2";
+                case COTC3 -> "CotC.3";
+                case BASE -> "base";
+            };
+
+            treasureBuilder.append(LangID.getStringByID("data.stage.battlePreset.treasure.format", lang).formatted(LangID.getStringByID("data.stage.battlePreset.treasure." + treasureName, lang))).append("\n");
+        }
+
+        spec.addField(LangID.getStringByID("data.stage.battlePreset.treasure.title", lang), treasureBuilder.toString(), false);
+
+        StringBuilder lineupBuilder = new StringBuilder();
+
+        for (int y = 0; y < 2; y++) {
+            for (int x = 0; x < 5; x++) {
+                Form form = preset.fs[y][x];
+
+                if (form == null)
+                    continue;
+
+                String formName = StaticStore.safeMultiLangGet(form, lang);
+
+                if (formName == null || formName.isBlank()) {
+                    formName = form.names.toString();
+                }
+
+                String idFormat = Data.trio(form.unit.id.id) + "-" + Data.trio(form.fid);
+
+                if (formName.isBlank()) {
+                    lineupBuilder.append("- ").append(idFormat).append("\n");
+                } else {
+                    lineupBuilder.append("- [").append(idFormat).append("] ").append(formName).append("\n");
+                }
+            }
+        }
+
+        lineupBuilder.append(LangID.getStringByID("data.stage.battlePreset.lineup.description", lang));
+
+        spec.addField(LangID.getStringByID("data.stage.battlePreset.lineup.title", lang), lineupBuilder.toString(), false);
+
+        spec.setImage(lineupLink);
+
+        spec.setFooter(LangID.getStringByID("data.stage.battlePreset.level", lang).formatted(Emoji.fromUnicode("👑").getFormatted(), preset.level + 1));
+
+        List<MessageTopLevelComponent> components = new ArrayList<>();
+
+        components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+
+        sender.deferEdit()
+                .setEmbeds(spec.build())
+                .setComponents(components)
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
+    }
+
+    public static void generateMedalEmbed(int id, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws  Exception {
+        String medalName = "./org/page/medal/medal_"+Data.trio(id);
+
+        if(id <= 13 && lang != CommonStatic.Lang.Locale.JP) {
+            medalName += "_"+getLocaleName(lang);
+        } else if(id == 90 && lang != CommonStatic.Lang.Locale.JP) {
+            medalName += "_en";
+        }
+
+        medalName += ".png";
+
+        VFile vf = VFile.get(medalName);
+
+        if(vf == null)
+            Command.replyToMessageSafely(ch, LangID.getStringByID("medal.failed.noImage", lang), reference, a -> a);
+        else {
+            String cacheID = StaticStore.MEDAL_ICON.formatted(Data.trio(id), lang.name());
+            String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+            if (cacheLink == null) {
+                File temp = new File("./temp");
+
+                if(!temp.exists() && !temp.mkdirs()) {
+                    StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
+                    return;
+                }
+
+                File image = StaticStore.generateTempFile(temp, "result", ".png", false);
+
+                if(image == null) {
+                    return;
+                }
+
+                FakeImage img = vf.getData().getImg();
+
+                CountDownLatch waiter = new CountDownLatch(1);
+
+                StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+                    connector.queue(g -> {
+                        g.drawImage(img, 0f, 0f);
+
+                        return kotlin.Unit.INSTANCE;
+                    });
+
+                    return kotlin.Unit.INSTANCE;
+                }, progress -> image, () -> {
+                    waiter.countDown();
+
+                    return kotlin.Unit.INSTANCE;
+                });
+
+                waiter.await();
+
+                cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
+
+                StaticStore.deleteFile(image, true);
+            }
+
+            EmbedBuilder e = new EmbedBuilder();
+
+            String name = StaticStore.MEDNAME.getCont(id, lang);
+            String desc = StaticStore.MEDEXP.getCont(id, lang);
+
+            if(StaticStore.medalData != null) {
+                JsonObject obj = StaticStore.medalData.getAsJsonArray().get(id).getAsJsonObject();
+
+                int grade = obj.get("grade").getAsInt();
+
+                e.setColor(StaticStore.grade[grade]);
+            }
+
+            e.addField(name, desc, false);
+            e.setImage(cacheLink);
+
+            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(e.build()));
         }
     }
 
-    private static BigDecimal getTotalAbilityAttack(MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
-        BigDecimal result = BigDecimal.ZERO;
+    // |---------------------------|
+    // |    Media Embed : Image    |
+    // |---------------------------|
 
-        for (int i = 0; i < data.getAtkCount(); i++) {
-            boolean abilityApplied = data.rawAtkData()[i][2] == 1;
+    public static void generateFormImage(Form f, Object sender, Message reference, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang) throws Exception {
+        f.anim.load();
 
-            if (abilityApplied) {
-                result = result.add(getAttack(i, data, levelCurve, lv, t, talent, treasure));
+        if(mode >= f.anim.anims.length)
+            mode = 0;
+
+        EAnimD<?> anim = f.anim.getEAnim(ImageDrawing.getAnimType(mode, f.anim.anims.length));
+
+        File img = ImageDrawing.drawAnimImage(anim, frame, 1f, transparent, debug);
+
+        f.anim.unload();
+
+        if (img == null) {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
             }
+
+            return;
         }
 
-        return result;
-    }
+        String icon = StaticStore.assetManager.getUnitIcon(f);
 
-    private static BigDecimal getTotalAbilityAttack(MaskEnemy data, int magnification) {
-        BigDecimal result = BigDecimal.ZERO;
-
-        for (int i = 0; i < data.getAtkCount(); i++) {
-            boolean abilityApplied = data.rawAtkData()[i][2] == 1;
-
-            if (abilityApplied) {
-                result = result.add(getAttack(i, data, magnification));
+        if (icon == null) {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
             }
+
+            return;
         }
 
-        return result;
-    }
+        List<ContainerChildComponent> children = new ArrayList<>();
 
-    private static BigDecimal getAttack(int index, MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
-        MaskAtk attack = data.getAtkModel(index);
+        String formName = StaticStore.safeMultiLangGet(f, lang);
 
-        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
-
-        if (data.rawAtkData()[index][2] == 1) {
-            Data.Proc.PM savageBlow = attack.getProc().SATK;
-            Data.Proc.PM critical = attack.getProc().CRIT;
-
-            if (savageBlow.exists()) {
-                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
-            }
-
-            if (critical.exists()) {
-                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
-            }
-        }
-
-        int result;
-
-        if(data.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(attack.getAtk() * levelCurve.getMult(lv.getLv() + lv.getPlusLv())) * t.getAtkMultiplier()) * data.getPCoin().getAtkMultiplication(lv.getTalents()));
+        if (formName == null || formName.isBlank()) {
+            formName = Data.trio(f.uid.id) + " - " + Data.trio(f.fid);
         } else {
-            result = (int) (Math.round(attack.getAtk() * levelCurve.getMult(lv.getLv() + lv.getPlusLv())) * t.getAtkMultiplier());
+            formName += " [" + Data.trio(f.uid.id) + " - " + Data.trio(f.fid) + "]";
         }
 
-        if(treasure) {
-            List<Trait> traits = data.getTraits();
+        children.add(Section.of(
+                Thumbnail.fromUrl(icon),
+                TextDisplay.of("## " + formName),
+                TextDisplay.of(
+                        LangID.getStringByID("formImage.result.mode", lang).formatted(getModeName(mode, f.anim.anims.length, lang)) + "\n" +
+                                LangID.getStringByID("formImage.result.frame", lang).formatted(frame)
+                )
+        ));
 
-            if((data.getAbi() & Data.AB_GOOD) > 0) {
-                result = (int) (result * t.getStrongAttackMultiplier(traits));
-            }
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-            if((data.getAbi() & Data.AB_MASSIVE) > 0) {
-                result = (int) (result * t.getMassiveAttackMultiplier(traits));
-            }
+        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
 
-            if((data.getAbi() & Data.AB_MASSIVES) > 0) {
-                result = (int) (result * t.getInsaneMassiveAttackMultiplier(traits));
-            }
+        int c;
+
+        if(f.fid == 0)
+            c = StaticStore.rainbow[StaticStore.BLUE];
+        else if(f.fid == 1)
+            c = StaticStore.rainbow[StaticStore.GREEN];
+        else if(f.fid == 2)
+            c = StaticStore.rainbow[StaticStore.YELLOW];
+        else
+            c = StaticStore.rainbow[StaticStore.RED];
+
+        Container container = Container.of(children).withAccentColor(c);
+
+        if (sender instanceof MessageChannel ch) {
+            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(img, true), e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to upload form image");
+
+                StaticStore.deleteFile(img, true);
+            }, container);
+        } else if (sender instanceof IMessageEditCallback event) {
+            event.deferEdit()
+                    .setComponents(container)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(unused -> StaticStore.deleteFile(img, true), e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to upload form image");
+
+                        StaticStore.deleteFile(img, true);
+                    });
         }
-
-        return BigDecimal.valueOf(result).multiply(damageTotalMultiplier);
     }
 
-    private static BigDecimal getAttack(int index, MaskEnemy data, int magnification) {
-        MaskAtk attack = data.getAtkModel(index);
+    public static void generateEnemyImage(Enemy enemy, Object sender, Message reference, boolean debug, boolean transparent, int frame, int mode, CommonStatic.Lang.Locale lang) throws Exception {
+        enemy.anim.load();
 
-        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
+        mode = Math.max(0, Math.min(mode, enemy.anim.anims.length - 1));
 
-        if (data.rawAtkData()[index][2] == 1) {
-            Data.Proc.PM savageBlow = attack.getProc().SATK;
-            Data.Proc.PM critical = attack.getProc().CRIT;
+        EAnimD<?> anim = enemy.getEAnim(ImageDrawing.getAnimType(mode, enemy.anim.anims.length));
 
-            if (savageBlow.exists()) {
-                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
+        File img = ImageDrawing.drawAnimImage(anim, frame, 1f, transparent, debug);
+
+        enemy.anim.unload();
+
+        if (img == null) {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
             }
 
-            if (critical.exists()) {
-                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
+            return;
+        }
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        String enemyName = StaticStore.safeMultiLangGet(enemy, lang);
+
+        if (enemyName == null || enemyName.isBlank()) {
+            enemyName = Data.trio(enemy.id.id);
+        } else {
+            enemyName += " [" + Data.trio(enemy.id.id) + "]";
+        }
+
+        String icon = StaticStore.assetManager.getEnemyIcon(enemy);
+
+        if (icon == null) {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemyImage.fail.unknown", lang));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("enemyImage.fail.unknown", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            }
+
+            return;
+        }
+
+        children.add(Section.of(
+                Thumbnail.fromUrl(icon),
+                TextDisplay.of("## " + enemyName),
+                TextDisplay.of(
+                        LangID.getStringByID("enemyImage.result.mode", lang).formatted(getModeName(mode, enemy.anim.anims.length, lang)) + "\n" +
+                                LangID.getStringByID("enemyImage.result.frame", lang).formatted(frame)
+                )
+        ));
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+
+        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
+
+        if (sender instanceof MessageChannel ch) {
+            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(img, true), container);
+        } else if (sender instanceof IMessageEditCallback event) {
+            event.deferEdit()
+                    .setComponents(container)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(unused -> StaticStore.deleteFile(img, true), e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send enemy image");
+
+                        StaticStore.deleteFile(img, true);
+                    });
+        }
+    }
+
+    // |-------------------------------|
+    // |    Media Embed : Animation    |
+    // |-------------------------------|
+
+    public static void generateFormAnim(Form f, Object sender, Message reference, StringBuilder primary, int booster, int mode, boolean transparent, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) throws Exception {
+        if(f.unit == null || f.unit.id == null) {
+            onFail.run();
+
+            return;
+        }
+
+        f.anim.load();
+
+        int filteredMode = Math.max(0, Math.min(f.anim.anims.length - 1, mode));
+
+        if(!debug && limit <= 0) {
+            String id = generateID(f, mode, transparent);
+
+            String link = StaticStore.imgur.get(id, gif, raw);
+
+            if(link != null) {
+                primary.append(LangID.getStringByID("data.animation.gif.cached", lang));
+
+                List<ContainerChildComponent> children = new ArrayList<>();
+
+                String formName = StaticStore.safeMultiLangGet(f, lang);
+
+                if (formName == null || formName.isBlank()) {
+                    formName = Data.trio(f.uid.id) + " - " + Data.trio(f.fid);
+                } else {
+                    formName += " [" + Data.trio(f.uid.id) + " - " + Data.trio(f.fid) + "]";
+                }
+
+                String iconLink = StaticStore.assetManager.getUnitIcon(f);
+
+                if (iconLink == null) {
+                    StaticStore.logger.uploadLog("E/EntityHandler::generateFormAnim - Failed to generate form model icon for enemy of " + formName);
+
+                    return;
+                }
+
+                String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, f.anim.anims.length, lang)) + "\n\n" +
+                        primary;
+
+                children.add(Section.of(Thumbnail.fromUrl(iconLink), TextDisplay.of("## " + formName), TextDisplay.of(summary)));
+                children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+                children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
+
+                Container container = Container.of(children);
+
+                if (sender instanceof MessageChannel ch) {
+                    Command.replyToMessageSafely(ch, reference, container);
+                } else if (sender instanceof Message message) {
+                    message.editMessageComponents(container)
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                }
+
+                onFail.run();
+
+                return;
             }
         }
 
-        int result = (int) ((attack.getAtk() * data.multi(BasisSet.current()) * magnification / 100.0));
+        ShardManager client;
 
-        return BigDecimal.valueOf(result).multiply(damageTotalMultiplier);
+        if (sender instanceof MessageChannel ch) {
+            client = ch.getJDA().getShardManager();
+        } else if (sender instanceof IMessageEditCallback event) {
+            client = event.getJDA().getShardManager();
+        } else {
+            return;
+        }
+
+        if (client == null)
+            return;
+
+        EAnimD<?> anim = f.getEAnim(getAnimType(filteredMode, f.anim.anims.length));
+
+        if (limit > 0) {
+            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit)).append("\n\n");
+        } else if (!raw && anim.len() >= 300) {
+            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300)).append("\n\n");
+        } else {
+            primary.append(LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len())).append("\n\n");
+        }
+
+        CommonStatic.getConfig().ref = false;
+
+        TextDisplay text = TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.analyzingBox", lang));
+
+        CountDownLatch messageCountdown = new CountDownLatch(1);
+        AtomicReference<Message> atomicMessage = new AtomicReference<>();
+
+        if (sender instanceof MessageChannel ch) {
+            Command.replyToMessageSafely(ch, reference, msg -> {
+                atomicMessage.set(msg);
+
+                messageCountdown.countDown();
+            }, e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to send initial message");
+
+                messageCountdown.countDown();
+            }, text);
+        } else {
+            ((IMessageEditCallback) sender).deferEdit()
+                    .setComponents(text)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(hook -> hook.retrieveOriginal().queue(msg -> {
+                        atomicMessage.set(msg);
+
+                        messageCountdown.countDown();
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to send initial message");
+
+                        messageCountdown.countDown();
+                    }), e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to send initial message");
+
+                        messageCountdown.countDown();
+                    });
+        }
+
+        messageCountdown.await();
+
+        Message message = atomicMessage.get();
+
+        if (message == null)
+            return;
+
+        long start = System.currentTimeMillis();
+
+        File img;
+
+        long max;
+
+        if (debug || limit > 0)
+            max = getBoosterFileLimit(booster) * 1024L * 1024L;
+        else
+            max = 8 * 1024 * 1024;
+
+        if(raw) {
+            img = ImageDrawing.drawAnimMp4(anim, message, 1f, false, debug, limit, lang);
+        } else {
+            img = ImageDrawing.drawAnimGif(anim, message, new StringBuilder(), 1f, false, transparent, debug, limit, lang);
+        }
+
+        primary.append(LangID.getStringByID("data.animation.gif.uploading.gif", lang)).append("\n\n");
+
+        message.editMessageComponents(TextDisplay.of(primary.toString()))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
+
+        f.anim.unload();
+
+        long processEnd = System.currentTimeMillis();
+
+        if (img == null) {
+            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.gif.failed.gif", lang)))
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+
+            onFail.run();
+
+            return;
+        }
+
+        String link = null;
+
+        if (img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+            primary.append(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).append("\n\n");
+
+            try {
+                link = StaticStore.imgur.uploadFile(img);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload to file to imgur");
+
+                StaticStore.deleteFile(img, true);
+
+                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.imgur", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                return;
+            }
+        } else if (img.length() >= max && img.length() < 200 * 1024 * 1024) {
+            primary.append(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).append("\n\n");
+
+            try {
+                link = StaticStore.imgur.uploadCatbox(img);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload animation to cat box");
+
+                StaticStore.deleteFile(img, true);
+
+                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.catbox", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                return;
+            }
+        } else if (img.length() >= max) {
+            message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.tooBig", lang)))
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+
+            StaticStore.deleteFile(img, true);
+
+            onSuccess.run();
+
+            return;
+        } else if (img.length() < max && !debug && limit <= 0) {
+            CountDownLatch countdown = new CountDownLatch(1);
+            AtomicReference<String> atomicLink = new AtomicReference<>();
+
+            GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
+
+            if (chan instanceof GuildMessageChannel gc) {
+                gc.sendMessage(generateID(f, filteredMode, transparent))
+                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                        .queue(m -> {
+                            for (int i = 0; i < m.getAttachments().size(); i++) {
+                                Message.Attachment at = m.getAttachments().get(i);
+
+                                if (at.getFileName().startsWith("result.")) {
+                                    atomicLink.set(at.getUrl());
+
+                                    break;
+                                }
+                            }
+
+                            cacheImage(f, filteredMode, transparent, m);
+
+                            onSuccess.run();
+
+                            countdown.countDown();
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display enemy anim");
+
+                            StaticStore.deleteFile(img, true);
+
+                            countdown.countDown();
+                        });
+
+                countdown.await();
+
+                link = atomicLink.get();
+
+                if (link == null) {
+                    message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    return;
+                }
+            } else {
+                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                return;
+            }
+        }
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        String title = StaticStore.safeMultiLangGet(f, lang);
+
+        if (title == null || title.isBlank()) {
+            title = Data.trio(f.uid.id) + " - " + Data.trio(f.fid);
+        } else {
+            title += " [" + Data.trio(f.uid.id) + " - " + Data.trio(f.fid) + "]";
+        }
+
+        String limitText;
+
+        if (limit > 0) {
+            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit);
+        } else if (!raw && anim.len() >= 300) {
+            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300);
+        } else {
+            limitText = LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len());
+        }
+
+        String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, f.anim.anims.length, lang)) + "\n" +
+                limitText + "\n\n" +
+                LangID.getStringByID("data.animation.gif.result.fileSize", lang).formatted(getFileSize(img)) + "\n" +
+                LangID.getStringByID("data.animation.gif.result.time.processing", lang).formatted(DataToString.df.format((processEnd - start) / 1000.0));
+
+        if (link != null) {
+            long totalEnd = System.currentTimeMillis();
+
+            summary += "\n" + LangID.getStringByID("data.animation.gif.result.time.total", lang).formatted(DataToString.df.format((totalEnd - start) / 1000.0));
+        }
+
+        String thumbnailLink = StaticStore.assetManager.getUnitIcon(f);
+
+        if (thumbnailLink != null) {
+            children.add(Section.of(Thumbnail.fromUrl(thumbnailLink), TextDisplay.of("## " + title), TextDisplay.of(summary)));
+        } else {
+            children.add(TextDisplay.of("## " + title));
+            children.add(TextDisplay.of(summary));
+        }
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        if (link == null) {
+            children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+        } else {
+            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
+        }
+
+        message.editMessageComponents(Container.of(children))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue(m -> {
+                    StaticStore.deleteFile(img, true);
+
+                    onSuccess.run();
+                }, e -> {
+                    StaticStore.deleteFile(img, true);
+
+                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload rendered enemy animation");
+                });
     }
 
-    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void generateEnemyAnim(Enemy enemy, Object sender, Message reference, StringBuilder primary, int booster, int mode, boolean transparent, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) throws Exception {
+        if (enemy.id == null) {
+            onFail.run();
+
+            return;
+        }
+
+        enemy.anim.load();
+
+        int filteredMode = Math.max(0, Math.min(enemy.anim.anims.length - 1, mode));
+
+        if (!debug && limit <= 0) {
+            String id = generateID(enemy, filteredMode, transparent);
+
+            String link = StaticStore.imgur.get(id, gif, raw);
+
+            if (link != null) {
+                primary.append(LangID.getStringByID("data.animation.gif.cached", lang));
+
+                List<ContainerChildComponent> children = new ArrayList<>();
+
+                String enemyName = StaticStore.safeMultiLangGet(enemy, lang);
+
+                if (enemyName == null || enemyName.isBlank()) {
+                    enemyName = Data.trio(enemy.id.id);
+                } else {
+                    enemyName += " [" + Data.trio(enemy.id.id) + "]";
+                }
+
+                String iconLink = StaticStore.assetManager.getEnemyIcon(enemy);
+
+                if (iconLink == null) {
+                    StaticStore.logger.uploadLog("E/EntityHandler::generateEnemyAnim - Failed to generate enemy model icon for enemy of " + enemyName);
+
+                    return;
+                }
+
+                String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, enemy.anim.anims.length, lang)) + "\n\n" +
+                        primary;
+
+                children.add(Section.of(Thumbnail.fromUrl(iconLink), TextDisplay.of("## " + enemyName), TextDisplay.of(summary)));
+                children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+                children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
+
+                Container container = Container.of(children);
+
+                if (sender instanceof MessageChannel ch) {
+                    Command.replyToMessageSafely(ch, reference, container);
+                } else if (sender instanceof Message message) {
+                    message.editMessageComponents(container)
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                }
+
+                onFail.run();
+
+                return;
+            }
+        }
+
+        ShardManager client;
+
+        if (sender instanceof MessageChannel ch) {
+            client = ch.getJDA().getShardManager();
+        } else if (sender instanceof IMessageEditCallback event) {
+            client = event.getJDA().getShardManager();
+        } else {
+            return;
+        }
+
+        if (client == null)
+            return;
+
+        EAnimD<?> anim = enemy.getEAnim(getAnimType(filteredMode, enemy.anim.anims.length));
+
+        if (limit > 0) {
+            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit)).append("\n\n");
+        } else if (!raw && anim.len() >= 300) {
+            primary.append(LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300)).append("\n\n");
+        } else {
+            primary.append(LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len())).append("\n\n");
+        }
+
+        CommonStatic.getConfig().ref = false;
+
+        TextDisplay text = TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.analyzingBox", lang));
+
+        CountDownLatch messageCountdown = new CountDownLatch(1);
+        AtomicReference<Message> atomicMessage = new AtomicReference<>();
+
+        if (sender instanceof MessageChannel ch) {
+            Command.replyToMessageSafely(ch, reference, msg -> {
+                atomicMessage.set(msg);
+
+                messageCountdown.countDown();
+            }, e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send initial message");
+
+                messageCountdown.countDown();
+            }, text);
+        } else {
+            ((IMessageEditCallback) sender).deferEdit()
+                    .setComponents(text)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(hook -> hook.retrieveOriginal().queue(msg -> {
+                        atomicMessage.set(msg);
+
+                        messageCountdown.countDown();
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send initial message");
+
+                        messageCountdown.countDown();
+                    }));
+        }
+
+        messageCountdown.await();
+
+        Message message = atomicMessage.get();
+
+        if (message == null)
+            return;
+
+        long start = System.currentTimeMillis();
+
+        File img;
+
+        long max;
+
+        if (debug || limit > 0)
+            max = getBoosterFileLimit(booster) * 1024L * 1024;
+        else
+            max = 8 * 1024 * 1024;
+
+        if (raw) {
+            img = ImageDrawing.drawAnimMp4(anim, message, 1f, false, debug, limit, lang);
+        } else {
+            img = ImageDrawing.drawAnimGif(anim, message, primary, 1f, false, transparent, debug, limit, lang);
+        }
+
+        primary.append(LangID.getStringByID("data.animation.gif.uploading.gif", lang)).append("\n\n");
+
+        message.editMessageComponents(TextDisplay.of(primary.toString()))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
+
+        enemy.anim.unload();
+
+        long processEnd = System.currentTimeMillis();
+
+        if (img == null) {
+            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.gif.failed.gif", lang)))
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+
+            onFail.run();
+
+            return;
+        }
+
+        String link = null;
+
+        if (img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+            primary.append(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).append("\n\n");
+
+            try {
+                link = StaticStore.imgur.uploadFile(img);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload to file to imgur");
+
+                StaticStore.deleteFile(img, true);
+
+                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.imgur", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                return;
+            }
+        } else if (img.length() >= max && img.length() < 200 * 1024 * 1024) {
+            primary.append(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).append("\n\n");
+
+            try {
+                link = StaticStore.imgur.uploadCatbox(img);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to upload animation to cat box");
+
+                StaticStore.deleteFile(img, true);
+
+                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.catbox", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                return;
+            }
+        } else if (img.length() >= max) {
+            message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.tooBig", lang)))
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+
+            StaticStore.deleteFile(img, true);
+
+            onSuccess.run();
+
+            return;
+        } else if (img.length() < max && !debug && limit <= 0) {
+            CountDownLatch countdown = new CountDownLatch(1);
+            AtomicReference<String> atomicLink = new AtomicReference<>();
+
+            GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
+
+            if (chan instanceof GuildMessageChannel gc) {
+                gc.sendMessage(generateID(enemy, filteredMode, transparent))
+                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                        .queue(m -> {
+                            for (int i = 0; i < m.getAttachments().size(); i++) {
+                                Message.Attachment at = m.getAttachments().get(i);
+
+                                if (at.getFileName().startsWith("result.")) {
+                                    atomicLink.set(at.getUrl());
+
+                                    break;
+                                }
+                            }
+
+                            cacheImage(enemy, filteredMode, transparent, m);
+
+                            onSuccess.run();
+
+                            countdown.countDown();
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
+
+                            StaticStore.deleteFile(img, true);
+
+                            countdown.countDown();
+                        });
+
+                countdown.await();
+
+                link = atomicLink.get();
+
+                if (link == null) {
+                    message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    return;
+                }
+            } else {
+                message.editMessageComponents(TextDisplay.of(primary + LangID.getStringByID("data.animation.gif.failed.unknown", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                return;
+            }
+        }
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        String title = StaticStore.safeMultiLangGet(enemy, lang);
+
+        if (title == null || title.isBlank()) {
+            title = Data.trio(enemy.id.id);
+        } else {
+            title += " [" + Data.trio(enemy.id.id) + "]";
+        }
+
+        String limitText;
+
+        if (limit > 0) {
+            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), limit);
+        } else if (!raw && anim.len() >= 300) {
+            limitText = LangID.getStringByID("data.animation.gif.length.withLimit", lang).formatted(anim.len(), 300);
+        } else {
+            limitText = LangID.getStringByID("data.animation.gif.length.default", lang).formatted(anim.len());
+        }
+
+        String summary = LangID.getStringByID("data.animation.gif.result.mode", lang).formatted(getModeName(filteredMode, enemy.anim.anims.length, lang)) + "\n" +
+                limitText + "\n\n" +
+                LangID.getStringByID("data.animation.gif.result.fileSize", lang).formatted(getFileSize(img)) + "\n" +
+                LangID.getStringByID("data.animation.gif.result.time.processing", lang).formatted(DataToString.df.format((processEnd - start) / 1000.0));
+
+        if (link != null) {
+            long totalEnd = System.currentTimeMillis();
+
+            summary += "\n" + LangID.getStringByID("data.animation.gif.result.time.total", lang).formatted(DataToString.df.format((totalEnd - start) / 1000.0));
+        }
+
+        String thumbnailLink = StaticStore.assetManager.getEnemyIcon(enemy);
+
+        if (thumbnailLink != null) {
+            children.add(Section.of(Thumbnail.fromUrl(thumbnailLink), TextDisplay.of("## " + title), TextDisplay.of(summary)));
+        } else {
+            children.add(TextDisplay.of("## " + title));
+            children.add(TextDisplay.of(summary));
+        }
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        if (link == null) {
+            children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+        } else {
+            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
+        }
+
+        message.editMessageComponents(Container.of(children))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue(m -> {
+                    StaticStore.deleteFile(img, true);
+
+                    onSuccess.run();
+                }, e -> {
+                    StaticStore.deleteFile(img, true);
+
+                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to upload rendered enemy animation");
+                });
+    }
+
+    public static void generateBGAnim(CommandLoader loader, Background bg, CommonStatic.Lang.Locale lang) throws Exception {
+        AtomicReference<Message> atomicMessage = new AtomicReference<>();
+        CountDownLatch countdown = new CountDownLatch(1);
+
+        if (loader.fromMessage) {
+            loader.getChannel().sendMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.prepare", lang)))
+                    .useComponentsV2()
+                    .setMessageReference(loader.getMessage())
+                    .mentionRepliedUser(false)
+                    .queue(message -> {
+                        atomicMessage.set(message);
+
+                        countdown.countDown();
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
+
+                        countdown.countDown();
+                    });
+        } else {
+            loader.getInteractionEvent().deferReply()
+                    .setComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.prepare", lang)))
+                    .useComponentsV2()
+                    .mentionRepliedUser(false)
+                    .queue(hook ->
+                                    hook.retrieveOriginal().queue(message -> {
+                                        atomicMessage.set(message);
+
+                                        countdown.countDown();
+                                    }, e -> {
+                                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
+
+                                        countdown.countDown();
+                                    })
+                            , e -> {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to upload message");
+
+                                countdown.countDown();
+                            });
+        }
+
+        countdown.await();
+
+        Message message = atomicMessage.get();
+
+        if (message == null)
+            return;
+
+        ShardManager client = loader.getClient().getShardManager();
+
+        if (client == null)
+            return;
+
+        long start = System.currentTimeMillis();
+
+        File result;
+
+        try {
+            result = ImageDrawing.drawBGAnimEffect(bg, message, lang);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate bg animation");
+
+            return;
+        }
+
+        long end = System.currentTimeMillis();
+
+        if(result == null) {
+            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.failed", lang)))
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+        } else if(result.length() >= 8 * 1024 * 1024) {
+            message.editMessageComponents(TextDisplay.of(LangID.getStringByID("data.animation.background.fileTooBig", lang).formatted(getFileSize(result))))
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+        } else {
+            GuildChannel channel = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+
+            if(channel instanceof MessageChannel) {
+                String size = getFileSize(result);
+
+                ((MessageChannel) channel).sendMessage("BG - "+Data.trio(bg.id.id))
+                        .addFiles(FileUpload.fromData(result, "result.mp4"))
+                        .queue(m -> {
+                            StaticStore.deleteFile(result, true);
+
+                            for(int i = 0; i < m.getAttachments().size(); i++) {
+                                Message.Attachment at = m.getAttachments().get(i);
+
+                                if(at.getFileName().startsWith("result.")) {
+                                    List<ContainerChildComponent> children = new ArrayList<>();
+
+                                    children.add(TextDisplay.of(LangID.getStringByID("background.result.title", lang)));
+
+                                    children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+                                    children.add(TextDisplay.of(
+                                            LangID.getStringByID("background.result.id", lang).formatted(Data.trio(bg.id.id)) + "\n\n" +
+                                                    LangID.getStringByID("background.result.fileSize", lang).formatted(size) + "\n" +
+                                                    LangID.getStringByID("background.result.renderingTime", lang).formatted(DataToString.df.format((end - start) / 1000.0))
+                                    ));
+
+                                    children.add(MediaGallery.of(MediaGalleryItem.fromUrl(at.getUrl())));
+
+                                    Container container = Container.of(children);
+
+                                    message.editMessageComponents(container)
+                                            .useComponentsV2()
+                                            .setAllowedMentions(new ArrayList<>())
+                                            .mentionRepliedUser(false)
+                                            .queue();
+
+                                    StaticStore.imgur.put("BG - " + Data.trio(bg.id.id), at.getUrl(), true);
+                                }
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate BG anim");
+
+                            if(result.exists() && !result.delete()) {
+                                StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
+                            }
+                        });
+            }
+        }
+    }
+
+    public static void generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, CommonStatic.Lang.Locale lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
+        if(s.getID() == null) {
+            onFail.run();
+
+            return;
+        }
+
+        else if(!debug && limit <= 0) {
+            String id = "SOUL - " + Data.trio(s.getID().id);
+
+            String link = StaticStore.imgur.get(id, gif, raw);
+
+            if(link != null) {
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.cached", lang).replace("_", link)).queue();
+
+                onFail.run();
+
+                return;
+            }
+        }
+
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
+
+        s.anim.load();
+
+        EAnimD<?> anim = s.anim.getEAnim(AnimU.UType.SOUL);
+
+        if(limit > 0)  {
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
+        } else if(!raw && anim.len() >= 300) {
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.withLimit", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
+        } else {
+            ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(anim.len()))).queue();
+        }
+
+        CommonStatic.getConfig().ref = false;
+
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
+            if(msg == null) {
+                onFail.run();
+
+                return;
+            }
+
+            long start = System.currentTimeMillis();
+
+            File img;
+
+            long max;
+
+            if(debug || limit > 0)
+                max = getBoosterFileLimit(booster) * 1024L * 1024L;
+            else
+                max = 8 * 1024 * 1024;
+
+            try {
+                if(raw) {
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, false, debug, limit, lang);
+                } else {
+                    img = ImageDrawing.drawAnimGif(anim, msg, new StringBuilder(), 1f, false, false, debug, limit, lang);
+                }
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to generate soul animation");
+
+                return;
+            }
+
+            s.anim.unload();
+
+            long end = System.currentTimeMillis();
+
+            String time = DataToString.df.format((end - start) / 1000.0);
+
+            if(img == null) {
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
+
+                onFail.run();
+            } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+                Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.alternative.imgur", lang), reference, a -> a, m -> {
+                    if(m == null) {
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
+
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        });
+
+                        onFail.run();
+
+                        return;
+                    }
+
+                    String link;
+
+                    try {
+                        link = StaticStore.imgur.uploadFile(img);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if(link == null) {
+                        m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang)).queue(message -> {
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
+
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        });
+                    } else {
+                        if(!debug && limit <= 0) {
+                            String id = "SOUL - " + Data.trio(s.getID().id);
+
+                            StaticStore.imgur.put(id, link, raw);
+                        }
+
+                        long finalEnd = System.currentTimeMillis();
+
+                        m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                        GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+
+                        if(chan instanceof GuildMessageChannel) {
+                            ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id) + "\n\n"+link).queue();
+                        }
+                    }
+
+                    onSuccess.run();
+                });
+            } else if(img.length() < max) {
+                if(debug || limit > 0) {
+                    Command.sendMessageWithFile(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
+                } else {
+                    GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+
+                    if(chan instanceof GuildMessageChannel) {
+                        String siz = getFileSize(img);
+
+                        ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id))
+                                .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                                .queue(m -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+
+                                    for(int i = 0; i < m.getAttachments().size(); i++) {
+                                        Message.Attachment at = m.getAttachments().get(i);
+
+                                        if(at.getFileName().startsWith("result.")) {
+                                            Command.replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+
+                                            StaticStore.imgur.put("SOUL - " + Data.trio(s.getID().id), at.getUrl(), raw);
+                                        }
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+                    }
+                }
+
+                onSuccess.run();
+            }
+        });
+    }
+
+    // |----------------------------|
+    // |    Media Embed : Sprite    |
+    // |----------------------------|
+
+    public static void generateUnitSprite(Form f, MessageChannel ch, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
+        if(f.unit == null || f.unit.id == null) {
+            ch.sendMessage(LangID.getStringByID("formSprite.failed.invalidUnit", lang)).queue();
+            return;
+        }
+
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return;
+            }
+        }
+
+        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
+
+        if(image == null) {
+            return;
+        }
+
+        f.anim.load();
+
+        FakeImage img;
+
+        switch (mode) {
+            case 0 -> img = f.anim.getNum();
+            case 1 -> img = f.anim.getUni().getImg();
+            case 2 -> {
+                if (f.unit.getCont() instanceof PackData.DefPack) {
+                    String code;
+
+                    if (f.fid == 0)
+                        code = "f";
+                    else if (f.fid == 1)
+                        code = "c";
+                    else if (f.fid == 2)
+                        code = "s";
+                    else
+                        code = "u";
+
+                    VFile vf = VFile.get("./org/unit/" + Data.trio(f.unit.id.id) + "/" + code + "/udi" + Data.trio(f.unit.id.id) + "_" + code + ".png");
+
+                    if (vf != null) {
+                        img = vf.getData().getImg();
+                    } else {
+                        img = null;
+                    }
+                } else {
+                    img = null;
+                }
+            }
+            case 3 -> img = f.anim.getEdi().getImg();
+            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
+        }
+
+        if(img == null) {
+            Command.replyToMessageSafely(ch, LangID.getStringByID("formSprite.failed.invalidMode", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
+            return;
+        }
+
+        FakeImage result = img;
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(result.getWidth(), result.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(result, 0f, 0f);
+
+                return kotlin.Unit.INSTANCE;
+            });
+
+            return kotlin.Unit.INSTANCE;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return kotlin.Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        String fName = StaticStore.safeMultiLangGet(f, lang);
+
+        if(fName == null || fName.isBlank()) {
+            fName = Data.trio(f.unit.id.id)+"-"+Data.trio(f.fid);
+        }
+
+        Command.sendMessageWithFile(ch, LangID.getStringByID("formSprite.uploaded", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
+
+        f.anim.unload();
+    }
+
+    public static void generateEnemySprite(Enemy e, Object sender, Message reference, int mode, CommonStatic.Lang.Locale lang) throws Exception {
+        if(e.id == null) {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("enemySprite.failed.invalidEnemy", lang));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("enemySprite.failed.invalidEnemy", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            }
+
+            return;
+        }
+
+        String icon = StaticStore.assetManager.getEnemyIcon(e);
+
+        if (icon == null)
+            return;
+
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return;
+            }
+        }
+
+        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
+
+        if(image == null) {
+            return;
+        }
+
+        e.anim.load();
+
+        FakeImage img = switch (mode) {
+            case 0 -> e.anim.getNum();
+            case 3 -> e.anim.getEdi().getImg();
+            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
+        };
+
+        if(img == null) {
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang)));
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("formSprite.failed.invalidMode", lang).formatted(getIconName(mode, lang))))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            }
+
+            return;
+        }
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(img, 0f, 0f);
+
+                return kotlin.Unit.INSTANCE;
+            });
+
+            return kotlin.Unit.INSTANCE;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return kotlin.Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        e.anim.unload();
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        String enemyName = StaticStore.safeMultiLangGet(e, lang);
+
+        if (enemyName == null || enemyName.isBlank()) {
+            enemyName = Data.trio(e.id.id);
+        } else {
+            enemyName += " [" + Data.trio(e.id.id) + "]";
+        }
+
+        String spriteType = switch (mode) {
+            case 0 -> LangID.getStringByID("enemySprite.result.spriteType.sprite", lang);
+            case 3 -> LangID.getStringByID("enemySprite.result.spriteType.ui", lang);
+            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
+        };
+
+        children.add(Section.of(
+                Thumbnail.fromUrl(icon),
+                TextDisplay.of("## " + enemyName),
+                TextDisplay.of(LangID.getStringByID("enemySprite.result.type", lang).formatted(spriteType))
+        ));
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(image))));
+
+        Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
+
+        if (sender instanceof MessageChannel ch) {
+            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(image, true), container);
+        } else if (sender instanceof IMessageEditCallback event) {
+            event.deferEdit()
+                    .setComponents(container)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue(unused -> StaticStore.deleteFile(image, true), err -> {
+                        StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::generateEnemySprite - Failed to upload enemy sprite");
+
+                        StaticStore.deleteFile(image, true);
+                    });
+        }
+    }
+
+    public static void generateSoulSprite(Soul s, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws Exception {
+        if(s.getID() == null) {
+            ch.sendMessage(LangID.getStringByID("soul.failed.noSoul", lang)).queue();
+
+            return;
+        }
+
+        File temp = new File("./temp");
+
+        if(!temp.exists() && !temp.mkdirs()) {
+            StaticStore.logger.uploadLog("W/EntityHandler::getSoulSprite - Failed to create folder : " + temp.getAbsolutePath());
+
+            return;
+        }
+
+        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
+
+        if(image == null)
+            return;
+
+        s.anim.load();
+
+        FakeImage img = s.anim.getNum();
+
+        if(img == null) {
+            Command.replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noSoul", lang), reference, a -> a);
+
+            return;
+        }
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(img, 0f, 0f);
+
+                return kotlin.Unit.INSTANCE;
+            });
+
+            return kotlin.Unit.INSTANCE;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return kotlin.Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        Command.sendMessageWithFile(
+                ch,
+                LangID.getStringByID("soulImage.success", lang).replace("_", Data.trio(s.getID().id)),
+                image,
+                reference
+        );
+
+        s.anim.unload();
+    }
+
+    // |-----------------------------|
+    // |    Datamine Embed : Stat    |
+    // |-----------------------------|
+
+    public static void generateUnitStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, CommonStatic.Lang.Locale lang) throws Exception {
         List<List<CellDrawer>> cellGroup = new ArrayList<>();
 
         for(int i = 0; i < units.length; i++) {
-            cellGroup.add(addCell(data, procData, abilityData, traitData, units[i], lang, lv, isFrame));
+            cellGroup.add(addUnitCell(data, procData, abilityData, traitData, units[i], lang, lv, isFrame));
         }
 
         String type = DataToString.getRarity(units[0].rarity, lang);
@@ -5299,47 +4057,1569 @@ public class EntityHandler {
         }
     }
 
-    private static void sendMultipleFiles(MessageChannel ch, List<File> results) {
-        int i = 0;
+    // |----------------------------------|
+    // |    Datamine Embed : Animation    |
+    // |----------------------------------|
 
-        Queue<File> done = new ArrayDeque<>();
+    public static void generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, boolean performance, CommonStatic.Lang.Locale lang, Runnable onFail, Runnable onSuccess) {
+        boolean mix = mixer.mix();
 
-        while(i < results.size()) {
-            MessageCreateAction action = ch.sendMessage("Analyzed stage image");
+        if(!mix) {
+            ch.sendMessage("Failed to mix Anim").queue();
 
-            long fileSize = 0;
+            onFail.run();
 
-            while (i < results.size() && fileSize + results.get(i).length() < 8 * 1024 * 1024) {
-                action = action.addFiles(FileUpload.fromData(results.get(i)));
-                done.add(results.get(i));
+            return;
+        }
 
-                fileSize += results.get(i).length();
-                i++;
+        CommonStatic.getConfig().ref = false;
+
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
+            if(msg == null) {
+                onFail.run();
+
+                return;
             }
 
-            action.queue(m -> {
-                while(!done.isEmpty()) {
-                    File target = done.poll();
+            long start = System.currentTimeMillis();
 
-                    if(target != null && target.exists() && !target.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandler::generateStageStatImage - Failed to delete file : " + target.getAbsolutePath());
+            File img;
+
+            try {
+                img = ImageDrawing.drawBCAnim(mixer, msg, 1f, performance, lang);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC animation");
+
+                return;
+            }
+
+            long end = System.currentTimeMillis();
+
+            String time = DataToString.df.format((end - start) / 1000.0);
+
+            if(img == null) {
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
+            } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < 200 * 1024 * 1024) {
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
+                    if(m == null) {
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang))
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                        onSuccess.run();
+
+                        return;
                     }
-                }
-            }, e -> {
-                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateStageStatImage - Error happened while trying to upload analyzed stage image");
 
-                while(!done.isEmpty()) {
-                    File target = done.poll();
+                    String link;
 
-                    if(target != null && target.exists() && !target.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandler::generateStageStatImage - Failed to delete file : " + target.getAbsolutePath());
+                    try {
+                        link = StaticStore.imgur.uploadFile(img);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "EntityHandler::generateAnim - Failed to upload animation to imgur");
+
+                        return;
                     }
+
+                    if(link == null) {
+                        m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+                    } else {
+                        long finalEnd = System.currentTimeMillis();
+
+                        m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+                    }
+
+                    onSuccess.run();
+                });
+            } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+                ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
+                        .addFiles(FileUpload.fromData(img, "result.mp4"))
+                        .queue(message -> {
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                            }
+                        });
+
+                onSuccess.run();
+            }
+        });
+    }
+
+    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, boolean performance, CommonStatic.Lang.Locale lang, boolean debug, int limit, boolean raw, int index) {
+        boolean mix = mixer.mix();
+
+        if(!mix) {
+            ch.sendMessage("Failed to mix Anim").queue();
+            return;
+        }
+
+        EAnimD<?> anim = mixer.getAnim(index);
+
+        if(anim == null) {
+            ch.sendMessage("Failed to generate anim instance").queue();
+            return;
+        }
+
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.length.default", lang).replace("_", String.valueOf(anim.len()))).queue();
+
+        CommonStatic.getConfig().ref = false;
+
+        ch.sendMessage(LangID.getStringByID("data.animation.gif.analyzingBox", lang)).queue(msg -> {
+            try {
+                if(msg == null)
+                    return;
+
+                long start = System.currentTimeMillis();
+
+                File img;
+
+                if(raw) {
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, performance, debug, limit, lang);
+                } else {
+                    img = ImageDrawing.drawAnimGif(anim, msg, new StringBuilder(), 1f, performance, false, debug, limit, lang);
                 }
+
+                long end = System.currentTimeMillis();
+
+                String time = DataToString.df.format((end - start)/1000.0);
+
+                if(img == null) {
+                    ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.gif", lang)).queue();
+                } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+                    if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadFile(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to upload animation file to imgur");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                long finalEnd = System.currentTimeMillis();
+
+                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            }
+                        });
+                    } else if(img.length() < 200 * 1024 * 1024) {
+                        ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).queue(m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadCatbox(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to upload animation file to cat box");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("data.animation.gif.failed.catbox", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                long finalEnd = System.currentTimeMillis();
+
+                                m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.catbox", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            }
+                        });
+                    }
+                } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+                    ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
+                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                            .queue(message -> {
+                                if(img.exists() && !img.delete()) {
+                                    StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
+                                }
+                            }, e -> {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to generate mixed anim");
+
+                                if(img.exists() && !img.delete()) {
+                                    StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
+                                }
+                            });
+                }
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to generate animation");
+            }
+        });
+    }
+
+    // |-----------------------|
+    // |    Private : Image    |
+    // |-----------------------|
+
+    private static String generateIcon(Form f) throws Exception {
+        if(f.unit == null)
+            return null;
+
+        String code = switch (f.fid) {
+            case 0 -> "F";
+            case 1 -> "C";
+            case 2 -> "S";
+            case 3 -> "U";
+            default -> throw new IllegalStateException("E/EntityHandler::generateCatfruit - Invalid form id %d".formatted(f.fid));
+        };
+
+        String cacheID = StaticStore.UNIT_ICON.formatted(Data.trio(f.unit.id.id), code);
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null) {
+            return cacheLink;
+        }
+
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        File img = StaticStore.generateTempFile(temp, "result", ".png", false);
+
+        if(img == null) {
+            return null;
+        }
+
+        FakeImage image;
+
+        if(f.anim.getUni() != null)
+            image = f.anim.getUni().getImg();
+        else if(f.anim.getEdi() != null)
+            image = f.anim.getEdi().getImg();
+        else
+            return null;
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(image.getWidth(), image.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(image, 0f, 0f);
+
+                return kotlin.Unit.INSTANCE;
             });
+
+            return kotlin.Unit.INSTANCE;
+        }, progress -> img, () -> {
+            waiter.countDown();
+
+            return kotlin.Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
+
+        StaticStore.deleteFile(img, true);
+
+        return cacheLink;
+    }
+
+    private static String generateCatfruit(Form f, CommonStatic.Lang.Locale lang) throws Exception {
+        String cacheID;
+
+        if (f.unit.info.hasZeroForm()) {
+            cacheID = StaticStore.UNIT_EVOLVE_ULTRA.formatted(Data.trio(f.unit.id.id), lang.name());
+        } else {
+            cacheID = StaticStore.UNIT_EVOLVE_TRUE.formatted(Data.trio(f.unit.id.id), lang.name());
+        }
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
+
+        if(f.unit.info.evo == null)
+            return null;
+
+        File tmp = new File("./temp");
+
+        if(!tmp.exists()) {
+            boolean res = tmp.mkdirs();
+
+            if(!res) {
+                StaticStore.logger.uploadLog("W/EntityHandler::generateCatfruit - Failed to create temp folder");
+
+                return null;
+            }
+        }
+
+        File img = StaticStore.generateTempFile(tmp, "result", ".png", false);
+
+        if(img == null) {
+            return null;
+        }
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        float[] trueFormText = font.measureDimension(LangID.getStringByID("data.unit.trueForm", lang));
+        float[] ultraFormText = font.measureDimension(LangID.getStringByID("data.unit.ultraForm", lang));
+
+        int w = Math.round(Math.max(600f, trueFormText[2]));
+        float th = catFruitTextGap + trueFormText[3] + catFruitTextGap + 150f;
+
+        if (f.unit.info.zeroEvo != null) {
+            th += catFruitTextGap + ultraFormText[3] + catFruitTextGap + 150f;
+        }
+
+        int h = Math.round(th);
+
+        StaticStore.renderManager.createRenderer(w, h, tmp, connector -> {
+            connector.queue(g -> {
+                g.setFontModel(font);
+
+                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
+                g.setColor(47, 49, 54, 255);
+
+                g.fillRect(0, 0, w, h);
+
+                g.translate(0f, catFruitTextGap);
+
+                g.setColor(238, 238, 238, 255);
+                g.drawText(LangID.getStringByID("data.unit.trueForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                g.translate(0f, trueFormText[3] + catFruitTextGap);
+
+                g.setColor(238, 238, 238, 128);
+
+                g.drawRect(0, 0, 600, 150);
+
+                for(int i = 1; i < 6; i++) {
+                    g.drawLine(100 * i, 0, 100* i , 150);
+                }
+
+                g.drawLine(0, 100, 600, 100);
+
+                g.setColor(238, 238, 238, 255);
+
+                for(int i = 0; i < 6; i++) {
+                    if(i == 0) {
+                        VFile vf = VFile.get("./org/page/catfruit/xp.png");
+
+                        if(vf != null) {
+                            FakeImage icon = vf.getData().getImg();
+
+                            g.drawImage(icon, 510, 10, 80, 80);
+                            g.drawText(String.valueOf(f.unit.info.xp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                        }
+                    } else {
+                        if(f.unit.info.evo[i - 1][0] != 0) {
+                            VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.evo[i - 1][0]+"_f.png");
+
+                            if(vf != null) {
+                                FakeImage icon = vf.getData().getImg();
+
+                                g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
+                                g.drawText(String.valueOf(f.unit.info.evo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                            }
+                        }
+                    }
+                }
+
+                if (f.unit.info.zeroEvo != null) {
+                    g.translate(0f, 150 + catFruitTextGap);
+
+                    g.setColor(238, 238, 238, 255);
+                    g.drawText(LangID.getStringByID("data.unit.ultraForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                    g.translate(0f, ultraFormText[3] + catFruitTextGap);
+
+                    g.setColor(238, 238, 238, 128);
+
+                    g.drawRect(0, 0, 600, 150);
+
+                    for(int i = 1; i < 6; i++) {
+                        g.drawLine(100 * i, 0, 100* i , 150);
+                    }
+
+                    g.drawLine(0, 100, 600, 100);
+
+                    g.setColor(238, 238, 238, 255);
+
+                    for(int i = 0; i < 6; i++) {
+                        if(i == 0) {
+                            VFile vf = VFile.get("./org/page/catfruit/xp.png");
+
+                            if(vf != null) {
+                                FakeImage icon = vf.getData().getImg();
+
+                                g.drawImage(icon, 510, 10, 80, 80);
+                                g.drawText(String.valueOf(f.unit.info.zeroXp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                            }
+                        } else {
+                            if(f.unit.info.zeroEvo[i - 1][0] != 0) {
+                                VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.zeroEvo[i - 1][0]+"_f.png");
+
+                                if(vf != null) {
+                                    FakeImage icon = vf.getData().getImg();
+
+                                    g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
+                                    g.drawText(String.valueOf(f.unit.info.zeroEvo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return kotlin.Unit.INSTANCE;
+            });
+
+            return kotlin.Unit.INSTANCE;
+        }, progress -> img, () -> {
+            waiter.countDown();
+
+            return kotlin.Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
+
+        StaticStore.deleteFile(img, true);
+
+        return cacheLink;
+    }
+
+    private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int lv, int star, TreasureHolder holder) throws Exception {
+        String hash = Long.toHexString(StaticStore.getHashOfVariables(st.data, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+
+        if (hash.length() < 5)
+            hash = "0".repeat(5 - hash.length()) + hash;
+        else
+            hash = hash.substring(0, 5);
+
+        String cacheID = StaticStore.STAGE_SCHEME.formatted(
+                DataToString.getMapCode(st.getCont().getCont()),
+                Data.trio(st.getCont().id.id),
+                Data.trio(st.id.id),
+                lv,
+                isFrame ? "FRAME" : "SECOND",
+                lang.name(),
+                hash
+        );
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
+
+        File temp = new File("./temp/");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        File img = StaticStore.generateTempFile(temp, "scheme", ".png", false);
+
+        if(img == null) {
+            return null;
+        }
+
+        boolean needBoss = false;
+        boolean needRespect = false;
+        boolean needCount = false;
+
+        for(int i = st.data.datas.length - 1; i >= 0; i--) {
+            SCDef.Line line = st.data.datas[i];
+
+            if(!needBoss && line.boss != 0)
+                needBoss = true;
+
+            if(!needRespect && (line.spawn_0 < 0 || line.spawn_1 < 0))
+                needRespect = true;
+
+            if(!needCount && line.kill_count != 0)
+                needCount = true;
+        }
+
+        ArrayList<String> enemies = new ArrayList<>();
+        ArrayList<String> numbers = new ArrayList<>();
+        ArrayList<String> magnifications = new ArrayList<>();
+        ArrayList<String> isBoss = new ArrayList<>();
+        ArrayList<String> baseHealth = new ArrayList<>();
+        ArrayList<String> startRespawn = new ArrayList<>();
+        ArrayList<String> layers = new ArrayList<>();
+        ArrayList<String> respects = new ArrayList<>();
+        ArrayList<String> killCounts = new ArrayList<>();
+
+        for(int i = st.data.datas.length - 1; i >= 0; i--) {
+            SCDef.Line line = st.data.datas[i];
+
+            AbEnemy enemy = line.enemy.get();
+
+            if(enemy == null)
+                continue;
+
+            int hp = line.multiple;
+            int atk = line.mult_atk;
+
+            if(enemy instanceof Enemy) {
+                String eName = MultiLangCont.get(enemy, lang);
+
+                if(eName == null || eName.isBlank())
+                    eName = ((Enemy) enemy).names.toString();
+
+                if(eName.isBlank())
+                    eName = DataToString.getPackName(((Enemy) enemy).id.pack, lang)+" - "+Data.trio(((Enemy) enemy).id.id);
+
+                enemies.add(eName);
+
+                if(((Enemy) enemy).de.getTraits().contains(UserProfile.getBCData().traits.get(Data.TRAIT_ALIEN)) && ((Enemy) enemy).de.getStar() == 0) {
+                    hp = (int) Math.round(hp * holder.getAlienMultiplier());
+                    atk = (int) Math.round(atk * holder.getAlienMultiplier());
+                } else if(((Enemy) enemy).de.getStar() == 1) {
+                    hp = (int) Math.round(hp * holder.getStarredAlienMultiplier());
+                    atk = (int) Math.round(atk * holder.getStarredAlienMultiplier());
+                }
+            } else if(enemy instanceof EneRand) {
+                String name = ((EneRand) enemy).name;
+
+                if(name == null || name.isBlank()) {
+                    name = DataToString.getPackName(((EneRand) enemy).id.pack, lang)+"-"+Data.trio(((EneRand) enemy).id.id);
+                }
+
+                enemies.add(name);
+            } else
+                continue;
+
+            String number;
+
+            if(line.number == 0)
+                number = LangID.getStringByID("data.stage.infinite", lang);
+            else
+                number = String.valueOf(line.number);
+
+            numbers.add(number);
+
+            int[] magnification;
+
+            if(st.getCont() != null && st.getCont().getCont() != null && st.getCont().getCont().getSID().equals("000003") && st.getCont().id.id == 9) {
+                magnification = new int[] {100, 100};
+            } else {
+
+                magnification = new int[] {hp, atk};
+            }
+
+            String mag = DataToString.getMagnification(magnification, star);
+
+            magnifications.add(mag);
+
+            String start;
+
+            if(line.spawn_1 == 0)
+                if(isFrame)
+                    start = Math.abs(line.spawn_0)+"f";
+                else
+                    start = df.format(Math.abs(line.spawn_0) / 30.0)+"s";
+            else {
+                int minSpawn = Math.abs(Math.min(line.spawn_0, line.spawn_1));
+                int maxSpawn = Math.abs(Math.max(line.spawn_0, line.spawn_1));
+
+                if(isFrame)
+                    start = minSpawn+"f ~ "+maxSpawn+"f";
+                else
+                    start = df.format(minSpawn/30.0)+"s ~ "+df.format(maxSpawn/30.0)+"s";
+            }
+
+            String respawn;
+
+            if(line.respawn_0 == line.respawn_1)
+                if(isFrame)
+                    respawn = line.respawn_0+"f";
+                else
+                    respawn = df.format(line.respawn_0/30.0)+"s";
+            else {
+                int minSpawn = Math.min(line.respawn_0, line.respawn_1);
+                int maxSpawn = Math.max(line.respawn_0, line.respawn_1);
+
+                if(isFrame)
+                    respawn = minSpawn+"f ~ "+maxSpawn+"f";
+                else
+                    respawn = df.format(minSpawn/30.0)+"s ~ "+df.format(maxSpawn/30.0)+"s";
+            }
+
+            String startResp = start+" ("+respawn+")";
+
+            startRespawn.add(startResp);
+
+            String baseHP;
+
+            if(st.trail) {
+                baseHP = String.valueOf(line.castle_0);
+            } else {
+                if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
+                    baseHP = line.castle_0+"%";
+                else {
+                    int minHealth = Math.min(line.castle_0, line.castle_1);
+                    int maxHealth = Math.max(line.castle_0, line.castle_1);
+
+                    baseHP = minHealth + " ~ " + maxHealth + "%";
+                }
+            }
+
+            baseHealth.add(baseHP);
+
+            String layer;
+
+            if(line.layer_0 != line.layer_1) {
+                int minLayer = Math.min(line.layer_0, line.layer_1);
+                int maxLayer = Math.max(line.layer_0, line.layer_1);
+
+                layer = minLayer + " ~ " + maxLayer;
+            } else {
+                layer = String.valueOf(line.layer_0);
+            }
+
+            layers.add(layer);
+
+            if(needBoss) {
+                String boss;
+
+                if(line.boss == 0)
+                    boss = "";
+                else if(line.boss == 1)
+                    boss = LangID.getStringByID("data.stage.boss.normal", lang);
+                else
+                    boss = LangID.getStringByID("data.stage.boss.shake", lang);
+
+                isBoss.add(boss);
+            }
+
+            if(needRespect) {
+                String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data.true", lang) : "";
+
+                respects.add(respect);
+            }
+
+            if(needCount) {
+                killCounts.add(String.valueOf(line.kill_count));
+            }
+        }
+
+        double eMax = font.textWidth(LangID.getStringByID("data.stage.enemy", lang));
+        double nMax = font.textWidth(LangID.getStringByID("data.stage.number", lang));
+        double mMax = font.textWidth(LangID.getStringByID("data.enemy.magnification", lang));
+        double iMax = font.textWidth(LangID.getStringByID("data.stage.isBoss", lang));
+        double bMax = font.textWidth(LangID.getStringByID(st.trail ? "data.stage.totalDamage" : "data.stage.basePercentage", lang));
+        double sMax = font.textWidth(LangID.getStringByID("data.stage.start", lang));
+        double lMax = font.textWidth(LangID.getStringByID("data.stage.layer", lang));
+        double rMax = font.textWidth(LangID.getStringByID("data.stage.respectStart", lang));
+        double kMax = font.textWidth(LangID.getStringByID("data.stage.killCount", lang));
+
+        for(int i = 0; i < enemies.size(); i++) {
+            eMax = Math.max(eMax, font.textWidth(enemies.get(i)));
+
+            nMax = Math.max(nMax, font.textWidth(numbers.get(i)));
+
+            mMax = Math.max(mMax, font.textWidth(magnifications.get(i)));
+
+            bMax = Math.max(bMax, font.textWidth(baseHealth.get(i)));
+
+            sMax = Math.max(sMax, font.textWidth(startRespawn.get(i)));
+
+            lMax = Math.max(lMax, font.textWidth(layers.get(i)));
+
+            if(needBoss)
+                iMax = Math.max(iMax, font.textWidth(isBoss.get(i)));
+
+            if(needRespect)
+                rMax = Math.max(rMax, font.textWidth(respects.get(i)));
+
+            if(needCount)
+                kMax = Math.max(kMax, font.textWidth(killCounts.get(i)));
+        }
+
+        int xGap = 16;
+        int yGap = 10;
+
+        eMax += xGap + 93;
+        nMax += xGap;
+        mMax += xGap;
+        bMax += xGap;
+        sMax += xGap;
+        lMax += xGap;
+        rMax += xGap;
+        kMax += xGap;
+        iMax += xGap;
+
+        int ySeg = Math.round(Math.max(font.getMaxHeight() + yGap, 32 + yGap));
+
+        double dw = eMax + nMax + mMax + bMax + sMax + lMax;
+
+        if(needBoss)
+            dw += iMax;
+
+        if(needRespect)
+            dw += rMax;
+
+        if(needCount)
+            dw += kMax;
+
+        int w = (int) Math.round(dw);
+        int h = ySeg * (enemies.size() + 1);
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        double finalEMax = eMax;
+        double finalNMax = nMax;
+        double finalBMax = bMax;
+        double finalMMax = mMax;
+        double finalSMax = sMax;
+        double finalLMax = lMax;
+        double finalRMax = rMax;
+        double finalKMax = kMax;
+        double finalIMax = iMax;
+
+        boolean finalNeedRespect = needRespect;
+        boolean finalNeedCount = needCount;
+        boolean finalNeedBoss = needBoss;
+
+        StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
+            connector.queue(g -> {
+                g.setFontModel(font);
+
+                g.setColor(47, 49, 54, 255);
+                g.fillRect(0, 0, w, h);
+
+                g.setColor(54, 57, 63, 255);
+                g.fillRect(0, 0, w, ySeg);
+
+                g.setColor(32, 34, 37, 255);
+                g.setStroke(4f, GLGraphics.LineEndMode.VERTICAL);
+
+                g.drawRect(0, 0, w, h);
+
+                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
+
+                for(int i = 1; i < enemies.size() + 1; i++) {
+                    g.drawLine(0, ySeg * i, w, ySeg * i);
+                }
+
+                int x = (int) finalEMax;
+
+                g.drawLine(x, 0, x, h);
+
+                x += (int) finalNMax;
+
+                g.drawLine(x, 0, x, h);
+
+                x += (int) finalBMax;
+
+                g.drawLine(x, 0, x, h);
+
+                x += (int) finalMMax;
+
+                g.drawLine(x, 0, x, h);
+
+                x += (int) finalSMax;
+
+                g.drawLine(x, 0, x, h);
+
+                x += (int) finalLMax;
+
+                g.drawLine(x, 0, x, h);
+
+                if(finalNeedRespect) {
+                    x += (int) finalRMax;
+
+                    g.drawLine(x, 0, x, h);
+                }
+
+                if(finalNeedCount) {
+                    x += (int) finalKMax;
+
+                    g.drawLine(x, 0, x, h);
+                }
+
+                if(finalNeedBoss) {
+                    x += (int) finalIMax;
+
+                    g.drawLine(x, 0, x, h);
+                }
+
+                g.setColor(238, 238, 238, 255);
+
+                int initX = (int) (finalEMax / 2);
+
+                g.drawText(LangID.getStringByID("data.stage.enemy", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalEMax / 2 + finalNMax / 2);
+
+                g.drawText(LangID.getStringByID("data.stage.number", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalNMax / 2 + finalBMax / 2);
+
+                g.drawText(LangID.getStringByID(st.trail ? "data.stage.totalDamage" : "data.stage.basePercentage", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalBMax / 2 + finalMMax / 2);
+
+                g.drawText(LangID.getStringByID("data.enemy.magnification", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalMMax / 2 + finalSMax / 2);
+
+                g.drawText(LangID.getStringByID("data.stage.start", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalSMax / 2 + finalLMax / 2);
+
+                g.drawText(LangID.getStringByID("data.stage.layer", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalLMax / 2);
+
+                if(finalNeedRespect) {
+                    initX += (int) (finalRMax / 2);
+
+                    g.drawText(LangID.getStringByID("data.stage.respectStart", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                    initX += (int) (finalRMax / 2);
+                }
+
+                if(finalNeedCount) {
+                    initX += (int) (finalKMax / 2);
+
+                    g.drawText(LangID.getStringByID("data.stage.killCount", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                    initX += (int) (finalKMax / 2);
+                }
+
+                if(finalNeedBoss) {
+                    initX += (int) (finalIMax / 2);
+
+                    g.drawText(LangID.getStringByID("data.stage.isBoss", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                }
+
+                for(int i = 0; i < enemies.size(); i++) {
+                    AbEnemy e = st.data.datas[st.data.datas.length - 1 - i].enemy.get();
+
+                    if(e != null) {
+                        FakeImage edi;
+
+                        if(e instanceof Enemy) {
+                            if(((Enemy) e).anim.getEdi() != null) {
+                                edi = ((Enemy) e).anim.getEdi().getImg();
+                            } else {
+                                edi = CommonStatic.getBCAssets().ico[0][0].getImg();
+                            }
+                        } else {
+                            edi = CommonStatic.getBCAssets().ico[0][0].getImg();
+                        }
+
+                        g.drawImage(edi, xGap / 2f, ySeg * (i + 1) + yGap / 2f);
+                    } else
+                        continue;
+
+                    int px = 93 + xGap / 2;
+                    int py = ySeg * (i + 2) - ySeg / 2;
+
+                    g.drawText(enemies.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px = (int) finalEMax + xGap / 2;
+
+                    g.drawText(numbers.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalNMax;
+
+                    g.drawText(baseHealth.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalBMax;
+
+                    g.drawText(magnifications.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalMMax;
+
+                    g.drawText(startRespawn.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalSMax;
+
+                    g.drawText(layers.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalLMax;
+
+                    if(finalNeedRespect) {
+                        g.drawText(respects.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                        px += (int) finalRMax;
+                    }
+
+                    if(finalNeedCount) {
+                        g.drawText(killCounts.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                        px += (int) finalKMax;
+                    }
+
+                    if(finalNeedBoss) {
+                        g.drawText(isBoss.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+                    }
+                }
+
+                return kotlin.Unit.INSTANCE;
+            });
+
+            return kotlin.Unit.INSTANCE;
+        }, progress -> img, () -> {
+            waiter.countDown();
+
+            return kotlin.Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
+
+        StaticStore.deleteFile(img, true);
+
+        return cacheLink;
+    }
+
+    private static String generateComboImage(Combo c) throws Exception {
+        String hash = Long.toHexString(StaticStore.getHashOfVariables(c, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+
+        if (hash.length() < 5) {
+            hash = "0".repeat(5 - hash.length()) + hash;
+        } else {
+            hash = hash.substring(0, 5);
+        }
+
+        String cacheID = StaticStore.COMBO_IMAGE.formatted(Data.trio(c.id.id), hash);
+
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+
+        if (cacheLink != null)
+            return cacheLink;
+
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : " + temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        File image = StaticStore.generateTempFile(temp, "combo", ".png", false);
+
+        if(image == null) {
+            return null;
+        }
+
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(600, 95, temp, connector -> {
+            connector.queue(g -> {
+                g.setColor(47, 49, 54, 255);
+                g.fillRect(0, 0, 650, 105);
+
+                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
+                g.setColor(230, 230, 230, 255);
+                g.drawRect(0, 0, 600, 95);
+
+                for(int i = 1; i < 5; i++) {
+                    g.drawLine(120 * i, 0, 120 * i, 95);
+                }
+
+                for(int i = 0; i < 5; i++) {
+                    if(i >= c.forms.length || c.forms[i] == null)
+                        continue;
+
+                    Unit u = c.forms[i].unit;
+
+                    if(u == null)
+                        continue;
+
+                    Form f = c.forms[i];
+
+                    f.anim.load();
+
+                    FakeImage icon = f.anim.getUni().getImg();
+
+                    g.drawImage(icon, 120 * i + 5, 5);
+
+                    f.anim.unload();
+                }
+
+                return kotlin.Unit.INSTANCE;
+            });
+
+            return kotlin.Unit.INSTANCE;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return kotlin.Unit.INSTANCE;
+        });
+
+        waiter.await();
+
+        cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
+
+        StaticStore.deleteFile(image, true);
+
+        return cacheLink;
+    }
+
+    private static FakeImage drawLevelImage(int max, int lv) {
+        File temp = new File("./temp");
+
+        if (!temp.exists() && !temp.mkdirs()) {
+            StaticStore.logger.uploadLog("W/EntityHandler::drawLevelImage - Failed to create folder : " + temp.getAbsolutePath());
+        }
+
+        File image = StaticStore.generateTempFile(temp, "level", ".png", false);
+
+        if (image == null || !image.exists())
+            return null;
+
+        try {
+            FakeImage crownOn = ImageBuilder.builder.build(new File("./data/bot/icons/crownOn.png"));
+            FakeImage crownOff = ImageBuilder.builder.build(new File("./data/bot/icons/crownOff.png"));
+
+            CountDownLatch waiter = new CountDownLatch(1);
+
+            StaticStore.renderManager.createRenderer(crownOn.getWidth() * max + 10 * (max - 1), crownOn.getHeight(), temp, connector -> {
+                connector.queue(g -> {
+                    int x = 0;
+
+                    for(int i = 0; i < max; i++) {
+                        if(i > lv) {
+                            g.drawImage(crownOff, x, 0);
+                        } else {
+                            g.drawImage(crownOn, x, 0);
+                        }
+
+                        x += crownOn.getWidth() + 10;
+                    }
+
+                    return kotlin.Unit.INSTANCE;
+                });
+
+                return kotlin.Unit.INSTANCE;
+            }, progress -> image, () -> {
+                waiter.countDown();
+
+                return kotlin.Unit.INSTANCE;
+            });
+
+            waiter.await();
+
+            return ImageBuilder.builder.build(image);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::drawLevelImage - Failed to generate level image");
+        }
+
+        return null;
+    }
+
+    private static void cacheImage(Form f, int mode, boolean transparent, Message msg) {
+        if(f.unit == null || f.unit.id == null)
+            return;
+
+        String id = generateID(f, mode, transparent);
+
+        List<Message.Attachment> att = msg.getAttachments();
+
+        if(att.isEmpty())
+            return;
+
+        for(Message.Attachment a : att) {
+            if (a.getFileName().equals("result.gif")) {
+                String link = a.getUrl();
+
+                StaticStore.imgur.put(id, link, false);
+
+                return;
+            } else if(a.getFileName().equals("result.mp4")) {
+                String link = a.getUrl();
+
+                StaticStore.imgur.put(id, link, true);
+
+                return;
+            }
         }
     }
 
-    private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskUnit u, CommonStatic.Lang.Locale lang, int lv, boolean isFrame) {
+    private static void cacheImage(Enemy e, int mode, boolean transparent, Message msg) {
+        if(e.id == null)
+            return;
+
+        String id = generateID(e, mode, transparent);
+
+        List<Message.Attachment> att = msg.getAttachments();
+
+        if(att.isEmpty())
+            return;
+
+        for(Message.Attachment a : att) {
+            if (a.getFileName().equals("result.gif")) {
+                String link = a.getUrl();
+
+                StaticStore.imgur.put(id, link, false);
+
+                return;
+            } else if(a.getFileName().equals("result.mp4")) {
+                String link = a.getUrl();
+
+                StaticStore.imgur.put(id, link, true);
+
+                return;
+            }
+        }
+    }
+
+    // |----------------------|
+    // |    Private : Data    |
+    // |----------------------|
+
+    private static String getProcHash(Data.Proc proc) throws Exception {
+        Class<?> cls = proc.getClass();
+
+        Field[] fields = cls.getDeclaredFields();
+
+        long hash = 0L;
+
+        for (int i = 0; i < fields.length; i++) {
+            Field f = fields[i];
+
+            Object obj = f.get(proc);
+
+            if (obj == null)
+                continue;
+
+            hash += StaticStore.getHashOfVariables(obj, new ArrayList<>());
+        }
+
+        String hashCode = Long.toHexString(hash);
+
+        if (hashCode.length() < 5) {
+            return "0".repeat(5 - hashCode.length()) + hashCode.toUpperCase(Locale.ENGLISH);
+        } else {
+            return hashCode.substring(0, 5).toUpperCase(Locale.ENGLISH);
+        }
+    }
+
+    private static List<String> mergeImmune(List<String> abilities, CommonStatic.Lang.Locale lang) {
+        List<String> result = new ArrayList<>();
+        List<String> immunities = new ArrayList<>();
+
+        for(int i = 0; i < abilities.size(); i++) {
+            String actualName = abilities.get(i).replaceAll("<:.+:\\d+> ", "");
+
+            switch (lang) {
+                case KR, JP -> {
+                    if (actualName.endsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
+                        immunities.add(actualName);
+                    } else {
+                        result.add(abilities.get(i));
+                    }
+                }
+                case EN -> {
+                    if (actualName.startsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
+                        immunities.add(actualName);
+                    } else {
+                        result.add(abilities.get(i));
+                    }
+                }
+                default -> {
+                    return abilities;
+                }
+            }
+        }
+
+        if(immunities.size() < 2)
+            return abilities;
+
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < immunities.size(); i++) {
+            String segment = immunities.get(i).replace(LangID.getStringByID("data.abilities.immuneTo", lang), "");
+
+            sb.append(segment);
+
+            if(i < immunities.size() - 1)
+                sb.append(LangID.getStringByID("data.comma", lang));
+        }
+
+        Emoji emoji = EmojiStore.ABILITY.get("IMMUNITY");
+
+        String e = emoji == null ? "" : emoji.getFormatted() + " ";
+
+        switch (lang) {
+            case KR, JP -> result.add(e + sb + LangID.getStringByID("data.abilities.immuneTo", lang));
+            default -> result.add(e + LangID.getStringByID("data.abilities.immuneTo", lang) + sb);
+        }
+
+        return result;
+    }
+
+    private static boolean talentExists(int[] t) {
+        for(int i = 0; i < t.length; i++) {
+            if (t[i] > 0)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static int[] handleTalent(Form f, Level lv, int[] t) {
+        int[] res = new int[t.length];
+        int[] talents = lv.getTalents();
+
+        for(int i = 0; i < t.length; i++) {
+            if(i >= talents.length && talents.length == 0)
+                res[i] = t[i];
+            else if(i < talents.length)
+                res[i] = Math.min(t[i], talents[i]);
+        }
+
+        if(f.du.getPCoin() != null) {
+            PCoin pc = f.du.getPCoin();
+
+            for(int i = 0; i < res.length; i++) {
+                if(pc.info.get(i)[13] == 1 && lv.getLv() + lv.getPlusLv() < 60) {
+                    res[i] = 0;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private static boolean hasTwoMusic(Stage st) {
+        return st.mush != 0 && st.mush != 100 && st.mus1 != null && st.mus0 != null && st.mus1.id != st.mus0.id;
+    }
+
+    private static BigDecimal getTotalAbilityAttack(MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
+        BigDecimal result = BigDecimal.ZERO;
+
+        for (int i = 0; i < data.getAtkCount(); i++) {
+            boolean abilityApplied = data.rawAtkData()[i][2] == 1;
+
+            if (abilityApplied) {
+                result = result.add(getAttack(i, data, levelCurve, lv, t, talent, treasure));
+            }
+        }
+
+        return result;
+    }
+
+    private static BigDecimal getAttack(int index, MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
+        MaskAtk attack = data.getAtkModel(index);
+
+        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
+
+        if (data.rawAtkData()[index][2] == 1) {
+            Data.Proc.PM savageBlow = attack.getProc().SATK;
+            Data.Proc.PM critical = attack.getProc().CRIT;
+
+            if (savageBlow.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+
+            if (critical.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+        }
+
+        int result;
+
+        if(data.getPCoin() != null && talent) {
+            result = (int) ((int) (Math.round(attack.getAtk() * levelCurve.getMult(lv.getLv() + lv.getPlusLv())) * t.getAtkMultiplier()) * data.getPCoin().getAtkMultiplication(lv.getTalents()));
+        } else {
+            result = (int) (Math.round(attack.getAtk() * levelCurve.getMult(lv.getLv() + lv.getPlusLv())) * t.getAtkMultiplier());
+        }
+
+        if(treasure) {
+            List<Trait> traits = data.getTraits();
+
+            if((data.getAbi() & Data.AB_GOOD) > 0) {
+                result = (int) (result * t.getStrongAttackMultiplier(traits));
+            }
+
+            if((data.getAbi() & Data.AB_MASSIVE) > 0) {
+                result = (int) (result * t.getMassiveAttackMultiplier(traits));
+            }
+
+            if((data.getAbi() & Data.AB_MASSIVES) > 0) {
+                result = (int) (result * t.getInsaneMassiveAttackMultiplier(traits));
+            }
+        }
+
+        return BigDecimal.valueOf(result).multiply(damageTotalMultiplier);
+    }
+
+    private static BigDecimal getTotalAbilityAttack(MaskEnemy data, int magnification) {
+        BigDecimal result = BigDecimal.ZERO;
+
+        for (int i = 0; i < data.getAtkCount(); i++) {
+            boolean abilityApplied = data.rawAtkData()[i][2] == 1;
+
+            if (abilityApplied) {
+                result = result.add(getAttack(i, data, magnification));
+            }
+        }
+
+        return result;
+    }
+
+    private static BigDecimal getAttack(int index, MaskEnemy data, int magnification) {
+        MaskAtk attack = data.getAtkModel(index);
+
+        BigDecimal damageTotalMultiplier = BigDecimal.ONE;
+
+        if (data.rawAtkData()[index][2] == 1) {
+            Data.Proc.PM savageBlow = attack.getProc().SATK;
+            Data.Proc.PM critical = attack.getProc().CRIT;
+
+            if (savageBlow.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+
+            if (critical.exists()) {
+                damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.ONE.multiply(BigDecimal.valueOf(critical.prob).divide(new BigDecimal("100"), Equation.context))));
+            }
+        }
+
+        int result = (int) ((attack.getAtk() * data.multi(BasisSet.current()) * magnification / 100.0));
+
+        return BigDecimal.valueOf(result).multiply(damageTotalMultiplier);
+    }
+
+    private static String getModeName(int mode, int max, CommonStatic.Lang.Locale lang) {
+        switch (mode) {
+            case 1 -> {
+                return LangID.getStringByID("data.animation.mode.idle", lang);
+            }
+            case 2 -> {
+                return LangID.getStringByID("data.animation.mode.attack", lang);
+            }
+            case 3 -> {
+                return LangID.getStringByID("formImage.mode.kb", lang);
+            }
+            case 4 -> {
+                if (max == 5)
+                    return LangID.getStringByID("data.animation.mode.enter", lang);
+                else
+                    return LangID.getStringByID("formImage.mode.burrowDown", lang);
+            }
+            case 5 -> {
+                return LangID.getStringByID("formImage.mode.burrowMove", lang);
+            }
+            case 6 -> {
+                return LangID.getStringByID("formImage.mode.burrowUp", lang);
+            }
+            default -> {
+                return LangID.getStringByID("data.animation.mode.walk", lang);
+            }
+        }
+    }
+
+    private static AnimU.UType getAnimType(int mode, int max) {
+        switch (mode) {
+            case 1 -> {
+                return AnimU.UType.IDLE;
+            }
+            case 2 -> {
+                return AnimU.UType.ATK;
+            }
+            case 3 -> {
+                return AnimU.UType.HB;
+            }
+            case 4 -> {
+                if (max == 5)
+                    return AnimU.UType.ENTER;
+                else
+                    return AnimU.UType.BURROW_DOWN;
+            }
+            case 5 -> {
+                return AnimU.UType.BURROW_MOVE;
+            }
+            case 6 -> {
+                return AnimU.UType.BURROW_UP;
+            }
+            default -> {
+                return AnimU.UType.WALK;
+            }
+        }
+    }
+
+    private static String getIconName(int mode, CommonStatic.Lang.Locale lang) {
+        if(mode == 0)
+            return LangID.getStringByID("formSprite.spriteSheet", lang);
+        else if(mode == 1)
+            return LangID.getStringByID("formSprite.icon.unitIcon", lang);
+        else if(mode == 2)
+            return LangID.getStringByID("formSprite.icon.unitDisplay", lang);
+        else
+            return LangID.getStringByID("formSprite.icon.enemyDisplay", lang);
+    }
+
+    private static String generateID(Enemy e, int mode, boolean transparent) {
+        if(e.id == null)
+            return "";
+
+        if (transparent) {
+            return "E - "+e.id.pack+" - "+Data.trio(e.id.id)+" - "+Data.trio(mode)+" - TRANSPARENT";
+        } else {
+            return "E - "+e.id.pack+" - "+Data.trio(e.id.id)+" - "+Data.trio(mode);
+        }
+    }
+
+    private static String generateID(Form f, int mode, boolean transparent) {
+        if(f.unit == null || f.unit.id == null)
+            return "";
+
+        if (transparent) {
+            return "F - "+f.unit.id.pack+" - "+ Data.trio(f.unit.id.id)+" - "+Data.trio(f.fid) + " - " + Data.trio(mode) + " - TRANSPARENT";
+        } else {
+            return "F - "+f.unit.id.pack+" - "+ Data.trio(f.unit.id.id)+" - "+Data.trio(f.fid) + " - " + Data.trio(mode);
+        }
+    }
+
+    private static String getLocaleName(CommonStatic.Lang.Locale lang) {
+        if(lang == CommonStatic.Lang.Locale.EN)
+            return "en";
+        else if(lang == CommonStatic.Lang.Locale.ZH)
+            return "tw";
+        else if(lang == CommonStatic.Lang.Locale.KR)
+            return "kr";
+        else
+            return "";
+    }
+
+    // |--------------------------|
+    // |    Private : Datamine    |
+    // |--------------------------|
+
+    private static List<CellDrawer> addUnitCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, CustomMaskUnit u, CommonStatic.Lang.Locale lang, int lv, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
         Level lvs = new Level(0);
@@ -5658,196 +5938,48 @@ public class EntityHandler {
         return cells;
     }
 
-    private static String generateComboImage(Combo c) throws Exception {
-        String hash = Long.toHexString(StaticStore.getHashOfVariables(c, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+    // |-------------------------|
+    // |    Private : Utility    |
+    // |-------------------------|
 
-        if (hash.length() < 5) {
-            hash = "0".repeat(5 - hash.length()) + hash;
-        } else {
-            hash = hash.substring(0, 5);
-        }
+    private static void sendMultipleFiles(MessageChannel ch, List<File> results) {
+        int i = 0;
 
-        String cacheID = StaticStore.COMBO_IMAGE.formatted(Data.trio(c.id.id), hash);
+        Queue<File> done = new ArrayDeque<>();
 
-        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+        while(i < results.size()) {
+            MessageCreateAction action = ch.sendMessage("Analyzed stage image");
 
-        if (cacheLink != null)
-            return cacheLink;
+            long fileSize = 0;
 
-        File temp = new File("./temp");
+            while (i < results.size() && fileSize + results.get(i).length() < 8 * 1024 * 1024) {
+                action = action.addFiles(FileUpload.fromData(results.get(i)));
+                done.add(results.get(i));
 
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : " + temp.getAbsolutePath());
-                return null;
+                fileSize += results.get(i).length();
+                i++;
             }
-        }
 
-        File image = StaticStore.generateTempFile(temp, "combo", ".png", false);
+            action.queue(m -> {
+                while(!done.isEmpty()) {
+                    File target = done.poll();
 
-        if(image == null) {
-            return null;
-        }
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        StaticStore.renderManager.createRenderer(600, 95, temp, connector -> {
-            connector.queue(g -> {
-                g.setColor(47, 49, 54, 255);
-                g.fillRect(0, 0, 650, 105);
-
-                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
-                g.setColor(230, 230, 230, 255);
-                g.drawRect(0, 0, 600, 95);
-
-                for(int i = 1; i < 5; i++) {
-                    g.drawLine(120 * i, 0, 120 * i, 95);
+                    if(target != null && target.exists() && !target.delete()) {
+                        StaticStore.logger.uploadLog("W/EntityHandler::generateStageStatImage - Failed to delete file : " + target.getAbsolutePath());
+                    }
                 }
+            }, e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateStageStatImage - Error happened while trying to upload analyzed stage image");
 
-                for(int i = 0; i < 5; i++) {
-                    if(i >= c.forms.length || c.forms[i] == null)
-                        continue;
+                while(!done.isEmpty()) {
+                    File target = done.poll();
 
-                    Unit u = c.forms[i].unit;
-
-                    if(u == null)
-                        continue;
-
-                    Form f = c.forms[i];
-
-                    f.anim.load();
-
-                    FakeImage icon = f.anim.getUni().getImg();
-
-                    g.drawImage(icon, 120 * i + 5, 5);
-
-                    f.anim.unload();
+                    if(target != null && target.exists() && !target.delete()) {
+                        StaticStore.logger.uploadLog("W/EntityHandler::generateStageStatImage - Failed to delete file : " + target.getAbsolutePath());
+                    }
                 }
-
-                return kotlin.Unit.INSTANCE;
             });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
-
-        StaticStore.deleteFile(image, true);
-
-        return cacheLink;
-    }
-
-    private static String getIconName(int mode, CommonStatic.Lang.Locale lang) {
-        if(mode == 0)
-            return LangID.getStringByID("formSprite.spriteSheet", lang);
-        else if(mode == 1)
-            return LangID.getStringByID("formSprite.icon.unitIcon", lang);
-        else if(mode == 2)
-            return LangID.getStringByID("formSprite.icon.unitDisplay", lang);
-        else
-            return LangID.getStringByID("formSprite.icon.enemyDisplay", lang);
-    }
-
-    private static void cacheImage(Enemy e, int mode, boolean transparent, Message msg) {
-        if(e.id == null)
-            return;
-
-        String id = generateID(e, mode, transparent);
-
-        List<Message.Attachment> att = msg.getAttachments();
-
-        if(att.isEmpty())
-            return;
-
-        for(Message.Attachment a : att) {
-            if (a.getFileName().equals("result.gif")) {
-                String link = a.getUrl();
-
-                StaticStore.imgur.put(id, link, false);
-
-                return;
-            } else if(a.getFileName().equals("result.mp4")) {
-                String link = a.getUrl();
-
-                StaticStore.imgur.put(id, link, true);
-
-                return;
-            }
         }
-    }
-
-    private static String generateID(Enemy e, int mode, boolean transparent) {
-        if(e.id == null)
-            return "";
-
-        if (transparent) {
-            return "E - "+e.id.pack+" - "+Data.trio(e.id.id)+" - "+Data.trio(mode)+" - TRANSPARENT";
-        } else {
-            return "E - "+e.id.pack+" - "+Data.trio(e.id.id)+" - "+Data.trio(mode);
-        }
-    }
-
-    private static String generateID(Form f, int mode, boolean transparent) {
-        if(f.unit == null || f.unit.id == null)
-            return "";
-
-        if (transparent) {
-            return "F - "+f.unit.id.pack+" - "+ Data.trio(f.unit.id.id)+" - "+Data.trio(f.fid) + " - " + Data.trio(mode) + " - TRANSPARENT";
-        } else {
-            return "F - "+f.unit.id.pack+" - "+ Data.trio(f.unit.id.id)+" - "+Data.trio(f.fid) + " - " + Data.trio(mode);
-        }
-    }
-
-    private static AnimU.UType getAnimType(int mode, int max) {
-        switch (mode) {
-            case 1 -> {
-                return AnimU.UType.IDLE;
-            }
-            case 2 -> {
-                return AnimU.UType.ATK;
-            }
-            case 3 -> {
-                return AnimU.UType.HB;
-            }
-            case 4 -> {
-                if (max == 5)
-                    return AnimU.UType.ENTER;
-                else
-                    return AnimU.UType.BURROW_DOWN;
-            }
-            case 5 -> {
-                return AnimU.UType.BURROW_MOVE;
-            }
-            case 6 -> {
-                return AnimU.UType.BURROW_UP;
-            }
-            default -> {
-                return AnimU.UType.WALK;
-            }
-        }
-    }
-
-    private static String getLocaleName(CommonStatic.Lang.Locale lang) {
-        if(lang == CommonStatic.Lang.Locale.EN)
-            return "en";
-        else if(lang == CommonStatic.Lang.Locale.ZH)
-            return "tw";
-        else if(lang == CommonStatic.Lang.Locale.KR)
-            return "kr";
-        else
-            return "";
-    }
-
-    private static boolean hasTwoMusic(Stage st) {
-        return st.mush != 0 && st.mush != 100 && st.mus1 != null && st.mus0 != null && st.mus1.id != st.mus0.id;
     }
 
     private static int getBoosterFileLimit(int level) {
@@ -5858,109 +5990,19 @@ public class EntityHandler {
         };
     }
 
-    private static List<String> mergeImmune(List<String> abilities, CommonStatic.Lang.Locale lang) {
-        List<String> result = new ArrayList<>();
-        List<String> immunities = new ArrayList<>();
+    private static String getFileSize(File f) {
+        String[] unit = {"B", "KB", "MB"};
 
-        for(int i = 0; i < abilities.size(); i++) {
-            String actualName = abilities.get(i).replaceAll("<:.+:\\d+> ", "");
+        double size = f.length();
 
-            switch (lang) {
-                case KR, JP -> {
-                    if (actualName.endsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
-                        immunities.add(actualName);
-                    } else {
-                        result.add(abilities.get(i));
-                    }
-                }
-                case EN -> {
-                    if (actualName.startsWith(LangID.getStringByID("data.abilities.immuneTo", lang))) {
-                        immunities.add(actualName);
-                    } else {
-                        result.add(abilities.get(i));
-                    }
-                }
-                default -> {
-                    return abilities;
-                }
+        for (String s : unit) {
+            if (size < 1024) {
+                return DataToString.df.format(size) + s;
+            } else {
+                size /= 1024.0;
             }
         }
 
-        if(immunities.size() < 2)
-            return abilities;
-
-        StringBuilder sb = new StringBuilder();
-
-        for(int i = 0; i < immunities.size(); i++) {
-            String segment = immunities.get(i).replace(LangID.getStringByID("data.abilities.immuneTo", lang), "");
-
-            sb.append(segment);
-
-            if(i < immunities.size() - 1)
-                sb.append(LangID.getStringByID("data.comma", lang));
-        }
-
-        Emoji emoji = EmojiStore.ABILITY.get("IMMUNITY");
-
-        String e = emoji == null ? "" : emoji.getFormatted() + " ";
-
-        switch (lang) {
-            case KR, JP -> result.add(e + sb + LangID.getStringByID("data.abilities.immuneTo", lang));
-            default -> result.add(e + LangID.getStringByID("data.abilities.immuneTo", lang) + sb);
-        }
-
-        return result;
-    }
-
-    private static FakeImage drawLevelImage(int max, int lv) {
-        File temp = new File("./temp");
-
-        if (!temp.exists() && !temp.mkdirs()) {
-            StaticStore.logger.uploadLog("W/EntityHandler::drawLevelImage - Failed to create folder : " + temp.getAbsolutePath());
-        }
-
-        File image = StaticStore.generateTempFile(temp, "level", ".png", false);
-
-        if (image == null || !image.exists())
-            return null;
-
-        try {
-            FakeImage crownOn = ImageBuilder.builder.build(new File("./data/bot/icons/crownOn.png"));
-            FakeImage crownOff = ImageBuilder.builder.build(new File("./data/bot/icons/crownOff.png"));
-
-            CountDownLatch waiter = new CountDownLatch(1);
-
-            StaticStore.renderManager.createRenderer(crownOn.getWidth() * max + 10 * (max - 1), crownOn.getHeight(), temp, connector -> {
-                connector.queue(g -> {
-                    int x = 0;
-
-                    for(int i = 0; i < max; i++) {
-                        if(i > lv) {
-                            g.drawImage(crownOff, x, 0);
-                        } else {
-                            g.drawImage(crownOn, x, 0);
-                        }
-
-                        x += crownOn.getWidth() + 10;
-                    }
-
-                    return kotlin.Unit.INSTANCE;
-                });
-
-                return kotlin.Unit.INSTANCE;
-            }, progress -> image, () -> {
-                waiter.countDown();
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            waiter.await();
-
-            return ImageBuilder.builder.build(image);
-        } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::drawLevelImage - Failed to generate level image");
-        }
-
-        return null;
+        return DataToString.df.format(size)+unit[2];
     }
 }

@@ -57,7 +57,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                 replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(unitName, comboName, lang))));
             } else if(combos.size() == 1) {
-                EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
+                EntityHandler.generateComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
             } else {
                 disableTimer();
 
@@ -82,7 +82,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                     replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("combo.failed.noCombo", lang).formatted(validateKeyword(getSearchKeywords(unitName, comboName, lang))));
                 } else if(combos.size() == 1) {
-                    EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
+                    EntityHandler.generateComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang, false);
                 } else {
                     disableTimer();
 

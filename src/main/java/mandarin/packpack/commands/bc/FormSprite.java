@@ -67,7 +67,7 @@ public class FormSprite extends TimedConstraintCommand {
             } else if(forms.size() == 1) {
                 int param = checkParameter(loader.getContent());
 
-                EntityHandler.getFormSprite(forms.getFirst(), ch, loader.getMessage(), getModeFromParam(param), lang);
+                EntityHandler.generateUnitSprite(forms.getFirst(), ch, loader.getMessage(), getModeFromParam(param), lang);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
 

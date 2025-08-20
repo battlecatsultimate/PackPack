@@ -57,7 +57,7 @@ public class SoulSprite extends TimedConstraintCommand {
             return;
         }
 
-        EntityHandler.getSoulSprite(s, ch, loader.getMessage(), lang);
+        EntityHandler.generateSoulSprite(s, ch, loader.getMessage(), lang);
     }
 
     private int findSoulID(String content) {

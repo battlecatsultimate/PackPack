@@ -91,7 +91,7 @@ public class TalentInfo extends ConstraintCommand {
                     sender = loader.getInteractionEvent();
                 }
 
-                EntityHandler.showTalentEmbed(sender, loader.getNullableMessage(), trueForm, isFrame, false, lang);
+                EntityHandler.generateTalentEmbed(sender, loader.getNullableMessage(), trueForm, isFrame, false, lang);
             } else if (forms.isEmpty()) {
                 if (loader.fromMessage) {
                     replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(name)), loader.getMessage(), a -> a);

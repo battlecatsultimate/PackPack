@@ -54,6 +54,6 @@ public class EnemyButtonHolder extends ComponentHolder {
 
     @Override
     public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) throws Exception {
-        EntityHandler.showEnemyEmb(e, event, hasAuthorMessage() ? getAuthorMessage() : null, t, configData, true, lang, msg -> {});
+        EntityHandler.generateEnemyEmbed(e, event, hasAuthorMessage() ? getAuthorMessage() : null, t, configData, true, lang, msg -> {});
     }
 }

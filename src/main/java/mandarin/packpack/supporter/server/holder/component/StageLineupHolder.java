@@ -72,7 +72,7 @@ public class StageLineupHolder extends ComponentHolder {
 
     @Override
     public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
-        EntityHandler.showFixedLineupData(st, st.preset, event, lang);
+        EntityHandler.generateFixedLineupData(st, st.preset, event, lang);
     }
 
     @Override

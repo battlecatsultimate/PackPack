@@ -82,7 +82,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
         try {
             Form f = form.get(index);
 
-            EntityHandler.getFormSprite(f, ch, getAuthorMessage(), mode, lang);
+            EntityHandler.generateUnitSprite(f, ch, getAuthorMessage(), mode, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormSpriteMessageHolder::onSelected - Failed to upload form sprite/icon");
         }

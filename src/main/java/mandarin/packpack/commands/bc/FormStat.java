@@ -148,7 +148,7 @@ public class FormStat extends ConstraintCommand {
 
                 Object sender = loader.fromMessage ? ch : loader.getInteractionEvent();
 
-                EntityHandler.showUnitEmb(f, sender, author, config, f.unit.forms.length >= 3, treasure, configData, lang, true, false, result -> {
+                EntityHandler.generateUnitEmbed(f, sender, author, config, f.unit.forms.length >= 3, treasure, configData, lang, true, false, result -> {
                     User u = loader.getUser();
 
                     StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.getFirst(), author, u.getId(), ch.getId(), result, config, treasure, configData, lang));
