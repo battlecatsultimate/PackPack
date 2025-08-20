@@ -2975,7 +2975,18 @@ public class EntityHandler {
             children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
         }
 
-        message.editMessageComponents(Container.of(children))
+        int c;
+
+        if(f.fid == 0)
+            c = StaticStore.rainbow[StaticStore.BLUE];
+        else if(f.fid == 1)
+            c = StaticStore.rainbow[StaticStore.GREEN];
+        else if(f.fid == 2)
+            c = StaticStore.rainbow[StaticStore.YELLOW];
+        else
+            c = StaticStore.rainbow[StaticStore.RED];
+
+        message.editMessageComponents(Container.of(children).withAccentColor(c))
                 .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -3313,7 +3324,7 @@ public class EntityHandler {
             children.add(MediaGallery.of(MediaGalleryItem.fromUrl(link)));
         }
 
-        message.editMessageComponents(Container.of(children))
+        message.editMessageComponents(Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]))
                 .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
