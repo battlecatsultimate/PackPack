@@ -13,8 +13,8 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormAnimMessageHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -25,22 +25,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("ALL")
 public class FormGif extends GlobalTimedConstraintCommand {
     private static final int PARAM_DEBUG = 2;
     private static final int PARAM_RAW = 4;
     private static final int PARAM_GIF = 8;
+    private static final int PARAM_TRANSPARENT = 16;
 
     public static List<Integer> forbidden = new ArrayList<>();
-
-    static {
-        int[] data = {
-
-        };
-
-        for(int d : data)
-            forbidden.add(d);
-    }
 
     private final ConfigHolder config;
 
@@ -61,14 +52,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
     @Override
     protected void doThing(CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
-
-        if(ch == null)
-            return;
-
         User u = loader.getUser();
-
-        if(u == null)
-            return;
 
         boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
 
@@ -77,28 +61,29 @@ public class FormGif extends GlobalTimedConstraintCommand {
         if(list.length >= 2) {
             File temp = new File("./temp");
 
-            if(!temp.exists()) {
-                boolean res = temp.mkdirs();
+            if(!temp.exists() && !temp.mkdirs()) {
+                StaticStore.logger.uploadLog("W/FormGif::doThing - Can't create folder : " + temp.getAbsolutePath());
 
-                if(!res) {
-                    System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                    disableTimer();
-                    return;
-                }
-            }
-
-            String search = filterCommand(loader.getContent());
-
-            if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formImage.fail.noParameter", lang), loader.getMessage(), a -> a);
                 disableTimer();
+
                 return;
             }
 
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(search, false, lang);
+            String formName = filterCommand(loader.getContent());
+
+            if(formName.isBlank()) {
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formImage.fail.noParameter", lang));
+
+                disableTimer();
+
+                return;
+            }
+
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(formName, false, lang);
 
             if(forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formStat.fail.noUnit", lang).formatted(getSearchKeyword(loader.getContent())));
+
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(loader.getContent());
@@ -106,18 +91,21 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 boolean debug = (param & PARAM_DEBUG) > 0;
                 boolean raw = (param & PARAM_RAW) > 0;
                 boolean gif = (param & PARAM_GIF) > 0;
+                boolean transparent = (param & PARAM_TRANSPARENT) > 0;
                 int frame = getFrame(loader.getContent());
 
                 Form f = forms.getFirst();
 
                 if(forbidden.contains(f.unit.id.id)) {
-                    replyToMessageSafely(ch, LangID.getStringByID("data.animation.gif.dummy", lang), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("data.animation.gif.dummy", lang));
 
                     return;
                 }
 
+                StringBuilder primary = new StringBuilder();
+
                 if(raw && !isTrusted) {
-                    ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
+                    primary.append(LangID.getStringByID("data.animation.gif.ignoring", lang)).append("\n\n");
                 }
 
                 int boostLevel = 0;
@@ -126,65 +114,45 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     boostLevel = loader.getGuild().getBoostTier().getKey();
                 }
 
-                EntityHandler.generateFormAnim(f, ch, loader.getMessage(), boostLevel, mode, debug, frame, lang, raw && isTrusted, gif, () -> {
+                EntityHandler.generateFormAnim(f, ch, loader.getMessage(), primary, boostLevel, mode, transparent, debug, frame, lang, raw && isTrusted, gif, () -> {
                     if(!StaticStore.conflictedAnimation.isEmpty()) {
                         StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + loader.getContent());
+
                         StaticStore.conflictedAnimation.clear();
                     }
 
                     if(raw && isTrusted) {
                         StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
-                    }
 
-                    if(raw && isTrusted) {
                         changeTime(TimeUnit.MINUTES.toMillis(1));
                     }
                 }, () -> {
                     if(!StaticStore.conflictedAnimation.isEmpty()) {
                         StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + loader.getContent());
+
                         StaticStore.conflictedAnimation.clear();
                     }
 
                     disableTimer();
                 });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(loader.getContent())));
-
-                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
-
-                List<String> data = accumulateData(forms);
-
-                for(int i = 0; i < data.size(); i++) {
-                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
-                }
-
-                if(forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-                    int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-                    if(forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                        totalPage++;
-
-                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
-                }
-
-                sb.append("```");
-
                 int param = checkParameters(loader.getContent());
                 int mode = getMode(loader.getContent());
                 int frame = getFrame(loader.getContent());
 
                 boolean raw = (param & PARAM_RAW) > 0;
                 boolean gif = (param &  PARAM_GIF) > 0;
+                boolean transparent = (param & PARAM_TRANSPARENT) > 0;
+
+                StringBuilder primary = new StringBuilder();
 
                 if(raw && !isTrusted) {
-                    ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
+                    primary.append(LangID.getStringByID("data.animation.gif.ignoring", lang)).append("\n\n");
                 }
 
-                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
-                    Message msg = loader.getMessage();
-
-                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, u.getId(), ch.getId(), res, search, config.searchLayout, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
-                });
+                replyToMessageSafely(ch, loader.getMessage(), msg ->
+                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, primary, formName, config.searchLayout, mode, frame, transparent, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif))
+                , getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(formName, forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
 
                 disableTimer();
             }
@@ -260,46 +228,48 @@ public class FormGif extends GlobalTimedConstraintCommand {
             label:
             for(int i = 0; i < pureMessage.length; i++) {
                 switch (pureMessage[i]) {
-                    case "-d":
-                    case "-debug":
-                        if((result & PARAM_DEBUG) == 0) {
+                    case "-d", "-debug" -> {
+                        if ((result & PARAM_DEBUG) == 0) {
                             result |= PARAM_DEBUG;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-r":
-                    case "-raw":
-                        if((result & PARAM_RAW) == 0) {
+                    }
+                    case "-r", "-raw" -> {
+                        if ((result & PARAM_RAW) == 0) {
                             result |= PARAM_RAW;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-f":
-                    case "-fr":
-                        if(i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i+1])) {
+                    }
+                    case "-f", "-fr" -> {
+                        if (i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i + 1])) {
                             i++;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-m":
-                    case "-mode":
-                        if(i < pureMessage.length -1) {
+                    }
+                    case "-m", "-mode" -> {
+                        if (i < pureMessage.length - 1) {
                             i++;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-g":
-                    case "-gif":
-                        if((result & PARAM_GIF) == 0) {
+                    }
+                    case "-g", "-gif" -> {
+                        if ((result & PARAM_GIF) == 0) {
                             result |= PARAM_GIF;
                         } else {
                             break label;
                         }
-                        break;
+                    }
+                    case "-t" -> {
+                        if ((result & PARAM_TRANSPARENT) == 0) {
+                            result |= PARAM_TRANSPARENT;
+                        } else {
+                            break label;
+                        }
+                    }
                 }
             }
         }
@@ -321,61 +291,66 @@ public class FormGif extends GlobalTimedConstraintCommand {
         boolean mode = false;
         boolean frame = false;
         boolean gif = false;
+        boolean transparent = false;
 
         for(int i = 1; i < contents.length; i++) {
             boolean written = false;
 
             switch (contents[i]) {
-                case "-debug":
-                case "-d":
-                    if(!debug) {
+                case "-debug", "-d" -> {
+                    if (!debug) {
                         debug = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-r":
-                case "-raw":
-                    if(!raw) {
+                }
+                case "-r", "-raw" -> {
+                    if (!raw) {
                         raw = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-mode":
-                case "-m":
-                    if(!mode && i < contents.length - 1) {
+                }
+                case "-mode", "-m" -> {
+                    if (!mode && i < contents.length - 1) {
                         mode = true;
                         i++;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-fr":
-                case "-f":
-                    if(!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                }
+                case "-fr", "-f" -> {
+                    if (!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
                         frame = true;
                         i++;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-g":
-                case "-gif":
-                    if(!gif) {
+                }
+                case "-g", "-gif" -> {
+                    if (!gif) {
                         gif = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                default:
+                }
+                case "-t" -> {
+                    if (!transparent) {
+                        transparent = true;
+                    } else {
+                        result.append(contents[i]);
+                        written = true;
+                    }
+                }
+                default -> {
                     result.append(contents[i]);
                     written = true;
+                }
             }
 
             if(written && i < contents.length - 1)
@@ -385,23 +360,45 @@ public class FormGif extends GlobalTimedConstraintCommand {
         return result.toString().trim();
     }
 
-    private List<String> accumulateData(List<Form> forms) {
+    private List<String> accumulateTextData(List<Form> forms, SearchHolder.TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
-            if(i >= forms.size())
-                break;
-
+        for(int i = 0; i < Math.min(forms.size(), config.searchLayout.chunkSize); i++) {
             Form f = forms.get(i);
 
-            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+            String text = null;
 
-            String name = StaticStore.safeMultiLangGet(f, lang);
+            switch (textType) {
+                case TEXT -> {
+                    if (config.searchLayout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + " ";
 
-            if(name != null)
-                fname += name;
+                        if (StaticStore.safeMultiLangGet(f, lang) != null) {
+                            text += StaticStore.safeMultiLangGet(f, lang);
+                        }
+                    } else {
+                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "` ";
 
-            data.add(fname);
+                        String formName = StaticStore.safeMultiLangGet(f, lang);
+
+                        if (formName == null || formName.isBlank()) {
+                            formName = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        }
+
+                        text += "**" + formName + "**";
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(f, lang);
+
+                    if (text == null) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+            }
+
+            data.add(text);
         }
 
         return data;

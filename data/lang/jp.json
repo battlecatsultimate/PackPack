@@ -1261,7 +1261,7 @@
     "enemyImage" : {
         "fail" : {
             "noParameter" : "このコマンドはもう一つ引数が必要です! : [敵の名前]",
-            "unknown" : "Unknown problem happened while rendering the image"
+            "unknown" : "Unknown problem happened while rendering the enemy image"
         },
         "result" : {
             "frame" : "Frame : %df",
@@ -1712,15 +1712,19 @@
         }
     },
     "formImage" : {
-        "result" : "アップロード _ | ::: | フレーム : =",
         "fail" : {
-            "noParameter" : "このコマンドはもう一つ引数が必要です! : [名前]"
+            "noParameter" : "このコマンドはもう一つ引数が必要です! : [名前]",
+            "unknown" : "Unknown problem happened while rendering the form image"
         },
         "mode" : {
             "burrowDown" : "潜伏",
             "burrowMove" : "潜伏移動",
             "burrowUp" : "浮上",
             "kb" : "KB"
+        },
+        "result" : {
+            "frame" : "Frame : %df",
+            "mode" : "Mode : %s"
         }
     },
     "formSprite" : {
@@ -1930,7 +1934,7 @@
             "alias" : "`egif`, `eg`",
             "description" : "名前から敵を検索しアニメーションをgifまたはmp3で生成します。 このコマンドを実行すると30秒もしくは1分使えなくなります。",
             "example" : "`p!eg -d Doge -f 10`\n`p!eg -r 535 -m attack` [信頼された人でなければ`-r`は無視されます]",
-            "parameter" : "- `-d`\nデバッグモード\n- `-f`もしくは`-fr`\nフレーム数を設定します。\n- `-r`もしくは`-raw`\nmp4で生成します。 クールダウンが１分になります。 **これは非常に重い操作なので信頼されたユーザーのみが使用できます。**\n- `-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)\n- `-g` or `-gif`\ngifのリンクを表示します。",
+            "parameter" : "- `-d`\nデバッグモード\n- `-t`\nGenerate transparent gif\n- `-f`もしくは`-fr`\nフレーム数を設定します。\n- `-r`もしくは`-raw`\nmp4で生成します。 クールダウンが１分になります。 **これは非常に重い操作なので信頼されたユーザーのみが使用できます。**\n- `-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)\n- `-g` or `-gif`\ngifのリンクを表示します。",
             "tip" : "Modeは正確に指定する必要はありません。 例えば、`att`と入力すると`Attack`とこちらで変換します。 `attack`の中の文字が含まれていればいいのです。 同様に、`hit`は`hitback`に変換されます。\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
             "usage" : "`%senemygif [名前]`"
         },
@@ -1998,7 +2002,7 @@
             "alias" : "`fgif`, `fg`, `cg`, `ug`",
             "description" : "名前からにゃんこを検索しアニメーションをgif,mp3で表示します。 このコマンドを実行すると30秒もしくは1分使えなくなります。 ",
             "example" : "`p!fg ネコ -f 10`\n`p!fg -r 493001 -m attack` [信頼された人でなければ`-r`は無視されます]",
-            "parameter" : "- `-d`\nデバッグモード\n- `-f`もしくは`-fr`\nフレーム数を設定します。\n- `-r`もしくは`-raw`\nmp4で生成します。 クールダウンが１分になります。 **これは非常に重い操作なので信頼されたユーザーのみが使用できます。**\n- `-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)\n- `-g` or `-gif`\ngifのリンクを表示します。",
+            "parameter" : "- `-d`\nデバッグモード\n- `-t`\nGenerate transparent gif\n- `-f`もしくは`-fr`\nフレーム数を設定します。\n- `-r`もしくは`-raw`\nmp4で生成します。 クールダウンが１分になります。 **これは非常に重い操作なので信頼されたユーザーのみが使用できます。**\n- `-m`もしくは`-mode`\nアニメーションの状態を指定します。 | `Walking`(移動), `Idle`(待機), `Attack`(攻撃), `Hitback`(KB), `Enter`(召喚), `Burrowdown`(潜伏), `Burrowmove`(潜伏移動), `Burrowup`(浮上)\n- `-g` or `-gif`\ngifのリンクを表示します。",
             "tip" : "Modeは正確に指定する必要はありません。 例えば、`att`と入力すると`Attack`とこちらで変換します。 `attack`の中の文字が含まれていればいいのです。 同様に、`hit`は`hitback`に変換されます。\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
             "usage" : "`%sformgif [名前]`"
         },

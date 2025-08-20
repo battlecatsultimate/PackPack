@@ -1261,7 +1261,7 @@
     "enemyImage" : {
         "fail" : {
             "noParameter" : "This command requires one more parameter! : [Enemy Name]",
-            "unknown" : "Unknown problem happened while rendering the image"
+            "unknown" : "Unknown problem happened while rendering the enemy image"
         },
         "result" : {
             "frame" : "Frame : %df",
@@ -1712,15 +1712,19 @@
         }
     },
     "formImage" : {
-        "result" : "Uploaded _ | ::: | Frame : =",
         "fail" : {
-            "noParameter" : "This command requires one more parameter! : [Unit Name]"
+            "noParameter" : "This command requires one more parameter! : [Unit Name]",
+            "unknown" : "Unknown problem happened while rendering the form image"
         },
         "mode" : {
             "burrowDown" : "Burrow Down",
             "burrowMove" : "Burrow Move",
             "burrowUp" : "Burrow Up",
             "kb" : "Hitback"
+        },
+        "result" : {
+            "frame" : "Frame : %df",
+            "mode" : "Mode : %s"
         }
     },
     "formSprite" : {
@@ -1932,7 +1936,7 @@
             "alias" : "`egif`, `eg`",
             "description" : "Try to search enemy with specified name, and upload gif/mp4 of its animation. Once it's used, users can use this command after 30 sec or 1 min",
             "example" : "`p!eg -d Doge -f 10`\n`p!eg -r 535 -m attack` [Trusted only or `-r` will be ignored]",
-            "parameter" : "- `-d`\nEnable debug mode\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
+            "parameter" : "- `-d`\nEnable debug mode\n- `-t`\nGenerate transparent gif\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
             "tip" : "When typing mode, you don't need to exactly specify name of mode. For example, if mode is `att`, since `Attack` contains these letters, you can activate attack mode. Similarly, same for other modes, for example, `hit` can activate `hitback` mode\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
             "usage" : "`%senemygif [Enemy Name]`"
         },
@@ -2000,7 +2004,7 @@
             "alias" : "`fgif`, `fg`, `cg`, `ug`",
             "description" : "Try to search unit with specified name, and upload gif/mp4 of its animation. Once it's used, users can use this command after 30 sec or 1 min",
             "example" : "`p!fg -d Cat -f 10`\n`p!fg -r 493001 -m attack` [Trusted only or `-r` will be ignored]",
-            "parameter" : "- `-d`\nEnable debug mode\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
+            "parameter" : "- `-d`\nEnable debug mode\n- `-t`\nGenerate transparent gif\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this parameter because it's quite heavy process**\n- `-m` or `-mode`\nDecide animation mode | `Walking`, `Idle`, `Attack`, `Hitback`, `Enter`, `Burrowdown`, `Burrowmove`, `Burrowup` are only valid mode\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
             "tip" : "When typing mode, you don't need to exactly specify name of mode. For example, if mode is `att`, since `Attack` contains these letters, you can activate attack mode. Similarly, same for other modes, for example, `hit` can activate `hitback` mode\n\n`-m hitback` = `-m hb`\n`-m burrowdown` = `-m bd`\n`-m burrowmove` = `-m bm`\n`-m burrowup` = `-m bu`",
             "usage" : "`%sformgif [Unit Name]`"
         },

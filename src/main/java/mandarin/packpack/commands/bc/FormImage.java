@@ -135,7 +135,7 @@ public class FormImage extends TimedConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, u.getId(), ch.getId(), res, search, config.searchLayout, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, u.getId(), ch.getId(), res, new StringBuilder(), search, config.searchLayout, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                 });
 
                 disableTimer();

@@ -11,11 +11,10 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import javax.annotation.Nonnull;
@@ -27,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class FormAnimMessageHolder extends SearchHolder {
-    private final ArrayList<Form> form;
+    private final ArrayList<Form> forms;
 
     private final int mode;
     private final int frame;
@@ -38,11 +37,12 @@ public class FormAnimMessageHolder extends SearchHolder {
     private final boolean gifMode;
 
     private final String command;
+    private final StringBuilder primary;
 
-    public FormAnimMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
+    public FormAnimMessageHolder(ArrayList<Form> forms, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, StringBuilder primary, String keyword, ConfigHolder.SearchLayout layout, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
-        this.form = form;
+        this.forms = forms;
 
         this.mode = mode;
         this.frame = frame;
@@ -53,6 +53,7 @@ public class FormAnimMessageHolder extends SearchHolder {
         this.gifMode = gifMode;
 
         this.command = author == null ? "" : author.getContentRaw();
+        this.primary = primary;
     }
 
     @Override
@@ -60,10 +61,10 @@ public class FormAnimMessageHolder extends SearchHolder {
         List<String> data = new ArrayList<>();
 
         for(int i = chunk * page; i < chunk * (page +1); i++) {
-            if(i >= form.size())
+            if(i >= forms.size())
                 break;
 
-            Form f = form.get(i);
+            Form f = forms.get(i);
 
             String text = null;
 
@@ -105,15 +106,16 @@ public class FormAnimMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
-        MessageChannel ch = event.getChannel();
-
         try {
-            Form f = form.get(index);
+            Form f = forms.get(index);
 
             if(FormGif.forbidden.contains(f.unit.id.id)) {
-                message.delete().queue();
-
-                ch.sendMessage(LangID.getStringByID("data.animation.gif.dummy", lang)).queue();
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("data.animation.gif.dummy", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
 
                 return;
             }
@@ -123,15 +125,9 @@ public class FormAnimMessageHolder extends SearchHolder {
 
                 if(timeBoolean == null || StaticStore.canDo.get("gif").canDo) {
                     RecordableThread t = new RecordableThread(() -> {
-                        Guild g;
+                        Guild g = event.getGuild();
 
-                        if(ch instanceof GuildChannel) {
-                            g = event.getGuild();
-                        } else {
-                            g = null;
-                        }
-
-                        EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode, () -> {
+                        EntityHandler.generateFormAnim(f, event, getAuthorMessage(), primary, g == null ? 0 : g.getBoostTier().getKey(), mode, transparent, debug, frame, lang, raw, gifMode, () -> {
                             if(!StaticStore.conflictedAnimation.isEmpty()) {
                                 StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
                                 StaticStore.conflictedAnimation.clear();
@@ -160,7 +156,12 @@ public class FormAnimMessageHolder extends SearchHolder {
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
                     t.start();
                 } else {
-                    ch.sendMessage(LangID.getStringByID("bot.denied.reason.cooldown", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("bot.denied.reason.cooldown", lang).formatted(DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
                 }
             } else {
                 User u = event.getUser();
@@ -170,18 +171,23 @@ public class FormAnimMessageHolder extends SearchHolder {
                         long time = StaticStore.timeLimit.get(u.getId()).get(StaticStore.COMMAND_FORMIMAGE_ID);
 
                         if(System.currentTimeMillis() - time > 10000) {
-                            EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+                            EntityHandler.generateFormImage(f, event, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                             StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
                         } else {
-                            ch.sendMessage(LangID.getStringByID("bot.command.timeLimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
+                            event.deferEdit()
+                                    .setComponents(TextDisplay.of(LangID.getStringByID("bot.command.timeLimit", lang).formatted(DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))))
+                                    .useComponentsV2()
+                                    .setAllowedMentions(new ArrayList<>())
+                                    .mentionRepliedUser(false)
+                                    .queue();
                         }
                     } else if(StaticStore.timeLimit.containsKey(u.getId())) {
-                        EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+                        EntityHandler.generateFormImage(f, event, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                         StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
                     } else {
-                        EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+                        EntityHandler.generateFormImage(f, event, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                         Map<String, Long> memberLimit = new HashMap<>();
 
@@ -196,12 +202,10 @@ public class FormAnimMessageHolder extends SearchHolder {
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to handle form image/animation");
         }
-
-        message.delete().queue();
     }
 
     @Override
     public int getDataSize() {
-        return form.size();
+        return forms.size();
     }
 }
