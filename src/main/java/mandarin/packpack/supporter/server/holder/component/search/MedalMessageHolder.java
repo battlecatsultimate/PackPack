@@ -6,7 +6,6 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import javax.annotation.Nonnull;
@@ -76,12 +75,8 @@ public class MedalMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
-        MessageChannel ch = event.getChannel();
-
-        message.delete().queue();
-
         try {
-            EntityHandler.generateMedalEmbed(id.get(index), ch, getAuthorMessage(), lang);
+            EntityHandler.generateMedalEmbed(id.get(index), event, getAuthorMessage(), lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/MedalMessageHolder::onSelected - Failed to upload medal embed");
         }

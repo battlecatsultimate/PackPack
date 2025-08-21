@@ -2378,81 +2378,127 @@ public class EntityHandler {
                 .queue();
     }
 
-    public static void generateMedalEmbed(int id, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws  Exception {
-        String medalName = "./org/page/medal/medal_"+Data.trio(id);
+    public static void generateMedalEmbed(int id, Object sender, Message reference, CommonStatic.Lang.Locale lang) throws  Exception {
+        String medalFile = "./org/page/medal/medal_"+Data.trio(id);
 
         if(id <= 13 && lang != CommonStatic.Lang.Locale.JP) {
-            medalName += "_"+getLocaleName(lang);
+            medalFile += "_"+getLocaleName(lang);
         } else if(id == 90 && lang != CommonStatic.Lang.Locale.JP) {
-            medalName += "_en";
+            medalFile += "_en";
         }
 
-        medalName += ".png";
+        medalFile += ".png";
 
-        VFile vf = VFile.get(medalName);
+        VFile vf = VFile.get(medalFile);
 
-        if(vf == null)
-            Command.replyToMessageSafely(ch, LangID.getStringByID("medal.failed.noImage", lang), reference, a -> a);
-        else {
-            String cacheID = StaticStore.MEDAL_ICON.formatted(Data.trio(id), lang.name());
-            String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+        if (vf == null) {
+            TextDisplay text = TextDisplay.of(LangID.getStringByID("medal.failed.noImage", lang));
 
-            if (cacheLink == null) {
-                File temp = new File("./temp");
+            if (sender instanceof MessageChannel ch) {
+                Command.replyToMessageSafely(ch, reference, text);
+            } else if (sender instanceof IMessageEditCallback event) {
+                event.deferEdit()
+                        .setComponents(text)
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+            }
 
-                if(!temp.exists() && !temp.mkdirs()) {
-                    StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
-                    return;
-                }
+            return;
+        }
 
-                File image = StaticStore.generateTempFile(temp, "result", ".png", false);
+        String cacheID = StaticStore.MEDAL_ICON.formatted(Data.trio(id), lang.name());
+        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
 
-                if(image == null) {
-                    return;
-                }
+        if (cacheLink == null) {
+            File temp = new File("./temp");
 
-                FakeImage img = vf.getData().getImg();
+            if(!temp.exists() && !temp.mkdirs()) {
+                StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
+                return;
+            }
 
-                CountDownLatch waiter = new CountDownLatch(1);
+            File image = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-                StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
-                    connector.queue(g -> {
-                        g.drawImage(img, 0f, 0f);
+            if(image == null) {
+                return;
+            }
 
-                        return kotlin.Unit.INSTANCE;
-                    });
+            FakeImage img = vf.getData().getImg();
 
-                    return kotlin.Unit.INSTANCE;
-                }, progress -> image, () -> {
-                    waiter.countDown();
+            CountDownLatch waiter = new CountDownLatch(1);
+
+            StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+                connector.queue(g -> {
+                    g.drawImage(img, 0f, 0f);
 
                     return kotlin.Unit.INSTANCE;
                 });
 
-                waiter.await();
+                return kotlin.Unit.INSTANCE;
+            }, progress -> image, () -> {
+                waiter.countDown();
 
-                cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
+                return kotlin.Unit.INSTANCE;
+            });
 
-                StaticStore.deleteFile(image, true);
-            }
+            waiter.await();
 
-            EmbedBuilder e = new EmbedBuilder();
+            cacheLink = StaticStore.assetManager.uploadIf(cacheID, image);
 
-            String name = StaticStore.MEDNAME.getCont(id, lang);
-            String desc = StaticStore.MEDEXP.getCont(id, lang);
+            StaticStore.deleteFile(image, true);
+        }
 
-            if(StaticStore.medalData != null) {
-                JsonObject obj = StaticStore.medalData.getAsJsonArray().get(id).getAsJsonObject();
+        if (cacheLink == null)
+            return;
 
-                int grade = obj.get("grade").getAsInt();
+        String medalName = StaticStore.MEDNAME.getCont(id, lang);
 
-                e.setColor(StaticStore.grade[grade]);
-            }
+        if (medalName == null || medalName.isBlank()) {
+            medalName = Data.trio(id);
+        } else {
+            medalName += " [" + Data.trio(id) + "]";
+        }
 
-            e.addField(name, desc, false);
-            e.setImage(cacheLink);
+        String description = StaticStore.MEDEXP.getCont(id, lang);
 
-            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(e.build()));
+        int c = -1;
+
+        if(StaticStore.medalData != null) {
+            JsonObject obj = StaticStore.medalData.getAsJsonArray().get(id).getAsJsonObject();
+
+            int grade = obj.get("grade").getAsInt();
+
+            c = StaticStore.grade[grade];
+        }
+
+        Container container;
+
+        if (description != null && !description.isBlank()) {
+            container = Container.of(
+                    TextDisplay.of("## " + medalName),
+                    TextDisplay.of(description),
+                    Separator.create(true, Separator.Spacing.LARGE),
+                    MediaGallery.of(MediaGalleryItem.fromUrl(cacheLink))
+            ).withAccentColor(c);
+        } else {
+            container = Container.of(
+                    TextDisplay.of("## " + medalName),
+                    Separator.create(true, Separator.Spacing.LARGE),
+                    MediaGallery.of(MediaGalleryItem.fromUrl(cacheLink))
+            ).withAccentColor(c);
+        }
+
+        if (sender instanceof MessageChannel ch) {
+            Command.replyToMessageSafely(ch, reference, container);
+        } else if (sender instanceof IMessageEditCallback event) {
+            event.deferEdit()
+                    .setComponents(container)
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
         }
     }
 
