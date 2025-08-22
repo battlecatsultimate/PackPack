@@ -50,6 +50,8 @@ class SlotMachineConfirmHolder(author: Message, userID: String, channelID: Strin
         when(event.componentId) {
             "roll" -> {
                 if (slotMachine.entryFee.minimumFee == slotMachine.entryFee.maximumFee) {
+                    val fee = slotMachine.entryFee.maximumFee
+
                     if (slotMachine.entryFee.minimumFee == 0L || yes) {
                         event.deferEdit()
                             .setContent("Rolling...! 🎲")
@@ -57,7 +59,7 @@ class SlotMachineConfirmHolder(author: Message, userID: String, channelID: Strin
                             .setAllowedMentions(ArrayList())
                             .mentionRepliedUser(false)
                             .queue {
-                                slotMachine.roll(message, authorMessage.author.idLong, inventory, 0, skip)
+                                slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
                             }
 
                         end(true)
@@ -69,8 +71,6 @@ class SlotMachineConfirmHolder(author: Message, userID: String, channelID: Strin
                         SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
                         SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
                     }
-
-                    val fee = slotMachine.entryFee.maximumFee
 
                     registerPopUp(event, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?")
 

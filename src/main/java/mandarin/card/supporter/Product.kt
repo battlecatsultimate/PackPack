@@ -74,7 +74,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         )
 
         val ramiel = Product(1,
-            CustomFilter(3, "3 Seasonal Units") { c ->
+            CustomFilter(3, "3 Collaboration Units") { c ->
                 return@CustomFilter c.cardType == Card.CardType.COLLABORATION && c.tier == CardData.Tier.UNCOMMON
             }
         )
