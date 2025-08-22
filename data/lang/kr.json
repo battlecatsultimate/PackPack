@@ -2411,11 +2411,12 @@
         }
     },
     "music" : {
-        "uploaded" : "_.ogg 업로드 성공",
+        "title" : "음악 %s",
+        "uploaded" : "%s.ogg 업로드 성공",
         "fail" : {
             "noParameter" : "해당 명령어는 하나의 정보를 더 요구합니다! : [ID]",
             "notNumber" : "음악 ID는 숫자여야만 합니다!",
-            "outOfRange" : "숫자가 너무 큽니다! 0 ~ _ 사이여야만 합니다"
+            "outOfRange" : "숫자가 너무 큽니다! 0 ~ %d 사이여야만 합니다"
         }
     },
     "optOut" : {

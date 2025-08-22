@@ -2406,11 +2406,12 @@
         }
     },
     "music" : {
-        "uploaded" : "Uploaded _.ogg",
+        "title" : "Music %s",
+        "uploaded" : "Uploaded %s.ogg",
         "fail" : {
             "noParameter" : "This command requires one more parameter : [ID]",
             "notNumber" : "Music ID must be number!",
-            "outOfRange" : "Number is too large! It has to be 0 ~ _"
+            "outOfRange" : "Number is too large! It has to be 0 ~ %d"
         }
     },
     "optOut" : {

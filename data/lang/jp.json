@@ -2406,11 +2406,12 @@
         }
     },
     "music" : {
-        "uploaded" : "_.oggをアップロードしました。 ",
+        "title" : "音楽 %s",
+        "uploaded" : "%s.oggをアップロードしました。 ",
         "fail" : {
             "noParameter" : "このコマンドはもう一つ引数が必要です! : [ID]",
             "notNumber" : "音楽IDは数である必要があります!",
-            "outOfRange" : "数が大きすぎます! 0 ~ _ である必要があります。"
+            "outOfRange" : "数が大きすぎます! 0 ~ %d である必要があります。"
         }
     },
     "optOut" : {
