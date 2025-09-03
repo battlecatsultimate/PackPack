@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlin.math.min
 
 object TransactionLogger {
@@ -1649,13 +1651,26 @@ object TransactionLogger {
         builder.addField("Way", "**$way**", false)
 
         if (inventory.validationCards.isNotEmpty()) {
-            builder.addField("Retrieved Cards", inventory.validationCards.entries.joinToString("\n") { (card, pair) ->
-                if (pair.second >= 2) {
+            val cardBuilder = StringBuilder()
+            var index = 0
+
+            inventory.validationCards.entries.forEach { (card, pair) ->
+                val text = if (pair.second >= 2) {
                     "${card.simpleCardInfo()} x${pair.second}"
                 } else {
                     card.simpleCardInfo()
                 }
-            }, false)
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
@@ -1703,13 +1718,26 @@ object TransactionLogger {
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC }
 
         if (cards.isNotEmpty()) {
-            builder.addField("Retrieved Cards", cards.entries.joinToString("\n") { (card, pair) ->
-                if (pair.second >= 2) {
+            val cardBuilder = StringBuilder()
+            var index = 0
+
+            cards.entries.forEach { (card, pair) ->
+                val text = if (pair.second >= 2) {
                     "${card.simpleCardInfo()} x${pair.second}"
                 } else {
                     card.simpleCardInfo()
                 }
-            }, false)
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
