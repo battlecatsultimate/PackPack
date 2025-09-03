@@ -34,13 +34,13 @@ import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
+import net.dv8tion.jda.api.events.role.RoleDeleteEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -771,19 +771,18 @@ object CardBot : ListenerAdapter() {
         }
     }
 
-    override fun onGuildMemberRoleRemove(event: GuildMemberRoleRemoveEvent) {
-        super.onGuildMemberRoleRemove(event)
+    override fun onRoleDelete(event: RoleDeleteEvent) {
+        super.onRoleDelete(event)
 
         val g = event.guild
-        val roles = event.roles.map { role -> role.idLong }
+        val role = event.role.idLong
 
         CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != 0L }.forEach { (id, inventory) ->
-            if (inventory.eccValidationRoleID in roles) {
+            if (inventory.eccValidationRoleID == role) {
                 TransactionLogger.logECCCancel(id, g.selfMember.idLong, inventory)
+                Notification.handleECCRoleDisconnectedNotification(inventory, id)
 
                 inventory.cancelECC(g, id)
-
-                Notification.handleECCRoleDisconnectedNotification(inventory, id)
             }
         }
     }
