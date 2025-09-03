@@ -3521,6 +3521,9 @@ public class EntityHandler {
 
         String id = "SOUL - " + Data.trio(s.getID().id);
 
+        if (transparent)
+            id += " - TRANSPARENT";
+
         if(!debug && limit <= 0) {
 
             String link = StaticStore.imgur.get(id, gif, raw);
