@@ -25,6 +25,7 @@ public class Soul extends GlobalTimedConstraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
     private final int PARAM_GIF = 8;
+    private final int PARAM_TRANSPARENT = 16;
 
     public Soul(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30), false);
@@ -36,7 +37,7 @@ public class Soul extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(CommandLoader loader) {
+    protected void doThing(CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
@@ -45,7 +46,7 @@ public class Soul extends GlobalTimedConstraintCommand {
         common.util.pack.Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noSoul", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soul.failed.noSoul", lang));
 
             return;
         }
@@ -56,10 +57,13 @@ public class Soul extends GlobalTimedConstraintCommand {
         boolean debug = (param & PARAM_DEBUG) > 0;
         boolean raw = (param & PARAM_RAW) > 0;
         boolean gif = (param & PARAM_GIF) > 0;
+        boolean transparent = (param & PARAM_TRANSPARENT) > 0;
         int frame = getFrame(loader.getContent());
 
+        StringBuilder primary = new StringBuilder();
+
         if(raw && !isTrusted) {
-            ch.sendMessage(LangID.getStringByID("data.animation.gif.ignoring", lang)).queue();
+            primary.append(LangID.getStringByID("data.animation.gif.ignoring", lang)).append("\n\n");
         }
 
         int boostLevel = 0;
@@ -68,12 +72,10 @@ public class Soul extends GlobalTimedConstraintCommand {
             boostLevel = loader.getGuild().getBoostTier().getKey();
         }
 
-        EntityHandler.generateSoulAnim(s, ch, loader.getMessage(), boostLevel, debug, frame, lang, raw && isTrusted, gif, () -> {
+        EntityHandler.generateSoulAnim(s, ch, loader.getMessage(), primary, boostLevel, debug, frame, lang, raw && isTrusted, transparent, gif, () -> {
             if(raw && isTrusted) {
                 StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for soul ID " + Data.trio(s.getID().id));
-            }
 
-            if(raw && isTrusted) {
                 changeTime(TimeUnit.MINUTES.toMillis(1));
             }
         }, this::disableTimer);
@@ -105,11 +107,8 @@ public class Soul extends GlobalTimedConstraintCommand {
         MessageChannel ch = loader.getChannel();
 
         switch (optionalID) {
-            case NO_ID -> replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noParameter", lang), loader.getMessage(), a -> a);
-            case INVALID_RANGE -> {
-                int soulLen = UserProfile.getBCData().souls.size() - 1;
-                replyToMessageSafely(ch, LangID.getStringByID("soul.failed.outOfRange", lang).replace("_", String.valueOf(soulLen)), loader.getMessage(), a -> a);
-            }
+            case NO_ID -> replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soul.failed.noParameter", lang));
+            case INVALID_RANGE -> replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soul.failed.outOfRange", lang).formatted(UserProfile.getBCData().souls.size() - 1));
         }
     }
 
@@ -148,6 +147,13 @@ public class Soul extends GlobalTimedConstraintCommand {
                     case "-g", "-gif" -> {
                         if ((result & PARAM_GIF) == 0) {
                             result |= PARAM_GIF;
+                        } else {
+                            break label;
+                        }
+                    }
+                    case "-t" -> {
+                        if ((result & PARAM_TRANSPARENT) == 0) {
+                            result |= PARAM_TRANSPARENT;
                         } else {
                             break label;
                         }

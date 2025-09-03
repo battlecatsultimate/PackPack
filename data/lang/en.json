@@ -468,6 +468,7 @@
         "kb" : "Knockbacks",
         "none" : "None",
         "range" : "Range",
+        "soul" : "Soul",
         "speed" : "Speed",
         "tba" : "TBA",
         "trait" : "Target Trait(s)",
@@ -2927,7 +2928,7 @@
         "failed" : {
             "noParameter" : "This command needs one more data! : [Soul ID]",
             "noSoul" : "Bot couldn't get data of this soul...",
-            "outOfRange" : "Invalid ID range, ID must be number between 0 ~ _"
+            "outOfRange" : "Invalid ID range, ID must be number between 0 ~ %d"
         }
     },
     "soulImage" : {

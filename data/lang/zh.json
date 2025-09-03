@@ -468,6 +468,7 @@
         "kb" : "KB",
         "none" : "N/A",
         "range" : "攻擊距離",
+        "soul" : "Soul",
         "speed" : "移動速度",
         "tba" : "攻擊間隔",
         "trait" : "攻擊對象",
@@ -2924,7 +2925,7 @@
         "failed" : {
             "noParameter" : "This command needs one more data! : [Soul ID]",
             "noSoul" : "Bot couldn't get data of this soul...",
-            "outOfRange" : "Invalid ID range, ID must be number between 0 ~ _"
+            "outOfRange" : "Invalid ID range, ID must be number between 0 ~ %d"
         }
     },
     "soulImage" : {

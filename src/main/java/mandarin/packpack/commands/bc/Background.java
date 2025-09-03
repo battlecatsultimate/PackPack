@@ -31,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
-public class Background extends TimedConstraintCommand {
+public class
+Background extends TimedConstraintCommand {
     public static void performButton(ButtonInteractionEvent event, common.util.pack.Background bg) throws Exception {
         Interaction interaction = event.getInteraction();
 

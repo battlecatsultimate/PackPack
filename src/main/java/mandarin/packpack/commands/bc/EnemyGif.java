@@ -130,7 +130,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
             EntityHandler.generateEnemyAnim(enemy, ch, loader.getMessage(), primary, boostLevel, mode, transparent, debug, frame, lang, raw && isTrusted, gif, () -> {
                 if(!StaticStore.conflictedAnimation.isEmpty()) {
-                    StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + loader.getContent());
+                    StaticStore.logger.uploadLog("W/EnemyGif::doThing - Bot generated animation while this animation is already cached\n\nCommand : " + loader.getContent());
 
                     StaticStore.conflictedAnimation.clear();
                 }
