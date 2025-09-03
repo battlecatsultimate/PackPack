@@ -3042,6 +3042,8 @@ public class DataToString extends Data {
         int maxLevel = StaticStore.safeParseInt(data[2 + index * 14 + 1]);
         int traitID = StaticStore.safeParseInt(data[1]);
 
+        boolean traitActivator = StaticStore.safeParseInt(data[2 + index * 14 + 12]) != -1;
+
         List<Trait> traits = Trait.bitmaskToTrait(traitID);
 
         if(talentText.containsKey(abilityID)) {
@@ -3054,7 +3056,7 @@ public class DataToString extends Data {
 
         String desc = "";
 
-        if(traits.size() == 1 && index == 0) {
+        if(traits.size() == 1 && traitActivator) {
             desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.getFirst().id.id], lang)) + "\n\n";
         }
 
