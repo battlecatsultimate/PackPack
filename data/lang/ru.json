@@ -1504,6 +1504,10 @@
             "35032" : "Come-Back Stamp",
             "35033" : "Summer Break Survival Stamp",
             "35034" : "Evangelion Collab Stamp",
+            "35035" : "Trash Cat Stamp",
+            "35036" : "Summer Break Paradise Stamp",
+            "35037" : "Event Stamp",
+            "35038" : "11.5th Anniversary Stamp",
             "rankingDojo" : "Ранговый Додзё _"
         },
         "permanentSchedule" : {
@@ -1598,7 +1602,9 @@
                 "9" : "Ограниченное Размещение Редкостей",
                 "10" : "Умноженные Силы Пушки",
                 "11" : "Фикс. Скорость Юнитов/Врагов",
-                "12" : "Специальные Спавнятся с Двойниками"
+                "12" : "Специальные Спавнятся с Двойниками",
+                "13" : "Low UR Cost",
+                "14" : "Ограниченная Перезарядка"
             }
         },
         "section" : {
