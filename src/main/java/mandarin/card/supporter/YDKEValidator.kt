@@ -6,6 +6,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.nio.charset.StandardCharsets
+import java.sql.DriverManager
 import java.util.*
 
 object YDKEValidator {
@@ -25,19 +26,21 @@ object YDKEValidator {
     val tournamentWhiteList = HashMap<Long, Int>()
     val BCEWhiteList = HashMap<Long, Int>()
 
+    val aliasData = HashMap<Long, ArrayList<Long>>()
+
     fun loadWhiteListData() {
         normalWhiteList.clear()
         tournamentWhiteList.clear()
         BCEWhiteList.clear()
 
-        val normal = File("./data/Normal.lflist.conf")
+        val normal = File("./data/bctcg/Normal.lflist.conf")
 
         if (normal.exists()) {
             BufferedReader(FileReader(normal)).use { reader ->
                 var line = ""
 
                 while (reader.readLine()?.also { line = it } != null) {
-                    if (line.matches(Regex("^\\d+ \\d+\\D*"))) {
+                    if (line.matches(Regex("\\d+ \\d+( .+)?"))) {
                         val data = line.split(" ")
 
                         if (data.size < 2)
@@ -52,7 +55,7 @@ object YDKEValidator {
             }
         }
 
-        val tournament = File("./data/Tournament.lflist.conf")
+        val tournament = File("./data/bctcg/Tournament.lflist.conf")
 
         if (tournament.exists()) {
             BufferedReader(FileReader(tournament)).use { reader ->
@@ -74,7 +77,7 @@ object YDKEValidator {
             }
         }
 
-        val bce = File("./data/BCE.lflist.conf")
+        val bce = File("./data/bctcg/BCE.lflist.conf")
 
         if (bce.exists()) {
             BufferedReader(FileReader(bce)).use { reader ->
@@ -97,16 +100,56 @@ object YDKEValidator {
         }
     }
 
+    fun loadCDBData() {
+        val cdbList = arrayListOf("cards.cdb", "BCTC.cdb")
+
+        cdbList.forEach { cdb ->
+            val file = File("./data/bctcg/$cdb")
+
+            if (!file.exists())
+                return
+
+            Class.forName("org.sqlite.JDBC")
+
+            DriverManager.getConnection("jdbc:sqlite:${file.absolutePath}").use { connection ->
+                connection.createStatement().use { statement ->
+                    val result = statement.executeQuery("select * from datas")
+
+                    while (result.next()) {
+                        val id = result.getLong("id")
+                        val alias = result.getLong("alias")
+
+                        if (alias == 0L)
+                            continue
+
+                        val list = aliasData[alias] ?: arrayListOf()
+
+                        if (id !in list)
+                            list.add(id)
+
+                        aliasData[alias] = list
+                    }
+                }
+            }
+        }
+    }
+
     fun sanitize(inventory: Inventory, link: String, whiteList: WhiteList) : Pair<String, ArrayList<String>> {
         val data = toData(link)
         val reasons = ArrayList<String>()
 
-        val cards = inventory.cards.filterKeys { card -> card.tier != Tier.SPECIAL }.keys.map { card -> (BCTCG + card.id).toLong() }
+        val cards = inventory.cards.filterKeys { card -> card.tier != Tier.SPECIAL }.mapKeys { (card, _) -> (BCTCG + card.id).toLong() }
 
-        data.forEach { segment ->
+        data.forEachIndexed { index, segment ->
+            val deckName = when(index) {
+                MAIN -> "Main"
+                EXTRA -> "Extra"
+                else -> "Side"
+            }
+
             segment.removeIf { value ->
-                if (value - BCTCG < 1000 && value !in cards) {
-                    val reason = "Card $value doesn't exist in this user's inventory"
+                if (value >= BCTCG && value - BCTCG < 1000 && !cards.containsKey(value)) {
+                    val reason = "- $deckName : Card $value doesn't exist in this user's inventory. Removing cards"
 
                     if (reason !in reasons) {
                         reasons.add(reason)
@@ -118,10 +161,22 @@ object YDKEValidator {
                 }
             }
 
-            val cardMap = HashMap<Long, Int>()
+            val segmentMap = HashMap<Long, Int>()
 
-            segment.forEach { value ->
-                cardMap[value] = (cardMap[value] ?: 0) + 1
+            segment.filter { value -> value >= BCTCG && value - BCTCG < 1000 }.forEach { value ->
+                segmentMap[value] = (segmentMap[value] ?: 0) + 1
+            }
+
+            segmentMap.forEach { (value, amount) ->
+                val trueAmount = cards[value] ?: 0
+
+                if (trueAmount < amount) {
+                    reasons.add("- $deckName : For card $value, deck contains $amount card${if (amount > 2) "s" else ""} while inventory contains $trueAmount card${if (trueAmount > 2) "s" else ""}. Limiting to $trueAmount")
+
+                    repeat(amount - trueAmount) {
+                        segment.remove(value)
+                    }
+                }
             }
 
             val whiteListData = when(whiteList) {
@@ -130,14 +185,51 @@ object YDKEValidator {
                 WhiteList.BCE -> BCEWhiteList
             }
 
-            cardMap.forEach { (value, amount) ->
-                val limit = whiteListData[value] ?: return@forEach
+            segment.removeIf { value ->
+                if (!whiteListData.containsKey(value) && !aliasData.values.any { list -> value in list }) {
+                    val reason = "- $deckName : White list data doesn't contain card $value. Removing cards"
 
-                if (amount > limit) {
-                    reasons.add("Deck owns $amount card${if (amount > 2) "s" else ""} while only $limit card${if (limit > 2) "s" else ""} allowed. Limiting...")
+                    if (reason !in reasons)
+                        reasons.add(reason)
 
-                    repeat(amount - limit) {
-                        segment.remove(value)
+                    return@removeIf true
+                } else {
+                    return@removeIf false
+                }
+            }
+
+            whiteListData.forEach { (id, limit) ->
+                val cardMap = HashMap<Long, Int>()
+                val alias = aliasData[id]
+
+                cardMap[id] = segment.count { value -> value == id }
+
+                alias?.forEach { a ->
+                    cardMap[a] = segment.count { value -> value == a }
+                }
+
+                val group = ArrayList(cardMap.keys)
+
+                val totalAmount = cardMap.values.sumOf { v -> v }
+
+                if (totalAmount > limit) {
+                    val removedMap = HashMap<Long, Int>()
+
+                    repeat(totalAmount - limit) {
+                        val lowestID = cardMap.keys.filter { v -> v in segment }.minOf { v -> v }
+
+                        segment.remove(lowestID)
+                        cardMap[lowestID] = (cardMap[lowestID] ?: 0) - 1
+                        removedMap[lowestID] = (removedMap[lowestID] ?: 0) + 1
+
+                        if ((cardMap[lowestID] ?: 0) == 0) {
+                            cardMap.remove(lowestID)
+                        }
+                    }
+
+                    reasons.add("- $deckName : Deck contains $totalAmount card${if (totalAmount > 2) "s" else ""} while only $limit card${if (totalAmount > 2) "s are" else " is"} allowed for group of ${group.joinToString(",", "[", "]")}. Limiting to $limit")
+                    removedMap.forEach { (value, amount) ->
+                        reasons.add("  - Removed $amount card $value")
                     }
                 }
             }

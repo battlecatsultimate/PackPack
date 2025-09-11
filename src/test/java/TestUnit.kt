@@ -1,5 +1,8 @@
 @file:Suppress("SameParameterValue")
 
+import mandarin.card.CardBot
+import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.YDKEValidator
 
 
@@ -8,17 +11,27 @@ class TestUnit {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val link = "ydke://gWyODBpsjgyEbI4MrmuODGFtjgwBbY4MMW2ODEptjgxKbY4MGm2ODBptjgy/bI4MT2yODIJrjgyla44M7WuODDxtjgxia44MJG2ODPVrjgz1a44MdGuODGNrjgxja44MZGuODGRrjgxka44M1muODLVsjgy1bI4MWWyODO+CFgCmm/QBxanaBO8l/gS4a60EGUOdBfK/hQHblWsC+wR4Ag==!QWuODI1sjgzAbI4M!o2uODCJtjgw9bI4M72uODFdsjgzwa44MoWuODKJrjgzua44MtmyODAVsjgx8bY4MQ77dAHRHKwHjsCoD!"
+            CardBot.test = true
+            CardBot.readCardData()
 
-            println("Link : $link")
+            val inventory = Inventory.getInventory(195682910269865984L)
 
-            val data = YDKEValidator.toData(link)
+            val link = "ydke://YWyODFJtjgw/a44MP2uODCFtjgwEbY4MC22ODAttjgwnbY4MJ22ODLFsjgz/a44M/2uODLJrjgyObI4Mam2ODOtqjgwLa44MC2uODJZsjgyWbI4M7GqODOxqjgwJa44MCmuODH1tjgx9bY4M1muODAJsjgwCbI4MQ77dAEmTlgLjsCoD7yX+BPipjAX7mjEDGUOdBfK/hQHblWsC+wR4Ag==!!o2uODCJtjgw9bI4M72uODE5tjgzwa44MoWuODKJrjgxXbI4M7muODLZsjgwFbI4MfG2ODHRHKwFJk5YC!"
 
-            println("Decoded : $data")
+            YDKEValidator.loadWhiteListData()
+            YDKEValidator.loadCDBData()
 
-            val back = YDKEValidator.toLink(data)
+            val pair = YDKEValidator.sanitize(inventory, link, YDKEValidator.WhiteList.NORMAL)
 
-            println("Encoded : $back")
+            println("Offered Link : $link")
+            println(YDKEValidator.toData(link))
+
+            println("Sanitized Link : ${pair.first}")
+            println(YDKEValidator.toData(pair.first))
+
+            println("----------")
+
+            pair.second.forEach { println(it) }
         }
 
         fun upload() {

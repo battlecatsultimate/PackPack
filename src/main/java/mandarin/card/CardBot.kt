@@ -983,7 +983,7 @@ object CardBot : ListenerAdapter() {
         StaticStore.logCommand = true
     }
 
-    private fun readCardData() {
+    fun readCardData() {
         val element: JsonElement? = StaticStore.getJsonFile(if (test) "testCardSave" else "cardSave")
 
         if (element == null || !element.isJsonObject)
@@ -1010,6 +1010,10 @@ object CardBot : ListenerAdapter() {
 
         CardData.cards.map { c -> c.id }.forEach { id ->
             if (CardData.cards.count { c -> c.id == id } > 1) {
+                val list = CardData.cards.filter { c -> c.id == id }
+
+                println(list)
+
                 throw IllegalStateException("E/CardBot::readCardData - Duplicated card ID $id found")
             }
         }
