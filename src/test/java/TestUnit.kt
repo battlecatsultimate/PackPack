@@ -1,7 +1,6 @@
 @file:Suppress("SameParameterValue")
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.YDKEValidator
 
