@@ -15,7 +15,7 @@ class TestUnit {
 
             val inventory = Inventory.getInventory(195682910269865984L)
 
-            val link = "ydke://YWyODFJtjgw/a44MP2uODCFtjgwEbY4MC22ODAttjgwnbY4MJ22ODLFsjgz/a44M/2uODLJrjgyObI4Mam2ODOtqjgwLa44MC2uODJZsjgyWbI4M7GqODOxqjgwJa44MCmuODH1tjgx9bY4M1muODAJsjgwCbI4MQ77dAEmTlgLjsCoD7yX+BPipjAX7mjEDGUOdBfK/hQHblWsC+wR4Ag==!!o2uODCJtjgw9bI4M72uODE5tjgzwa44MoWuODKJrjgxXbI4M7muODLZsjgwFbI4MfG2ODHRHKwFJk5YC!"
+            val link = "ydke://YWyODH5sjgyBbI4MZ2yODG9sjgzea44MGmyODBpsjgynbI4Mp2yODKdsjgyua44MrmuODFJtjgxhbY4MAW2ODAFtjgzia44M92qODPdqjgz3ao4MUWuODFFrjgxRa44Mr2uODK9rjgxabY4MWm2ODFptjgyja44Mo2uODDRtjgw0bY4MNG2ODJhtjgyYbY4MmG2ODPZqjgz2ao4M9mqODAxtjgwMbY4MDG2ODJlsjgyZbI4MmWyODL5rjgy+a44MLGyODCxsjgwsbI4M9WqODPVqjgz1ao4MIm2ODCJtjgwibY4MHWuODB1rjgwda44M0GuODNBrjgzQa44MOm2ODD9rjgw/a44MP2uODCFtjgwxbY4M22qODNtqjgzbao4MBG2ODARtjgwEbY4MrmyODEptjgxKbY4MBmyODAttjgwLbY4MC22ODCdtjgwnbY4MJ22ODMNsjgzDbI4Mw2yODLFsjgyxbI4MZm2ODGZtjgy/bI4MPWyODD1sjgw9bI4MGm2ODBptjgwabY4M72uODIdsjgyHbI4Mh2yODE5tjgy7a44Mu2uODGVtjgxlbY4MHGuODBxrjgwca44M8GuODIhsjgyIbI4MiGyODE9sjgxPbI4MT2yODMpqjgzKao4MymqODKJrjgxXbI4M7muODMdsjgzya44M8muODPNqjgzzao4M82qODP9rjgz/a44M/2uODCprjgwqa44MtmyODMxqjgzMao4MzGqODIJrjgw=!!!"
 
             YDKEValidator.loadWhiteListData()
             YDKEValidator.loadCDBData()

@@ -1,6 +1,5 @@
 package mandarin.card.supporter
 
-import mandarin.card.supporter.CardData.Tier
 import mandarin.packpack.supporter.StaticStore
 import java.io.BufferedReader
 import java.io.File
@@ -20,7 +19,7 @@ object YDKEValidator {
     const val EXTRA = 1
     const val SIDE = 2
 
-    const val BCTCG = 210660000
+    const val BCTCG = 210660000L
 
     val normalWhiteList = HashMap<Long, Int>()
     val tournamentWhiteList = HashMap<Long, Int>()
@@ -138,7 +137,25 @@ object YDKEValidator {
         val data = toData(link)
         val reasons = ArrayList<String>()
 
-        val cards = inventory.cards.filterKeys { card -> card.tier != Tier.SPECIAL }.mapKeys { (card, _) -> (BCTCG + card.id).toLong() }
+        val cards = HashMap<Long, Int>()
+
+        inventory.cards.filterKeys { card -> card.tier != CardData.Tier.SPECIAL }.forEach { (card, amount) ->
+            val id = BCTCG + card.id
+
+            cards[id] = (cards[id] ?: 0) + amount
+        }
+
+        inventory.favorites.filterKeys { card -> card.tier != CardData.Tier.SPECIAL }.forEach { (card, amount) ->
+            val id = BCTCG + card.id
+
+            cards[id] = (cards[id] ?: 0) + amount
+        }
+
+        inventory.validationCards.forEach { (card, pair) ->
+            val id = BCTCG + card.id
+
+            cards[id] = (cards[id] ?: 0) + pair.second
+        }
 
         data.forEachIndexed { index, segment ->
             val deckName = when(index) {
