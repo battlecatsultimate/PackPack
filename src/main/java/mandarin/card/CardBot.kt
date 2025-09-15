@@ -723,6 +723,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}acc" -> AddCC()
             "${globalPrefix}addecc",
             "${globalPrefix}aecc" -> AddECC()
+            "${globalPrefix}ydke" -> YDKE()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 
@@ -884,7 +885,11 @@ object CardBot : ListenerAdapter() {
         val wasSafe = StaticStore.safeClose
         StaticStore.safeClose = false
 
-        CardData.auctionSessions.forEach { it.queueSession(event.jda) }
+        if (!test) {
+            CardData.auctionSessions.forEach { it.queueSession(event.jda) }
+        } else {
+            CardData.auctionSessions.clear()
+        }
 
         val g = event.jda.getGuildById(CardData.guild) ?: return
 
@@ -981,6 +986,9 @@ object CardBot : ListenerAdapter() {
         Initializer.checkAssetDownload(false)
 
         StaticStore.logCommand = true
+
+        YDKEValidator.loadWhiteListData()
+        YDKEValidator.loadCDBData()
     }
 
     fun readCardData() {
