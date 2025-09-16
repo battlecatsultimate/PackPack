@@ -2949,11 +2949,11 @@
         }
     },
     "stageInfo" : {
-        "mapCollection" : "Map Collection : _",
-        "several" : "Searching with [_], and several results found...\n",
+        "mapCollection" : "Map Collection : %s",
+        "several" : "Searching with [%s], and %d results have been found...",
         "smartSearch" : "Smart search activated, searched data with specified name as map name automatically",
-        "stage" : "Stage : _",
-        "stageMap" : "Stage Map : _",
+        "stage" : "Stage : %s",
+        "stageMap" : "Stage Map : %s",
         "button" : {
             "background" : "Background",
             "castle" : "Castle",
@@ -2965,7 +2965,7 @@
         },
         "fail" : {
             "noParameter" : "This command requires one more parameter : [Stage Name]",
-            "noResult" : "Searching with [_], but no such stage found!"
+            "noResult" : "Searching with [%s], but no such stage found!"
         }
     },
     "stageMapImage" : {

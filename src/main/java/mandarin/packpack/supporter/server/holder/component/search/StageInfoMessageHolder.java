@@ -9,6 +9,7 @@ import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
@@ -39,6 +40,11 @@ public class StageInfoMessageHolder extends SearchHolder {
 
         this.treasure = treasure;
         this.configData = configData;
+    }
+
+    @Override
+    public String getSearchSummary() {
+        return LangID.getStringByID("stageInfo.several", lang).formatted(keyword, stages.size());
     }
 
     @Override

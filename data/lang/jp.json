@@ -2949,11 +2949,11 @@
         }
     },
     "stageInfo" : {
-        "mapCollection" : "マップコレクション : _",
-        "several" : "[_]で検索しましたが、 複数見つかりました...\n",
+        "mapCollection" : "マップコレクション : %s",
+        "several" : "Searching with [%s], and %d results have been found...",
         "smartSearch" : "スマートサーチを実行し、 指定されたマップ名で自動的に検索しています。",
-        "stage" : "ステージ : _",
-        "stageMap" : "マップ : _",
+        "stage" : "ステージ : %s",
+        "stageMap" : "マップ : %s",
         "button" : {
             "background" : "背景",
             "fixedLineup" : "Fixed Lineup",
@@ -2965,7 +2965,7 @@
         },
         "fail" : {
             "noParameter" : "このコマンドはもう一つ引数が必要です! : [ステージの名前]",
-            "noResult" : "[_]で検索しましたが、 そのようなステージは見つかりませんでした!"
+            "noResult" : "[%s]で検索しましたが、 そのようなステージは見つかりませんでした!"
         }
     },
     "stageMapImage" : {

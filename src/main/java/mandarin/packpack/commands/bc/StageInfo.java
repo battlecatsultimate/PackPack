@@ -2,13 +2,13 @@ package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
@@ -17,6 +17,7 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOptionMap;
 import net.dv8tion.jda.api.Permission;
@@ -124,9 +125,9 @@ public class StageInfo extends TimedConstraintCommand {
 
         if(allNull(names)) {
             if (loader.fromMessage) {
-                replyToMessageSafely(ch, LangID.getStringByID("stageInfo.fail.noParameter", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("stageInfo.fail.noParameter", lang));
             } else {
-                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("stageInfo.fail.noParameter", lang), a -> a);
+                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("stageInfo.fail.noParameter", lang));
             }
 
             disableTimer();
@@ -149,9 +150,9 @@ public class StageInfo extends TimedConstraintCommand {
 
             if(stages.isEmpty()) {
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, additionalContent + LangID.getStringByID("stageInfo.fail.noResult", lang).replace("_", generateSearchName(names)), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), additionalContent + "\n" + LangID.getStringByID("stageInfo.fail.noResult", lang).formatted(generateSearchName(names)));
                 } else {
-                    replyToMessageSafely(loader.getInteractionEvent(), additionalContent + "\n" + LangID.getStringByID("stageInfo.fail.noResult", lang).replace("_", generateSearchName(names)), a -> a);
+                    replyToMessageSafely(loader.getInteractionEvent(), additionalContent + "\n" + LangID.getStringByID("stageInfo.fail.noResult", lang).formatted(generateSearchName(names)));
                 }
 
                 disableTimer();
@@ -172,42 +173,20 @@ public class StageInfo extends TimedConstraintCommand {
                     StaticStore.putHolder(loader.getUser().getId(), new StageInfoButtonHolder(finalStages.getFirst(), loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), result, treasure, configData, true, lang))
                 );
             } else {
-                StringBuilder sb = new StringBuilder(additionalContent)
-                        .append((LangID.getStringByID("stageInfo.several", lang).replace("_", generateSearchName(names))))
-                        .append("```md\n")
-                        .append(LangID.getStringByID("ui.search.selectData", lang));
-
-                List<String> data = accumulateData(stages, true);
-
-                for(int i = 0; i < data.size(); i++) {
-                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
-                }
-
-                if(stages.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-                    int totalPage = stages.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-                    if(stages.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                        totalPage++;
-
-                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
-                }
-
-                sb.append("```");
-
                 ArrayList<Stage> finalStages = stages;
 
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
+                    replyToMessageSafely(ch, loader.getMessage(), msg -> {
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
-                    });
+                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), msg, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
+                    }, getSearchComponents(stages.size(), LangID.getStringByID("stageInfo.several", lang).formatted(generateSearchName(names), stages.size()), stages, this::accumulateTextData, config.searchLayout, lang));
                 } else {
-                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
+                    replyToMessageSafely(loader.getInteractionEvent(), msg -> {
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
 
-                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), res, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
-                    });
+                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), msg, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
+                    }, getSearchComponents(stages.size(), LangID.getStringByID("stageInfo.several", lang).formatted(generateSearchName(names), stages.size()), stages, this::accumulateTextData, config.searchLayout, lang));
                 }
 
                 disableTimer();
@@ -371,15 +350,15 @@ public class StageInfo extends TimedConstraintCommand {
         }
 
         if(names[0] != null) {
-            result += LangID.getStringByID("stageInfo.mapCollection", lang).replace("_", names[0])+", ";
+            result += LangID.getStringByID("stageInfo.mapCollection", lang).formatted(names[0])+", ";
         }
 
         if(names[1] != null) {
-            result += LangID.getStringByID("stageInfo.stageMap", lang).replace("_", names[1])+", ";
+            result += LangID.getStringByID("stageInfo.stageMap", lang).formatted(names[1])+", ";
         }
 
         if(names[2] != null) {
-            result += LangID.getStringByID("stageInfo.stage", lang).replace("_", names[2]);
+            result += LangID.getStringByID("stageInfo.stage", lang).formatted(names[2]);
         }
 
         if(result.endsWith(", "))
@@ -388,57 +367,60 @@ public class StageInfo extends TimedConstraintCommand {
         return result;
     }
 
-    private List<String> accumulateData(List<Stage> stages, boolean full) {
+    private List<String> accumulateTextData(List<Stage> stages, SearchHolder.TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
-            if(i >= stages.size())
-                break;
-
+        for(int i = 0; i < Math.min(stages.size(), config.searchLayout.chunkSize); i++) {
             Stage st = stages.get(i);
             StageMap stm = st.getCont();
             MapColc mc = stm.getCont();
 
+            if (st.id == null || stm.id == null)
+                continue;
+
             String name = "";
 
-            if(full) {
-                if(mc != null) {
-                    String mcn = MultiLangCont.get(mc, lang);
+            String fullName = "";
 
-                    if(mcn == null || mcn.isBlank())
-                        mcn = mc.getSID();
+            if (mc != null) {
+                String mcName = StaticStore.safeMultiLangGet(mc, lang);
 
-                    name += mcn+" - ";
-                } else {
-                    name += "Unknown - ";
+                if (mcName == null || mcName.isBlank()) {
+                    mcName = DataToString.getMapCode(mc);
                 }
+
+                fullName += mcName + " - ";
             } else {
-                name = "";
+                fullName += "Unknown - ";
             }
 
-            String stageMapName = MultiLangCont.get(stm, lang);
+            String stmName = StaticStore.safeMultiLangGet(stm, lang);
 
-            if(stm.id != null) {
-                if(stageMapName == null || stageMapName.isBlank())
-                    stageMapName = Data.trio(stm.id.id);
-            } else {
-                if(stageMapName == null || stageMapName.isBlank())
-                    stageMapName = "Unknown";
+            if (stmName == null || stmName.isBlank()) {
+                stmName = Data.trio(stm.id.id);
             }
 
-            name += stageMapName+" - ";
+            fullName += stmName + " - ";
 
-            String stn = MultiLangCont.get(st, lang);
+            String stName = StaticStore.safeMultiLangGet(st, lang);
 
-            if(st.id != null) {
-                if(stn == null || stn.isBlank())
-                    stn = Data.trio(st.id.id);
-            } else {
-                if(stn == null || stn.isBlank())
-                    stn = "Unknown";
+            if (stName == null || stName.isBlank()) {
+                stName = Data.trio(st.id.id);
             }
 
-            name += stn;
+            fullName += stName;
+
+            switch (textType) {
+                case TEXT -> {
+                    if (config.searchLayout == ConfigHolder.SearchLayout.COMPACTED) {
+                        name = fullName;
+                    } else {
+                        name = "`" + DataToString.getStageCode(st) + "` " + fullName;
+                    }
+                }
+                case LIST_DESCRIPTION -> name = DataToString.getStageCode(st);
+                case LIST_LABEL -> name = fullName;
+            }
 
             data.add(name);
         }

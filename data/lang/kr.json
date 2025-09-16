@@ -2954,11 +2954,11 @@
         }
     },
     "stageInfo" : {
-        "mapCollection" : "맵 콜래션 : _",
-        "several" : "[_] 로 검색한 결과, 여러 종류의 결과가 존재합니다...\n",
+        "mapCollection" : "맵 콜래션 : %s",
+        "several" : "[%s]로 검색한 결과, %d개의 결과가 발견되었습니다...",
         "smartSearch" : "스마트 검색 모드가 작동하여 제공된 이름을 가진 맵을 자동으로 찾아냈습니다",
-        "stage" : "스테이지 : _",
-        "stageMap" : "맵 : _",
+        "stage" : "스테이지 : %s",
+        "stageMap" : "맵 : %s",
         "button" : {
             "background" : "배경",
             "castle" : "성",
@@ -2970,7 +2970,7 @@
         },
         "fail" : {
             "noParameter" : "해당 명령어는 하나의 정보를 더 요구합니다 : [스테이지 이름]",
-            "noResult" : "[_] 로 검색해 보았지만, 해당 스테이지를 찾지 못했습니다!"
+            "noResult" : "[%s] 로 검색해 보았지만, 해당 스테이지를 찾지 못했습니다!"
         }
     },
     "stageMapImage" : {
