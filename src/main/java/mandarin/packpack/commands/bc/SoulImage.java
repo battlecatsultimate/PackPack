@@ -14,10 +14,19 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class SoulImage extends TimedConstraintCommand {
@@ -87,12 +96,22 @@ public class SoulImage extends TimedConstraintCommand {
         s.anim.unload();
 
         if(img != null) {
-            sendMessageWithFile(
-                    ch,
-                    LangID.getStringByID("soulImage.result", lang).replace("_", Data.trio(s.getID().id)).replace("-", String.valueOf(frame)),
-                    img,
-                    loader.getMessage()
-            );
+            List<ContainerChildComponent> children = new ArrayList<>();
+
+            String title = LangID.getStringByID("data.soul", lang) + " [" + Data.trio(s.getID().id) + "]";
+
+            children.add(TextDisplay.of("## " + title));
+            children.add(TextDisplay.of(LangID.getStringByID("soulImage.frame", lang).formatted(frame)));
+
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+            children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(img))));
+
+            replyToMessageSafely(ch, loader.getMessage(), unused -> StaticStore.deleteFile(img, true), e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/SoulImage::doSomething - Failed to upload soul image");
+
+                StaticStore.deleteFile(img, true);
+            }, Container.of(children));
         } else {
             replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soulImage.failed.unknown", lang));
 

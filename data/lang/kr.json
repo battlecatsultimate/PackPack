@@ -769,7 +769,7 @@
             "attackTimings" : "공격 시간 : 선딜 -> 후딜 -> 공격 간격",
             "cataminBaseXP" : "고양이 드링크 - 성 체력 - XP",
             "costCooldownSpeed" : "코스트 - 쿨타임 - 속도",
-            "damageDPS" : "<_TTT_> 공격력 [DPS]",
+            "damageDPS" : "<%s> 공격력 [DPS]",
             "dropBarrierSpeed" : "드롭 - 베리어 - 속도",
             "energyBaseXP" : "에너지 - 성 체력 - XP",
             "healthKb" : "체력 - 히트백",
@@ -2934,9 +2934,10 @@
         }
     },
     "soulImage" : {
-        "result" : "영혼 _ 업로드 성공 | Frame : -",
-        "success" : "Soul _ 스프라이트 업로드 성공",
+        "frame" : "프레임 : %d",
+        "sprite" : "영혼 스프라이트 업로드 성공",
         "failed" : {
+            "range" : "유효하지 않은 ID 범위입니다. ID는 0 ~ %d 사이의 숫자여야만 합니다",
             "unknown" : "영혼 이미지 생성 실패"
         }
     },

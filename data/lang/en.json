@@ -2932,9 +2932,10 @@
         }
     },
     "soulImage" : {
-        "result" : "Uploaded Soul _ | Frame : -",
-        "success" : "Uploaded Soul _ sprite",
+        "frame" : "Frame : %d",
+        "sprite" : "Uploaded soul sprite",
         "failed" : {
+            "range" : "Invalid ID range, ID must be number between 0 ~ %d",
             "unknown" : "Failed to generate soul image"
         }
     },

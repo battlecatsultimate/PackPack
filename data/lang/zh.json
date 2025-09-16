@@ -769,7 +769,7 @@
             "attackTimings" : "Attack Time : Foreswing -> Backswing -> TBA",
             "cataminBaseXP" : "Catamin - Base Health - XP",
             "costCooldownSpeed" : "Cost - Cooldown - Speed",
-            "damageDPS" : "<_TTT_> Attack [DPS]",
+            "damageDPS" : "<%s> Attack [DPS]",
             "dropBarrierSpeed" : "Drop - Barrier - Speed",
             "energyBaseXP" : "Energy - Base Health - XP",
             "healthKb" : "Health - Knockbacks",
@@ -2929,9 +2929,10 @@
         }
     },
     "soulImage" : {
-        "result" : "Uploaded Soul _ | Frame : -",
-        "success" : "Uploaded Soul _ sprite",
+        "frame" : "Frame : %d",
+        "sprite" : "Uploaded soul sprite",
         "failed" : {
+            "range" : "Invalid ID range, ID must be number between 0 ~ %d",
             "unknown" : "Failed to generate soul image"
         }
     },

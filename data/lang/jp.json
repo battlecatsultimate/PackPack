@@ -769,7 +769,7 @@
             "attackTimings" : "攻撃頻度  : 攻撃感知～攻撃発生 -> 攻撃発生～攻撃終了 -> 攻撃終了～移動",
             "cataminBaseXP" : "ネコビタン - 城体力 - XP",
             "costCooldownSpeed" : "お金 - 再生産 - 速度",
-            "damageDPS" : "<_TTT_> 攻撃力 [DPS]",
+            "damageDPS" : "<%s> 攻撃力 [DPS]",
             "dropBarrierSpeed" : "ドロップ - バリア - 速度",
             "energyBaseXP" : "統率力 - 城体力 - XP",
             "healthKb" : "体力-KB",
@@ -2929,9 +2929,10 @@
         }
     },
     "soulImage" : {
-        "result" : "アップロードされた魂 _ | フレーム : -",
-        "success" : "アップロードされた魂 _ スプライト",
+        "frame" : "フレーム : %d",
+        "sprite" : "Uploaded soul sprite",
         "failed" : {
+            "range" : "IDの範囲が無効です。IDは 0 ~ %d の数字である必要があります",
             "unknown" : "魂画像の生成に失敗しました"
         }
     },
