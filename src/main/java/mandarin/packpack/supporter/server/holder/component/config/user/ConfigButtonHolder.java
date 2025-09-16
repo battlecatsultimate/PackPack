@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import mandarin.packpack.supporter.server.holder.modal.LevelModalHolder;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -20,7 +21,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -68,7 +69,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                 performResult(event);
             }
             case "defLevels" -> {
-                TextInput input = TextInput.create("level", LangID.getStringByID("config.defaultLevel.set.inputTagName", config.lang), TextInputStyle.SHORT)
+                TextInput input = TextInput.create("level", TextInputStyle.SHORT)
                         .setPlaceholder(LangID.getStringByID("config.defaultLevel.set.placeholder", config.lang))
                         .setRequiredRange(1, 2)
                         .setRequired(true)
@@ -76,7 +77,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                         .build();
 
                 Modal modal = Modal.create("level", LangID.getStringByID("config.defaultLevel.set.tagName", config.lang))
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of(LangID.getStringByID("config.defaultLevel.set.inputTagName", config.lang), input))
                         .build();
                 
                 event.replyModal(modal).queue();

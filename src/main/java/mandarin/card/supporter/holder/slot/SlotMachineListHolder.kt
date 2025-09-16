@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -20,7 +21,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
@@ -47,13 +48,13 @@ class SlotMachineListHolder(author: Message, userID: String, channelID: String, 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "create" -> {
-                val input = TextInput.create("name", "Name", TextInputStyle.SHORT)
+                val input = TextInput.create("name", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setRequiredRange(1, 50)
                     .setPlaceholder("Decide Slot Machine Name")
                     .build()
 
-                val modal = Modal.create("name", "Slot Machine Name").addComponents(ActionRow.of(input)).build()
+                val modal = Modal.create("name", "Slot Machine Name").addComponents(Label.of("Name", input)).build()
 
                 event.replyModal(modal).queue()
 

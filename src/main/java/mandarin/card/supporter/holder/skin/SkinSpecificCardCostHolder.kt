@@ -18,6 +18,7 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -26,7 +27,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -139,13 +140,13 @@ class SkinSpecificCardCostHolder(
                 applyResult()
             }
             "amount" -> {
-                val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                val input = TextInput.create("amount", TextInputStyle.SHORT)
                     .setPlaceholder("Decide amount of required cards")
                     .setRequired(true)
                     .build()
 
                 val modal = Modal.create("amount", "Required Cards Amount")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Amount", input))
                     .build()
 
                 event.replyModal(modal).queue()

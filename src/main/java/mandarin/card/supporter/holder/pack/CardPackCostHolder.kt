@@ -21,12 +21,13 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -50,14 +51,14 @@ class CardPackCostHolder(author: Message, userID: String, channelID: String, mes
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "cf" -> {
-                val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                val input = TextInput.create("amount", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setPlaceholder("Define amount of cat food cost")
                     .setValue(pack.cost.catFoods.toString())
                     .build()
 
                 val modal = Modal.create("cf", "Cat Food Cost")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Amount", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -65,14 +66,14 @@ class CardPackCostHolder(author: Message, userID: String, channelID: String, mes
                 connectTo(CatFoodCostHolder(authorMessage, userID, channelID, message, pack.cost))
             }
             "shard" -> {
-                val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                val input = TextInput.create("amount", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setPlaceholder("Define amount of platinum shard cost")
                     .setValue(pack.cost.platinumShards.toString())
                     .build()
 
                 val modal = Modal.create("shard", "Platinum Shard Cost")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Amount", input))
                     .build()
 
                 event.replyModal(modal).queue()

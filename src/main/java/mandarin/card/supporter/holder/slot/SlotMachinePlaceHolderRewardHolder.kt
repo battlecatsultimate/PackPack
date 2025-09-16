@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -25,7 +26,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
@@ -95,9 +96,9 @@ class SlotMachinePlaceHolderRewardHolder(
                 applyResult(event)
             }
             "search" -> {
-                val input = TextInput.create("keyword", "Keyword", TextInputStyle.SHORT).setRequired(false).setPlaceholder("Empty Keyword For No Filter").build()
+                val input = TextInput.create("keyword", TextInputStyle.SHORT).setRequired(false).setPlaceholder("Empty Keyword For No Filter").build()
 
-                val modal = Modal.create("search", "Emoji Search").addComponents(ActionRow.of(input)).build()
+                val modal = Modal.create("search", "Emoji Search").addComponents(Label.of("Keyword", input)).build()
 
                 event.replyModal(modal).queue()
 

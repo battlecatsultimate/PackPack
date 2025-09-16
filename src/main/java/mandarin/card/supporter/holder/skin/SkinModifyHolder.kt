@@ -20,10 +20,11 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
@@ -77,21 +78,19 @@ class SkinModifyHolder(
 
                 val cachedMessage = skin.getCachedMessage(authorMessage.jda)
 
-                if (cachedMessage != null) {
-                    cachedMessage.editMessage(content).setAllowedMentions(ArrayList()).queue()
-                }
+                cachedMessage?.editMessage(content)?.setAllowedMentions(ArrayList())?.queue()
 
                 applyResult(event)
             }
             "name" -> {
-                val input = TextInput.create("name", "Name", TextInputStyle.SHORT)
+                val input = TextInput.create("name", TextInputStyle.SHORT)
                     .setPlaceholder("Type Name of Skin Here")
                     .setRequiredRange(1, 100)
                     .setRequired(true)
                     .build()
 
                 val modal = Modal.create("skinName", "Skin Name")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Name", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -169,9 +168,7 @@ class SkinModifyHolder(
 
                         val retry = skin.getCachedMessage(authorMessage.jda)
 
-                        if (retry != null) {
-                            retry.delete().queue()
-                        }
+                        retry?.delete()?.queue()
                     }
 
                     CardData.inventories.values.forEach { inventory ->
@@ -243,7 +240,7 @@ class SkinModifyHolder(
 
     private fun getContents() : String {
         val builder = StringBuilder("## Skin Manager\n")
-            .append(skin.displayInfo(authorMessage.jda, true, false))
+            .append(skin.displayInfo(authorMessage.jda, showPublic = true, displayCacheLink = false))
 
         return builder.toString()
     }

@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,13 +75,13 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                             .setEphemeral(true)
                             .queue();
                 } else {
-                    TextInput input = TextInput.create("name", LangID.getStringByID("serverConfig.general.custom.name", lang), TextInputStyle.SHORT)
+                    TextInput input = TextInput.create("name", TextInputStyle.SHORT)
                             .setRequired(true)
                             .setPlaceholder(LangID.getStringByID("serverConfig.general.custom.decideName", lang))
                             .build();
 
                     Modal modal = Modal.create("register", LangID.getStringByID("serverConfig.general.custom.customRoleName", lang))
-                            .addComponents(ActionRow.of(input))
+                            .addComponents(Label.of(LangID.getStringByID("serverConfig.general.custom.name", lang), input))
                             .build();
 
                     event.replyModal(modal).queue();

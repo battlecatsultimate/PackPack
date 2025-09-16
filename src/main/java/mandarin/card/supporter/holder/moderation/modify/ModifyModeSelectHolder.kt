@@ -17,11 +17,12 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 
 class ModifyModeSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
@@ -72,12 +73,12 @@ class ModifyModeSelectHolder(author: Message, userID: String, channelID: String,
                         connectTo(event, SkinModifyHolder(authorMessage, userID, channelID, message, isAdd, inventory, targetMember))
                     }
                     CardData.ModifyCategory.CF -> {
-                        val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                        val input = TextInput.create("amount", TextInputStyle.SHORT)
                             .setPlaceholder("Define amount of cat foods that will be ${if(isAdd) "added" else "removed"} from this user")
                             .build()
 
                         val modal = Modal.create("cf", "Modify Cat Food")
-                            .addComponents(ActionRow.of(input))
+                            .addComponents(Label.of("Amount", input))
                             .build()
 
                         event.replyModal(modal).queue()
@@ -85,12 +86,12 @@ class ModifyModeSelectHolder(author: Message, userID: String, channelID: String,
                         connectTo(CatFoodModifyHolder(authorMessage, userID, channelID, message, inventory, isAdd, targetMember.id))
                     }
                     CardData.ModifyCategory.SHARD -> {
-                        val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                        val input = TextInput.create("amount", TextInputStyle.SHORT)
                             .setPlaceholder("Define amount of platinum shards that will be ${if(isAdd) "added" else "removed"} from this user")
                             .build()
 
                         val modal = Modal.create("shard", "Modify Platinum Shard")
-                            .addComponents(ActionRow.of(input))
+                            .addComponents(Label.of("Amount", input))
                             .build()
 
                         event.replyModal(modal).queue()

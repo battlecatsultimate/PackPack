@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -25,7 +26,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.math.MathContext
 import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
@@ -97,9 +98,9 @@ class SlotMachineCurrencyRewardHolder(
                 applyResult(event)
             }
             "search" -> {
-                val input = TextInput.create("keyword", "Keyword", TextInputStyle.SHORT).setRequired(false).setPlaceholder("Empty Keyword For No Filter").build()
+                val input = TextInput.create("keyword", TextInputStyle.SHORT).setRequired(false).setPlaceholder("Empty Keyword For No Filter").build()
 
-                val modal = Modal.create("search", "Emoji Search").addComponents(ActionRow.of(input)).build()
+                val modal = Modal.create("search", "Emoji Search").addComponents(Label.of("Keyword", input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -110,9 +111,9 @@ class SlotMachineCurrencyRewardHolder(
                 })
             }
             "slot" -> {
-                val input = TextInput.create("size", "Size", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Put Slot Size Here").build()
+                val input = TextInput.create("size", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Put Slot Size Here").build()
 
-                val modal = Modal.create("slot", "Slot Content Required Slot Size").addComponents(ActionRow.of(input)).build()
+                val modal = Modal.create("slot", "Slot Content Required Slot Size").addComponents(Label.of("Size", input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -136,9 +137,9 @@ class SlotMachineCurrencyRewardHolder(
                     SlotCurrencyContent.Mode.PERCENTAGE -> "Percentage"
                 }
 
-                val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide $valueName Value").build()
+                val input = TextInput.create("amount", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide $valueName Value").build()
 
-                val modal = Modal.create("amount", "$valueName Value").addComponents(ActionRow.of(input)).build()
+                val modal = Modal.create("amount", "$valueName Value").addComponents(Label.of("Amount", input)).build()
 
                 event.replyModal(modal).queue()
 

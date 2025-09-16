@@ -16,9 +16,10 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 
 class CardPackAdjustHolder(
@@ -48,13 +49,13 @@ class CardPackAdjustHolder(
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "name" -> {
-                val input = TextInput.create("name", "Name", TextInputStyle.SHORT)
+                val input = TextInput.create("name", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setPlaceholder("Decide name of card pack")
                     .build()
 
                 val modal = Modal.create("name", "Card Pack Name")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Name", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -68,13 +69,13 @@ class CardPackAdjustHolder(
                 connectTo(event, CardPackContentHolder(authorMessage, userID, channelID, message, pack))
             }
             "cooldown" -> {
-                val input = TextInput.create("cooldown", "Cooldown", TextInputStyle.SHORT)
+                val input = TextInput.create("cooldown", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setPlaceholder("Example : 1d3h4m30s => 1 day, 3 hours, 4 minutes, 30 seconds")
                     .build()
 
                 val modal = Modal.create("cooldown", "Cooldown of Card Pack")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Cooldown", input))
                     .build()
 
                 event.replyModal(modal).queue()

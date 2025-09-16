@@ -14,9 +14,10 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 
 class CatFoodRateConfigHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
@@ -38,21 +39,21 @@ class CatFoodRateConfigHolder(author: Message, userID: String, channelID: String
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "cf" -> {
-                val min = TextInput.create("date.minute.uppercase.singular", "Minimum Cat Food", TextInputStyle.SHORT)
+                val min = TextInput.create("date.minute.uppercase.singular", TextInputStyle.SHORT)
                     .setPlaceholder("Define minimum amount of cat foods that will be given to user while chatting")
                     .setValue(CardData.minimumCatFoods.toString())
                     .setRequired(true)
                     .build()
 
-                val max = TextInput.create("max", "Maximum Cat Food", TextInputStyle.SHORT)
+                val max = TextInput.create("max", TextInputStyle.SHORT)
                     .setPlaceholder("Define maximum amount of cat foods that will be given to user while chatting")
                     .setValue(CardData.maximumCatFoods.toString())
                     .setRequired(true)
                     .build()
 
                 val modal = Modal.create("cf", "Cat Food Rate")
-                    .addComponents(ActionRow.of(min))
-                    .addComponents(ActionRow.of(max))
+                    .addComponents(Label.of("Minimum Cat Food", min))
+                    .addComponents(Label.of("Maximum Cat Food", max))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -60,14 +61,14 @@ class CatFoodRateConfigHolder(author: Message, userID: String, channelID: String
                 StaticStore.putHolder(authorMessage.author.id, CatFoodRateHolder(authorMessage, userID, channelID, message, this::applyResult))
             }
             "cooldown" -> {
-                val cooldown = TextInput.create("cooldown", "Cooldown (In Seconds)", TextInputStyle.SHORT)
+                val cooldown = TextInput.create("cooldown", TextInputStyle.SHORT)
                     .setPlaceholder("Cooldown until new cat food will be given to user")
                     .setValue((CardData.catFoodCooldown / 1000).toString())
                     .setRequired(true)
                     .build()
 
                 val modal = Modal.create("cooldown", "Cooldown")
-                    .addComponents(ActionRow.of(cooldown))
+                    .addComponents(Label.of("Cooldown (In Seconds)", cooldown))
                     .build()
 
                 event.replyModal(modal).queue()

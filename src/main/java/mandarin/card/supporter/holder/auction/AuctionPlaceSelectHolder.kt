@@ -16,11 +16,12 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 
 class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
@@ -63,14 +64,14 @@ class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: Strin
                     return
                 }
 
-                val textInput = TextInput.create("bid", "Bid Cat Foods (Minimum ${auctionSession.currentBid + auctionSession.minimumBid})", TextInputStyle.SHORT)
+                val input = TextInput.create("bid", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setValue(null)
                     .setPlaceholder("i.e. 3000, 2k, 1m")
                     .build()
 
                 val modal = Modal.create("bid", "Bid The Auction")
-                    .addComponents(ActionRow.of(textInput))
+                    .addComponents(Label.of("Bid Cat Foods (Minimum ${auctionSession.currentBid + auctionSession.minimumBid})", input))
                     .build()
 
                 event.replyModal(modal).queue()

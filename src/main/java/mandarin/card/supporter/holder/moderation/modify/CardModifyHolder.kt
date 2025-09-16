@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.min
 
 class CardModifyHolder(author: Message, userID: String, channelID: String, message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -116,12 +117,12 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                 val card = cards[index]
 
                 if (isAdd) {
-                    val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                    val input = TextInput.create("amount", TextInputStyle.SHORT)
                         .setPlaceholder("Put amount of cards that will be added")
                         .build()
 
                     val modal = Modal.create("select", "Select Amount of Cards")
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of("Amount of Cards", input))
                         .build()
 
                     event.replyModal(modal).queue()
@@ -141,12 +142,12 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
                     val realAmount = (inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0) - (selectedCards[card] ?: 0)
 
                     if (realAmount >= 2) {
-                        val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                        val input = TextInput.create("amount", TextInputStyle.SHORT)
                             .setPlaceholder("Put amount up to $realAmount")
                             .build()
 
                         val modal = Modal.create("select", "Select Amount of Cards")
-                            .addComponents(ActionRow.of(input))
+                            .addComponents(Label.of("Amount of Cards", input))
                             .build()
 
                         event.replyModal(modal).queue()

@@ -12,9 +12,10 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 
 class CraftCostHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val size = 2
@@ -62,14 +63,14 @@ class CraftCostHolder(author: Message, userID: String, channelID: String, messag
                     else -> CardData.CraftMode.T4
                 }
 
-                val input = TextInput.create("cost", "Cost", TextInputStyle.SHORT)
+                val input = TextInput.create("cost", TextInputStyle.SHORT)
                     .setPlaceholder("Define amount of platinum shards that will be spent upon craft")
                     .setRequired(true)
                     .setValue(craftMode.cost.toString())
                     .build()
 
                 val modal = Modal.create("craftCost", "Cost of Crafting")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Cost", input))
                     .build()
 
                 event.replyModal(modal).queue()

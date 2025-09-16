@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -23,7 +24,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -99,12 +100,12 @@ class CardCostPayHolder(
                 val realAmount = (inventory.cards[card] ?: 0) - containers.sumOf { container -> container.pickedCards.count { c -> c.id == card.id } }
 
                 if (realAmount > 2 && container.cost.amount - container.pickedCards.size > 1) {
-                    val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                    val input = TextInput.create("amount", TextInputStyle.SHORT)
                         .setPlaceholder("Put amount up to ${min(realAmount - 1L, container.cost.amount - container.pickedCards.size)}")
                         .build()
 
                     val modal = Modal.create("select", "Select Amount of Cards")
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of("Amount of Cards", input))
                         .build()
 
                     event.replyModal(modal).queue()

@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.modal.LevelModalHolder;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -39,7 +40,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
     public void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "level" -> {
-                TextInput input = TextInput.create("level", LangID.getStringByID("config.defaultLevel.set.inputTagName", holder.config.lang), TextInputStyle.SHORT)
+                TextInput input = TextInput.create("level", TextInputStyle.SHORT)
                         .setPlaceholder(LangID.getStringByID("config.defaultLevel.set.placeholder", holder.config.lang))
                         .setRequiredRange(1, 2)
                         .setRequired(true)
@@ -47,7 +48,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
                         .build();
 
                 Modal modal = Modal.create("level", LangID.getStringByID("config.defaultLevel.set.tagName", holder.config.lang))
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of(LangID.getStringByID("config.defaultLevel.set.inputTagName", holder.config.lang), input))
                         .build();
 
                 event.replyModal(modal).queue();

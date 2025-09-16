@@ -20,11 +20,12 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 import net.dv8tion.jda.api.components.selections.SelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
@@ -50,10 +51,10 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "slot" -> {
-                val input = TextInput.create("slot", "Size", TextInputStyle.SHORT).setRequired(true).build()
+                val input = TextInput.create("slot", TextInputStyle.SHORT).setRequired(true).build()
 
                 val modal = Modal.create("size", "Slot Machine Slot Size")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Size", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -84,9 +85,9 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
                 applyResult()
             }
             "name" -> {
-                val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Decide Slot Machine Name Here").setRequired(true).setRequiredRange(1, 50).build()
+                val input = TextInput.create("name", TextInputStyle.SHORT).setPlaceholder("Decide Slot Machine Name Here").setRequired(true).setRequiredRange(1, 50).build()
 
-                val modal = Modal.create("name", "Slot Machine Name").addComponents(ActionRow.of(input)).build()
+                val modal = Modal.create("name", "Slot Machine Name").addComponents(Label.of("Name", input)).build()
 
                 event.replyModal(modal).queue()
 
@@ -99,10 +100,10 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
                 connectTo(event, SlotMachineContentHolder(authorMessage, userID, channelID, message, slotMachine))
             }
             "cooldown" -> {
-                val input = TextInput.create("cooldown", "Cooldown", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 3d4h30m -> 3 Days 4 Hours 30 Minutes").build()
+                val input = TextInput.create("cooldown", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 3d4h30m -> 3 Days 4 Hours 30 Minutes").build()
 
                 val modal = Modal.create("cooldown", "Slot Machine Cooldown")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Cooldown", input))
                     .build()
 
                 event.replyModal(modal).queue()

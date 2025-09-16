@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -24,7 +25,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
@@ -59,13 +60,13 @@ class SlotMachineCardChancePairHolder(
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "chance" -> {
-                val input = TextInput.create("chance", "Chance", TextInputStyle.SHORT)
+                val input = TextInput.create("chance", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setPlaceholder("Decide chance (Percentage)")
                     .build()
 
                 val modal = Modal.create("chance", "Card Chance Adjustment")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Chance", input))
                     .build()
 
                 event.replyModal(modal).queue()

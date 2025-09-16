@@ -17,9 +17,10 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.max
 
 class ManualSlotConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val member: Member, private val users: List<String>, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -77,9 +78,9 @@ class ManualSlotConfirmHolder(author: Message, userID: String, channelID: String
             "input" -> {
                 val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
 
-                val input = TextInput.create("fee", "Entry Fee", TextInputStyle.SHORT).setPlaceholder("Put Entry Fee From $minimumInput To ${slotMachine.entryFee.maximumFee}").setRequired(true).build()
+                val input = TextInput.create("fee", TextInputStyle.SHORT).setPlaceholder("Put Entry Fee From $minimumInput To ${slotMachine.entryFee.maximumFee}").setRequired(true).build()
 
-                val modal = Modal.create("roll", "Slot Machine Roll").addComponents(ActionRow.of(input)).build()
+                val modal = Modal.create("roll", "Slot Machine Roll").addComponents(Label.of("Entry Fee", input)).build()
 
                 event.replyModal(modal).queue()
 

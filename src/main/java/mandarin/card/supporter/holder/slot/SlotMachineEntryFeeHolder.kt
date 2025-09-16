@@ -17,9 +17,10 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 
 class SlotMachineEntryFeeHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -68,10 +69,10 @@ class SlotMachineEntryFeeHolder(author: Message, userID: String, channelID: Stri
                 applyResult()
             }
             "min" -> {
-                val input = TextInput.create("entryFee", "Entry Fee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
+                val input = TextInput.create("entryFee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
 
                 val modal = Modal.create("minMax", "Slot Machine Minimum Entry Fee")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Entry Fee", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -79,10 +80,10 @@ class SlotMachineEntryFeeHolder(author: Message, userID: String, channelID: Stri
                 connectTo(SlotMachineEntryFeeMinMaxHolder(authorMessage, userID, channelID, message, slotMachine, true))
             }
             "max" -> {
-                val input = TextInput.create("entryFee", "Entry Fee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
+                val input = TextInput.create("entryFee", TextInputStyle.SHORT).setRequired(true).setPlaceholder("i.e. 1k -> 1000, 250k -> 250000").build()
 
                 val modal = Modal.create("minMax", "Slot Machine Maximum Entry Fee")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Entry Fee", input))
                     .build()
 
                 event.replyModal(modal).queue()

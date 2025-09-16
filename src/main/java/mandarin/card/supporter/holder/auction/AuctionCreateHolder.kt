@@ -21,9 +21,10 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 
 class AuctionCreateHolder(author: Message, userID: String, channelID: String, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var selectedCard: Card? = null
@@ -51,13 +52,13 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                 })
             }
             "duration" -> {
-                val input = TextInput.create("time", "End Time (UTC Time Zone)", TextInputStyle.SHORT)
+                val input = TextInput.create("time", TextInputStyle.SHORT)
                     .setPlaceholder("Example : 2024-5-30-18-40-00")
                     .setRequired(true)
                     .build()
 
                 val modal = Modal.create("endTime", "Decide Auction End Time")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("End Time (UTC Time Zone)", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -73,12 +74,12 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                 })
             }
             "price" -> {
-                val input = TextInput.create("price", "Initial Price", TextInputStyle.SHORT)
+                val input = TextInput.create("price", TextInputStyle.SHORT)
                     .setPlaceholder("Example : 1000000, 100k, 2m")
                     .build()
 
                 val modal = Modal.create("price", "Decide Initial Price")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Initial Price", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -94,12 +95,12 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                 })
             }
             "bid" -> {
-                val input = TextInput.create("bid", "Minimum Bid Increase", TextInputStyle.SHORT)
+                val input = TextInput.create("bid", TextInputStyle.SHORT)
                     .setPlaceholder("Example : 1000000, 100k, 2m")
                     .build()
 
                 val modal = Modal.create("minimumBid", "Decide Minimum Bid Increase")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Minimum Bid Increase", input))
                     .build()
 
                 event.replyModal(modal).queue()
@@ -135,13 +136,13 @@ class AuctionCreateHolder(author: Message, userID: String, channelID: String, me
                     .queue()
             }
             "closeTime" -> {
-                val input = TextInput.create("time", "Time", TextInputStyle.SHORT)
+                val input = TextInput.create("time", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setPlaceholder("i.e. 43200 = 12 hours, 3d6h30m - 3 days 6 hours 30 minutes")
                     .build()
 
                 val modal = Modal.create("autoClose", "Auto Close Time")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Time", input))
                     .build()
 
                 event.replyModal(modal).queue()

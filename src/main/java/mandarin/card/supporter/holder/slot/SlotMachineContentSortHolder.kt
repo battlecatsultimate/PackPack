@@ -21,9 +21,10 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import org.jcodec.api.UnsupportedFormatException
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
@@ -123,9 +124,9 @@ class SlotMachineContentSortHolder(author: Message, userID: String, channelID: S
                         if (index < 0 || index >= slotMachine.content.size)
                             return
 
-                        val input = TextInput.create("index", "Place", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide place to be set here").build()
+                        val input = TextInput.create("index", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide place to be set here").build()
 
-                        val modal = Modal.create("sort", "Content Place Setter").addComponents(ActionRow.of(input)).build()
+                        val modal = Modal.create("sort", "Content Place Setter").addComponents(Label.of("Place", input)).build()
 
                         event.replyModal(modal).queue()
 

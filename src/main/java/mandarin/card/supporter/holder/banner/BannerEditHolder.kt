@@ -17,10 +17,11 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 
 class BannerEditHolder(author: Message, userID: String, channelID: String, message: Message, private val banner: Banner, private val createMode: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -31,10 +32,10 @@ class BannerEditHolder(author: Message, userID: String, channelID: String, messa
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "name" -> {
-                val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Type banner name here").build()
+                val input = TextInput.create("name", TextInputStyle.SHORT).setPlaceholder("Type banner name here").build()
 
                 val modal = Modal.create("bannerName", "Banner Name")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Name", input))
                     .build()
 
                 event.replyModal(modal).queue()

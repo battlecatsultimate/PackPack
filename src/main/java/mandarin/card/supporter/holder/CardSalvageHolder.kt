@@ -23,11 +23,12 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.min
 
 class CardSalvageHolder(author: Message, userID: String, channelID: String, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -172,12 +173,12 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
                 val realAmount = (inventory.cards[card] ?: 0) - selectedCard.count { c -> c.id == card.id }
 
                 if (realAmount >= 2) {
-                    val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                    val input = TextInput.create("amount", TextInputStyle.SHORT)
                         .setPlaceholder("Put amount up to ${realAmount - 1L}")
                         .build()
 
                     val modal = Modal.create("select", "Select Amount of Cards")
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of("Amount of Cards", input))
                         .build()
 
                     event.replyModal(modal).queue()

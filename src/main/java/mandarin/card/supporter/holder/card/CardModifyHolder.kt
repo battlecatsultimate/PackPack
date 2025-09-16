@@ -20,11 +20,12 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import java.io.File
 import kotlin.math.abs
@@ -33,18 +34,18 @@ class CardModifyHolder(author: Message, userID: String, channelID: String, messa
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "id" -> {
-                val id = TextInput.create("id", "ID", TextInputStyle.SHORT).setPlaceholder("Make sure not to conflict the ID!").build()
+                val id = TextInput.create("id", TextInputStyle.SHORT).setPlaceholder("Make sure not to conflict the ID!").build()
 
-                val modal = Modal.create("cardID", "Card ID").addComponents(ActionRow.of(id)).build()
+                val modal = Modal.create("cardID", "Card ID").addComponents(Label.of("ID", id)).build()
 
                 event.replyModal(modal).queue()
 
                 connectTo(CardIDHolder(authorMessage, userID, channelID, message, card, createMode))
             }
             "name" -> {
-                val name = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Type card name here").build()
+                val name = TextInput.create("name", TextInputStyle.SHORT).setPlaceholder("Type card name here").build()
 
-                val modal = Modal.create("cardName", "Card Name").addComponents(ActionRow.of(name)).build()
+                val modal = Modal.create("cardName", "Card Name").addComponents(Label.of("Name", name)).build()
 
                 event.replyModal(modal).queue()
 

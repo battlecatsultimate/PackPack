@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -24,7 +25,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.min
 
 class AuctionCardSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory?, private val onSelected: (Card, Int) -> Unit) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
@@ -73,13 +74,13 @@ class AuctionCardSelectHolder(author: Message, userID: String, channelID: String
                 val index = event.values[0].toInt()
                 val card = cards[index]
 
-                val field = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                val input = TextInput.create("amount", TextInputStyle.SHORT)
                     .setPlaceholder("Define the card amount that will be put into the auction")
                     .setRequired(true)
                     .build()
 
                 val modal = Modal.create("card", "Select The Amount")
-                    .addComponents(ActionRow.of(field))
+                    .addComponents(Label.of("Amount", input))
                     .build()
 
                 event.replyModal(modal).queue()

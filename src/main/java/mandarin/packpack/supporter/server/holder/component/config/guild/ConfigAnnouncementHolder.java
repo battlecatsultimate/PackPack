@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.modal.AnnouncementAdditionalMessageHolder;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -19,7 +20,7 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,14 +58,14 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 applyResult(event);
             }
             case "additional" -> {
-                TextInput input = TextInput.create("message", LangID.getStringByID("serverConfig.eventData.message", lang), TextInputStyle.PARAGRAPH)
+                TextInput input = TextInput.create("message", TextInputStyle.PARAGRAPH)
                         .setPlaceholder(LangID.getStringByID("serverConfig.eventData.typeAdditional", lang))
                         .setRequired(false)
                         .setRequiredRange(0, 500)
                         .build();
 
                 Modal modal = Modal.create("additional", LangID.getStringByID("serverConfig.eventData.additionalMessage", lang))
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of(LangID.getStringByID("serverConfig.eventData.message", lang), input))
                         .build();
 
                 event.replyModal(modal).queue();

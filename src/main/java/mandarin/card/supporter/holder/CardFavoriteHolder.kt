@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -25,7 +26,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
@@ -111,13 +112,13 @@ class CardFavoriteHolder(author: Message, userID: String, channelID: String, mes
                 val amount = inventory.cards[card] ?: 0
 
                 if (amount >= 2) {
-                    val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                    val input = TextInput.create("amount", TextInputStyle.SHORT)
                         .setPlaceholder("Favorite cards up to ${inventory.cards[card] ?: 1} card(s)")
                         .setRequired(true)
                         .build()
 
                     val modal = Modal.create("favorite", "Favorite Cards")
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of("Amount", input))
                         .build()
 
                     event.replyModal(modal).queue()
@@ -140,13 +141,13 @@ class CardFavoriteHolder(author: Message, userID: String, channelID: String, mes
                 val amount = inventory.favorites[card] ?: 0
 
                 if (amount >= 2) {
-                    val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                    val input = TextInput.create("amount", TextInputStyle.SHORT)
                         .setPlaceholder("Unfavorite cards up to ${inventory.favorites[card] ?: 1} card(s)")
                         .setRequired(true)
                         .build()
 
                     val modal = Modal.create("favorite", "Unfavorite Cards")
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of("Amount", input))
                         .build()
 
                     event.replyModal(modal).queue()

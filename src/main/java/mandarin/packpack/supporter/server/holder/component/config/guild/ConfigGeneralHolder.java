@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.modal.ServerPrefixModalHolder;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -20,7 +21,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,13 +66,13 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 applyResult();
             }
             case "prefix" -> {
-                TextInput input = TextInput.create("prefix", LangID.getStringByID("serverConfig.general.prefix", lang), TextInputStyle.SHORT)
+                TextInput input = TextInput.create("prefix", TextInputStyle.SHORT)
                         .setPlaceholder(LangID.getStringByID("serverConfig.general.typePrefix", lang))
                         .setRequired(true)
                         .build();
 
                 Modal modal = Modal.create("prefix", LangID.getStringByID("serverConfig.general.serverPrefix", lang))
-                        .addComponents(ActionRow.of(input))
+                        .addComponents(Label.of(LangID.getStringByID("serverConfig.general.prefix", lang), input))
                         .build();
 
                 event.replyModal(modal).queue();

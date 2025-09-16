@@ -23,9 +23,10 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
@@ -75,14 +76,14 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
                 applyResult(event)
             }
             "amount" -> {
-                val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                val input = TextInput.create("amount", TextInputStyle.SHORT)
                     .setPlaceholder("Define amount of card that will be crafted")
                     .setRequired(true)
                     .setValue(amount.toString())
                     .build()
 
                 val modal = Modal.create("amount", "Amount of Card")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Amount", input))
                     .build()
 
                 event.replyModal(modal).queue()

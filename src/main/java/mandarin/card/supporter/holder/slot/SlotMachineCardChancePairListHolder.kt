@@ -21,11 +21,12 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
+import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 
 class SlotMachineCardChancePairListHolder(
@@ -57,13 +58,13 @@ class SlotMachineCardChancePairListHolder(
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "amount" -> {
-                val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                val input = TextInput.create("amount", TextInputStyle.SHORT)
                     .setPlaceholder("Decide amount of rolled cards")
                     .setRequired(true)
                     .build()
 
                 val modal = Modal.create("amount", "Rolled Cards Amount")
-                    .addComponents(ActionRow.of(input))
+                    .addComponents(Label.of("Amount", input))
                     .build()
 
                 event.replyModal(modal).queue()
