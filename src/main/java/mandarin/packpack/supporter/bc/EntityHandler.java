@@ -4052,7 +4052,7 @@ public class EntityHandler {
 
     public static void generateSoulSprite(Soul s, MessageChannel ch, Message reference, CommonStatic.Lang.Locale lang) throws Exception {
         if(s.getID() == null) {
-            ch.sendMessage(LangID.getStringByID("soul.failed.noSoul", lang)).queue();
+            Command.replyToMessageSafely(ch, reference, LangID.getStringByID("soulImage.failed.noSoul", lang));
 
             return;
         }
@@ -4075,7 +4075,7 @@ public class EntityHandler {
         FakeImage img = s.anim.getNum();
 
         if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noSoul", lang), reference, a -> a);
+            Command.replyToMessageSafely(ch, reference, LangID.getStringByID("soul.failed.noSoul", lang));
 
             return;
         }
@@ -4098,12 +4098,22 @@ public class EntityHandler {
 
         waiter.await();
 
-        Command.sendMessageWithFile(
-                ch,
-                LangID.getStringByID("soulImage.success", lang).replace("_", Data.trio(s.getID().id)),
-                image,
-                reference
-        );
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        String title = LangID.getStringByID("data.soul", lang) + " [" + Data.trio(s.getID().id) + "]";
+
+        children.add(TextDisplay.of("## " + title));
+        children.add(TextDisplay.of(LangID.getStringByID("soulImage.sprite", lang)));
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(image))));
+
+        Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(image, true), e -> {
+            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulSprite - Failed to send soul sprite");
+
+            StaticStore.deleteFile(image, true);
+        }, Container.of(children));
 
         s.anim.unload();
     }

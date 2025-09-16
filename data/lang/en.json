@@ -2937,13 +2937,13 @@
         "failed" : {
             "noParameter" : "This command needs one more data! : [Soul ID]",
             "noSoul" : "Bot couldn't get data of this soul...",
-            "range" : "Invalid ID range, ID must be number between 0 ~ %d",
+            "outOfRange" : "Invalid ID range, ID must be number between 0 ~ %d",
             "unknown" : "Failed to generate soul image"
         }
     },
     "stageImage" : {
         "result" : "Result : ",
-        "fail" : {
+        "failed" : {
             "letterNotSupported" : "Your message has invalid letters : ",
             "maxLimit" : "You can put only up to 128 letters!",
             "noParameter" : "You need one more parameter!\nUsage : `_stageimg [Text]`",

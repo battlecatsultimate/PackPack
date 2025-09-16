@@ -32,15 +32,17 @@ public class SoulSprite extends TimedConstraintCommand {
         int id = findSoulID(loader.getContent());
 
         if(id == -1) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.noParameter", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soulImage.failed.noParameter", lang));
 
             disableTimer();
+
+            return;
         }
 
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul.failed.outOfRange", lang).replace("_", String.valueOf(soulLen - 1)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soulImage.failed.outOfRange", lang).formatted(soulLen - 1));
 
             disableTimer();
 
@@ -50,7 +52,7 @@ public class SoulSprite extends TimedConstraintCommand {
         Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul.failed.noSoul", lang));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soulImage.failed.noSoul", lang));
 
             disableTimer();
 
@@ -63,14 +65,8 @@ public class SoulSprite extends TimedConstraintCommand {
     private int findSoulID(String content) {
         String[] contents = content.split(" ");
 
-        boolean frame = false;
-
         for(int i = 0; i < contents.length; i++) {
-            if((contents[i].equals("-f") || contents[i].equals("-fr")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1]) && !frame) {
-                frame = true;
-
-                i++;
-            } else if(StaticStore.isNumeric(contents[i]))
+            if(StaticStore.isNumeric(contents[i]))
                 return StaticStore.safeParseInt(contents[i]);
         }
 
