@@ -91,7 +91,55 @@ class YDKE : Command(CommonStatic.Lang.Locale.EN, true) {
         if (reasons.isNotEmpty()) {
             lines.add("There was conflict between the YDKE link and this user's inventory. Bot modified the YDKE link")
             lines.add("## Modification Log")
-            lines.addAll(reasons)
+
+            val mainReason = reasons.filter { reason -> reason.startsWith("Main : ") }.map { reason -> reason.replace("Main : ", "") }
+            val extraReason = reasons.filter { reason -> reason.startsWith("Extra : ") }.map { reason -> reason.replace("Extra : ", "") }
+            val sideReason = reasons.filter { reason -> reason.startsWith("Side : ") }.map { reason -> reason.replace("Side : ", "") }
+
+            if (mainReason.isNotEmpty()) {
+                lines.add("### Main")
+                lines.add("```")
+
+                mainReason.forEachIndexed { index, line ->
+                    lines.add(line)
+
+                    if (index < mainReason.lastIndex) {
+                        lines.add("\n")
+                    }
+                }
+
+                lines.add("```")
+            }
+
+            if (extraReason.isNotEmpty()) {
+                lines.add("### Extra")
+                lines.add("```")
+
+                extraReason.forEachIndexed { index, line ->
+                    lines.add(line)
+
+                    if (index < mainReason.lastIndex) {
+                        lines.add("\n")
+                    }
+                }
+
+                lines.add("```")
+            }
+
+            if (sideReason.isNotEmpty()) {
+                lines.add("### Side")
+                lines.add("```")
+
+                sideReason.forEachIndexed { index, line ->
+                    lines.add(line)
+
+                    if (index < mainReason.lastIndex) {
+                        lines.add("\n")
+                    }
+                }
+
+                lines.add("```")
+            }
         } else {
             lines.add("The link was clean and synced with this user's inventory!")
         }
@@ -192,11 +240,27 @@ class YDKE : Command(CommonStatic.Lang.Locale.EN, true) {
         lines.add(sanitizedLink)
         lines.add("```")
 
+        lines.add("## Final Deck Size")
+        lines.add("```")
+        lines.add("Main  : ${data[0].size}")
+        lines.add("Extra : ${data[1].size}")
+        lines.add("Side  : ${data[2].size}")
+        lines.add("```")
+
         val builder = StringBuilder()
         var replied = false
+        var codeBlock = false
 
         lines.forEach { line ->
+            if (line == "```") {
+                codeBlock = !codeBlock
+            }
+
             if (builder.length + line.length + 1 >= 1900) {
+                if (codeBlock) {
+                    builder.append("```")
+                }
+
                 if (replied) {
                     loader.channel.sendMessage(builder.toString()).setAllowedMentions(arrayListOf()).queue()
                 } else {
@@ -206,6 +270,10 @@ class YDKE : Command(CommonStatic.Lang.Locale.EN, true) {
                 }
 
                 builder.clear()
+
+                if (codeBlock) {
+                    builder.append("```\n")
+                }
             }
 
             builder.append(line).append("\n")

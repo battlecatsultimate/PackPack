@@ -26,6 +26,7 @@ object YDKEValidator {
     val BCEWhiteList = HashMap<Long, Int>()
 
     val aliasData = HashMap<Long, ArrayList<Long>>()
+    val cardName = HashMap<Long, String>()
 
     fun loadWhiteListData() {
         normalWhiteList.clear()
@@ -61,7 +62,7 @@ object YDKEValidator {
                 var line = ""
 
                 while (reader.readLine()?.also { line = it } != null) {
-                    if (line.matches(Regex("^\\d+ \\d+\\D*"))) {
+                    if (line.matches(Regex("\\d+ \\d+( .+)?"))) {
                         val data = line.split(" ")
 
                         if (data.size < 2)
@@ -83,7 +84,7 @@ object YDKEValidator {
                 var line = ""
 
                 while (reader.readLine()?.also { line = it } != null) {
-                    if (line.matches(Regex("^\\d+ \\d+\\D*"))) {
+                    if (line.matches(Regex("\\d+ \\d+( .+)?"))) {
                         val data = line.split(" ")
 
                         if (data.size < 2)
@@ -112,11 +113,11 @@ object YDKEValidator {
 
             DriverManager.getConnection("jdbc:sqlite:${file.absolutePath}").use { connection ->
                 connection.createStatement().use { statement ->
-                    val result = statement.executeQuery("select * from datas")
+                    val dataResult = statement.executeQuery("select * from datas")
 
-                    while (result.next()) {
-                        val id = result.getLong("id")
-                        val alias = result.getLong("alias")
+                    while (dataResult.next()) {
+                        val id = dataResult.getLong("id")
+                        val alias = dataResult.getLong("alias")
 
                         if (alias == 0L)
                             continue
@@ -127,6 +128,18 @@ object YDKEValidator {
                             list.add(id)
 
                         aliasData[alias] = list
+                    }
+
+                    val textResult = statement.executeQuery("select * from texts")
+
+                    while (textResult.next()) {
+                        val id = textResult.getLong("id")
+                        val name = textResult.getString("name")
+
+                        if (name == null || name.isBlank())
+                            continue
+
+                        cardName[id] = name
                     }
                 }
             }
@@ -166,7 +179,13 @@ object YDKEValidator {
 
             segment.removeIf { value ->
                 if (value >= BCTCG && value - BCTCG < 1000 && !cards.containsKey(value)) {
-                    val reason = "- $deckName : Card $value doesn't exist in this user's inventory. Removing cards"
+                    val name = if (cardName.containsKey(value)) {
+                        "${cardName[value]} [$value]"
+                    } else {
+                        "Card $value"
+                    }
+
+                    val reason = "$deckName : $name doesn't exist in this user's inventory. Removing cards"
 
                     if (reason !in reasons) {
                         reasons.add(reason)
@@ -188,7 +207,13 @@ object YDKEValidator {
                 val trueAmount = cards[value] ?: 0
 
                 if (trueAmount < amount) {
-                    reasons.add("- $deckName : For card $value, deck contains $amount card${if (amount > 2) "s" else ""} while inventory contains $trueAmount card${if (trueAmount > 2) "s" else ""}. Limiting to $trueAmount")
+                    val name = if (cardName.containsKey(value)) {
+                        "${cardName[value]} [$value]"
+                    } else {
+                        "Card $value"
+                    }
+
+                    reasons.add("$deckName : For $name, deck contains $amount card${if (amount >= 2) "s" else ""} while inventory contains $trueAmount card${if (trueAmount > 2) "s" else ""}. Limiting to $trueAmount")
 
                     repeat(amount - trueAmount) {
                         segment.remove(value)
@@ -204,7 +229,13 @@ object YDKEValidator {
 
             segment.removeIf { value ->
                 if (!whiteListData.containsKey(value) && !aliasData.values.any { list -> value in list }) {
-                    val reason = "- $deckName : White list data doesn't contain card $value. Removing cards"
+                    val name = if (cardName.containsKey(value)) {
+                        "${cardName[value]} [$value]"
+                    } else {
+                        "Card $value"
+                    }
+
+                    val reason = "$deckName : White list data doesn't contain $name. Removing cards"
 
                     if (reason !in reasons)
                         reasons.add(reason)
@@ -244,7 +275,27 @@ object YDKEValidator {
                         }
                     }
 
-                    reasons.add("- $deckName : Deck contains $totalAmount card${if (totalAmount > 2) "s" else ""} while only $limit card${if (totalAmount > 2) "s are" else " is"} allowed for group of ${group.joinToString(",", "[", "]")}. Limiting to $limit")
+                    val text = if (group.size == 1) {
+                        val name = if (cardName.containsKey(group.first())) {
+                            "${cardName[group.first()]} [${group.first()}]"
+                        } else {
+                            "Card ${group.first()}"
+                        }
+
+                        "$deckName : Deck contains $totalAmount card${if (totalAmount >= 2) "s" else ""} while only $limit card${if (limit >= 2) "s are" else " is"} allowed for $name. Limiting to $limit"
+                    } else {
+                        val name = group.map { value ->
+                            return@map if (cardName.containsKey(value)) {
+                                "${cardName[value]} [$value]"
+                            } else {
+                                "Card $value"
+                            }
+                        }.joinToString(",", "[", "]")
+
+                        "$deckName : Deck contains $totalAmount card${if (totalAmount >= 2) "s" else ""} while only $limit card${if (limit >= 2) "s are" else " is"} allowed for group of $name. Limiting to $limit"
+                    }
+
+                    reasons.add(text)
                     removedMap.forEach { (value, amount) ->
                         reasons.add("  - Removed $amount card $value")
                     }
