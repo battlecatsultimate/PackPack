@@ -2935,6 +2935,8 @@
         "frame" : "Frame : %d",
         "sprite" : "Uploaded soul sprite",
         "failed" : {
+            "noParameter" : "This command needs one more data! : [Soul ID]",
+            "noSoul" : "Bot couldn't get data of this soul...",
             "range" : "Invalid ID range, ID must be number between 0 ~ %d",
             "unknown" : "Failed to generate soul image"
         }

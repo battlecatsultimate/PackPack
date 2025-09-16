@@ -49,7 +49,7 @@ public class SoulImage extends TimedConstraintCommand {
         int id = findSoulID(loader.getContent());
 
         if(id == -1) {
-            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soul.failed.noParameter", lang));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soulImage.failed.noParameter", lang));
 
             return;
         }
@@ -57,7 +57,7 @@ public class SoulImage extends TimedConstraintCommand {
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soul.failed.outOfRange", lang).formatted(soulLen - 1));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soulImage.failed.outOfRange", lang).formatted(soulLen - 1));
 
             disableTimer();
 
@@ -67,7 +67,7 @@ public class SoulImage extends TimedConstraintCommand {
         Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soul.failed.noSoul", lang));
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("soulImage.failed.noSoul", lang));
 
             disableTimer();
 

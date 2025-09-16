@@ -2932,6 +2932,8 @@
         "frame" : "フレーム : %d",
         "sprite" : "Uploaded soul sprite",
         "failed" : {
+            "noParameter" : "このコマンドにはもう１つのデータが必要です! : [魂 ID]",
+            "noSoul" : "ボットはこの魂データを取得できませんでした...",
             "range" : "IDの範囲が無効です。IDは 0 ~ %d の数字である必要があります",
             "unknown" : "魂画像の生成に失敗しました"
         }
