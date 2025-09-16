@@ -118,7 +118,7 @@ class YDKE : Command(CommonStatic.Lang.Locale.EN, true) {
                 extraReason.forEachIndexed { index, line ->
                     lines.add(line)
 
-                    if (index < mainReason.lastIndex) {
+                    if (index < extraReason.lastIndex) {
                         lines.add("\n")
                     }
                 }
@@ -133,7 +133,7 @@ class YDKE : Command(CommonStatic.Lang.Locale.EN, true) {
                 sideReason.forEachIndexed { index, line ->
                     lines.add(line)
 
-                    if (index < mainReason.lastIndex) {
+                    if (index < sideReason.lastIndex) {
                         lines.add("\n")
                     }
                 }
