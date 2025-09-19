@@ -151,7 +151,7 @@ class BuySkin : Command(CommonStatic.Lang.Locale.EN, false) {
 
         val confirmButtons = ArrayList<Button>()
 
-        confirmButtons.add(Button.primary("confirm", "Close"))
+        confirmButtons.add(Button.primary("close", "Close"))
 
         result.add(ActionRow.of(confirmButtons))
 
