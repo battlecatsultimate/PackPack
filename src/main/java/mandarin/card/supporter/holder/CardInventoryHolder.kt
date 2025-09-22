@@ -350,9 +350,9 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     private fun getContents() : String {
         val cardAmount = cards.sumOf { c ->
             return@sumOf when(filterMode) {
-                FilterMode.NONE -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0)
+                FilterMode.NONE -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0) + (inventory.validationCards[c]?.second ?: 0)
                 FilterMode.FAVORITE_ONLY -> inventory.favorites[c] ?: 0
-                FilterMode.NON_FAVORITE_ONLY -> inventory.cards[c] ?: 0
+                FilterMode.NON_FAVORITE_ONLY -> (inventory.cards[c] ?: 0) + (inventory.validationCards[c]?.second ?: 0)
             }
         }
 
