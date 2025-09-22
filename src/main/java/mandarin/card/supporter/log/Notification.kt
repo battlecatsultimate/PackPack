@@ -130,16 +130,18 @@ object Notification {
                     ccRemoved = true
 
                     if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && inventory.eccValidationWay != Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
-                        inventory.cancelECC(g, userID)
-
                         eccRemoved = true
                     }
+
+                    inventory.cancelCC(g, userID)
                 }
 
                 if (inventory.eccValidationWay == Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), eccRole).queue()
 
                     eccRemoved = true
+
+                    inventory.cancelECC(g, userID)
                 }
 
                 if (this::notificationChannel.isInitialized) {

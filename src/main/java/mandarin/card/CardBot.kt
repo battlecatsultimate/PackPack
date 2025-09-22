@@ -34,13 +34,13 @@ import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
+import net.dv8tion.jda.api.events.role.RoleDeleteEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
@@ -723,6 +723,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}acc" -> AddCC()
             "${globalPrefix}addecc",
             "${globalPrefix}aecc" -> AddECC()
+            "${globalPrefix}ydke" -> YDKE()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 
@@ -771,19 +772,18 @@ object CardBot : ListenerAdapter() {
         }
     }
 
-    override fun onGuildMemberRoleRemove(event: GuildMemberRoleRemoveEvent) {
-        super.onGuildMemberRoleRemove(event)
+    override fun onRoleDelete(event: RoleDeleteEvent) {
+        super.onRoleDelete(event)
 
         val g = event.guild
-        val roles = event.roles.map { role -> role.idLong }
+        val role = event.role.idLong
 
         CardData.inventories.filter { (_, inventory) -> inventory.eccValidationRoleID != 0L }.forEach { (id, inventory) ->
-            if (inventory.eccValidationRoleID in roles) {
+            if (inventory.eccValidationRoleID == role) {
                 TransactionLogger.logECCCancel(id, g.selfMember.idLong, inventory)
+                Notification.handleECCRoleDisconnectedNotification(inventory, id)
 
                 inventory.cancelECC(g, id)
-
-                Notification.handleECCRoleDisconnectedNotification(inventory, id)
             }
         }
     }
@@ -885,7 +885,11 @@ object CardBot : ListenerAdapter() {
         val wasSafe = StaticStore.safeClose
         StaticStore.safeClose = false
 
-        CardData.auctionSessions.forEach { it.queueSession(event.jda) }
+        if (!test) {
+            CardData.auctionSessions.forEach { it.queueSession(event.jda) }
+        } else {
+            CardData.auctionSessions.clear()
+        }
 
         val g = event.jda.getGuildById(CardData.guild) ?: return
 
@@ -982,9 +986,12 @@ object CardBot : ListenerAdapter() {
         Initializer.checkAssetDownload(false)
 
         StaticStore.logCommand = true
+
+        YDKEValidator.loadWhiteListData()
+        YDKEValidator.loadCDBData()
     }
 
-    private fun readCardData() {
+    fun readCardData() {
         val element: JsonElement? = StaticStore.getJsonFile(if (test) "testCardSave" else "cardSave")
 
         if (element == null || !element.isJsonObject)
@@ -1011,6 +1018,10 @@ object CardBot : ListenerAdapter() {
 
         CardData.cards.map { c -> c.id }.forEach { id ->
             if (CardData.cards.count { c -> c.id == id } > 1) {
+                val list = CardData.cards.filter { c -> c.id == id }
+
+                println(list)
+
                 throw IllegalStateException("E/CardBot::readCardData - Duplicated card ID $id found")
             }
         }

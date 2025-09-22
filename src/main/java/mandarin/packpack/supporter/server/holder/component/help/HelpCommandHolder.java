@@ -39,7 +39,7 @@ public class HelpCommandHolder extends ComponentHolder {
             },
             {
                 "background", "castle", "catCombo", "enemyDps", "enemyGif", "enemyImage",
-                "enemySprite", "enemyStat", "findReward", "findStage", "formDps", "formGif",
+                "enemySprite", "enemyStat", "findReward", "findStage", "formDps", "formGif", "formImage",
                 "formSprite", "formStat", "medal", "soul", "soulImage", "soulSprite", "stageInfo",
                 "talentInfo", "treasure"
             },

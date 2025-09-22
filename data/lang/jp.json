@@ -1543,6 +1543,10 @@
             "35032" : "Come-Back Stamp",
             "35033" : "Summer Break Survival Stamp",
             "35034" : "Evangelion Collab Stamp",
+            "35035" : "Trash Cat Stamp",
+            "35036" : "Summer Break Paradise Stamp",
+            "35037" : "Event Stamp",
+            "35038" : "11.5th Anniversary Stamp",
             "rankingDojo" : "ランキングの間 _"
         },
         "permanentSchedule" : {
@@ -1637,7 +1641,9 @@
                 "9" : "レア度代表戦",
                 "10" : "にゃんこ砲超強化",
                 "11" : "等速直線運動",
-                "12" : "プラスワン EX"
+                "12" : "プラスワン EX",
+                "13" : "限定超特売 超激レア",
+                "14" : "現品限り"
             }
         },
         "section" : {

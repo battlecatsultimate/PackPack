@@ -123,7 +123,10 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
                 rows.add(ActionRow.of(bannerCategory.build()))
             }
 
-            val cards = inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
+            val cards = inventory.cards.keys
+                .union(inventory.favorites.keys)
+                .union(inventory.validationCards.keys)
+                .sortedWith(CardComparator())
             val dataSize = cards.size
 
             val cardCategoryElements = ArrayList<SelectOption>()

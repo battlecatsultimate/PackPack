@@ -1009,7 +1009,9 @@ public class DataToString extends Data {
 
         StringBuilder sb = new StringBuilder(LangID.getStringByID("data.unit.talent.list", lang));
 
-        if(!f.getPCoin().trait.isEmpty()) {
+        int[] talents = lv.getTalents();
+
+        if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator == -1) {
             sb.append("[");
 
             String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
@@ -1020,12 +1022,21 @@ public class DataToString extends Data {
             sb.append(trait).append("] ");
         }
 
-        int[] talents = lv.getTalents();
-
         for(int i = 0; i < info.size(); i++) {
             int[] data = info.get(i);
 
             if(talentText.containsKey(data[0])) {
+                if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator == i) {
+                    sb.append("[");
+
+                    String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
+
+                    if(trait.endsWith(", "))
+                        trait = trait.substring(0, trait.length() - 2);
+
+                    sb.append(trait).append("] ");
+                }
+
                 sb.append(LangID.getStringByID(talentText.get(data[0]), lang));
 
                 if(info.get(i)[13] == 1) {
@@ -2849,7 +2860,7 @@ public class DataToString extends Data {
             }
         }
 
-        if(du.getPCoin().trait.size() == 1 && index == 0) {
+        if(du.getPCoin().trait.size() == 1 && index == du.getPCoin().traitActivator) {
             String code = Interpret.TRAITICON[du.getPCoin().trait.getFirst().id.id];
 
             Emoji emoji = EmojiStore.TRAIT.getCont(code, lang);
@@ -2907,7 +2918,7 @@ public class DataToString extends Data {
 
         String desc = "";
 
-        if(du.getPCoin().trait.size() == 1 && index == 0) {
+        if(du.getPCoin().trait.size() == 1 && index == du.getPCoin().traitActivator) {
             desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
         }
 
@@ -3017,6 +3028,8 @@ public class DataToString extends Data {
         int maxLevel = StaticStore.safeParseInt(data[2 + index * 14 + 1]);
         int traitID = StaticStore.safeParseInt(data[1]);
 
+        boolean traitActivator = StaticStore.safeParseInt(data[2 + index * 14 + 12]) != -1;
+
         List<Trait> traits = Trait.bitmaskToTrait(traitID);
 
         if(talentText.containsKey(abilityID)) {
@@ -3029,7 +3042,7 @@ public class DataToString extends Data {
 
         String desc = "";
 
-        if(traits.size() == 1 && index == 0) {
+        if(traits.size() == 1 && traitActivator) {
             desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.getFirst().id.id], lang)) + "\n\n";
         }
 

@@ -158,8 +158,9 @@ class ModifyModeSelectHolder(author: Message, userID: String, channelID: String,
         val target = when (category) {
             CardData.ModifyCategory.CARD -> "cards"
             CardData.ModifyCategory.ROLE -> "roles"
+            CardData.ModifyCategory.SKIN -> "skins"
             CardData.ModifyCategory.CF -> "cat foods"
-            else -> "platinum shards"
+            CardData.ModifyCategory.SHARD -> "platinum shards"
         }
 
         val content = when (category) {

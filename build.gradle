@@ -151,6 +151,7 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.5.16'
 
     implementation 'com.dropbox.core:dropbox-core-sdk:7.0.0'
+    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
 }
 
 jar {

@@ -1543,6 +1543,10 @@
             "35032" : "Come-Back Stamp",
             "35033" : "Summer Break Survival Stamp",
             "35034" : "Evangelion Collab Stamp",
+            "35035" : "Trash Cat Stamp",
+            "35036" : "Summer Break Paradise Stamp",
+            "35037" : "Event Stamp",
+            "35038" : "11.5th Anniversary Stamp",
             "rankingDojo" : "Ranking Dojo _"
         },
         "permanentSchedule" : {
@@ -1637,7 +1641,9 @@
                 "9" : "Rarity Deploy Limit",
                 "10" : "Cannon Multiplier Buff",
                 "11" : "Identical Unit/Enemy Speed",
-                "12" : "EX Deploy Duplication"
+                "12" : "EX Deploy Duplication",
+                "13" : "Low UR Cost",
+                "14" : "Cooldown Limit"
             }
         },
         "section" : {

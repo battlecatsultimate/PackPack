@@ -81,7 +81,7 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
     }
 
     private fun getContents() : String {
-        return "Please select how you will validate CC\n\n" +
+        return "Please select how you will validate ECC\n\n" +
                 "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card\n" +
                 "- 2 Unique T4 Cards\n" +
                 "- 3 Same T4 Cards\n" +
