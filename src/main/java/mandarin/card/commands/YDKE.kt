@@ -1,6 +1,7 @@
 package mandarin.card.commands
 
 import common.CommonStatic
+import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.YDKEValidator
@@ -23,7 +24,7 @@ class YDKE : Command(CommonStatic.Lang.Locale.EN, true) {
         val contents = loader.content.split(" ")
 
         if (contents.size < 4) {
-            replyToMessageSafely(loader.channel, "This command requires 3 parameters : `p!ydke [-n|-t] [Member ID/Mention] [YDKE Link]`\n\n`-n` : Normal white list\n`-t` : BCTC-T (Tournament) white list", loader.message) { a -> a }
+            replyToMessageSafely(loader.channel, "This command requires 3 parameters : `${CardBot.globalPrefix}ydke [-n|-t] [Member ID/Mention] [YDKE Link]`\n\n`-n` : Normal white list\n`-t` : BCTC-T (Tournament) white list", loader.message) { a -> a }
 
             return
         }
