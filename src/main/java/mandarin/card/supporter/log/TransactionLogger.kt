@@ -52,13 +52,28 @@ object TransactionLogger {
 
         builder.addField(MessageEmbed.Field("Pack", pack.packName, false))
 
-        val cardBuilder = StringBuilder()
-
         if (cards.isNotEmpty()) {
-            cards.forEach { c -> cardBuilder.append("- ").append(c.cardInfo()).append("\n") }
-        }
+            val cardBuilder = StringBuilder()
+            var index = 0
 
-        builder.addField(MessageEmbed.Field("Result", cardBuilder.toString(), false))
+            cards.forEach { card ->
+                val text = "- ${card.cardInfo()}\n"
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
+        }
 
         builder.setAuthor(member.user.effectiveName, null, member.user.effectiveAvatarUrl)
 
@@ -1552,6 +1567,10 @@ object TransactionLogger {
 
                 cardBuilder.append(text).append("\n")
             }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
@@ -1603,6 +1622,10 @@ object TransactionLogger {
                 }
 
                 cardBuilder.append(text).append("\n")
+            }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
             }
         }
 
@@ -1671,6 +1694,10 @@ object TransactionLogger {
 
                 cardBuilder.append(text).append("\n")
             }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
@@ -1737,6 +1764,10 @@ object TransactionLogger {
                 }
 
                 cardBuilder.append(text).append("\n")
+            }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
             }
         }
 
