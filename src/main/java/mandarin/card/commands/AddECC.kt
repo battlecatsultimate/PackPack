@@ -90,6 +90,21 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
 
                     TransactionLogger.logECCAdd(id, m.idLong, inventory)
 
+                    val ecc = g.roles.find { role -> role.id == CardData.ecc }
+
+                    if (ecc == null) {
+                        e.deferEdit()
+                            .setContent("Successfully gave ECC to user <@$id> [$id] with reason of `Custom Role`, but ECC role couldn't be given to the user. Please manually add the role")
+                            .setComponents()
+                            .setAllowedMentions(arrayListOf())
+                            .mentionRepliedUser(false)
+                            .queue()
+
+                        return@ConfirmPopUpHolder
+                    }
+
+                    g.addRoleToMember(UserSnowflake.fromId(id), ecc)
+
                     e.deferEdit()
                         .setContent("Successfully gave ECC to user <@$id> [$id] with reason of `Custom Role`!")
                         .setComponents()
