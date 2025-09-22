@@ -32,7 +32,12 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
         NON_FAVORITE_ONLY
     }
 
-    private val cards = ArrayList<Card>(inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator()))
+    private val cards = ArrayList<Card>(
+        inventory.cards.keys
+            .union(inventory.favorites.keys)
+            .union(inventory.validationCards.keys)
+            .sortedWith(CardComparator())
+    )
 
     private var page = 0
         set(value) {
@@ -173,7 +178,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     private fun filterCards() {
         cards.clear()
 
-        cards.addAll(inventory.cards.keys.union(inventory.favorites.keys))
+        cards.addAll(inventory.cards.keys.union(inventory.favorites.keys).union(inventory.validationCards.keys))
 
         val collectedCards = banner.collectCards()
 
@@ -191,7 +196,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
             }
         } else if (filterMode == FilterMode.NON_FAVORITE_ONLY) {
             cards.removeIf { card ->
-                return@removeIf !inventory.cards.containsKey(card)
+                return@removeIf !inventory.cards.containsKey(card) && !inventory.validationCards.containsKey(card)
             }
         }
 
@@ -372,9 +377,9 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
                 builder.append(cards[i].cardInfo())
 
                 val amount = when(filterMode) {
-                    FilterMode.NONE -> (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
+                    FilterMode.NONE -> (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0) + (inventory.validationCards[cards[i]]?.second ?: 0)
                     FilterMode.FAVORITE_ONLY -> inventory.favorites[cards[i]] ?: 0
-                    FilterMode.NON_FAVORITE_ONLY -> inventory.cards[cards[i]] ?: 0
+                    FilterMode.NON_FAVORITE_ONLY -> (inventory.cards[cards[i]] ?: 0) + (inventory.validationCards[cards[i]]?.second ?: 0)
                 }
 
                 if (amount >= 2) {

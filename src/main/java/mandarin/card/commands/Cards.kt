@@ -122,7 +122,10 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
                 rows.add(ActionRow.of(bannerCategory.build()))
             }
 
-            val cards = inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
+            val cards = inventory.cards.keys
+                .union(inventory.favorites.keys)
+                .union(inventory.validationCards.keys)
+                .sortedWith(CardComparator())
             val dataSize = cards.size
 
             val cardCategoryElements = ArrayList<SelectOption>()
@@ -148,15 +151,12 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             rows.add(ActionRow.of(cardCategory))
 
-            var totPage = dataSize / SearchHolder.PAGE_CHUNK
-
-            if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-                totPage++
+            val totalPage = SearchHolder.getTotalPage(dataSize)
 
             if (dataSize > SearchHolder.PAGE_CHUNK) {
                 val buttons = ArrayList<Button>()
 
-                if (totPage > 10) {
+                if (totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
                 }
 
@@ -164,7 +164,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-                if (totPage > 10) {
+                if (totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
                 }
 
