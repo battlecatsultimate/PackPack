@@ -8,9 +8,6 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -44,29 +41,11 @@ public class FormTalentHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
-        ArrayList<ActionRow> rows = new ArrayList<>();
-
-        for (ActionRow row : message.getComponentTree().findAll(ActionRow.class)) {
-            ArrayList<Button> expiredButtons = new ArrayList<>();
-
-            for (Button button : row.getButtons()) {
-                if (button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
-                    expiredButtons.add(button);
-                } else if (!configData.compact) {
-                    expiredButtons.add(button.asDisabled());
-                }
-            }
-
-            if (!expiredButtons.isEmpty()) {
-                rows.add(ActionRow.of(expiredButtons));
-            }
-        }
-
-        if(rows.isEmpty()) {
-            message.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
-        } else {
-            message.editMessageComponents(rows).mentionRepliedUser(false).queue(null, e -> {});
-        }
+        message.editMessageComponents(expireButton(message, configData.compact))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
     }
 
     @Override

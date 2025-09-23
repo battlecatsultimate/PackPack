@@ -168,39 +168,6 @@ public class DataToString extends Data {
         talentIcon.put(id, icon);
     }
 
-    public static String getTitle(Form f, CommonStatic.Lang.Locale lang) {
-        if(f == null)
-            return "";
-
-        String name = MultiLangCont.get(f, lang);
-
-        if(name == null)
-            name = "";
-
-        String rarity;
-
-        if(f.unit.rarity == 0)
-            rarity = LangID.getStringByID("data.unit.rarity.basic", lang);
-        else if(f.unit.rarity == 1)
-            rarity = LangID.getStringByID("data.unit.rarity.ex", lang);
-        else if(f.unit.rarity == 2)
-            rarity = LangID.getStringByID("data.unit.rarity.rare", lang);
-        else if(f.unit.rarity == 3)
-            rarity = LangID.getStringByID("data.unit.rarity.superRare", lang);
-        else if(f.unit.rarity == 4)
-            rarity = LangID.getStringByID("data.unit.rarity.uberRare", lang);
-        else if(f.unit.rarity == 5)
-            rarity = LangID.getStringByID("data.unit.rarity.legendRare", lang);
-        else
-            rarity = "Unknown";
-
-        if(name.isBlank()) {
-            return rarity;
-        } else {
-            return rarity + " - " + name;
-        }
-    }
-
     public static String getRarity(int type, CommonStatic.Lang.Locale lang) {
         String rarity;
 
@@ -1829,39 +1796,6 @@ public class DataToString extends Data {
         } else {
             return null;
         }
-    }
-
-    public static String getCatFruitEvolve(Form f, CommonStatic.Lang.Locale lang) {
-        if (f.unit == null)
-            return null;
-
-        StringBuilder result = new StringBuilder();
-
-        String cfText = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info, lang);
-        String ufText = MultiLangCont.getStatic().UFEXP.getCont(f.unit.info, lang);
-
-        if (cfText != null && !cfText.strip().isBlank() && f.unit.info.hasEvolveCost()) {
-            result.append("- **")
-                    .append(LangID.getStringByID("data.unit.trueForm", lang))
-                    .append("**\n")
-                    .append(cfText);
-        }
-
-        if (ufText != null && !ufText.strip().isBlank() && f.unit.info.hasZeroForm()) {
-            if (!result.isEmpty()) {
-                result.append("\n\n");
-            }
-
-            result.append("- **")
-                    .append(LangID.getStringByID("data.unit.ultraForm", lang))
-                    .append("**\n")
-                    .append(ufText);
-        }
-
-        if (result.isEmpty())
-            return null;
-
-        return result.toString();
     }
 
     public static String getRewards(Stage s, CommonStatic.Lang.Locale lang) {

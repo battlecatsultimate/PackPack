@@ -11,9 +11,6 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -68,7 +65,7 @@ public class FormButtonHolder extends ComponentHolder {
                 f = f.unit.forms[f.fid + diff];
 
                 try {
-                    EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, true, msg -> { });
+                    EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, msg -> { });
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
                 }
@@ -83,33 +80,15 @@ public class FormButtonHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
-        ArrayList<ActionRow> rows = new ArrayList<>();
-
-        for (ActionRow row : message.getComponentTree().findAll(ActionRow.class)) {
-            ArrayList<Button> expiredButtons = new ArrayList<>();
-
-            for (Button button : row.getButtons()) {
-                if (button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
-                    expiredButtons.add(button);
-                } else if (!configData.compact) {
-                    expiredButtons.add(button.asDisabled());
-                }
-            }
-
-            if (!expiredButtons.isEmpty()) {
-                rows.add(ActionRow.of(expiredButtons));
-            }
-        }
-
-        if(rows.isEmpty()) {
-            message.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
-        } else {
-            message.editMessageComponents(rows).mentionRepliedUser(false).queue(null, e -> {});
-        }
+        message.editMessageComponents(expireButton(message, configData.compact))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
     }
 
     @Override
     public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) throws Exception {
-        EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, true, msg -> { });
+        EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, msg -> { });
     }
 }

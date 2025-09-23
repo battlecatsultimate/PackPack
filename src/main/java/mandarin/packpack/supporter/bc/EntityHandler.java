@@ -58,7 +58,6 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.commons.lang3.ArrayUtils;
@@ -81,8 +80,6 @@ import java.util.function.Consumer;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class EntityHandler {
     private static final DecimalFormat df;
-
-    private static final float catFruitTextGap = 20f;
 
     private static FontModel font;
 
@@ -115,7 +112,7 @@ public class EntityHandler {
     // |    Stat Embed : Main    |
     // |-------------------------|
 
-    public static void generateUnitEmbed(Form f, Object sender, @Nullable Message reference, ConfigHolder config, boolean trueFormPossible, TreasureHolder holder, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang, boolean addEmoji, boolean editMode, Consumer<Message> onSuccess) throws Exception {
+    public static void generateUnitEmbed(Form f, Object sender, @Nullable Message reference, ConfigHolder config, boolean trueFormPossible, TreasureHolder holder, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang, boolean editMode, Consumer<Message> onSuccess) throws Exception {
         int level = configData.lv.getLv();
         int plusLevel = configData.lv.getPlusLv();
 
@@ -151,17 +148,7 @@ public class EntityHandler {
         else
             l = level + " + " + plusLevel;
 
-        String iconLink = generateIcon(f);
-
-        String evolveImageLink;
-
-        if (configData.showEvolveImage) {
-            evolveImageLink = generateCatfruit(f, lang);
-        } else {
-            evolveImageLink = null;
-        }
-
-        EmbedBuilder spec = new EmbedBuilder();
+        String iconLink = StaticStore.assetManager.getUnitIcon(f);
 
         int c;
 
@@ -207,6 +194,10 @@ public class EntityHandler {
             desc += LangID.getStringByID("data.unit.treasure", lang);
         }
 
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        EmbedBuilder spec = new EmbedBuilder();
+
         if(!desc.isBlank()) {
             spec.setDescription(desc);
         }
@@ -214,67 +205,78 @@ public class EntityHandler {
         spec.setColor(c);
         spec.setThumbnail(iconLink);
 
-        if(configData.compact) {
-            spec.setTitle(DataToString.getCompactTitle(f, lang));
+        if (iconLink != null) {
+            if (!desc.isBlank()) {
+                children.add(Section.of(
+                        Thumbnail.fromUrl(iconLink),
+                        TextDisplay.of("## " + DataToString.getCompactTitle(f, lang)),
+                        TextDisplay.of(desc),
+                        TextDisplay.of(
+                                "**" + LangID.getStringByID("data.unit.level", lang) + "**\n" +
+                                        l
+                        )
+                ));
 
-            spec.addField(LangID.getStringByID("data.unit.level", lang), l, false);
-            spec.addField(LangID.getStringByID("data.compact.healthKb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, configData.talent, configData.lv, configData.treasure, holder), false);
-            spec.addField(LangID.getStringByID("data.compact.costCooldownSpeed", lang), DataToString.getCostCooldownSpeed(f.du, configData.isFrame, configData.talent, configData.lv, holder), true);
-            spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data.compact.attackTimings", lang), DataToString.getCompactAtkTimings(f.du, configData.talent, configData.lv, configData.isFrame), false);
-            spec.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, configData.talent, f.unit.lv, configData.lv, configData.treasure, holder), false);
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                                DataToString.getHealthHitback(f.du, f.unit.lv, configData.talent, configData.lv, configData.treasure, holder)
+                ));
+            } else {
+                children.add(Section.of(
+                        Thumbnail.fromUrl(iconLink),
+                        TextDisplay.of("## " + DataToString.getCompactTitle(f, lang)),
+                        TextDisplay.of(
+                                "**" + LangID.getStringByID("data.unit.level", lang) + "**\n" +
+                                        l
+                        ),
+                        TextDisplay.of(
+                                "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                                        DataToString.getHealthHitback(f.du, f.unit.lv, configData.talent, configData.lv, configData.treasure, holder)
+                        )
+                ));
+            }
         } else {
-            spec.setTitle(DataToString.getTitle(f, lang));
+            children.add(TextDisplay.of("## " + DataToString.getCompactTitle(f, lang)));
 
-            spec.addField(LangID.getStringByID("data.id", lang), DataToString.getID(f.uid.id, f.fid), true);
-            spec.addField(LangID.getStringByID("data.unit.level", lang), l, true);
-
-            String hpNormal = DataToString.getHP(f.du, f.unit.lv, configData.talent, configData.lv, false, holder);
-            String hpWithTreasure;
-
-            if(configData.treasure) {
-                hpWithTreasure = DataToString.getHP(f.du, f.unit.lv, configData.talent, configData.lv, true, holder);
-            } else {
-                hpWithTreasure = "";
+            if (!desc.isBlank()) {
+                children.add(TextDisplay.of(desc));
             }
 
-            if(hpWithTreasure.isBlank() || hpNormal.equals(hpWithTreasure)) {
-                spec.addField(LangID.getStringByID("data.hp", lang), hpNormal, true);
-            } else {
-                spec.addField(LangID.getStringByID("data.hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
-            }
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.unit.level", lang) + "**\n" +
+                            l
+            ));
 
-            spec.addField(LangID.getStringByID("data.kb", lang), DataToString.getHitback(f.du, configData.talent, configData.lv), true);
-            spec.addField(LangID.getStringByID("data.unit.cooldown", lang), DataToString.getCD(f.du,configData.isFrame, configData.talent, configData.lv, holder), true);
-            spec.addField(LangID.getStringByID("data.speed", lang), DataToString.getSpeed(f.du, configData.talent, configData.lv), true);
-            spec.addField(LangID.getStringByID("data.unit.cost", lang), DataToString.getCost(f.du, configData.talent, configData.lv), true);
-            spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data.attackTime", lang), DataToString.getAtkTime(f.du, configData.talent, configData.isFrame, configData.lv), true);
-            spec.addField(LangID.getStringByID("data.foreswing", lang), DataToString.getPre(f.du, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.backswing", lang), DataToString.getPost(f.du, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.tba", lang), DataToString.getTBA(f.du, configData.talent, configData.lv, configData.isFrame), true);
-            spec.addField(LangID.getStringByID("data.attackType", lang), DataToString.getSiMu(f.du, lang), true);
-
-            String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, configData.talent, configData.lv, false, holder);
-            String dpsWithTreasure;
-
-            if(configData.treasure) {
-                dpsWithTreasure = DataToString.getDPS(f.du, f.unit.lv, configData.talent, configData.lv, true, holder);
-            } else {
-                dpsWithTreasure = "";
-            }
-
-            if(dpsWithTreasure.isBlank() || dpsNormal.equals(dpsWithTreasure)) {
-                spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal, true);
-            } else {
-                spec.addField(LangID.getStringByID("data.dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
-            }
-
-            spec.addField(LangID.getStringByID("data.useAbility", lang), DataToString.getAbilT(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data.damage", lang), DataToString.getAtk(f.du, f.unit.lv, configData.talent, configData.lv, configData.treasure, holder), true);
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                            DataToString.getHealthHitback(f.du, f.unit.lv, configData.talent, configData.lv, configData.treasure, holder)
+            ));
         }
 
-        spec.addField(LangID.getStringByID("data.trait", lang), DataToString.getTrait(f.du, configData.talent, configData.lv, true, lang), true);
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.costCooldownSpeed", lang) + "**\n" +
+                        DataToString.getCostCooldownSpeed(f.du, configData.isFrame, configData.talent, configData.lv, holder)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + DataToString.getRangeTitle(f.du, lang) + "**\n" +
+                        DataToString.getRange(f.du)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.attackTimings", lang) + "**\n" +
+                        DataToString.getCompactAtkTimings(f.du, configData.talent, configData.lv, configData.isFrame)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.damageDPS", lang).formatted(DataToString.getSiMu(f.du, lang)) + "**\n" +
+                        DataToString.getCompactAtk(f.du, configData.talent, f.unit.lv, configData.lv, configData.treasure, holder)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.trait", lang) + "**\n" +
+                        DataToString.getTrait(f.du, configData.talent, configData.lv, true, lang)
+        ));
 
         MaskUnit du;
 
@@ -326,77 +328,72 @@ public class EntityHandler {
             res = sb.toString();
         }
 
-        spec.addField(LangID.getStringByID("data.ability", lang), res, false);
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.ability", lang) + "**\n" +
+                        res
+        ));
 
         if(configData.showUnitDescription) {
             String explanation = DataToString.getDescription(f, lang);
 
             if(explanation != null)
-                spec.addField(LangID.getStringByID("data.unit.description", lang), explanation, false);
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.unit.description", lang) + "**\n" +
+                                explanation
+                ));
         }
 
-        if (configData.showEvolveDescription) {
-            String catfruit = DataToString.getCatFruitEvolve(f, lang);
-
-            if(catfruit != null)
-                spec.addField(LangID.getStringByID("data.unit.evolve", lang), catfruit, false);
-        }
-
-        if (configData.showEvolveImage && evolveImageLink != null) {
-            spec.setImage(evolveImageLink);
+        if (configData.showEvolveDescription || configData.showEvolveImage) {
+            handleCatfruitData(f, children, configData, lang);
         }
 
         if(t != null && talentExists(t))
-            spec.setFooter(DataToString.getTalent(f.du, configData.lv, lang));
+            children.add(TextDisplay.of("-# " + DataToString.getTalent(f.du, configData.lv, lang)));
 
         ArrayList<Button> forms = new ArrayList<>();
         ArrayList<Button> misc = new ArrayList<>();
 
-        if(addEmoji) {
-            if (f.fid - 3 >= 0) {
-                forms.add(Button.secondary("first", LangID.getStringByID("formStat.button.firstForm", lang)).withEmoji(EmojiStore.THREE_PREVIOUS));
-            }
-
-            if (f.fid - 2 >= 0) {
-                forms.add(Button.secondary("twoPre", LangID.getStringByID("formStat.button.twoPreviousForm", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
-            }
-
-            if (f.fid - 1 >= 0) {
-                forms.add(Button.secondary("pre", LangID.getStringByID("formStat.button.previousForm", lang)).withEmoji(EmojiStore.PREVIOUS));
-            }
-
-            if (f.fid + 1 < f.unit.forms.length) {
-                forms.add(Button.secondary("next", LangID.getStringByID("formStat.button.nextForm", lang)).withEmoji(EmojiStore.NEXT));
-            }
-
-            if (f.fid + 2 < f.unit.forms.length) {
-                forms.add(Button.secondary("twoNext", LangID.getStringByID("formStat.button.twoNextForm", lang)).withEmoji(EmojiStore.TWO_NEXT));
-            }
-
-            if (f.fid + 3 < f.unit.forms.length) {
-                forms.add(Button.secondary("final", LangID.getStringByID("formStat.button.finalForm", lang)).withEmoji(EmojiStore.THREE_NEXT));
-            }
-
-            if(Arrays.stream(f.unit.forms).anyMatch(form -> form.du.getPCoin() != null)) {
-                misc.add(Button.secondary("talent", LangID.getStringByID("formStat.button.talentInfo", lang)).withEmoji(EmojiStore.NP));
-            }
-
-            misc.add(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("📈")));
+        if (f.fid - 3 >= 0) {
+            forms.add(Button.secondary("first", LangID.getStringByID("formStat.button.firstForm", lang)).withEmoji(EmojiStore.THREE_PREVIOUS));
         }
+
+        if (f.fid - 2 >= 0) {
+            forms.add(Button.secondary("twoPre", LangID.getStringByID("formStat.button.twoPreviousForm", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
+        }
+
+        if (f.fid - 1 >= 0) {
+            forms.add(Button.secondary("pre", LangID.getStringByID("formStat.button.previousForm", lang)).withEmoji(EmojiStore.PREVIOUS));
+        }
+
+        if (f.fid + 1 < f.unit.forms.length) {
+            forms.add(Button.secondary("next", LangID.getStringByID("formStat.button.nextForm", lang)).withEmoji(EmojiStore.NEXT));
+        }
+
+        if (f.fid + 2 < f.unit.forms.length) {
+            forms.add(Button.secondary("twoNext", LangID.getStringByID("formStat.button.twoNextForm", lang)).withEmoji(EmojiStore.TWO_NEXT));
+        }
+
+        if (f.fid + 3 < f.unit.forms.length) {
+            forms.add(Button.secondary("final", LangID.getStringByID("formStat.button.finalForm", lang)).withEmoji(EmojiStore.THREE_NEXT));
+        }
+
+        if(Arrays.stream(f.unit.forms).anyMatch(form -> form.du.getPCoin() != null)) {
+            misc.add(Button.secondary("talent", LangID.getStringByID("formStat.button.talentInfo", lang)).withEmoji(EmojiStore.NP));
+        }
+
+        misc.add(Button.secondary("dps", LangID.getStringByID("ui.button.dps", lang)).withEmoji(Emoji.fromUnicode("📈")));
 
         if(StaticStore.availableUDP.contains(f.unit.id.id)) {
             misc.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(EmojiStore.UDP));
         }
 
-        ArrayList<MessageTopLevelComponent> components = new ArrayList<>();
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
         if (!forms.isEmpty()) {
-            components.add(ActionRow.of(forms));
+            children.add(ActionRow.of(forms));
         }
 
-        if (!misc.isEmpty()) {
-            components.add(ActionRow.of(misc));
-        }
+        children.add(ActionRow.of(misc));
 
         Consumer<Message> finisher = msg -> {
             f.anim.unload();
@@ -404,44 +401,28 @@ public class EntityHandler {
             onSuccess.accept(msg);
         };
 
+        Container container = Container.of(children).withAccentColor(c);
+
         if (editMode) {
             if (sender instanceof Message msg) {
-                msg.editMessage("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
+                msg.editMessageComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(finisher);
             } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
-                        .setContent("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
+                        .setComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue(hook -> hook.retrieveOriginal().queue(finisher));
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, "", reference, a -> {
-                    MessageCreateAction action = a.setEmbeds(spec.build());
-
-                    if (!components.isEmpty()) {
-                        action.addComponents(components);
-                    }
-
-                    return action;
-                }, finisher);
+                Command.replyToMessageSafely(ch, reference, finisher, container);
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, "", a -> {
-                    ReplyCallbackAction action = a.setEmbeds(spec.build());
-
-                    if (!components.isEmpty()) {
-                        action.addComponents(components);
-                    }
-
-                    return action;
-                }, finisher);
+                Command.replyToMessageSafely(event, finisher, container);
             }
         }
     }
@@ -4573,84 +4554,70 @@ public class EntityHandler {
     // |    Private : Image    |
     // |-----------------------|
 
-    private static String generateIcon(Form f) throws Exception {
-        if(f.unit == null)
-            return null;
+    private static void handleCatfruitData(Form f, List<ContainerChildComponent> children, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) throws Exception {
+        if (!configData.showEvolveDescription && !configData.showEvolveImage)
+            return;
 
-        String code = switch (f.fid) {
-            case 0 -> "F";
-            case 1 -> "C";
-            case 2 -> "S";
-            case 3 -> "U";
-            default -> throw new IllegalStateException("E/EntityHandler::generateCatfruit - Invalid form id %d".formatted(f.fid));
-        };
+        boolean trueForm = f.unit.info.evo != null;
+        boolean ultraForm = f.unit.info.hasZeroForm();
 
-        String cacheID = StaticStore.UNIT_ICON.formatted(Data.trio(f.unit.id.id), code);
+        if (!trueForm && !ultraForm)
+            return;
 
-        String cacheLink = StaticStore.assetManager.getAsset(cacheID);
+        children.add(TextDisplay.of("**" + LangID.getStringByID("data.unit.evolve", lang) + "**"));
 
-        if (cacheLink != null) {
-            return cacheLink;
-        }
+        if (trueForm) {
+            String label = "- **" + LangID.getStringByID("data.unit.trueForm", lang) + "**";
 
-        File temp = new File("./temp");
+            if (configData.showEvolveDescription) {
+                String trueFormText = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info, lang);
 
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
+                if (trueFormText != null && !trueFormText.isBlank()) {
+                    label += "\n" + trueFormText;
+                }
+            }
 
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return null;
+            children.add(TextDisplay.of(label));
+
+            if (configData.showEvolveImage) {
+                String trueFormImage = generateCatfruit(f, true, lang);
+
+                if (trueFormImage != null) {
+                    children.add(MediaGallery.of(MediaGalleryItem.fromUrl(trueFormImage)));
+                }
             }
         }
 
-        File img = StaticStore.generateTempFile(temp, "result", ".png", false);
+        if (ultraForm) {
+            String label = "- **" + LangID.getStringByID("data.unit.ultraForm", lang) + "**";
 
-        if(img == null) {
-            return null;
+            if (configData.showEvolveDescription) {
+                String ultraFormText = MultiLangCont.getStatic().UFEXP.getCont(f.unit.info, lang);
+
+                if (ultraFormText != null && !ultraFormText.isBlank()) {
+                    label += "\n" + ultraFormText;
+                }
+            }
+
+            children.add(TextDisplay.of(label));
+
+            if (configData.showEvolveImage) {
+                String zeroFormImage = generateCatfruit(f, false, lang);
+
+                if (zeroFormImage != null) {
+                    children.add(MediaGallery.of(MediaGalleryItem.fromUrl(zeroFormImage)));
+                }
+            }
         }
-
-        FakeImage image;
-
-        if(f.anim.getUni() != null)
-            image = f.anim.getUni().getImg();
-        else if(f.anim.getEdi() != null)
-            image = f.anim.getEdi().getImg();
-        else
-            return null;
-
-        CountDownLatch waiter = new CountDownLatch(1);
-
-        StaticStore.renderManager.createRenderer(image.getWidth(), image.getHeight(), temp, connector -> {
-            connector.queue(g -> {
-                g.drawImage(image, 0f, 0f);
-
-                return kotlin.Unit.INSTANCE;
-            });
-
-            return kotlin.Unit.INSTANCE;
-        }, progress -> img, () -> {
-            waiter.countDown();
-
-            return kotlin.Unit.INSTANCE;
-        });
-
-        waiter.await();
-
-        cacheLink = StaticStore.assetManager.uploadIf(cacheID, img);
-
-        StaticStore.deleteFile(img, true);
-
-        return cacheLink;
     }
 
-    private static String generateCatfruit(Form f, CommonStatic.Lang.Locale lang) throws Exception {
+    private static String generateCatfruit(Form f, boolean trueForm, CommonStatic.Lang.Locale lang) throws Exception {
         String cacheID;
 
-        if (f.unit.info.hasZeroForm()) {
-            cacheID = StaticStore.UNIT_EVOLVE_ULTRA.formatted(Data.trio(f.unit.id.id), lang.name());
-        } else {
+        if (trueForm) {
             cacheID = StaticStore.UNIT_EVOLVE_TRUE.formatted(Data.trio(f.unit.id.id), lang.name());
+        } else {
+            cacheID = StaticStore.UNIT_EVOLVE_ULTRA.formatted(Data.trio(f.unit.id.id), lang.name());
         }
 
         String cacheLink = StaticStore.assetManager.getAsset(cacheID);
@@ -4661,16 +4628,15 @@ public class EntityHandler {
         if(f.unit.info.evo == null)
             return null;
 
+        if (!trueForm && !f.unit.info.hasZeroForm())
+            return null;
+
         File tmp = new File("./temp");
 
-        if(!tmp.exists()) {
-            boolean res = tmp.mkdirs();
+        if(!tmp.exists() && !tmp.mkdirs()) {
+            StaticStore.logger.uploadLog("W/EntityHandler::generateCatfruit - Failed to create temp folder");
 
-            if(!res) {
-                StaticStore.logger.uploadLog("W/EntityHandler::generateCatfruit - Failed to create temp folder");
-
-                return null;
-            }
+            return null;
         }
 
         File img = StaticStore.generateTempFile(tmp, "result", ".png", false);
@@ -4681,33 +4647,14 @@ public class EntityHandler {
 
         CountDownLatch waiter = new CountDownLatch(1);
 
-        float[] trueFormText = font.measureDimension(LangID.getStringByID("data.unit.trueForm", lang));
-        float[] ultraFormText = font.measureDimension(LangID.getStringByID("data.unit.ultraForm", lang));
-
-        int w = Math.round(Math.max(600f, trueFormText[2]));
-        float th = catFruitTextGap + trueFormText[3] + catFruitTextGap + 150f;
-
-        if (f.unit.info.zeroEvo != null) {
-            th += catFruitTextGap + ultraFormText[3] + catFruitTextGap + 150f;
-        }
-
-        int h = Math.round(th);
-
-        StaticStore.renderManager.createRenderer(w, h, tmp, connector -> {
+        StaticStore.renderManager.createRenderer(600, 150, tmp, connector -> {
             connector.queue(g -> {
                 g.setFontModel(font);
 
                 g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
                 g.setColor(47, 49, 54, 255);
 
-                g.fillRect(0, 0, w, h);
-
-                g.translate(0f, catFruitTextGap);
-
-                g.setColor(238, 238, 238, 255);
-                g.drawText(LangID.getStringByID("data.unit.trueForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
-
-                g.translate(0f, trueFormText[3] + catFruitTextGap);
+                g.fillRect(0, 0, 600, 150);
 
                 g.setColor(238, 238, 238, 128);
 
@@ -4721,6 +4668,17 @@ public class EntityHandler {
 
                 g.setColor(238, 238, 238, 255);
 
+                int xp;
+                int[][] evo;
+
+                if (trueForm) {
+                    xp = f.unit.info.xp;
+                    evo = f.unit.info.evo;
+                } else {
+                    xp = f.unit.info.zeroXp;
+                    evo = f.unit.info.zeroEvo;
+                }
+
                 for(int i = 0; i < 6; i++) {
                     if(i == 0) {
                         VFile vf = VFile.get("./org/page/catfruit/xp.png");
@@ -4729,62 +4687,17 @@ public class EntityHandler {
                             FakeImage icon = vf.getData().getImg();
 
                             g.drawImage(icon, 510, 10, 80, 80);
-                            g.drawText(String.valueOf(f.unit.info.xp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                            g.drawText(String.valueOf(xp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                         }
                     } else {
-                        if(f.unit.info.evo[i - 1][0] != 0) {
-                            VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.evo[i - 1][0]+"_f.png");
+                        if(evo[i - 1][0] != 0) {
+                            VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+evo[i - 1][0]+"_f.png");
 
                             if(vf != null) {
                                 FakeImage icon = vf.getData().getImg();
 
                                 g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
-                                g.drawText(String.valueOf(f.unit.info.evo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                            }
-                        }
-                    }
-                }
-
-                if (f.unit.info.zeroEvo != null) {
-                    g.translate(0f, 150 + catFruitTextGap);
-
-                    g.setColor(238, 238, 238, 255);
-                    g.drawText(LangID.getStringByID("data.unit.ultraForm", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
-
-                    g.translate(0f, ultraFormText[3] + catFruitTextGap);
-
-                    g.setColor(238, 238, 238, 128);
-
-                    g.drawRect(0, 0, 600, 150);
-
-                    for(int i = 1; i < 6; i++) {
-                        g.drawLine(100 * i, 0, 100* i , 150);
-                    }
-
-                    g.drawLine(0, 100, 600, 100);
-
-                    g.setColor(238, 238, 238, 255);
-
-                    for(int i = 0; i < 6; i++) {
-                        if(i == 0) {
-                            VFile vf = VFile.get("./org/page/catfruit/xp.png");
-
-                            if(vf != null) {
-                                FakeImage icon = vf.getData().getImg();
-
-                                g.drawImage(icon, 510, 10, 80, 80);
-                                g.drawText(String.valueOf(f.unit.info.zeroXp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                            }
-                        } else {
-                            if(f.unit.info.zeroEvo[i - 1][0] != 0) {
-                                VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.zeroEvo[i - 1][0]+"_f.png");
-
-                                if(vf != null) {
-                                    FakeImage icon = vf.getData().getImg();
-
-                                    g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
-                                    g.drawText(String.valueOf(f.unit.info.zeroEvo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
-                                }
+                                g.drawText(String.valueOf(evo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                             }
                         }
                     }
