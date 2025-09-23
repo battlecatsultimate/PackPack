@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
@@ -82,10 +83,8 @@ public class TalentMessageHolder extends SearchHolder {
 
             if(f.unit.forms.length < 3) {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("talentInfo.failed.noTrueForm", lang))
-                        .setComponents()
-                        .setEmbeds()
-                        .setFiles()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("talentInfo.failed.noTrueForm", lang)))
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
@@ -97,10 +96,8 @@ public class TalentMessageHolder extends SearchHolder {
 
             if(trueForm.du == null || trueForm.du.getPCoin() == null) {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("talentInfo.failed.noTalent", lang))
-                        .setComponents()
-                        .setEmbeds()
-                        .setFiles()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("talentInfo.failed.noTalent", lang)))
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
@@ -108,7 +105,7 @@ public class TalentMessageHolder extends SearchHolder {
                 return;
             }
 
-            EntityHandler.generateTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, trueForm, isFrame, true, lang);
+            EntityHandler.generateTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, trueForm, isFrame, true, false, lang);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/TalentMessageHolder::onSelected - Failed to perform showing talent embed");
         }

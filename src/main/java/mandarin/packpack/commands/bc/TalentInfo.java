@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.TalentMessageHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
@@ -55,9 +56,9 @@ public class TalentInfo extends ConstraintCommand {
 
         if(name.isBlank()) {
             if (loader.fromMessage) {
-                replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noName", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formStat.fail.noName", lang));
             } else {
-                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noName", lang), a -> a);
+                replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noName", lang));
             }
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(name, true, lang);
@@ -66,7 +67,7 @@ public class TalentInfo extends ConstraintCommand {
                 Form f = forms.getFirst();
 
                 if(f.unit.forms.length < 3) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("talentInfo.failed.noTrueForm", lang));
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("talentInfo.failed.noTrueForm", lang));
 
                     return;
                 }
@@ -75,9 +76,9 @@ public class TalentInfo extends ConstraintCommand {
 
                 if(trueForm.du == null || trueForm.du.getPCoin() == null) {
                     if (loader.fromMessage) {
-                        replyToMessageSafely(ch, LangID.getStringByID("talentInfo.failed.noTalent", lang), loader.getMessage(), a -> a);
+                        replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("talentInfo.failed.noTalent", lang));
                     } else {
-                        replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("talentInfo.failed.noTalent", lang), a -> a);
+                        replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("talentInfo.failed.noTalent", lang));
                     }
 
                     return;
@@ -91,47 +92,26 @@ public class TalentInfo extends ConstraintCommand {
                     sender = loader.getInteractionEvent();
                 }
 
-                EntityHandler.generateTalentEmbed(sender, loader.getNullableMessage(), trueForm, isFrame, false, lang);
+                EntityHandler.generateTalentEmbed(sender, loader.getNullableMessage(), trueForm, isFrame, false, false, lang);
             } else if (forms.isEmpty()) {
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(name)), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("formStat.fail.noUnit", lang).formatted(getSearchKeyword(name)));
                 } else {
-                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noUnit", lang).replace("_", getSearchKeyword(name)), a -> a);
+                    replyToMessageSafely(loader.getInteractionEvent(), LangID.getStringByID("formStat.fail.noUnit", lang).formatted(getSearchKeyword(name)));
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("ui.search.severalResult", lang).replace("_", getSearchKeyword(name)));
-
-                sb.append("```md\n").append(LangID.getStringByID("ui.search.selectData", lang));
-
-                List<String> data = accumulateListData(forms);
-
-                for(int i = 0; i < data.size(); i++) {
-                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
-                }
-
-                if(forms.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-                    int totalPage = forms.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-                    if(forms.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                        totalPage++;
-
-                    sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
-                }
-
-                sb.append("```");
-
                 if (loader.fromMessage) {
-                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                    replyToMessageSafely(ch, loader.getMessage(), msg -> {
                         User u = loader.getUser();
 
-                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), res, name, config.searchLayout, forms, isFrame, lang));
-                    });
+                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), msg, name, config.searchLayout, forms, isFrame, lang));
+                    }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(getSearchKeyword(name), forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
                 } else {
-                    replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                    replyToMessageSafely(loader.getInteractionEvent(), msg -> {
                         User u = loader.getUser();
 
-                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getNullableMessage(), u.getId(), ch.getId(), res, name, config.searchLayout, forms, isFrame, lang));
-                    });
+                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getNullableMessage(), u.getId(), ch.getId(), msg, name, config.searchLayout, forms, isFrame, lang));
+                    }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(getSearchKeyword(name), forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
                 }
             }
         }
@@ -196,23 +176,45 @@ public class TalentInfo extends ConstraintCommand {
         return command.toString().trim();
     }
 
-    private List<String> accumulateListData(List<Form> forms) {
+    private List<String> accumulateTextData(List<Form> forms, SearchHolder.TextType textType) {
         List<String> data = new ArrayList<>();
 
-        for(int i = 0; i < ConfigHolder.SearchLayout.COMPACTED.chunkSize; i++) {
-            if(i >= forms.size())
-                break;
-
+        for(int i = 0; i < Math.min(forms.size(), config.searchLayout.chunkSize); i++) {
             Form f = forms.get(i);
 
-            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+            String text = null;
 
-            String name = StaticStore.safeMultiLangGet(f, lang);
+            switch (textType) {
+                case TEXT -> {
+                    if (config.searchLayout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + " ";
 
-            if(name != null)
-                fname += name;
+                        if (StaticStore.safeMultiLangGet(f, lang) != null) {
+                            text += StaticStore.safeMultiLangGet(f, lang);
+                        }
+                    } else {
+                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "` ";
 
-            data.add(fname);
+                        String formName = StaticStore.safeMultiLangGet(f, lang);
+
+                        if (formName == null || formName.isBlank()) {
+                            formName = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                        }
+
+                        text += "**" + formName + "**";
+                    }
+                }
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(f, lang);
+
+                    if (text == null) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+                    }
+                }
+                case LIST_DESCRIPTION -> text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
+            }
+
+            data.add(text);
         }
 
         return data;

@@ -2919,7 +2919,7 @@ public class DataToString extends Data {
         String desc = "";
 
         if(du.getPCoin().trait.size() == 1 && index == du.getPCoin().traitActivator) {
-            desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
+            desc += LangID.getStringByID("data.talent.description.trait.together", lang).formatted(LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
         }
 
         switch (type[0]) {
@@ -2962,9 +2962,9 @@ public class DataToString extends Data {
 
                     if (fieldName.equals("time")) {
                         if (isFrame) {
-                            desc += LangID.getStringByID(descID, lang).replace("_mmm_", min + "f").replace("_MMM_", max + "f") + "\n\n";
+                            desc += LangID.getStringByID(descID, lang).formatted(min + "f", max + "f") + "\n\n";
                         } else {
-                            desc += LangID.getStringByID(descID, lang).replace("_mmm_", df.format(min / 30.0) + "s").replace("_MMM_", df.format(max / 30.0) + "s") + "\n\n";
+                            desc += LangID.getStringByID(descID, lang).formatted(df.format(min / 30.0) + "s", df.format(max / 30.0) + "s") + "\n\n";
                         }
                     } else {
                         if (fieldName.equals("mult") && type[1] == P_WEAK) {
@@ -2972,7 +2972,7 @@ public class DataToString extends Data {
                             max = 100 - max;
                         }
 
-                        desc += LangID.getStringByID(descID, lang).replace("_mmm_", String.valueOf(min)).replace("_MMM_", String.valueOf(max)) + "\n\n";
+                        desc += LangID.getStringByID(descID, lang).formatted(min, max) + "\n\n";
                     }
                 }
                 return desc + fillUpNpCost(data, lang, desc.isBlank());
@@ -3008,10 +3008,9 @@ public class DataToString extends Data {
                     default -> throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
                 };
 
-                return desc + LangID.getStringByID(key, lang)
-                        .replace("_mmm_", String.valueOf(min))
-                        .replace("_MMM_", String.valueOf(max)) +
-                        fillUpNpCost(data, lang, true);
+                System.out.println(LangID.getStringByID(key, lang));
+
+                return desc + LangID.getStringByID(key, lang).formatted(min, max) + fillUpNpCost(data, lang, true);
             }
             case PC_TRAIT -> {
                 return desc + LangID.getStringByID("data.talent.description.trait.default", lang).replace("_", talentName) + fillUpNpCost(data, lang, true);
@@ -3208,7 +3207,7 @@ public class DataToString extends Data {
     private static String fillUpNpCost(int[] data, CommonStatic.Lang.Locale lang, boolean space) {
         if(talentLevel.containsKey(data[11])) {
             if(data[1] < 2) {
-                return (space ? "\n** **\n" : "") + LangID.getStringByID("data.talent.npCost.single", lang).replace("_", String.valueOf(talentLevel.get(data[11])[0]));
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("data.talent.npCost.single", lang).formatted(talentLevel.get(data[11])[0]);
             } else {
                 int[] costs = talentLevel.get(data[11]);
 
@@ -3227,7 +3226,7 @@ public class DataToString extends Data {
                     }
                 }
 
-                return (space ? "\n** **\n" : "") + LangID.getStringByID("data.talent.npCost.level", lang).replace("_CCC_", cost.toString()).replace("_TTT_", String.valueOf(totalCost));
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("data.talent.npCost.level", lang).formatted(cost, totalCost);
             }
         } else {
             StaticStore.logger.uploadLog("W/DataToString::fillUpNpCost - Unknown talent cost group ID : " + data[11]);
@@ -3256,6 +3255,6 @@ public class DataToString extends Data {
             }
         }
 
-        return LangID.getStringByID("data.talent.npCost.total", lang).replace("_", String.valueOf(cost));
+        return LangID.getStringByID("data.talent.npCost.total", lang).formatted(cost);
     }
 }

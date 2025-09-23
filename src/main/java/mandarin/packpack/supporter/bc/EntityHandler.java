@@ -923,7 +923,7 @@ public class EntityHandler {
     // |    Stat Embed : Miscellaneous    |
     // |----------------------------------|
 
-    public static void generateTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void generateTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, boolean addButton, CommonStatic.Lang.Locale lang) {
         if(form.du == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
@@ -952,24 +952,19 @@ public class EntityHandler {
 
         MaskUnit improved = talent.improve(levels.getTalents());
 
-        EmbedBuilder spec = new EmbedBuilder();
+        List<ContainerChildComponent> children = new ArrayList<>();
 
-        String iconLink = generateIcon(form);
+        String unitName = StaticStore.safeMultiLangGet(form, lang);
 
-        String unitName = MultiLangCont.get(form, lang);
-
-        if(unitName == null)
-            unitName = Data.trio(form.unit.id.id);
-
-        spec.setTitle(LangID.getStringByID("data.talent.embed.title", lang).replace("_", unitName));
-
-        for(int i = 0; i < talent.info.size(); i++) {
-            if(talent.info.get(i)[13] == 1) {
-                spec.setDescription(LangID.getStringByID("data.talent.superTalent.description", lang));
-
-                break;
-            }
+        if (unitName == null || unitName.isBlank()) {
+            unitName = Data.trio(form.uid.id) + " - " + Data.trio(form.fid);
         }
+
+        boolean superTalent = talent.info.stream().anyMatch(data -> data[13] == 1);
+
+        String iconLink = StaticStore.assetManager.getUnitIcon(form);
+
+        boolean thumbnailAdded = false;
 
         for(int i = 0; i < talent.info.size(); i++) {
             String title = DataToString.getTalentTitle(newForm.du, i, lang);
@@ -978,8 +973,31 @@ public class EntityHandler {
             if(title.isBlank() || desc.isBlank())
                 continue;
 
-            spec.addField(title, desc, false);
+            if (!thumbnailAdded) {
+                if (iconLink == null) {
+                    children.add(TextDisplay.of("## " + LangID.getStringByID("data.talent.embed.title", lang).formatted(unitName)));
+
+                    if (superTalent) {
+                        children.add(TextDisplay.of(LangID.getStringByID("data.talent.superTalent.description", lang)));
+                    }
+
+                    children.add(TextDisplay.of("### " + title + "\n" + desc));
+                } else {
+                    children.add(Section.of(
+                            Thumbnail.fromUrl(iconLink),
+                            TextDisplay.of("## " + LangID.getStringByID("data.talent.embed.title", lang).formatted(unitName)),
+                            TextDisplay.of(LangID.getStringByID("data.talent.superTalent.description", lang)),
+                            TextDisplay.of("### " + title + "\n" + desc)
+                    ));
+                }
+
+                thumbnailAdded = true;
+            } else {
+                children.add(TextDisplay.of("### " + title + "\n" + desc));
+            }
         }
+
+        children.add(TextDisplay.of("-# " + DataToString.accumulateNpCost(talent, lang)));
 
         int c;
 
@@ -992,39 +1010,34 @@ public class EntityHandler {
         else
             c = StaticStore.rainbow[StaticStore.RED];
 
-        spec.setColor(c);
+        if (addButton) {
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-        if(iconLink != null)
-            spec.setThumbnail(iconLink);
+            children.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
+        }
 
-        spec.setFooter(DataToString.accumulateNpCost(talent, lang));
+        Container container = Container.of(children).withAccentColor(c);
 
         if (editMode) {
-            List<MessageTopLevelComponent> components = new ArrayList<>();
-
-            components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
-
             if (sender instanceof Message msg) {
-                msg.editMessage("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
+                msg.editMessageComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
             } else if (sender instanceof GenericComponentInteractionCreateEvent event) {
                 event.deferEdit()
-                        .setContent("")
-                        .setEmbeds(spec.build())
-                        .setComponents(components)
+                        .setComponents(container)
+                        .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
                         .queue();
             }
         } else {
             if (sender instanceof MessageChannel ch) {
-                Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
+                Command.replyToMessageSafely(ch, reference, container);
             } else if (sender instanceof GenericCommandInteractionEvent event) {
-                Command.replyToMessageSafely(event, "", a -> a.setEmbeds(spec.build()));
+                Command.replyToMessageSafely(event, container);
             }
         }
     }

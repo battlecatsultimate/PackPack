@@ -1034,28 +1034,28 @@
         "talent" : {
             "ultraTalent" : "\"*\" 글자가 표기된 본능은 진본능입니다\n레벨에 따라서 자동으로 비활성화될 수 있습니다",
             "description" : {
-                "chance" : "확률 _mmm_% 부터 _MMM_% 까지 증가",
-                "cooldown" : "쿨다운 _mmm_ ~ _MMM_ 만큼 감소",
-                "cost" : "코스트 _mmm_ ~ _MMM_ 만큼 감소",
-                "damage" : "공격력 _mmm_% ~ _MMM_% 만큼 증가",
+                "chance" : "확률 %d%% 부터 %d%% 까지 증가",
+                "cooldown" : "쿨다운 %d ~ %d 만큼 감소",
+                "cost" : "코스트 %d ~ %d 만큼 감소",
+                "damage" : "공격력 %d%% ~ %d%% 만큼 증가",
                 "duration" : "시간 _mmm_ 부터 _MMM_ 까지 증가",
-                "health" : "체력 _mmm_% ~ _MMM_% 만큼 증가",
-                "kb" : "히트백 횟수 _mmm_ ~ _MMM_ 만큼 증가",
-                "multiplier" : "배율 _mmm_% 부터 _MMM_% 까지 증가",
-                "speed" : "속도 _mmm_ ~ _MMM_ 만큼 증가",
-                "tba" : "공격 간격 _mmm_% ~ _MMM_% 만큼 감소",
+                "health" : "체력 %d%% ~ %d%% 만큼 증가",
+                "kb" : "히트백 횟수 %d ~ %d 만큼 증가",
+                "multiplier" : "배율 %d%% 부터 %d%% 까지 증가",
+                "speed" : "속도 %d ~ %d 만큼 증가",
+                "tba" : "공격 간격 %d%% ~ %d%% 만큼 감소",
                 "trait" : {
-                    "default" : "속성 언락 : _",
-                    "together" : "[_] 속성도 함께 언락"
+                    "default" : "속성 언락 : %s",
+                    "together" : "[%s] 속성도 함께 언락"
                 }
             },
             "embed" : {
-                "title" : "_의 본능"
+                "title" : "%s의 본능"
             },
             "npCost" : {
-                "level" : "**NP 코스트 => 도합**\n```_CCC_ => _TTT_```",
-                "single" : "**NP 코스트 : _ NP**",
-                "total" : "풀 본능을 위해 _ NP 필요"
+                "level" : "**NP 코스트 => 도합**\n```%s => %d```",
+                "single" : "**NP 코스트 : %d NP**",
+                "total" : "풀 본능을 위해 %d NP 필요"
             },
             "superTalent" : {
                 "description" : "진본능은 유닛이 60 레벨에 도달했을 때에만 활성화 됩니다",

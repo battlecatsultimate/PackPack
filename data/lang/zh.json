@@ -1034,28 +1034,28 @@
         "talent" : {
             "ultraTalent" : "含\"*\"的本能為超本能\n角色等級過低時將不考慮超本能的加成",
             "description" : {
-                "chance" : "Increase chance from _mmm_% to _MMM_%",
-                "cooldown" : "Reduce cooldown by _mmm_ ~ _MMM_",
-                "cost" : "Reduce cost by _mmm_ ~ _MMM_",
-                "damage" : "Increase attack by _mmm_% ~ _MMM_%",
-                "duration" : "Increase duration from _mmm_ to _MMM_",
-                "health" : "Increase health by _mmm_% ~ _MMM_%",
-                "kb" : "Increase number of knockbacks by _mmm_ ~ _MMM_",
-                "multiplier" : "Increase multiplier from _mmm_% to _MMM_%",
-                "speed" : "Increase speed by _mmm_ ~ _MMM_",
-                "tba" : "Reduce TBA by _mmm_% ~ _MMM_%",
+                "chance" : "Increase chance from %d%% to %d%%",
+                "cooldown" : "Reduce cooldown by %d ~ %d",
+                "cost" : "Reduce cost by %d ~ %d",
+                "damage" : "Increase damage by %d%% ~ %d%%",
+                "duration" : "Increase duration from %s to %s",
+                "health" : "Increase health by %d%% ~ %d%%",
+                "kb" : "Increase number of knockbacks by %d ~ %d",
+                "multiplier" : "Increase multiplier from %d%% to %d%%",
+                "speed" : "Increase speed by %d ~ %d",
+                "tba" : "Reduce TBA by %d%% ~ %d%%",
                 "trait" : {
-                    "default" : "Unlock the trait : _",
-                    "together" : "Unlock target trait [_] together"
+                    "default" : "Unlock the trait : %s",
+                    "together" : "Unlock target trait [%s] together"
                 }
             },
             "embed" : {
-                "title" : "Talent of _"
+                "title" : "Talent of %s"
             },
             "npCost" : {
-                "level" : "**NP Cost => Total Cost**\n```_CCC_ => _TTT_```",
-                "single" : "**NP Cost : _ NP**",
-                "total" : "_ NP needed for full talents"
+                "level" : "**NP Cost => Total Cost**\n```%s => %d```",
+                "single" : "**NP Cost : %d NP**",
+                "total" : "%d NP needed for full talents"
             },
             "superTalent" : {
                 "description" : "Super talents can be activated once unit reaches 60 level",
