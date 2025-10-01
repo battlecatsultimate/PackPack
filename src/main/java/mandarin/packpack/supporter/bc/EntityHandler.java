@@ -81,6 +81,14 @@ import java.util.function.Consumer;
 public class EntityHandler {
     private static final DecimalFormat df;
 
+    private static final float fruitIconGap = 7.5f;
+    private static final float fruitIconSize = 60f;
+    private static final float fruitFrameSize = 75f;
+    private static final float fruitTextSize = 30f;
+
+    private static final int fruitImageWidth = (int) (fruitFrameSize * 6);
+    private static final int fruitImageHeight = (int) (fruitFrameSize + fruitTextSize);
+
     private static FontModel font;
 
     static {
@@ -97,7 +105,7 @@ public class EntityHandler {
             CountDownLatch waiter = new CountDownLatch(1);
 
             StaticStore.renderManager.queueGL(() -> {
-                font = new FontModel(24f, fon, FontModel.Type.FILL, 0f);
+                font = new FontModel(16f, fon, FontModel.Type.FILL, 0f);
 
                 waiter.countDown();
             });
@@ -4647,24 +4655,24 @@ public class EntityHandler {
 
         CountDownLatch waiter = new CountDownLatch(1);
 
-        StaticStore.renderManager.createRenderer(600, 150, tmp, connector -> {
+        StaticStore.renderManager.createRenderer(fruitImageWidth, fruitImageHeight, tmp, connector -> {
             connector.queue(g -> {
                 g.setFontModel(font);
 
                 g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
                 g.setColor(47, 49, 54, 255);
 
-                g.fillRect(0, 0, 600, 150);
+                g.fillRect(0, 0, fruitImageWidth, fruitImageHeight);
 
                 g.setColor(238, 238, 238, 128);
 
-                g.drawRect(0, 0, 600, 150);
+                g.drawRect(0, 0, fruitImageWidth, fruitImageHeight);
 
                 for(int i = 1; i < 6; i++) {
-                    g.drawLine(100 * i, 0, 100* i , 150);
+                    g.drawLine(fruitFrameSize * i, 0, fruitFrameSize * i , fruitImageHeight);
                 }
 
-                g.drawLine(0, 100, 600, 100);
+                g.drawLine(0, fruitFrameSize, fruitImageWidth, fruitFrameSize);
 
                 g.setColor(238, 238, 238, 255);
 
@@ -4686,8 +4694,8 @@ public class EntityHandler {
                         if(vf != null) {
                             FakeImage icon = vf.getData().getImg();
 
-                            g.drawImage(icon, 510, 10, 80, 80);
-                            g.drawText(String.valueOf(xp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                            g.drawImage(icon, fruitFrameSize * 5 + fruitIconGap, fruitIconGap, fruitIconSize, fruitIconSize);
+                            g.drawText(String.valueOf(xp), fruitFrameSize * 5.5f, fruitFrameSize + fruitTextSize / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                         }
                     } else {
                         if(evo[i - 1][0] != 0) {
@@ -4696,8 +4704,8 @@ public class EntityHandler {
                             if(vf != null) {
                                 FakeImage icon = vf.getData().getImg();
 
-                                g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
-                                g.drawText(String.valueOf(evo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                                g.drawImage(icon, fruitFrameSize * (i-1) + fruitIconGap, fruitIconGap, fruitIconSize, fruitIconSize);
+                                g.drawText(String.valueOf(evo[i - 1][1]), fruitFrameSize * (i-1) + fruitFrameSize / 2f, fruitFrameSize + fruitTextSize / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                             }
                         }
                     }
