@@ -1388,6 +1388,7 @@
             "849" : "チョコサプネコCセール",
             "850" : "プラチナチケットダブル販売1回目",
             "851" : "プラチナチケットダブル販売2回目",
+            "852" : "コラボ記念パック",
             "900" : "Mushroom Garden Stamp",
             "901" : "Comeback Bonus Stamp",
             "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1508,6 +1509,8 @@
             "35036" : "Summer Break Paradise Stamp",
             "35037" : "Event Stamp",
             "35038" : "11.5th Anniversary Stamp",
+            "35039" : "Halloween Event Stamp",
+            "35040" : "Street Fighter Collab Stamp",
             "rankingDojo" : "ランキングの間 _"
         },
         "permanentSchedule" : {
@@ -1604,7 +1607,9 @@
                 "11" : "等速直線運動",
                 "12" : "プラスワン EX",
                 "13" : "限定超特売 超激レア",
-                "14" : "現品限り"
+                "14" : "現品限り",
+                "15" : "給料日",
+                "16" : "二束三文"
             }
         },
         "section" : {

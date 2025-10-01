@@ -1388,6 +1388,7 @@
             "849" : "Chocosurp Cat C Sale",
             "850" : "Double Platinum Ticket Sale [1st]",
             "851" : "Double Platinum Ticket Sale [2nd]",
+            "852" : "Collaboration Celebration Pack",
             "900" : "Mushroom Garden Stamp",
             "901" : "Comeback Bonus Stamp",
             "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1508,6 +1509,8 @@
             "35036" : "Summer Break Paradise Stamp",
             "35037" : "Event Stamp",
             "35038" : "11.5th Anniversary Stamp",
+            "35039" : "Halloween Event Stamp",
+            "35040" : "Street Fighter Collab Stamp",
             "rankingDojo" : "Ranking Dojo _"
         },
         "permanentSchedule" : {
@@ -1604,7 +1607,9 @@
                 "11" : "Identical Unit/Enemy Speed",
                 "12" : "EX Deploy Duplication",
                 "13" : "Low UR Cost",
-                "14" : "Cooldown Limit"
+                "14" : "Cooldown Limit",
+                "15" : "Money Limit/Uber Rare Cooldown Buff",
+                "16" : "Low Cost"
             }
         },
         "section" : {
