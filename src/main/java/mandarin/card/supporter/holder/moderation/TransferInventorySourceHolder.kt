@@ -111,11 +111,22 @@ class TransferInventorySourceHolder(author: Message, userID: String, channelID: 
             "After transfer is done, picked user's inventory will be wiped out"
         }
 
+        val mode = when(transferMode) {
+            CardData.TransferMode.INJECT -> "Inject"
+            CardData.TransferMode.OVERRIDE -> "Override"
+        }
+
+        val resetText = if (reset) {
+            "Yes"
+        } else {
+            "No"
+        }
+
         return "## Inventory Transfer\n" +
                 "This command will allow you to transfer specific user's inventory to other user. First, you have to pick which user's inventory you want to transfer\n" +
-                "### Transfer Mode : Inject\n" +
+                "### Transfer Mode : $mode\n" +
                 "$modeExplanation\n" +
-                "### Reset User's Inventory? : No\n" +
+                "### Reset User's Inventory? : $resetText\n" +
                 resetExplanation
     }
 
