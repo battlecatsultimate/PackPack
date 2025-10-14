@@ -51,6 +51,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     private var banner = Banner.NONE
 
     private var filterMode = FilterMode.NONE
+    private var skinMode = false
 
     init {
         registerAutoExpiration(FIVE_MIN)
@@ -149,6 +150,13 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
 
                 applyResult(event)
             }
+            "skin" -> {
+                skinMode = !skinMode
+
+                filterCards()
+
+                applyResult(event)
+            }
             "card" -> {
                 if (event !is StringSelectInteractionEvent)
                     return
@@ -200,7 +208,30 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
             }
         }
 
-        cards.sortWith(CardComparator())
+        if (skinMode) {
+            val comparator = CardComparator()
+
+            cards.sortWith { c0, c1 ->
+                if (c0 == null && c1 == null)
+                    return@sortWith 0
+
+                if (c0 == null)
+                    return@sortWith 1
+
+                if (c1 == null)
+                    return@sortWith -1
+
+                if (inventory.skins.any { s -> s.card == c0 })
+                    return@sortWith -1
+
+                if (inventory.skins.any { s -> s.card == c1 })
+                    return@sortWith 1
+
+                return@sortWith comparator.compare(c0, c1)
+            }
+        } else {
+            cards.sortWith(CardComparator())
+        }
 
         page = max(0, min(page, getTotalPage(cards.size) - 1))
     }
@@ -341,6 +372,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
 
         confirmButtons.add(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CROSS))
         confirmButtons.add(Button.secondary("filter", text))
+        confirmButtons.add(Button.secondary("skin", "Sort by Skin").withEmoji(if (skinMode) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF))
 
         rows.add(ActionRow.of(confirmButtons))
 
