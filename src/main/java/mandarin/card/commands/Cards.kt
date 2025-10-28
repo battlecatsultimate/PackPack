@@ -176,6 +176,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             confirmButtons.add(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CROSS))
             confirmButtons.add(Button.secondary("filter", "Filter Mode : None"))
+            confirmButtons.add(Button.secondary("skin", "Sort by Skin").withEmoji(EmojiStore.SWITCHOFF))
 
             rows.add(ActionRow.of(confirmButtons))
 
