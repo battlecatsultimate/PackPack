@@ -23,13 +23,13 @@ public class RegisterFixing extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            ch.sendMessage("Please specify guild ID").queue();
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Please specify guild ID");
 
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            ch.sendMessage("ID `"+contents[1]+"` isn't numeric").queue();
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "ID `" + contents[1] + "` isn't numeric");
 
             return;
         }
@@ -44,9 +44,9 @@ public class RegisterFixing extends ConstraintCommand {
         if(g != null) {
             StaticStore.needFixing.add(contents[1]);
 
-            ch.sendMessage("Added `"+contents[1]+"` [**"+g.getName()+"**] as fixing server").queue();
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Added `" + contents[1] + "` [**" + g.getName() + "**] as fixing server");
         } else {
-            ch.sendMessage("Couldn't find such guild").queue();
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Couldn't find such guild");
         }
     }
 }
