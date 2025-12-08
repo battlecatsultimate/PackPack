@@ -2,38 +2,30 @@ package mandarin.packpack.supporter.server.holder.message.alias;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
-import mandarin.packpack.supporter.server.holder.message.MessageHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 
-public class AliasFormMessageHolder extends MessageHolder {
-    private final ArrayList<Form> form;
-    private final String channelID;
+public class AliasFormMessageHolder extends SearchHolder {
+    private final ArrayList<Form> forms;
     private final AliasHolder.MODE mode;
     private final String aliasName;
 
-    private int page = 0;
-    private boolean expired = false;
+    public AliasFormMessageHolder(ArrayList<Form> forms, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName) {
+        super(author, userID, channelID, msg, keyword, ConfigHolder.SearchLayout.FANCY_LIST, lang);
 
-    private final ArrayList<Message> cleaner = new ArrayList<>();
-
-    public AliasFormMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nullable String aliasName) {
-        super(author, userID, channelID, msg, lang);
-
-        this.form = form;
-        this.channelID = channelID;
+        this.forms = forms;
         this.mode = mode;
         this.aliasName = aliasName;
 
@@ -41,214 +33,199 @@ public class AliasFormMessageHolder extends MessageHolder {
     }
 
     @Override
-    public STATUS onReceivedEvent(MessageReceivedEvent event) {
-        if(expired) {
-            System.out.println("Expired at AliasFormHolder!!");
+    public List<String> accumulateTextData(TextType textType) {
+        List<String> data = new ArrayList<>();
 
-            return STATUS.FAIL;
-        }
+        for(int i = chunk * page; i < chunk * (page +1); i++) {
+            if(i >= forms.size())
+                break;
 
-        MessageChannel ch = event.getMessage().getChannel();
+            Form f = forms.get(i);
 
-        if(!ch.getId().equals(channelID))
-            return STATUS.WAIT;
+            String text = null;
 
-        String content = event.getMessage().getContentRaw();
+            switch (textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + " ";
 
-        if(content.equals("n")) {
-            if(20 * (page + 1) >= form.size())
-                return STATUS.WAIT;
-
-            page++;
-
-            showPage();
-
-            cleaner.add(event.getMessage());
-        } else if(content.equals("p")) {
-            if(page == 0)
-                return STATUS.WAIT;
-
-            page--;
-
-            showPage();
-
-            cleaner.add(event.getMessage());
-        } else if(StaticStore.isNumeric(content)) {
-            int id = StaticStore.safeParseInt(content)-1;
-
-            if(id < 0 || id >= form.size())
-                return STATUS.WAIT;
-
-            message.delete().queue();
-
-            String fname = StaticStore.safeMultiLangGet(form.get(id), lang);
-
-            if(fname == null || fname.isBlank())
-                fname = form.get(id).names.toString();
-
-            if(fname.isBlank())
-                fname = Data.trio(form.get(id).unit.id.id)+"-"+Data.trio(form.get(id).fid);
-
-            ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.FORM, lang, form.get(id));
-
-            switch (mode) {
-                case GET -> {
-                    if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", fname));
+                        if (StaticStore.safeMultiLangGet(f, lang) != null) {
+                            text += StaticStore.safeMultiLangGet(f, lang);
+                        }
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.unit", lang).replace("_FFF_", fname).replace("_NNN_", String.valueOf(alias.size())));
-                        result.append("\n\n");
+                        text = "`" + Data.trio(f.uid.id) + "-" + Data.trio(f.fid) + "` ";
 
-                        for (int i = 0; i < alias.size(); i++) {
-                            String temp = "- " + alias.get(i);
+                        String formName = StaticStore.safeMultiLangGet(f, lang);
 
-                            if (result.length() + temp.length() > 1900) {
-                                result.append("\n")
-                                        .append(LangID.getStringByID("alias.etc", lang));
-                                break;
-                            }
-
-                            result.append(temp);
-
-                            if (i < alias.size() - 1)
-                                result.append("\n");
+                        if (formName == null || formName.isBlank()) {
+                            formName = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
                         }
 
-                        createMessageWithNoPings(ch, result.toString());
+                        text += "**" + formName + "**";
                     }
                 }
-                case ADD -> {
-                    if (alias == null)
-                        alias = new ArrayList<>();
-                    if (aliasName.isBlank()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noName", lang));
-                        break;
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(f, lang);
+
+                    if (text == null) {
+                        text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
                     }
-                    if (alias.contains(aliasName)) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.contain", lang).replace("_", fname));
-                        break;
-                    }
-                    alias.add(aliasName);
-                    AliasHolder.FALIAS.put(lang, form.get(id), alias);
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias.added", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
-                    StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }
-                case REMOVE -> {
-                    if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", fname));
-                        break;
-                    }
-                    if (aliasName.isBlank()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noName", lang));
-                        break;
-                    }
-                    if (!alias.contains(aliasName)) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.removeFail", lang));
-                        break;
-                    }
-                    alias.remove(aliasName);
-                    AliasHolder.FALIAS.put(lang, form.get(id), alias);
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias.removed", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
-                    StaticStore.logger.uploadLog("Alias removed\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-                }
+                case LIST_DESCRIPTION -> text = Data.trio(f.uid.id) + "-" + Data.trio(f.fid);
             }
 
-            expired = true;
-
-            cleaner.add(event.getMessage());
-
-            return STATUS.FINISH;
-        } else if(content.equals("c")) {
-            message.editMessage(LangID.getStringByID("ui.search.canceled", lang)).queue();
-
-            expired = true;
-
-            cleaner.add(event.getMessage());
-
-            return STATUS.FINISH;
-        } else if(content.startsWith("n ")) {
-            String[] contents = content.split(" ");
-
-            if(contents.length == 2) {
-                if(StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1])-1;
-
-                    if(p < 0 || p * 20 >= form.size()) {
-                        return STATUS.WAIT;
-                    }
-
-                    page = p;
-
-                    showPage();
-
-                    cleaner.add(event.getMessage());
-                }
-            }
+            data.add(text);
         }
 
-        return STATUS.WAIT;
+        return data;
     }
 
     @Override
-    public void clean() {
-        for(Message m : cleaner) {
-            if (m == null)
-                continue;
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
+        String fname = StaticStore.safeMultiLangGet(forms.get(index), lang);
 
-            if (m.getChannel() instanceof PrivateChannel)
-                return;
+        if(fname == null || fname.isBlank())
+            fname = forms.get(index).names.toString();
 
-            m.delete().queue();
+        if(fname.isBlank())
+            fname = Data.trio(forms.get(index).unit.id.id)+"-"+Data.trio(forms.get(index).fid);
+
+        ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.FORM, lang, forms.get(index));
+
+        switch (mode) {
+            case GET -> {
+                if (alias == null || alias.isEmpty()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.noAlias.unit", lang).formatted(fname)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                } else {
+                    StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.unit", lang).formatted(fname, alias.size()));
+                    result.append("\n\n");
+
+                    for (int i = 0; i < alias.size(); i++) {
+                        String temp = "- " + alias.get(i);
+
+                        if (result.length() + temp.length() > 1900) {
+                            result.append("\n").append(LangID.getStringByID("alias.etc", lang));
+
+                            break;
+                        }
+
+                        result.append(temp);
+
+                        if (i < alias.size() - 1)
+                            result.append("\n");
+                    }
+
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(result.toString()))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                }
+            }
+            case ADD -> {
+                if (alias == null)
+                    alias = new ArrayList<>();
+
+                if (aliasName.isBlank()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.failed.noName", lang)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                if (alias.contains(aliasName)) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.contain", lang).formatted(fname)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                alias.add(aliasName);
+
+                AliasHolder.FALIAS.put(lang, forms.get(index), alias);
+
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("alias.added", lang).formatted(fname, aliasName)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : <@" + userID + ">");
+            }
+            case REMOVE -> {
+                if (alias == null || alias.isEmpty()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.noAlias.unit", lang).formatted(fname)))
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                if (aliasName.isBlank()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.failed.noName", lang)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                if (!alias.contains(aliasName)) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.failed.removeFail", lang)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                alias.remove(aliasName);
+                AliasHolder.FALIAS.put(lang, forms.get(index), alias);
+
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("alias.removed", lang).formatted(fname, aliasName)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                StaticStore.logger.uploadLog("Alias removed\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : <@" + userID + ">");
+            }
         }
+    }
+
+    @Override
+    public int getDataSize() {
+        return forms.size();
     }
 
     @Override
     public void onExpire() {
-        message.editMessage(LangID.getStringByID("ui.search.expired", lang))
+        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("ui.search.expired", lang)))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
-    }
-
-    private void showPage() {
-        String check;
-
-        if(form.size() <= 20)
-            check = "";
-        else if(page == 0)
-            check = LangID.getStringByID("ui.search.old.page.nextOnly", lang);
-        else if((page + 1) * 20 >= form.size())
-            check = LangID.getStringByID("ui.search.old.page.previousOnly", lang);
-        else
-            check = LangID.getStringByID("ui.search.old.page.nextPrevious", lang);
-
-        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("ui.search.selectData", lang)).append(check);
-
-        for(int i = 20 * page; i < 20 * (page +1); i++) {
-            if(i >= form.size())
-                break;
-
-            Form f = form.get(i);
-
-            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-            if(MultiLangCont.get(f, lang) != null)
-                fname += MultiLangCont.get(f, lang);
-
-            sb.append(i+1).append(". ").append(fname).append("\n");
-        }
-
-        if(form.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-            int totalPage = form.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-            if(form.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                totalPage++;
-
-            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
-        }
-
-        sb.append(LangID.getStringByID("ui.search.old.page.cancel", lang));
-        sb.append("```");
-
-        message.editMessage(sb.toString()).queue();
     }
 }

@@ -28,7 +28,7 @@ public class AddMaintainer extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if (contents.length < 2) {
-            replyToMessageSafely(loader.getChannel(), "Format : `p!am [User ID]`", loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Format : `p!am [User ID]`");
 
             return;
         }
@@ -40,26 +40,26 @@ public class AddMaintainer extends ConstraintCommand {
         }
 
         if (!StaticStore.isNumeric(id)) {
-            replyToMessageSafely(loader.getChannel(), "User ID must be numeric", loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "User ID must be numeric");
 
             return;
         }
 
         if (!validUser(manager, StaticStore.safeParseLong(id))) {
-            replyToMessageSafely(loader.getChannel(), "Failed to found user <@%s> (%s)".formatted(id, id), loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Failed to found user <@%s> (%s)".formatted(id, id));
 
             return;
         }
 
         if (StaticStore.maintainers.contains(id)) {
-            replyToMessageSafely(loader.getChannel(), "User <@%s> (%s) is already maintainer of this bot".formatted(id, id), loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "User <@%s> (%s) is already maintainer of this bot".formatted(id, id));
 
             return;
         }
 
         StaticStore.maintainers.add(id);
 
-        replyToMessageSafely(loader.getChannel(), "User <@%s> (%s) is now a maintainer of this bot".formatted(id, id), loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "User <@%s> (%s) is now a maintainer of this bot".formatted(id, id));
     }
 
     private boolean validUser(ShardManager manager, long userID) throws Exception {

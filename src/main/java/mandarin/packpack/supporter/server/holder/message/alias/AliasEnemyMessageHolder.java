@@ -2,247 +2,233 @@ package mandarin.packpack.supporter.server.holder.message.alias;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
-import mandarin.packpack.supporter.server.holder.message.MessageHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 
-public class AliasEnemyMessageHolder extends MessageHolder {
-    private final ArrayList<Enemy> enemy;
-    private final String channelID;
+public class AliasEnemyMessageHolder extends SearchHolder {
+    private final ArrayList<Enemy> enemies;
     private final AliasHolder.MODE mode;
     private final String aliasName;
 
-    private int page = 0;
+    public AliasEnemyMessageHolder(ArrayList<Enemy> enemies, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName) {
+        super(author, userID, channelID, msg, keyword, ConfigHolder.SearchLayout.FANCY_LIST, lang);
 
-    private final ArrayList<Message> cleaner = new ArrayList<>();
-
-    public AliasEnemyMessageHolder(ArrayList<Enemy> enemy, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg,AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nullable String aliasName) {
-        super(author, userID, channelID, msg, lang);
-
-        this.enemy = enemy;
+        this.enemies = enemies;
         this.mode = mode;
-        this.channelID = channelID;
         this.aliasName = aliasName;
 
         registerAutoExpiration(FIVE_MIN);
     }
 
     @Override
-    public STATUS onReceivedEvent(MessageReceivedEvent event) {
-        MessageChannel ch = event.getMessage().getChannel();
+    public List<String> accumulateTextData(TextType textType) {
+        List<String> data = new ArrayList<>();
 
-        if(!ch.getId().equals(channelID))
-            return STATUS.WAIT;
+        for(int i = chunk * page; i < chunk * (page +1); i++) {
+            if(i >= enemies.size())
+                break;
 
-        String content = event.getMessage().getContentRaw();
+            Enemy e = enemies.get(i);
 
-        if(content.equals("n")) {
-            if(20 * (page + 1) >= enemy.size())
-                return STATUS.WAIT;
+            String text = null;
 
-            page++;
+            switch(textType) {
+                case TEXT -> {
+                    if (layout == ConfigHolder.SearchLayout.COMPACTED) {
+                        text = Data.trio(e.id.id);
 
-            showPage();
+                        String name = StaticStore.safeMultiLangGet(e, lang);
 
-            cleaner.add(event.getMessage());
-        } else if(content.equals("p")) {
-            if(page == 0)
-                return STATUS.WAIT;
-
-            page--;
-
-            showPage();
-
-            cleaner.add(event.getMessage());
-        } else if(StaticStore.isNumeric(content)) {
-            int id = StaticStore.safeParseInt(content)-1;
-
-            if(id < 0 || id >= enemy.size())
-                return STATUS.WAIT;
-
-            message.delete().queue();
-
-            String eName = StaticStore.safeMultiLangGet(enemy.get(id), lang);
-
-            if(eName == null || eName.isBlank())
-                eName = enemy.get(id).names.toString();
-
-            if(eName.isBlank())
-                eName = Data.trio(enemy.get(id).id.id);
-
-            ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.ENEMY, lang, enemy.get(id));
-
-            switch (mode) {
-                case GET -> {
-                    if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", eName));
+                        if (name != null && !name.isBlank()) {
+                            text += " " + name;
+                        }
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.enemy", lang).replace("_EEE_", eName).replace("_NNN_", String.valueOf(alias.size())));
-                        result.append("\n\n");
+                        text = "`" + Data.trio(e.id.id) + "`";
 
-                        for (int i = 0; i < alias.size(); i++) {
-                            String temp = "- " + alias.get(i);
+                        String name = StaticStore.safeMultiLangGet(e, lang);
 
-                            if (result.length() + temp.length() > 1900) {
-                                result.append("\n")
-                                        .append(LangID.getStringByID("alias.etc", lang));
-                                break;
-                            }
-
-                            result.append(temp);
-
-                            if (i < alias.size() - 1) {
-                                result.append("\n");
-                            }
+                        if (name == null || name.isBlank()) {
+                            name = Data.trio(e.id.id);
                         }
 
-                        createMessageWithNoPings(ch, result.toString());
+                        text += " " + name;
                     }
                 }
-                case ADD -> {
-                    if (alias == null)
-                        alias = new ArrayList<>();
-                    if (aliasName.isBlank()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noName", lang));
-                        break;
+                case LIST_LABEL -> {
+                    text = StaticStore.safeMultiLangGet(e, lang);
+
+                    if (text == null) {
+                        text = Data.trio(e.id.id);
                     }
-                    if (alias.contains(aliasName)) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.contain", lang).replace("_", eName));
-                        break;
-                    }
-                    alias.add(aliasName);
-                    AliasHolder.EALIAS.put(lang, enemy.get(id), alias);
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias.added", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
-                    StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
                 }
-                case REMOVE -> {
-                    if (alias == null || alias.isEmpty()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.noAlias.unit", lang).replace("_", eName));
-                        break;
-                    }
-                    if (aliasName.isBlank()) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.noName", lang));
-                        break;
-                    }
-                    if (!alias.contains(aliasName)) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("alias.failed.removeFail", lang).replace("_", eName));
-                        break;
-                    }
-                    alias.remove(aliasName);
-                    AliasHolder.EALIAS.put(lang, enemy.get(id), alias);
-                    createMessageWithNoPings(ch, LangID.getStringByID("alias.removed", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
-                    StaticStore.logger.uploadLog("Alias removed\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-                }
+                case LIST_DESCRIPTION -> text = Data.trio(e.id.id);
             }
 
-            cleaner.add(event.getMessage());
-
-            end(true);
-
-            return STATUS.FINISH;
-        } else if(content.equals("c")) {
-            message.editMessage(LangID.getStringByID("ui.search.canceled", lang)).queue();
-
-            cleaner.add(event.getMessage());
-
-            end(true);
-
-            return STATUS.FINISH;
-        } else if(content.startsWith("n ")) {
-            String[] contents = content.split(" ");
-
-            if(contents.length == 2) {
-                if (StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1]) - 1;
-
-                    if (p < 0 || p * 20 >= enemy.size()) {
-                        return STATUS.WAIT;
-                    }
-
-                    page = p;
-
-                    showPage();
-
-                    cleaner.add(event.getMessage());
-                }
-            }
+            data.add(text);
         }
 
-        return STATUS.WAIT;
+        return data;
     }
 
     @Override
-    public void clean() {
-        for(Message m : cleaner) {
-            if (m == null)
-                continue;
+    public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
+        String eName = StaticStore.safeMultiLangGet(enemies.get(index), lang);
 
-            if (m.getChannel() instanceof PrivateChannel)
-                return;
+        if(eName == null || eName.isBlank())
+            eName = enemies.get(index).names.toString();
 
-            m.delete().queue();
+        if(eName.isBlank())
+            eName = Data.trio(enemies.get(index).id.id);
+
+        ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.ENEMY, lang, enemies.get(index));
+
+        switch (mode) {
+            case GET -> {
+                if (alias == null || alias.isEmpty()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.noAlias.unit", lang).formatted(eName)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                } else {
+                    StringBuilder result = new StringBuilder(LangID.getStringByID("alias.aliases.enemy", lang).formatted(eName, alias.size()));
+                    result.append("\n\n");
+
+                    for (int i = 0; i < alias.size(); i++) {
+                        String temp = "- " + alias.get(i);
+
+                        if (result.length() + temp.length() > 1900) {
+                            result.append("\n")
+                                    .append(LangID.getStringByID("alias.etc", lang));
+                            break;
+                        }
+
+                        result.append(temp);
+
+                        if (i < alias.size() - 1) {
+                            result.append("\n");
+                        }
+                    }
+
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(result.toString()))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+                }
+            }
+            case ADD -> {
+                if (alias == null)
+                    alias = new ArrayList<>();
+
+                if (aliasName.isBlank()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.failed.noName", lang)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                if (alias.contains(aliasName)) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.contain", lang).formatted(eName)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                alias.add(aliasName);
+
+                AliasHolder.EALIAS.put(lang, enemies.get(index), alias);
+
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("alias.added", lang).formatted(eName, aliasName)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getUser().getAsMention());
+            }
+            case REMOVE -> {
+                if (alias == null || alias.isEmpty()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.noAlias.unit", lang).formatted(eName)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+                if (aliasName.isBlank()) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.failed.noName", lang)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+                if (!alias.contains(aliasName)) {
+                    event.deferEdit()
+                            .setComponents(TextDisplay.of(LangID.getStringByID("alias.failed.removeFail", lang).formatted(eName)))
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .mentionRepliedUser(false)
+                            .queue();
+
+                    break;
+                }
+
+                alias.remove(aliasName);
+
+                AliasHolder.EALIAS.put(lang, enemies.get(index), alias);
+
+                event.deferEdit()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("alias.removed", lang).formatted(eName, aliasName)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
+                        .queue();
+
+                StaticStore.logger.uploadLog("Alias removed\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getUser().getAsMention());
+            }
         }
+    }
+
+    @Override
+    public int getDataSize() {
+        return enemies.size();
     }
 
     @Override
     public void onExpire() {
-        message.editMessage(LangID.getStringByID("ui.search.expired", lang))
+        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("ui.search.expired", lang)))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
-    }
-
-    private void showPage() {
-        String check;
-
-        if(enemy.size() <= 20)
-            check = "";
-        else if(page == 0)
-            check = LangID.getStringByID("ui.search.old.page.nextOnly", lang);
-        else if((page + 1) * 20 >= enemy.size())
-            check = LangID.getStringByID("ui.search.old.page.previousOnly", lang);
-        else
-            check = LangID.getStringByID("ui.search.old.page.nextPrevious", lang);
-
-        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("ui.search.selectData", lang)).append(check);
-
-        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-            if(i >= enemy.size())
-                break;
-
-            Enemy e = enemy.get(i);
-
-            String ename = Data.trio(e.id.id)+" ";
-
-            if(MultiLangCont.get(e, lang) != null)
-                ename += MultiLangCont.get(e, lang);
-
-            sb.append(i+1).append(". ").append(ename).append("\n");
-        }
-
-        if(enemy.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-            int totalPage = enemy.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-            if(enemy.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                totalPage++;
-
-            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage));
-        }
-
-        sb.append(LangID.getStringByID("ui.search.old.page.cancel", lang));
-        sb.append("```");
-
-        message.editMessage(sb.toString()).queue();
     }
 }

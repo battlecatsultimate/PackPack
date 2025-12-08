@@ -21,25 +21,25 @@ public class UnregisterFixing extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            ch.sendMessage("Please specify guild ID").queue();
+            replyToMessageSafely(ch, loader.getMessage(),"Please specify guild ID");
 
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            ch.sendMessage("ID `"+contents[1]+"` isn't numeric").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "ID `" + contents[1] + "` isn't numeric");
 
             return;
         }
 
         if(!StaticStore.needFixing.contains(contents[1])) {
-            ch.sendMessage("This server (`"+contents[1]+"`) isn't registered as fixing server already").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "This server (`" + contents[1] + "`) isn't registered as fixing server already");
 
             return;
         }
 
         StaticStore.needFixing.remove(contents[1]);
 
-        ch.sendMessage("Removed `"+contents[1]+"` from fixing server list").queue();
+        replyToMessageSafely(ch, loader.getMessage(), "Removed `" + contents[1] + "` from fixing server list");
     }
 }

@@ -21,25 +21,26 @@ public class AddScamLinkHelpingServer extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            ch.sendMessage("Usage : p!ashs [Server ID]").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Usage : p!ashs [Server ID]");
 
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            ch.sendMessage("Server ID must be numeric!").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Server ID must be numeric!");
 
             return;
         }
 
 
         if(StaticStore.scamLink.servers.contains(contents[1])) {
-            ch.sendMessage("This server is already registered as helping server").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "This server is already registered as helping server");
 
             return;
         }
 
         StaticStore.scamLink.servers.add(contents[1]);
-        ch.sendMessage("Added server "+contents[1]).queue();
+
+        replyToMessageSafely(ch, loader.getMessage(), "Added server " + contents[1]);
     }
 }

@@ -536,9 +536,9 @@ public class AllEventAdapter extends ListenerAdapter {
             case "suggestunban", "sgub" -> new SuggestUnban(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "suggestresponse", "sgr" ->
                     new SuggestResponse(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-            case "alias", "al" -> new Alias(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "aliasadd", "ala" -> new AliasAdd(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-            case "aliasremove", "alr" -> new AliasRemove(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "alias", "al" -> new Alias(ConstraintCommand.ROLE.MEMBER, lang, c, idh).execute(event);
+            case "aliasadd", "ala" -> new AliasAdd(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
+            case "aliasremove", "alr" -> new AliasRemove(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
             case "contributoradd", "coa" ->
                     new ContributorAdd(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "contributorremove", "cor" ->
@@ -715,9 +715,9 @@ public class AllEventAdapter extends ListenerAdapter {
             case "suggestunban", "sgub" -> new SuggestUnban(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "suggestresponse", "sgr" ->
                     new SuggestResponse(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-            case "alias", "al" -> new Alias(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "aliasadd", "ala" -> new AliasAdd(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-            case "aliasremove", "alr" -> new AliasRemove(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "alias", "al" -> new Alias(ConstraintCommand.ROLE.MEMBER, lang, c, idh).execute(event);
+            case "aliasadd", "ala" -> new AliasAdd(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
+            case "aliasremove", "alr" -> new AliasRemove(ConstraintCommand.ROLE.TRUSTED, lang, c, idh).execute(event);
             case "contributoradd", "coa" ->
                     new ContributorAdd(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "contributorremove", "cor" ->

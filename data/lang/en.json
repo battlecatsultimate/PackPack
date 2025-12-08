@@ -1,19 +1,19 @@
 {
     "alias" : {
-        "added" : "Added _AAA_ to _DDD_!",
-        "contain" : "_ already has that alias",
+        "added" : "Added %s to %s!",
+        "contain" : "%s already has that alias",
         "etc" : "... and more",
-        "removed" : "Removed _AAA_ from _DDD_!",
+        "removed" : "Removed %s from %s!",
         "aliases" : {
-            "enemy" : "List of alias of enemy _EEE_ (_NNN_ aliases in total) : ",
-            "stage" : "List of alias of stage _SSS_ (_NNN_ in total) : ",
-            "unit" : "List of alias of unit _FFF_ (_NNN_ aliases in total) : "
+            "enemy" : "List of alias of enemy %s (%d aliases in total) : ",
+            "stage" : "List of alias of stage %s (%d in total) : ",
+            "unit" : "List of alias of unit %s (%d aliases in total) : "
         },
         "failed" : {
             "noName" : "You have to specify alias name",
             "noPermission" : "You don't have permission to manipulate aliases",
             "noType" : "Please specify which type of data you want to manipulate",
-            "removeFail" : "_ doesn't have such alias",
+            "removeFail" : "%s doesn't have such alias",
             "noAlias" : {
                 "enemy" : "You have to specify enemy's name",
                 "stage" : "You have to specify stage's name",

@@ -33,6 +33,8 @@ class RenderSession {
         private fun initialize() {
             GLFWErrorCallback.createPrint(System.err).set()
 
+            GLFW.glfwInitHint(GLFW.GLFW_WAYLAND_LIBDECOR, GLFW.GLFW_WAYLAND_DISABLE_LIBDECOR)
+
             if (!GLFW.glfwInit()) {
                 throw IllegalStateException("Unable to initialize GLFW")
             }

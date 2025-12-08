@@ -1,19 +1,19 @@
 {
     "alias" : {
-        "added" : "_DDD_!に_AAA_を追加しました。",
-        "contain" : "_ はすでにエイリアスを持っています。",
+        "added" : "%sに%sを追加しました。",
+        "contain" : "%s はすでにエイリアスを持っています。",
         "etc" : "... もっと",
-        "removed" : "_DDD_から_AAA_を削除しました!",
+        "removed" : "%sから%sを削除しました!",
         "aliases" : {
-            "enemy" : "敵のエイリアスのリスト _EEE_ (合計_NNN_エイリアス) : ",
-            "stage" : "ステージのエイリアスのリスト _SSS_ (合計_NNN_) : ",
-            "unit" : "にゃんこのエイリアスのリスト _FFF_ (合計_NNN_エイリアス) : "
+            "enemy" : "敵のエイリアスのリスト %s (合計%dエイリアス) : ",
+            "stage" : "ステージのエイリアスのリスト %s (合計%d) : ",
+            "unit" : "にゃんこのエイリアスのリスト %s (合計%dエイリアス) : "
         },
         "failed" : {
             "noName" : "有効なエイリアスの名前を使用する必要があります。",
             "noPermission" : "エイリアスを操作する権限を持っていません。",
             "noType" : "どのタイプのデータを操作したいか選択してください。",
-            "removeFail" : "_ はエイリアスを持っていません。",
+            "removeFail" : "%s はエイリアスを持っていません。",
             "noAlias" : {
                 "enemy" : "有効な敵の名前を指定してください。",
                 "stage" : "有効なステージ名を指定してください。",
@@ -1045,17 +1045,17 @@
                 "speed" : "移動速度が %d ~ %d 上がります",
                 "tba" : "攻撃間隔が %d%% ~ %d%% 短くなります",
                 "trait" : {
-                    "default" : "効果のターゲットに _ を追加します",
-                    "together" : "同時に効果のターゲットに [_] を追加します "
+                    "default" : "効果のターゲットに %s を追加します",
+                    "together" : "同時に効果のターゲットに [%s] を追加します "
                 }
             },
             "embed" : {
-                "title" : "_ の本能"
+                "title" : "%s の本能"
             },
             "npCost" : {
-                "level" : "**NP コスト => 総コスト**\n```_CCC_ => _TTT_```",
-                "single" : "**NP コスト : _ NP**",
-                "total" : "本能を全開放するには _ NPが必要です"
+                "level" : "**NP コスト => 総コスト**\n```%s => %d```",
+                "single" : "**NP コスト : %d NP**",
+                "total" : "本能を全開放するには %d NPが必要です"
             },
             "superTalent" : {
                 "description" : "Super talents can be activated once unit reaches 60 level",
@@ -2951,7 +2951,7 @@
     },
     "stageImage" : {
         "result" : "結果 : ",
-        "fail" : {
+        "failed" : {
             "letterNotSupported" : "あなたのテキストは有効ではない文字が含まれています。 : ",
             "maxLimit" : "You can put only up to 128 letters!",
             "noParameter" : "もう一つ引数が必要です!\n使い方 : `_stageimg [テキスト]`",

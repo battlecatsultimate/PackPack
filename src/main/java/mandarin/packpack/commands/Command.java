@@ -13,6 +13,7 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -55,6 +56,17 @@ public abstract class Command {
         components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS));
 
         return m.setComponents(ActionRow.of(components));
+    }
+
+    public static List<MessageTopLevelComponent> withConfirmButtons(List<MessageTopLevelComponent> components, CommonStatic.Lang.Locale lang) {
+        components.add(
+                ActionRow.of(
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
+                )
+        );
+
+        return components;
     }
 
     public static MessageCreateAction registerSearchComponents(MessageCreateAction m, int dataSize, List<String> data, CommonStatic.Lang.Locale lang) {
@@ -324,6 +336,20 @@ public abstract class Command {
         }
     }
 
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+            } else {
+                ch.sendMessageComponents(components).useComponentsV2().queue();
+            }
+        } else {
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+        }
+    }
+
     public static void replyToMessageSafely(MessageChannel ch, Message reference, Consumer<Message> onSuccess, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
         if (ch instanceof GuildMessageChannel gc) {
             Guild g = gc.getGuild();
@@ -338,6 +364,20 @@ public abstract class Command {
         }
     }
 
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components, Consumer<Message> onSuccess) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            } else {
+                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess);
+            }
+        } else {
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+        }
+    }
+
     public static void replyToMessageSafely(MessageChannel ch, Message reference, Consumer<Message> onSuccess, Consumer<Throwable> onError, MessageTopLevelComponent component, MessageTopLevelComponent... components) {
         if (ch instanceof GuildMessageChannel gc) {
             Guild g = gc.getGuild();
@@ -349,6 +389,20 @@ public abstract class Command {
             }
         } else {
             ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, List<MessageTopLevelComponent> components, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+            } else {
+                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess, onError);
+            }
+        } else {
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
         }
     }
 
