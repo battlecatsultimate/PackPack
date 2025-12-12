@@ -303,6 +303,10 @@
         "slot" : {
             "plural" : "<%d Slots>",
             "singular" : "<1 Slot>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -659,6 +663,10 @@
                 "description" : "會心一擊機率增加%d%%",
                 "title" : "“會心一擊”連組"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "Increase money increase per frame by %d%%",
                 "title" : "Worker Cat Efficiency Combo"
@@ -696,10 +704,11 @@
                 "title" : "”很耐打“連組"
             },
             "size" : {
-                "l" : "L",
-                "m" : "M",
-                "sm" : "Sm",
-                "xl" : "XL"
+                "given" : "賦予",
+                "l" : "大",
+                "m" : "中",
+                "sm" : "小",
+                "xl" : "究極"
             },
             "slow" : {
                 "description" : "緩速時長增加%d%%",
@@ -721,9 +730,17 @@
                 "description" : "Increases earned XP by %d%%",
                 "title" : "Study Combo"
             },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier to villain enemies",
+                "title" : "Villain Slayer"
+            },
             "wallet" : {
                 "description" : "Increase wallet size by %d%%",
                 "title" : "Wallet Size Combo"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "攻擊力下降時長增加%d%%",
@@ -1052,6 +1069,7 @@
             "relic" : "古代種",
             "sage" : "超賢者",
             "starred" : "宙星",
+            "villain" : "Villain",
             "white" : "無屬性",
             "witch" : "魔女",
             "zombie" : "不死生物"

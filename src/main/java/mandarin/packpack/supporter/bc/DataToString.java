@@ -14,10 +14,7 @@ import common.util.anim.ImgCut;
 import common.util.lang.Formatter;
 import common.util.lang.MultiLangCont;
 import common.util.lang.ProcLang;
-import common.util.stage.Limit;
-import common.util.stage.MapColc;
-import common.util.stage.Stage;
-import common.util.stage.StageMap;
+import common.util.stage.*;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
 import mandarin.packpack.supporter.EmojiStore;
@@ -1022,7 +1019,7 @@ public class DataToString extends Data {
 
         int[] talents = lv.getTalents();
 
-        if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator == -1) {
+        if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator.isEmpty()) {
             sb.append("[");
 
             String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
@@ -1037,7 +1034,7 @@ public class DataToString extends Data {
             int[] data = info.get(i);
 
             if(talentText.containsKey(data[0])) {
-                if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator == i) {
+                if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator.contains(i)) {
                     sb.append("[");
 
                     String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
@@ -2306,6 +2303,37 @@ public class DataToString extends Data {
             default -> "Lv. " + lv;
         };
     }
+    public static String getComboCharacterGroup(Combo c, CommonStatic.Lang.Locale lang) {
+        CharaGroup group = c.group;
+
+        if (group == null)
+            return null;
+
+        if (group.set.isEmpty())
+            return null;
+
+        StringBuilder builder = new StringBuilder();
+
+        for (Unit u : group.set) {
+            if (u == null)
+                continue;
+
+            String unitName = StaticStore.safeMultiLangGet(u.forms[u.forms.length - 1], lang);
+
+            if (unitName == null)
+                unitName = trio(u.id.id) + "-" + trio(u.forms[u.forms.length - 1].fid);
+
+            builder.append(unitName).append(", ");
+        }
+
+        String unitNames = builder.toString().replaceAll(", $", "");
+
+        if (group.set.size() == 1) {
+            return LangID.getStringByID("combo.unit.singular", lang).formatted(unitNames);
+        } else {
+            return LangID.getStringByID("combo.unit.plural", lang).formatted(unitNames);
+        }
+    }
 
     private static int getComboFactor(int type, int lv) {
         switch (type) {
@@ -2385,6 +2413,9 @@ public class DataToString extends Data {
             case 23 -> "evaAngelKiller";
             case 22 -> "witchKiller";
             case 24 -> "critical";
+            case 25 -> "villain";
+            case 26 -> "waveImmune";
+            case 27 -> "discount";
             default -> throw new IllegalStateException("Invalid Combo Type : " + type);
         };
     }
@@ -2874,7 +2905,7 @@ public class DataToString extends Data {
             }
         }
 
-        if(du.getPCoin().trait.size() == 1 && index == du.getPCoin().traitActivator) {
+        if(du.getPCoin().trait.size() == 1 && du.getPCoin().traitActivator.contains(index)) {
             String code = Interpret.TRAITICON[du.getPCoin().trait.getFirst().id.id];
 
             Emoji emoji = EmojiStore.TRAIT.getCont(code, lang);
@@ -2932,7 +2963,7 @@ public class DataToString extends Data {
 
         String desc = "";
 
-        if(du.getPCoin().trait.size() == 1 && index == du.getPCoin().traitActivator) {
+        if(du.getPCoin().trait.size() == 1 && du.getPCoin().traitActivator.contains(index)) {
             desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
         }
 

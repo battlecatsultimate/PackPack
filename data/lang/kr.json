@@ -303,6 +303,10 @@
         "slot" : {
             "plural" : "<%d 슬롯>",
             "singular" : "<1 슬롯>"
+        },
+        "unit" : {
+            "plural" : "해당 콤보는 특정 유닛들에게만 적용됩니다 : **%s**",
+            "singular" : "해당 콤보는 특정 유닛에게만 적용됩니다 : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -659,6 +663,10 @@
                 "description" : "크리티컬 확률 %d%% 증가",
                 "title" : "특수 능력 콤보 : 크리티컬"
             },
+            "discount" : {
+                "description" : "유닛 코스트 %d%% 감소",
+                "title" : "코스트 감소"
+            },
             "efficiency" : {
                 "description" : "매 프레임마다 증가하는 돈의 양 %d%% 증가",
                 "title" : "일 고양이 효율 콤보"
@@ -696,6 +704,7 @@
                 "title" : "특수 능력 콤보 : 맷집이 좋다"
             },
             "size" : {
+                "given" : "부여",
                 "l" : "대",
                 "m" : "중",
                 "sm" : "소",
@@ -721,9 +730,17 @@
                 "description" : "스테이지 클리어 시 얻는 XP %d%% 증가",
                 "title" : "공부력 증가"
             },
+            "villain" : {
+                "description" : "괴인 적들로부터 가하는 데미지 2.5x증가, 받는 데미지 2.5x 감소 효과 부여",
+                "title" : "괴인 특효"
+            },
             "wallet" : {
                 "description" : "지갑 크기 %d%% 증가",
                 "title" : "지갑 콤보"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "공격력 약화 정도 %d%% 증가",
@@ -1052,6 +1069,7 @@
             "relic" : "고대종",
             "sage" : "초현자",
             "starred" : "별달린",
+            "villain" : "괴인",
             "white" : "흰적",
             "witch" : "마녀",
             "zombie" : "좀비"

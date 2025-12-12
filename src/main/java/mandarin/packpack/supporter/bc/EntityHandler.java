@@ -3532,6 +3532,11 @@ public class EntityHandler {
             e.setColor(StaticStore.rainbow[0]);
         }
 
+        String groupData = DataToString.getComboCharacterGroup(c, lang);
+
+        if (groupData != null)
+            e.setDescription(groupData);
+
         e.addField(DataToString.getComboType(c, lang), DataToString.getComboDescription(c, lang), false);
 
         if (comboLink != null) {

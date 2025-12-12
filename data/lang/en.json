@@ -303,6 +303,10 @@
         "slot" : {
             "plural" : "<%d Slots>",
             "singular" : "<1 Slot>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -659,6 +663,10 @@
                 "description" : "Increases critical hit chance by %d%%",
                 "title" : "Ability Combo : Critical"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "Increase money increase per frame by %d%%",
                 "title" : "Worker Cat Efficiency Combo"
@@ -696,6 +704,7 @@
                 "title" : "Ability Combo : Resistant"
             },
             "size" : {
+                "given" : "Given",
                 "l" : "L",
                 "m" : "M",
                 "sm" : "Sm",
@@ -721,9 +730,17 @@
                 "description" : "Increases earned XP by %d%%",
                 "title" : "Study Combo"
             },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier to villain enemies",
+                "title" : "Villain Slayer Combo"
+            },
             "wallet" : {
                 "description" : "Increase wallet size by %d%%",
                 "title" : "Wallet Size Combo"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "Increases weaken duration by %d%%",
@@ -1052,6 +1069,7 @@
             "relic" : "Relic",
             "sage" : "Sage",
             "starred" : "Starred",
+            "villain" : "Villain",
             "white" : "White",
             "witch" : "Witch",
             "zombie" : "Zombie"
