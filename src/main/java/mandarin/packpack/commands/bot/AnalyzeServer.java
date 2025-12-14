@@ -5,11 +5,14 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedWriter;
@@ -168,6 +171,13 @@ public class AnalyzeServer extends ConstraintCommand {
 
         writer.close();
 
-        sendMessageWithFile(ch, "Analyzed " + StaticStore.idHolder.size() + " servers", text, "Analysis.txt");
+        ch.sendMessageComponents(TextDisplay.of("Analyzed " + StaticStore.idHolder.size() + " servers"), FileDisplay.fromFile(FileUpload.fromData(text, "Analysis.txt")))
+                .setMessageReference(loader.getMessage())
+                .mentionRepliedUser(false)
+                .queue(unused -> StaticStore.deleteFile(text, true), e -> {
+                    StaticStore.logger.uploadErrorLog(e, "E/AnalyzeServer::doSomething - Failed to send analyzed result message");
+
+                    StaticStore.deleteFile(text, true);
+                });
     }
 }
