@@ -1529,6 +1529,7 @@
             "35038" : "11.5th Anniversary Stamp",
             "35039" : "Halloween Event Stamp",
             "35040" : "Street Fighter Collab Stamp",
+            "35041" : "13th Anniversary Stamp",
             "rankingDojo" : "ランキングの間 _"
         },
         "permanentSchedule" : {
@@ -1627,7 +1628,8 @@
                 "13" : "限定超特売 超激レア",
                 "14" : "現品限り",
                 "15" : "給料日",
-                "16" : "二束三文"
+                "16" : "二束三文",
+                "17" : "大勝負"
             }
         },
         "section" : {

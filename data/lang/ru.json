@@ -1529,6 +1529,7 @@
             "35038" : "11.5th Anniversary Stamp",
             "35039" : "Подарки: Хеллоуин",
             "35040" : "Подарки: Street Fighter Коллаб",
+            "35041" : "13th Anniversary Stamp",
             "rankingDojo" : "Ранговый Додзё _"
         },
         "permanentSchedule" : {
@@ -1627,7 +1628,8 @@
                 "13" : "Low UR Cost",
                 "14" : "Ограниченная Перезарядка",
                 "15" : "Money Limit/Uber Rare Cooldown Buff",
-                "16" : "Low Cost"
+                "16" : "Low Cost",
+                "17" : "UR Cost Up/Triple UR Deploy"
             }
         },
         "section" : {
