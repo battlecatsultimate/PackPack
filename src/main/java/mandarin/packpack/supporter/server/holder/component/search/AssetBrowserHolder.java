@@ -2,15 +2,22 @@ package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.CommonStatic;
 import common.system.files.VFile;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -43,6 +50,11 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
     }
 
     @Override
+    public String getSearchSummary() {
+        return LangID.getStringByID("assetBrowser.currentPath", lang).formatted(vf.getPath());
+    }
+
+    @Override
     public List<String> accumulateTextData(TextType textType) {
         List<String> result = new ArrayList<>();
 
@@ -56,15 +68,11 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
                     }
                 }
                 case LIST_LABEL -> result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
-                case LIST_DESCRIPTION -> result.add(null);
+                case LIST_DESCRIPTION -> result.add(vf.getPath());
             }
         }
 
-        for(int i = page * chunk; i < (page + 1) * chunk; i++) {
-            if(i >= files.size()) {
-                break;
-            }
-
+        for(int i = page * chunk; i < Math.min(files.size(), (page + 1) * chunk); i++) {
             VFile vf = files.get(i);
 
             if(vf.getData() == null) {
@@ -73,11 +81,11 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
                         if (layout == ConfigHolder.SearchLayout.COMPACTED) {
                             result.add(vf.getName());
                         } else {
-                            result.add(EmojiStore.FOLDERUP.getFormatted() + " " + vf.getName().replace("_", "\\_"));
+                            result.add(EmojiStore.FOLDER.getFormatted() + "    " + vf.getName().replace("_", "\\_"));
                         }
                     }
-                    case LIST_LABEL -> result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
-                    case LIST_DESCRIPTION -> result.add(null);
+                    case LIST_LABEL -> result.add(EmojiStore.FOLDER.getFormatted() + "\\\\" + vf.getName());
+                    case LIST_DESCRIPTION -> result.add(vf.getPath());
                 }
             } else {
                 String[] nameData = vf.getName().split("\\.");
@@ -99,11 +107,11 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
                         if (layout == ConfigHolder.SearchLayout.COMPACTED) {
                             result.add(vf.getName());
                         } else {
-                            result.add(emoji.getFormatted() + " " + vf.getName().replace("_", "\\_"));
+                            result.add(emoji.getFormatted() + "    " + vf.getName().replace("_", "\\_"));
                         }
                     }
-                    case LIST_LABEL -> result.add(emoji.getFormatted() + "\\\\" + LangID.getStringByID("assetBrowser.parentFolder", lang));
-                    case LIST_DESCRIPTION -> result.add(null);
+                    case LIST_LABEL -> result.add(emoji.getFormatted() + "\\\\" + vf.getName());
+                    case LIST_DESCRIPTION -> result.add(vf.getPath());
                 }
             }
         }
@@ -113,12 +121,6 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
-        MessageChannel ch = event.getChannel();
-
-        if(!vf.getName().equals("org")) {
-            index--;
-        }
-
         if(index - page * chunk == -1)
             throw new IllegalStateException("E/AssetBrowserHolder::onSelected - Invalid ID found : -1");
 
@@ -162,9 +164,26 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             fos.close();
             stream.close();
 
-            Command.sendMessageWithFile(ch, LangID.getStringByID("assetBrowser.uploaded", lang).replace("_", file.getName()), f, file.getName());
+            List<ContainerChildComponent> components = new ArrayList<>();
 
-            message.delete().queue();
+            components.add(TextDisplay.of(LangID.getStringByID("assetBrowser.uploaded", lang).formatted(file.getName())));
+
+            components.add(Separator.create(true, Separator.Spacing.LARGE));
+
+            if (file.getName().endsWith("png")) {
+                components.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(f, file.getName()))));
+            } else {
+                components.add(FileDisplay.fromFile(FileUpload.fromData(f, file.getName())));
+            }
+
+            event.deferEdit()
+                    .setComponents(Container.of(components)).useComponentsV2()
+                    .mentionRepliedUser(false)
+                    .queue(unused -> StaticStore.deleteFile(f, true), e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/AssetBrowserHolder::onSelected - Failed to send asset file");
+
+                        StaticStore.deleteFile(f, true);
+                    });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AssetBrowserHolder::onSelected - Failed to perform interaction");
         }
@@ -212,41 +231,6 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
         files.sort(this);
     }
-
-    protected String getPage() {
-        StringBuilder builder = new StringBuilder(LangID.getStringByID("assetBrowser.currentPath", lang).replace("_", vf.getPath()))
-                .append("\n\n```md\n");
-
-        List<String> data = accumulateTextData(TextType.TEXT);
-
-        builder.append(LangID.getStringByID("ui.search.selectData", lang));
-
-        for(int i = 0; i < data.size(); i++) {
-            if(!vf.getName().equals("org")) {
-                if(i == 0) {
-                    builder.append(data.get(i)).append("\n");
-                } else {
-                    builder.append(page * chunk + i).append(". ").append(data.get(i)).append("\n");
-                }
-            } else {
-                builder.append(page * chunk + i + 1).append(". ").append(data.get(i)).append("\n");
-            }
-        }
-
-        if(files.size() > ConfigHolder.SearchLayout.COMPACTED.chunkSize) {
-            int totalPage = files.size() / ConfigHolder.SearchLayout.COMPACTED.chunkSize;
-
-            if(files.size() % ConfigHolder.SearchLayout.COMPACTED.chunkSize != 0)
-                totalPage++;
-
-            builder.append(LangID.getStringByID("ui.search.page", lang).formatted(page + 1, totalPage)).append("\n");
-        }
-
-        builder.append("```");
-
-        return builder.toString();
-    }
-
 
     @Override
     public int compare(VFile o1, VFile o2) {

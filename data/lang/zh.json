@@ -48,9 +48,9 @@
         "limit" : "This link has 5 minutes limit, call this command again if 5 minutes already have passed : "
     },
     "assetBrowser" : {
-        "currentPath" : "Current path : `_`",
+        "currentPath" : "Current path : `%s`",
         "parentFolder" : "Go to parent folder",
-        "uploaded" : "Successfully uploaded file : _",
+        "uploaded" : "Successfully uploaded file : %s",
         "failed" : {
             "noAsset" : "Bot couldn't bring asset data..."
         }
