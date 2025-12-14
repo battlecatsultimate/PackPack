@@ -303,6 +303,10 @@
         "slot" : {
             "plural" : "<Слоты %d>",
             "singular" : "<Слот 1>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -659,6 +663,10 @@
                 "description" : "Увеличивает шанс крита на %d%%",
                 "title" : "Комбо Способности : Крит"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "Увеличивает прибавление денег за каждый кадр на %d%%",
                 "title" : "Комбо Эффективности Кота Рабочего"
@@ -696,6 +704,7 @@
                 "title" : "Комбо Способности : Resistant"
             },
             "size" : {
+                "given" : "Given",
                 "l" : "L",
                 "m" : "M",
                 "sm" : "Sm",
@@ -721,9 +730,17 @@
                 "description" : "Увеличивает получаемый Опыт на %d%%",
                 "title" : "Комбо Опыта"
             },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier to villain enemies",
+                "title" : "Villain Slayer"
+            },
             "wallet" : {
                 "description" : "Увеличивает размер кошелька на %d%%",
                 "title" : "Комбо Размера Кошелька"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "Увеличивает длительность ослабления на %d%%",
@@ -1052,6 +1069,7 @@
             "relic" : "Реликтовый",
             "sage" : "Мудрец",
             "starred" : "Космический",
+            "villain" : "Villain",
             "white" : "Белый",
             "witch" : "Ведьма",
             "zombie" : "Зомби"
@@ -1511,6 +1529,7 @@
             "35038" : "11.5th Anniversary Stamp",
             "35039" : "Подарки: Хеллоуин",
             "35040" : "Подарки: Street Fighter Коллаб",
+            "35041" : "13th Anniversary Stamp",
             "rankingDojo" : "Ранговый Додзё _"
         },
         "permanentSchedule" : {
@@ -1609,7 +1628,8 @@
                 "13" : "Low UR Cost",
                 "14" : "Ограниченная Перезарядка",
                 "15" : "Money Limit/Uber Rare Cooldown Buff",
-                "16" : "Low Cost"
+                "16" : "Low Cost",
+                "17" : "UR Cost Up/Triple UR Deploy"
             }
         },
         "section" : {
