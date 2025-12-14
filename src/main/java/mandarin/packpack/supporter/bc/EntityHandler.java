@@ -1051,6 +1051,13 @@ public class EntityHandler {
         children.add(TextDisplay.of("**" + DataToString.getComboType(c, lang) + "**"));
         children.add(Separator.create(false, Separator.Spacing.SMALL));
 
+        String groupData = DataToString.getComboCharacterGroup(c, lang);
+
+        if (groupData != null) {
+            children.add(TextDisplay.of(groupData));
+            children.add(Separator.create(false, Separator.Spacing.SMALL));
+        }
+
         children.add(TextDisplay.of(DataToString.getComboDescription(c, lang)));
         children.add(Separator.create(false, Separator.Spacing.SMALL));
 

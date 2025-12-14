@@ -317,6 +317,10 @@
         "slot" : {
             "plural" : "<%d Slots>",
             "singular" : "<1 Slot>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -686,6 +690,10 @@
                 "description" : "特性 「クリティカル」　効果+%d%%上昇",
                 "title" : "「クリティカル」 効果アップ"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "お金の増加スピードが1フレームあたり%d%%アップ",
                 "title" : "働きネコの仕事効率アップ"
@@ -723,6 +731,7 @@
                 "title" : "「打たれ強い」 効果アップ"
             },
             "size" : {
+                "given" : "Given",
                 "l" : "大",
                 "m" : "中",
                 "sm" : "小",
@@ -748,9 +757,17 @@
                 "description" : "得られるXPが%d%%増加",
                 "title" : "勉強力アップ"
             },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier to villain enemies",
+                "title" : "Villain Slayer"
+            },
             "wallet" : {
                 "description" : "お財布上限が%d%%増加",
                 "title" : "働きネコお財布アップ"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "攻撃力ダウンの時間+%d%%増加",
@@ -1079,6 +1096,7 @@
             "relic" : "古代種",
             "sage" : "超賢者",
             "starred" : "スター",
+            "villain" : "怪人",
             "white" : "白い",
             "witch" : "魔女",
             "zombie" : "ゾンビ"
@@ -1550,6 +1568,7 @@
             "35038" : "11.5th Anniversary Stamp",
             "35039" : "Halloween Event Stamp",
             "35040" : "Street Fighter Collab Stamp",
+            "35041" : "13th Anniversary Stamp",
             "rankingDojo" : "ランキングの間 _"
         },
         "permanentSchedule" : {
@@ -1648,7 +1667,8 @@
                 "13" : "限定超特売 超激レア",
                 "14" : "現品限り",
                 "15" : "給料日",
-                "16" : "二束三文"
+                "16" : "二束三文",
+                "17" : "大勝負"
             }
         },
         "section" : {

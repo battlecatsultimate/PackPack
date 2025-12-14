@@ -317,6 +317,10 @@
         "slot" : {
             "plural" : "<%d Slots>",
             "singular" : "<1 Slot>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -686,6 +690,10 @@
                 "description" : "Increases critical hit chance by %d%%",
                 "title" : "Ability Combo : Critical"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "Increase money increase per frame by %d%%",
                 "title" : "Worker Cat Efficiency Combo"
@@ -723,6 +731,7 @@
                 "title" : "Ability Combo : Resistant"
             },
             "size" : {
+                "given" : "Given",
                 "l" : "L",
                 "m" : "M",
                 "sm" : "Sm",
@@ -748,9 +757,17 @@
                 "description" : "Increases earned XP by %d%%",
                 "title" : "Study Combo"
             },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier to villain enemies",
+                "title" : "Villain Slayer Combo"
+            },
             "wallet" : {
                 "description" : "Increase wallet size by %d%%",
                 "title" : "Wallet Size Combo"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "Increases weaken duration by %d%%",
@@ -1079,6 +1096,7 @@
             "relic" : "Relic",
             "sage" : "Sage",
             "starred" : "Starred",
+            "villain" : "Villain",
             "white" : "White",
             "witch" : "Witch",
             "zombie" : "Zombie"
@@ -1550,6 +1568,7 @@
             "35038" : "11.5th Anniversary Stamp",
             "35039" : "Halloween Event Stamp",
             "35040" : "Street Fighter Collab Stamp",
+            "35041" : "13th Anniversary Stamp",
             "rankingDojo" : "Ranking Dojo _"
         },
         "permanentSchedule" : {
@@ -1647,8 +1666,9 @@
                 "12" : "EX Deploy Duplication",
                 "13" : "Low UR Cost",
                 "14" : "Cooldown Limit",
-                "15" : "Money Limit/Uber Rare Cooldown Buff",
-                "16" : "Low Cost"
+                "15" : "Money Limit/UR Cooldown Buff",
+                "16" : "Low Cost",
+                "17" : "UR Cost Up/Triple UR Deploy"
             }
         },
         "section" : {
