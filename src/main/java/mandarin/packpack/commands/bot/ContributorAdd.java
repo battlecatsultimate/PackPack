@@ -28,7 +28,8 @@ public class ContributorAdd extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            createMessageWithNoPings(ch, "You have to specify member ID or mention of member");
+            replyToMessageSafely(ch, loader.getMessage(), "You have to specify member ID or mention of member");
+
             return;
         }
 
@@ -38,8 +39,8 @@ public class ContributorAdd extends ConstraintCommand {
             if(!StaticStore.contributors.contains(id))
                 StaticStore.contributors.add(id);
 
-            createMessageWithNoPings(ch, "Added <@!"+id+"> as contributor");
-        }, () -> createMessageWithNoPings(ch, "Not a valid user"));
+            replyToMessageSafely(ch, loader.getMessage(), "Added <@!"+id+"> as contributor");
+        }, () -> replyToMessageSafely(ch, loader.getMessage(), "Not a valid user"));
     }
 
     private void validUser(String id, ShardManager client, Runnable found, Runnable notFound) {

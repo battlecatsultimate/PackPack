@@ -23,13 +23,13 @@ public class DumpHeap extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        replyToMessageSafely(ch,  "Dumping Heap...", loader.getMessage(), a -> a);
+        replyToMessageSafely(ch, loader.getMessage(), "Dumping Heap...");
 
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         File folder = new File("./temp");
 
         if (!folder.exists() && !folder.exists()) {
-            replyToMessageSafely(ch, "Failed to generate folder...", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Failed to generate folder...");
 
             return;
         }
@@ -43,9 +43,9 @@ public class DumpHeap extends ConstraintCommand {
         hotSpotDiagnosticMXBean.dumpHeap(dumpFile.getAbsolutePath(), true);
 
         if (dumpFile.exists()) {
-            replyToMessageSafely(ch, "Dumping success, check file manually", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Dumping success, check file manually");
         } else {
-            replyToMessageSafely(ch, "Failed to dump heap...", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Failed to dump heap...");
         }
     }
 }

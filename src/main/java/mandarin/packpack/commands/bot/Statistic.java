@@ -18,10 +18,6 @@ public class Statistic extends Command {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        createMessageWithNoPings(ch, LangID.getStringByID("stat.info", lang)
-                .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
-                .replace("_CCC_", String.valueOf(StaticStore.executed))
-                .replace("_MMM_", String.valueOf(StaticStore.spamData.size()))
-        );
+        replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("stat.info", lang).formatted(StaticStore.idHolder.size(), StaticStore.executed, StaticStore.spamData.size()));
     }
 }

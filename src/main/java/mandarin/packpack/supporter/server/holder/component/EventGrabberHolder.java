@@ -4,10 +4,15 @@ import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.buttons.Button;
 
@@ -63,8 +68,8 @@ public class EventGrabberHolder extends ComponentHolder {
             }
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent("Applied")
-                        .setComponents()
+                        .setComponents(TextDisplay.of("Applied"))
+                        .useComponentsV2()
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
@@ -76,62 +81,47 @@ public class EventGrabberHolder extends ComponentHolder {
 
     private void performResult(GenericComponentInteractionCreateEvent event) {
         event.deferEdit()
-                .setContent(parseMessage())
+                .setComponents(registerComponent())
+                .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
-                .setComponents(registerComponent())
                 .queue();
     }
 
     private List<MessageTopLevelComponent> registerComponent() {
         List<MessageTopLevelComponent> layouts = new ArrayList<>();
 
-        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
-            boolean newWay = EventFileGrabber.newWay.get(locale);
+        List<ContainerChildComponent> components = new ArrayList<>();
+
+        for (int i = 0; i < EventFactor.supportedVersions.length; i++) {
+            CommonStatic.Lang.Locale locale = EventFactor.supportedVersions[i];
+
+            boolean newWay = EventFileGrabber.newWay.getOrDefault(locale, false);
 
             String name = switch (locale) {
-                case EN -> "BCEN : ";
-                case ZH -> "BCTW : ";
-                case JP -> "BCJP : ";
-                case KR -> "BCKR : ";
-                default -> "";
+                case EN -> "BCEN";
+                case ZH -> "BCTW";
+                case JP -> "BCJP";
+                case KR -> "BCKR";
+                default -> throw new IllegalStateException(("E/SwitchEventGrabber::parseMessage - Unknown supported version : %s".formatted(locale)));
             };
 
             String isNew = newWay ? "New Way" : "Old Way";
 
             Emoji e = newWay ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
 
-            layouts.add(ActionRow.of(Button.secondary(name.replace(" : ", "").toLowerCase(Locale.ENGLISH), name + isNew).withEmoji(e)));
-        }
+            components.add(Section.of(Button.secondary(name.toLowerCase(Locale.ENGLISH), isNew).withEmoji(e), TextDisplay.of(name + " : " + isNew)));
 
-        layouts.add(ActionRow.of(Button.primary("confirm", "Confirm")));
-
-        return layouts;
-    }
-
-    private String parseMessage() {
-        StringBuilder builder = new StringBuilder();
-
-        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
-            boolean newWay = EventFileGrabber.newWay.get(locale);
-
-            String name = switch (locale) {
-                case EN -> "BCEN : ";
-                case ZH -> "BCTW : ";
-                case JP -> "BCJP : ";
-                case KR -> "BCKR : ";
-                default -> "";
-            };
-
-            String isNew = newWay ? "New Way" : "Old Way";
-
-            builder.append(name).append(isNew);
-
-            if (locale != CommonStatic.Lang.Locale.JP) {
-                builder.append("\n");
+            if (i < EventFactor.supportedVersions.length - 1) {
+                components.add(Separator.create(false, Separator.Spacing.SMALL));
             }
         }
 
-        return builder.toString();
+        components.add(Separator.create(true, Separator.Spacing.LARGE));
+        components.add(ActionRow.of(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CHECK)));
+
+        layouts.add(Container.of(components));
+
+        return layouts;
     }
 }

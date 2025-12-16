@@ -9,13 +9,16 @@ import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.EventGrabberHolder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -32,25 +35,18 @@ public class SwitchEventGrabber extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        replyToMessageSafely(ch, parseMessage(), loader.getMessage(), this::registerComponent, m -> {
-            User u = loader.getUser();
+        List<ContainerChildComponent> components = new ArrayList<>();
 
-            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), u.getId(), ch.getId(), m, lang));
-        });
+        for (int i = 0; i < EventFactor.supportedVersions.length; i++) {
+            CommonStatic.Lang.Locale locale = EventFactor.supportedVersions[i];
 
-    }
-
-    private MessageCreateAction registerComponent(MessageCreateAction action) {
-        List<MessageTopLevelComponent> layouts = new ArrayList<>();
-
-        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
-            boolean newWay = EventFileGrabber.newWay.get(locale);
+            boolean newWay = EventFileGrabber.newWay.getOrDefault(locale, false);
 
             String name = switch (locale) {
-                case EN -> "BCEN : ";
-                case ZH -> "BCTW : ";
-                case JP -> "BCJP : ";
-                case KR -> "BCKR : ";
+                case EN -> "BCEN";
+                case ZH -> "BCTW";
+                case JP -> "BCJP";
+                case KR -> "BCKR";
                 default -> throw new IllegalStateException(("E/SwitchEventGrabber::parseMessage - Unknown supported version : %s".formatted(locale)));
             };
 
@@ -58,37 +54,21 @@ public class SwitchEventGrabber extends ConstraintCommand {
 
             Emoji e = newWay ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
 
-            layouts.add(ActionRow.of(Button.secondary(name.replace(" : ", "").toLowerCase(Locale.ENGLISH), name + isNew).withEmoji(e)));
-        }
+            components.add(Section.of(Button.secondary(name.toLowerCase(Locale.ENGLISH), isNew).withEmoji(e), TextDisplay.of(name + " : " + isNew)));
 
-        layouts.add(ActionRow.of(Button.primary("confirm", "Confirm")));
-
-        return action.setComponents(layouts);
-    }
-
-    private String parseMessage() {
-        StringBuilder builder = new StringBuilder();
-
-        for(CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
-            boolean newWay = EventFileGrabber.newWay.get(locale);
-
-            String name = switch (locale) {
-                case EN -> "BCEN : ";
-                case ZH -> "BCTW : ";
-                case JP -> "BCJP : ";
-                case KR -> "BCKR : ";
-                default -> throw new IllegalStateException(("E/SwitchEventGrabber::parseMessage - Unknown supported version : %s".formatted(locale)));
-            };
-
-            String isNew = newWay ? "New Way" : "Old Way";
-
-            builder.append(name).append(isNew);
-
-            if (locale != CommonStatic.Lang.Locale.JP) {
-                builder.append("\n");
+            if (i < EventFactor.supportedVersions.length - 1) {
+                components.add(Separator.create(false, Separator.Spacing.SMALL));
             }
         }
 
-        return builder.toString();
+        components.add(Separator.create(true, Separator.Spacing.LARGE));
+        components.add(ActionRow.of(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CHECK)));
+
+        replyToMessageSafely(ch, loader.getMessage(), msg -> {
+            User u = loader.getUser();
+
+            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang));
+        }, Container.of(components));
+
     }
 }

@@ -19,6 +19,6 @@ public class GarbageCollect extends ConstraintCommand {
 
         System.gc();
 
-        createMessageWithNoPings(ch, "Vurp!");
+        replyToMessageSafely(ch, loader.getMessage(), "Vurp!");
     }
 }

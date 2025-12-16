@@ -127,6 +127,7 @@
         }
     },
     "bot" : {
+        "announcement" : "<@%d> Announcement",
         "spamBanned" : "<@_UUU_> あなたがコマンドをスパムしたので _TTT_ の間コマンドを実行できません。 何回もスパムを続けるとBANされる可能性があります!",
         "command" : {
             "timeLimit" : " _ 秒後にコマンドを実行できます!"
@@ -2725,6 +2726,7 @@
                     "none" : "None",
                     "warning" : "%s **Warning! Additional message contains mention. This will notify targeted user/role whenever event data gets posted!** %s",
                     "indicator" : {
+                        "announcement" : "### **Additional Message**",
                         "eventData" : "### **For Event Data**",
                         "newVersion" : "### **For New Version**"
                     }
@@ -3005,7 +3007,7 @@
         }
     },
     "stat" : {
-        "info" : "PackPackは現在_SSS_サーバーで使用されていて、\n_CCC_回コマンドが使用されました。\n_MMM_人がコマンドを使用してくれました!"
+        "info" : "PackPackは現在%dサーバーで使用されていて、\n%d回コマンドが使用されました。\n%d人がコマンドを使用してくれました!"
     },
     "statAnalyzer" : {
         "analyzingStages" : "ステージを分析中... : %d / %d",
@@ -3048,7 +3050,7 @@
     },
     "suggest" : {
         "failed" : {
-            "banned" : "あなたはブロックされました。なのであなたは開発者に提案はもうできません。\n理由 : _RRR_",
+            "banned" : "あなたはブロックされました。なのであなたは開発者に提案はもうできません。\n理由 : %s",
             "noTitle" : "このコマンドはもう一つ引数が必要です。 : [提案のタイトル]"
         },
         "response" : {

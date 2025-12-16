@@ -22,14 +22,14 @@ public class SuggestUnban extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            ch.sendMessage("This command requires user ID!").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "This command requires user ID!");
         } else {
             if(StaticStore.suggestBanned.containsKey(contents[1])) {
                 StaticStore.suggestBanned.remove(contents[1]);
 
-                ch.sendMessage("Unbanned "+contents[1]).queue();
+                replyToMessageSafely(ch, loader.getMessage(), "Unbanned "+contents[1]);
             } else {
-                ch.sendMessage("That user seems not suggest-banned yet").queue();
+                replyToMessageSafely(ch, loader.getMessage(), "That user seems not suggest-banned yet");
             }
         }
     }

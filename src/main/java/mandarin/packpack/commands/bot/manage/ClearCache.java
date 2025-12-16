@@ -29,7 +29,7 @@ public class ClearCache extends ConstraintCommand {
 
         components.add(TextDisplay.of("Are you sure you want to clear cache? This cannot be undone"));
 
-        withConfirmButtons(components, lang);
+        messageWithConfirmButtons(components, lang);
 
         replyToMessageSafely(ch, loader.getMessage(), components, msg ->
             StaticStore.putHolder(loader.getUser().getId(), new ConfirmButtonHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, lang, () -> {

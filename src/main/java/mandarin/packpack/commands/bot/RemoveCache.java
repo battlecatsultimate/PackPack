@@ -21,15 +21,15 @@ public class RemoveCache extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ",  2);
 
         if(contents.length < 2) {
-            ch.sendMessage("Format `p!rc [Cache Name]`").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Format `p!rc [Cache Name]`");
 
             return;
         }
 
         if(StaticStore.imgur.removeCache(contents[1])) {
-            ch.sendMessage("Successfully removed cache : "+contents[1]).queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Successfully removed cache : "+contents[1]);
         } else {
-            ch.sendMessage("No such cache found : "+contents[1]).queue();
+            replyToMessageSafely(ch, loader.getMessage(), "No such cache found : "+contents[1]);
         }
     }
 }

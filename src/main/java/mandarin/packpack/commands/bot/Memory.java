@@ -4,6 +4,8 @@ import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import javax.annotation.Nonnull;
@@ -22,6 +24,6 @@ public class Memory extends ConstraintCommand {
         long m = Runtime.getRuntime().maxMemory();
         double per = 100.0 * (t - f) / m;
 
-        ch.sendMessage("Memory used: " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue();
+        replyToMessageSafely(ch, loader.getMessage(), Container.of(TextDisplay.of("Memory used: " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%")));
     }
 }

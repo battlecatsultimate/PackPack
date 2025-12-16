@@ -23,13 +23,14 @@ public class News extends ConstraintCommand {
         String[] contents = content.split(" ", 3);
 
         if(contents.length != 3) {
-            createMessageWithNoPings(ch, "Usage : [Locale] [Desc]\nEN : 0, ZH : 1, KR : 2, JP : 3, FR : 4, IT : 5, ES : 6, DE : 7, TH : 8");
+            replyToMessageSafely(ch, loader.getMessage(), "Usage : [Locale] [Desc]\nEN : 0, ZH : 1, KR : 2, JP : 3, FR : 4, IT : 5, ES : 6, DE : 7, TH : 8");
         } else {
             if(StaticStore.isNumeric(contents[1])) {
                 int loc = StaticStore.safeParseInt(contents[1]);
 
                 if(loc >= 9) {
-                    createMessageWithNoPings(ch, "Locale must be less than 8");
+                    replyToMessageSafely(ch, loader.getMessage(), "Locale must be less than 8");
+
                     return;
                 }
 
@@ -46,15 +47,15 @@ public class News extends ConstraintCommand {
                 };
 
                 if(contents[2].isBlank()) {
-                    createMessageWithNoPings(ch, "Announcement content is empty!");
+                    replyToMessageSafely(ch, loader.getMessage(), "Announcement content is empty!");
                     return;
                 }
 
                 StaticStore.announcements.put(locale, contents[2]);
 
-                createMessageWithNoPings(ch, "Announcement added for " + locale.code);
+                replyToMessageSafely(ch, loader.getMessage(), "Announcement added for " + locale.code);
             } else {
-                createMessageWithNoPings(ch, "Locale must be number\nEN : 0, ZH : 1, KR : 2, JP : 3, FR : 4, IT : 5, ES : 6, DE : 7");
+                replyToMessageSafely(ch, loader.getMessage(), "Locale must be number\nEN : 0, ZH : 1, KR : 2, JP : 3, FR : 4, IT : 5, ES : 6, DE : 7");
             }
         }
     }

@@ -3,8 +3,13 @@ package mandarin.packpack.commands.bot;
 import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -14,6 +19,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Publish extends ConstraintCommand {
     public Publish(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
@@ -27,7 +33,7 @@ public class Publish extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, "`p!pub [Importance]`\n-i : Important\n-n : Not important", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "`p!pub [Importance]`\n-i : Important\n-n : Not important");
 
             return;
         }
@@ -40,7 +46,8 @@ public class Publish extends ConstraintCommand {
             return;
 
         if(!StaticStore.announcements.containsKey(CommonStatic.Lang.Locale.EN)) {
-            createMessageWithNoPings(ch, "You have to at least make announcement for English!");
+            replyToMessageSafely(ch, loader.getMessage(), "You have to at least make announcement for English!");
+
             return;
         }
 
@@ -67,19 +74,30 @@ public class Publish extends ConstraintCommand {
 
             if(c instanceof NewsChannel) {
                 String content = null;
+                CommonStatic.Lang.Locale selectedLocale = null;
 
                 CommonStatic.Lang.Locale[] pref = CommonStatic.Lang.pref[language.ordinal()];
 
                 for(CommonStatic.Lang.Locale p : pref) {
                     if(StaticStore.announcements.containsKey(p)) {
                         content = StaticStore.announcements.get(p);
+                        selectedLocale = p;
                         break;
                     }
                 }
 
                 if(content != null && ((NewsChannel) c).canTalk()) {
+                    List<ContainerChildComponent> components = new ArrayList<>();
+
+                    components.add(TextDisplay.of("## " + LangID.getStringByID("bot.announcement", selectedLocale).formatted(loader.getClient().getSelfUser().getIdLong())));
+                    components.add(Separator.create(true, Separator.Spacing.LARGE));
+                    components.add(TextDisplay.of(content));
+
+                    Container container = Container.of(components);
+
                     ((NewsChannel) c)
-                            .sendMessage(content)
+                            .sendMessageComponents(container)
+                            .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .queue(m -> {
                                 if(m != null && holder.publish)
@@ -87,9 +105,12 @@ public class Publish extends ConstraintCommand {
 
                                 if(!holder.announceMessage.isBlank()) {
                                     if(important) {
-                                        ((NewsChannel) c).sendMessage(holder.announceMessage).queue();
+                                        ((NewsChannel) c).sendMessageComponents(TextDisplay.of(holder.announceMessage))
+                                                .useComponentsV2()
+                                                .queue();
                                     } else {
-                                        ((NewsChannel) c).sendMessage(holder.announceMessage)
+                                        ((NewsChannel) c).sendMessageComponents(TextDisplay.of(holder.announceMessage))
+                                                .useComponentsV2()
                                                 .setSuppressedNotifications(true)
                                                 .queue();
                                     }
@@ -98,38 +119,50 @@ public class Publish extends ConstraintCommand {
                 }
             } else if(c instanceof GuildMessageChannel) {
                 String content = null;
+                CommonStatic.Lang.Locale selectedLocale = null;
 
                 CommonStatic.Lang.Locale[] pref = CommonStatic.Lang.pref[language.ordinal()];
 
                 for(CommonStatic.Lang.Locale p : pref) {
                     if(StaticStore.announcements.containsKey(p)) {
+                        selectedLocale = p;
                         content = StaticStore.announcements.get(p);
                         break;
                     }
                 }
 
                 if(content != null) {
-                    if(((GuildMessageChannel) c).canTalk()) {
-                        ((GuildMessageChannel) c).sendMessage(content)
-                                .setAllowedMentions(new ArrayList<>())
-                                .queue();
-                    }
+                    List<ContainerChildComponent> components = new ArrayList<>();
 
-                    if(!holder.announceMessage.isBlank()) {
-                        if(important) {
-                            ((GuildMessageChannel) c).sendMessage(holder.announceMessage).queue();
-                        } else {
-                            ((GuildMessageChannel) c).sendMessage(holder.announceMessage)
-                                    .setSuppressedNotifications(true)
-                                    .queue();
-                        }
-                    }
+                    components.add(TextDisplay.of("## " + LangID.getStringByID("bot.announcement", selectedLocale).formatted(loader.getClient().getSelfUser().getIdLong())));
+                    components.add(Separator.create(true, Separator.Spacing.LARGE));
+                    components.add(TextDisplay.of(content));
+
+                    Container container = Container.of(components);
+
+                    ((GuildMessageChannel) c).sendMessageComponents(container)
+                            .useComponentsV2()
+                            .setAllowedMentions(new ArrayList<>())
+                            .queue(unused -> {
+                                if(!holder.announceMessage.isBlank()) {
+                                    if(important) {
+                                        ((GuildMessageChannel) c).sendMessageComponents(TextDisplay.of(holder.announceMessage))
+                                                .useComponentsV2()
+                                                .queue();
+                                    } else {
+                                        ((GuildMessageChannel) c).sendMessageComponents(TextDisplay.of(holder.announceMessage))
+                                                .useComponentsV2()
+                                                .setSuppressedNotifications(true)
+                                                .queue();
+                                    }
+                                }
+                            });
                 }
             }
         }
 
         StaticStore.announcements.clear();
 
-        createMessageWithNoPings(ch, "Successfully announced");
+        replyToMessageSafely(ch, loader.getMessage(), "Successfully announced");
     }
 }

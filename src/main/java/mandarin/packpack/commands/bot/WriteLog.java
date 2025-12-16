@@ -21,6 +21,6 @@ public class WriteLog extends ConstraintCommand {
 
         Logger.writeLog(Logger.BotInstance.PACK_PACK);
 
-        replyToMessageSafely(ch, "Successfully wrote log!", loader.getMessage(), a -> a);
+        replyToMessageSafely(ch, loader.getMessage(), "Successfully wrote log!");
     }
 }

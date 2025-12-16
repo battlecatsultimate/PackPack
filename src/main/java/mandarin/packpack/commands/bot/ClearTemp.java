@@ -23,6 +23,6 @@ public class ClearTemp extends ConstraintCommand {
 
         StaticStore.deleteFile(temp, false);
 
-        ch.sendMessage("Tried to clean temp folder").queue();
+        replyToMessageSafely(ch, loader.getMessage(), "Tried to clean temp folder");
     }
 }

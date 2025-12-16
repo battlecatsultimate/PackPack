@@ -20,6 +20,6 @@ public class RegisterLogging extends ConstraintCommand {
 
         StaticStore.loggingChannel = ch.getId();
 
-        createMessageWithNoPings(ch, "Logging channel is registered [<#"+StaticStore.loggingChannel+">]");
+        replyToMessageSafely(ch, loader.getMessage(), "Logging channel is registered [<#"+StaticStore.loggingChannel+">]");
     }
 }

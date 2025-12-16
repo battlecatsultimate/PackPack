@@ -21,25 +21,25 @@ public class RemoveScamLinkHelpingServer extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            ch.sendMessage("Usage : p!ashs [Server ID]").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Usage : p!ashs [Server ID]");
 
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            ch.sendMessage("Server ID must be numeric!").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Server ID must be numeric!");
 
             return;
         }
 
 
         if(!StaticStore.scamLink.servers.contains(contents[1])) {
-            ch.sendMessage("This server is already unregistered as helping server").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "This server is already unregistered as helping server");
 
             return;
         }
 
         StaticStore.scamLink.servers.remove(contents[1]);
-        ch.sendMessage("Removed server "+contents[1]).queue();
+        replyToMessageSafely(ch, loader.getMessage(), "Removed server "+contents[1]);
     }
 }

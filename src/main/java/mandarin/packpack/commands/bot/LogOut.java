@@ -8,6 +8,9 @@ import mandarin.packpack.supporter.lwjgl.opengl.RenderSessionManager;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -17,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class LogOut extends ConstraintCommand {
@@ -26,13 +30,14 @@ public class LogOut extends ConstraintCommand {
 
     @Override
     public void doSomething(@Nonnull CommandLoader loader) {
+        MessageChannel ch = loader.getChannel();
+
         if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && !StaticStore.maintainers.contains(loader.getUser().getId())) {
-            loader.getChannel().sendMessage(LangID.getStringByID("bot.denied.reason.noPermission.developer", lang)).queue();
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("bot.denied.reason.noPermission.developer", lang));
 
             return;
         }
 
-        MessageChannel ch = loader.getChannel();
         ShardManager client = ch.getJDA().getShardManager();
 
         if (client == null)
@@ -41,12 +46,18 @@ public class LogOut extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, "Format : `p!lo -b/-u/-a/-m/-p`\n\n-b : Bug fix\n-u : Update\n-a : API Update\n-m : Maintenance\n-p : Permanent out of service", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Format : `p!lo -b/-u/-a/-m/-p`\n\n-b : Bug fix\n-u : Update\n-a : API Update\n-m : Maintenance\n-p : Permanent out of service");
 
             return;
         }
 
-        registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), CommonStatic.Lang.Locale.EN).queue(msg -> {
+        List<ContainerChildComponent> components = new ArrayList<>();
+
+        components.add(TextDisplay.of("Are you sure that you want to turn off the bot?"));
+
+        containerWithConfirmButtons(components, lang);
+
+        replyToMessageSafely(ch, loader.getMessage(), msg -> {
             User u = loader.getUser();
 
             StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang, () -> {
@@ -82,7 +93,8 @@ public class LogOut extends ConstraintCommand {
 
                             CountDownLatch countDown = new CountDownLatch(1);
 
-                            ((MessageChannel) c).sendMessage(fullMessage)
+                            ((MessageChannel) c).sendMessageComponents(TextDisplay.of(fullMessage))
+                                    .useComponentsV2()
                                     .setAllowedMentions(new ArrayList<>())
                                     .queue(res -> countDown.countDown(), e -> countDown.countDown());
 
@@ -95,7 +107,7 @@ public class LogOut extends ConstraintCommand {
                 try {
                     CountDownLatch countDown = new CountDownLatch(1);
 
-                    ch.sendMessage("Good bye!").queue(res -> countDown.countDown(), e -> countDown.countDown());
+                    replyToMessageSafely(ch, loader.getMessage(), "Good bye!", unused -> countDown.countDown(), e -> countDown.countDown());
 
                     countDown.await();
                 } catch (Exception ignored) {
@@ -118,6 +130,6 @@ public class LogOut extends ConstraintCommand {
 
                 LogManager.shutdown();
             }));
-        });
+        }, Container.of(components));
     }
 }

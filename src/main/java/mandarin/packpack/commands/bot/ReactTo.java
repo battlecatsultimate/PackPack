@@ -29,19 +29,19 @@ public class ReactTo extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ", 5);
 
         if(contents.length < 5) {
-            replyToMessageSafely(ch, "Format : `p!ret [Guild ID] [Channel ID] [Message ID] [Emoji]`", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Format : `p!ret [Guild ID] [Channel ID] [Message ID] [Emoji]`");
 
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            replyToMessageSafely(ch, "Guild ID must be numeric", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Guild ID must be numeric");
 
             return;
         }
 
         try {
-            ShardManager client = ch.getJDA().getShardManager();
+            ShardManager client = loader.getClient().getShardManager();
 
             if (client == null)
                 return;
@@ -49,13 +49,13 @@ public class ReactTo extends ConstraintCommand {
             Guild g = client.getGuildById(contents[1]);
 
             if(g == null) {
-                replyToMessageSafely(ch, "No such guild", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "No such guild");
 
                 return;
             }
 
             if(!StaticStore.isNumeric(contents[2])) {
-                replyToMessageSafely(ch, "Channel ID must be numeric", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "Channel ID must be numeric");
 
                 return;
             }
@@ -63,26 +63,26 @@ public class ReactTo extends ConstraintCommand {
             GuildChannel chan = g.getGuildChannelById(contents[2]);
 
             if(chan == null) {
-                replyToMessageSafely(ch, "No such channel", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "No such channel");
 
                 return;
             }
 
             if(!(chan instanceof MessageChannel) || !g.getSelfMember().hasPermission(chan, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ADD_REACTION)) {
-                replyToMessageSafely(ch, "Can't react message", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "Can't react message");
 
                 return;
             }
 
             if(!StaticStore.isNumeric(contents[3])) {
-                replyToMessageSafely(ch, "Message ID must be numeric", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "Message ID must be numeric");
 
                 return;
             }
 
             ((MessageChannel) chan).retrieveMessageById(contents[3]).queue( m -> {
                 if(m == null) {
-                    replyToMessageSafely(ch, "No such message", loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), "No such message");
 
                     return;
                 }

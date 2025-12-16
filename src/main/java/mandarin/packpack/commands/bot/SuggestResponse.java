@@ -36,7 +36,8 @@ public class SuggestResponse extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ", 6);
 
         if(contents.length < 6) {
-            ch.sendMessage("Invalid Format : `p!suggestresponse [Guild ID] [Channel ID] [Member ID] [Suggestion ID] Contents`").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Invalid Format : `p!suggestresponse [Guild ID] [Channel ID] [Member ID] [Suggestion ID] Contents`");
+
             return;
         }
 

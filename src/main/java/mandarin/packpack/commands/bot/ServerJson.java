@@ -19,7 +19,7 @@ public class ServerJson extends ConstraintCommand {
     @Override
     public void doSomething(@Nonnull CommandLoader loader) throws Exception {
         if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && !StaticStore.maintainers.contains(loader.getUser().getId())) {
-            loader.getChannel().sendMessage(LangID.getStringByID("bot.denied.reason.noPermission.developer", lang)).queue();
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), LangID.getStringByID("bot.denied.reason.noPermission.developer", lang));
 
             return;
         }
@@ -27,7 +27,7 @@ public class ServerJson extends ConstraintCommand {
         String link = StaticStore.backup.uploadBackup(Logger.BotInstance.PACK_PACK);
 
         if (link.isBlank()) {
-            replyToMessageSafely(loader.getChannel(), "Failed to upload backup", loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Failed to upload backup");
 
             return;
         }

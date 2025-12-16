@@ -27,13 +27,13 @@ public class GetID extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length != 3) {
-            replyToMessageSafely(ch, "`p!gi -u|m/c/s [ID]`", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "`p!gi -u|m/c/s [ID]`");
 
             return;
         }
 
         if(!StaticStore.isNumeric(contents[2])) {
-            replyToMessageSafely(ch, "ID is not numeric", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "ID is not numeric");
 
             return;
         }
@@ -45,7 +45,7 @@ public class GetID extends ConstraintCommand {
 
         try {
             switch (contents[1]) {
-                case "-m", "-u" -> client.retrieveUserById(contents[2]).queue(u -> replyToMessageSafely(ch, "User : " + u.getEffectiveName() + " (" + u.getAsMention() + ")", loader.getMessage(), a -> a));
+                case "-m", "-u" -> client.retrieveUserById(contents[2]).queue(u -> replyToMessageSafely(ch, loader.getMessage(), "User : " + u.getEffectiveName() + " (" + u.getAsMention() + ")"));
                 case "-c" -> {
                     GuildChannel c = client.getGuildChannelById(contents[2]);
                     if (c == null)
@@ -58,7 +58,7 @@ public class GetID extends ConstraintCommand {
                         default -> "Channel";
                     };
 
-                    replyToMessageSafely(ch, type + " : " + c.getName() + " (" + c.getAsMention() + ")", loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), type + " : " + c.getName() + " (" + c.getAsMention() + ")");
                 }
                 case "-s" -> {
                     Guild g = client.getGuildById(contents[2]);
@@ -66,11 +66,11 @@ public class GetID extends ConstraintCommand {
                     if (g == null)
                         return;
 
-                    replyToMessageSafely(ch, "Guild : " + g.getName() + " | Size : " + g.getMemberCount(), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), "Guild : " + g.getName() + " | Size : " + g.getMemberCount());
                 }
             }
         } catch (Exception ignore) {
-            replyToMessageSafely(ch, "Failed", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Failed");
         }
     }
 }

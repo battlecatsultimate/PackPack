@@ -28,15 +28,17 @@ public class ContributorRemove extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            createMessageWithNoPings(ch, "You have to specify member ID or mention of member");
+            replyToMessageSafely(ch, loader.getMessage(), "You have to specify member ID or mention of member");
+
             return;
         }
 
         validUser(contents[1], client, () -> {
             String id = contents[1].replaceAll("<@!|<@|>", "");
             StaticStore.contributors.remove(id);
-            createMessageWithNoPings(ch, "Removed <@!"+id+"> from contributor list");
-        }, () -> createMessageWithNoPings(ch, "Not a valid user"));
+
+            replyToMessageSafely(ch, loader.getMessage(), "Removed <@!"+id+"> from contributor list");
+        }, () -> replyToMessageSafely(ch, loader.getMessage(), "Not a valid user"));
     }
 
     private void validUser(String id, ShardManager client, Runnable found, Runnable notFound) {

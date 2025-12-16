@@ -18,7 +18,7 @@ public class RemoveAsset extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if (contents.length < 2) {
-            replyToMessageSafely(loader.getChannel(), "Format : `p!ra <-r|-regex> [ID]", loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Format : `p!ra <-r|-regex> [ID]");
 
             return;
         }
@@ -27,7 +27,7 @@ public class RemoveAsset extends ConstraintCommand {
         int startIndex = regex ? 2 : 1;
 
         if (contents.length < startIndex + 1) {
-            replyToMessageSafely(loader.getChannel(), "Format : `p!ra <-r|-regex> [ID]", loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Format : `p!ra <-r|-regex> [ID]");
 
             return;
         }
@@ -46,6 +46,6 @@ public class RemoveAsset extends ConstraintCommand {
             StaticStore.assetManager.removeAsset(id);
         }
 
-        replyToMessageSafely(loader.getChannel(), "Successfully removed " + (regex ? "regex " : "") + id, loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Successfully removed " + (regex ? "regex " : "") + id);
     }
 }

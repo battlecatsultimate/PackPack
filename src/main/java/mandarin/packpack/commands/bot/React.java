@@ -29,7 +29,7 @@ public class React extends ConstraintCommand {
         String[] contents = loader.getContent().replaceAll("\\s+", " ").split(" ", 4);
 
         if(contents.length < 4) {
-            replyToMessageSafely(ch, "Format : `p!r [Channel ID] [Message ID] [Emoji]`", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Format : `p!r [Channel ID] [Message ID] [Emoji]`");
 
             return;
         }
@@ -38,7 +38,7 @@ public class React extends ConstraintCommand {
             String channel = getChannel(contents[1]);
 
             if(!StaticStore.isNumeric(channel)) {
-                replyToMessageSafely(ch, "Channel ID must be numeric", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "Channel ID must be numeric");
 
                 return;
             }
@@ -46,26 +46,26 @@ public class React extends ConstraintCommand {
             GuildChannel chan = g.getGuildChannelById(channel);
 
             if(chan == null) {
-                replyToMessageSafely(ch, "No such channel", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "No such channel");
 
                 return;
             }
 
             if(!(chan instanceof MessageChannel) || !g.getSelfMember().hasPermission(chan, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ADD_REACTION)) {
-                replyToMessageSafely(ch, "Can't react message", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "Can't react message");
 
                 return;
             }
 
             if(!StaticStore.isNumeric(contents[2])) {
-                replyToMessageSafely(ch, "Message ID must be numeric", loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), "Message ID must be numeric");
 
                 return;
             }
 
             ((MessageChannel) chan).retrieveMessageById(contents[2]).queue( m -> {
                 if(m == null) {
-                    replyToMessageSafely(ch, "No such message", loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), "No such message");
 
                     return;
                 }
@@ -79,19 +79,19 @@ public class React extends ConstraintCommand {
                         if(mr.isSelf()) {
                             m.removeReaction(em).queue();
 
-                            replyToMessageSafely(ch, "Removed emoji : " + em.getFormatted(), loader.getMessage(), a -> a);
+                            replyToMessageSafely(ch, loader.getMessage(), "Removed emoji : " + em.getFormatted());
                         } else {
                             m.addReaction(em).queue();
 
-                            replyToMessageSafely(ch, "Added emoji : " + em.getFormatted(), loader.getMessage(), a -> a);
+                            replyToMessageSafely(ch, loader.getMessage(), "Added emoji : " + em.getFormatted());
                         }
                     } else {
                         m.addReaction(em).queue();
 
-                        replyToMessageSafely(ch, "Added emoji : " + em.getFormatted(), loader.getMessage(), a -> a);
+                        replyToMessageSafely(ch, loader.getMessage(), "Added emoji : " + em.getFormatted());
                     }
                 } catch (IllegalStateException ignored) {
-                    replyToMessageSafely(ch, "Failed to get emoji data", loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, loader.getMessage(), "Failed to get emoji data");
                 }
             });
 

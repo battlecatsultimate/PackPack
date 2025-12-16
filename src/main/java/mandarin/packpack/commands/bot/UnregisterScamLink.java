@@ -22,14 +22,15 @@ public class UnregisterScamLink extends ConstraintCommand {
         Guild g = loader.getGuild();
 
         if(!StaticStore.scamLink.servers.contains(g.getId())) {
-            ch.sendMessage(LangID.getStringByID("scamLinkRegister.failed.noPermission", lang)).queue();
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("scamLinkRegister.failed.noPermission", lang));
+
             return;
         }
 
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            ch.sendMessage(LangID.getStringByID("scamLinkRegister.failed.noLink", lang)).queue();
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("scamLinkRegister.failed.noLink", lang));
 
             return;
         }
@@ -37,16 +38,19 @@ public class UnregisterScamLink extends ConstraintCommand {
         String link = contents[1];
 
         if(!link.startsWith("http://") && !link.startsWith("https://")) {
-            ch.sendMessage(LangID.getStringByID("scamLinkRegister.failed.invalidLink", lang)).queue();
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("scamLinkRegister.failed.invalidLink", lang));
+
             return;
         }
 
         if(!StaticStore.scamLink.links.contains(link)) {
-            ch.sendMessage(LangID.getStringByID("scamLinkRegisterRemove.failed.notFound", lang)).queue();
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("scamLinkRegisterRemove.failed.notFound", lang));
+
             return;
         }
 
         StaticStore.scamLink.links.remove(link);
-        ch.sendMessage(LangID.getStringByID("scamLinkRegisterRemove.removed", lang)).queue();
+
+        replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("scamLinkRegisterRemove.removed", lang));
     }
 }

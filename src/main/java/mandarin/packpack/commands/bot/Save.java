@@ -6,9 +6,11 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 
 public class Save extends ConstraintCommand {
     public Save(ROLE role, CommonStatic.Lang.Locale lang, IDHolder holder) {
@@ -19,14 +21,18 @@ public class Save extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        ch.sendMessage(LangID.getStringByID("save.saving", lang)).queue( msg -> {
-            if(msg != null) {
-                StaticStore.saveServerInfo();
+        replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("save.saving", lang), msg -> {
+            StaticStore.saveServerInfo();
 
-                msg.editMessage(LangID.getStringByID("save.done", lang)).queue();
-            } else {
-                onFail(loader, DEFAULT_ERROR);
-            }
+            msg.editMessageComponents(TextDisplay.of(LangID.getStringByID("save.done", lang)))
+                    .useComponentsV2()
+                    .setAllowedMentions(new ArrayList<>())
+                    .mentionRepliedUser(false)
+                    .queue();
+        }, e -> {
+            StaticStore.logger.uploadErrorLog(e, "E/Save::doSomething - Failed to send saving notification mesage");
+
+            onFail(loader, DEFAULT_ERROR);
         });
     }
 }

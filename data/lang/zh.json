@@ -127,6 +127,7 @@
         }
     },
     "bot" : {
+        "announcement" : "<@%d> Announcement",
         "spamBanned" : "<@_UUU_>因短時間內使用大量指令並且在_TTT_內無法使用任何指令。如果未來情況繼續時長會增加。",
         "command" : {
             "timeLimit" : "你可以在_秒後使用這個指令！"
@@ -2725,6 +2726,7 @@
                     "none" : "None",
                     "warning" : "%s **Warning! Additional message contains mention. This will notify targeted user/role whenever event data gets posted!** %s",
                     "indicator" : {
+                        "announcement" : "### **Additional Message**",
                         "eventData" : "### **For Event Data**",
                         "newVersion" : "### **For New Version**"
                     }
@@ -3005,7 +3007,7 @@
         }
     },
     "stat" : {
-        "info" : "I'm in _SSS_ servers currently\nCommands are executed _CCC_ times so far\n_MMM_ members used one of my commands!"
+        "info" : "I'm in %d servers currently\nCommands are executed %d times so far\n%d members used one of my commands!"
     },
     "statAnalyzer" : {
         "analyzingStages" : "Analyzing stage... : %d / %d",
@@ -3048,7 +3050,7 @@
     },
     "suggest" : {
         "failed" : {
-            "banned" : "You are blocked from bot, so you can't suggest to developer\nReason : _RRR_",
+            "banned" : "You are blocked from bot, so you can't suggest to developer\nReason : %s",
             "noTitle" : "This command requires one more parameter : [Suggestion Title]"
         },
         "response" : {

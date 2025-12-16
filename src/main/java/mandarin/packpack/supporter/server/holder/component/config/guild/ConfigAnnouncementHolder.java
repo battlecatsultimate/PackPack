@@ -59,7 +59,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
             }
             case "additional" -> {
                 TextInput input = TextInput.create("message", TextInputStyle.PARAGRAPH)
-                        .setPlaceholder(LangID.getStringByID("serverConfig.eventData.typeAdditional", lang))
+                        .setPlaceholder(LangID.getStringByID("serverConfig.eventData.additionalMessage", lang))
                         .setRequired(false)
                         .setRequiredRange(0, 500)
                         .build();
@@ -162,15 +162,13 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 .append(LangID.getStringByID("serverConfig.announcement.info.additionalMessage", lang).formatted(additional));
 
         if (!holder.announceMessage.isBlank()) {
-            builder.append("\n\n```\n")
-                    .append(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang))
-                    .append("\n```\n")
+            builder.append("\n\n")
+                    .append(LangID.getStringByID("serverConfig.eventData.info.content.indicator.announcement", lang))
+                    .append("\n")
                     .append(holder.announceMessage)
-                    .append("\n\n```\n")
-                    .append("=".repeat(LangID.getStringByID("serverConfig.eventData.info.content.indicator", lang).length()))
-                    .append("\n```");
+                    .append("\n");
 
-            if (holder.announceMessage.matches("")) {
+            if (holder.announceMessage.matches("(.+)?(<@&?\\d+>|@everyone|@here)(.+)?")) {
                 Emoji warn = Emoji.fromUnicode("⚠️");
 
                 builder.append("\n")

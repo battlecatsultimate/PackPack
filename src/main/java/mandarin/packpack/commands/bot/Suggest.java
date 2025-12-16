@@ -32,7 +32,7 @@ public class Suggest extends TimedConstraintCommand {
         User u = loader.getUser();
 
         if(StaticStore.suggestBanned.containsKey(u.getId())) {
-            ch.sendMessage(LangID.getStringByID("suggest.failed.banned", lang).replace("_RRR_", StaticStore.suggestBanned.get(u.getId()))).queue();
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("suggest.failed.banned", lang).formatted(StaticStore.suggestBanned.get(u.getId())));
 
             disableTimer();
 
@@ -42,7 +42,8 @@ public class Suggest extends TimedConstraintCommand {
         String title = getTitle(loader.getContent());
 
         if(title.isBlank()) {
-            ch.sendMessage(LangID.getStringByID("suggest.failed.noTitle", lang)).queue();
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("suggest.failed.noTitle", lang));
+
             disableTimer();
         } else {
             if(title.length() >= 256) {
@@ -83,9 +84,9 @@ public class Suggest extends TimedConstraintCommand {
             }
 
             if(desc.length() >= 1024) {
-                ch.sendMessage(LangID.getStringByID("suggest.sent.cutOff", lang)).queue();
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("suggest.sent.cutOff", lang));
             } else {
-                ch.sendMessage(LangID.getStringByID("suggest.sent.default", lang)).queue();
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("suggest.sent.default", lang));
             }
         }
     }

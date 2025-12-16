@@ -22,7 +22,7 @@ public class GrabLanguage extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ", 4);
 
         if(contents.length < 3) {
-            replyToMessageSafely(ch, "Format : `p!gl [Locale] [ID]`", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Format : `p!gl [Locale] [ID]`");
 
             return;
         }
@@ -30,19 +30,19 @@ public class GrabLanguage extends ConstraintCommand {
         CommonStatic.Lang.Locale l = getLocale(contents[1]);
 
         if (l == null) {
-            replyToMessageSafely(ch, "Valid Locale Code :\n- en\n- tw\n- kr\n- jp\n- ru", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), "Valid Locale Code :\n- en\n- tw\n- kr\n- jp\n- ru");
 
             return;
         }
 
         if(contents.length > 3) {
             try {
-                replyToMessageSafely(ch, String.format(LangID.getStringByID(contents[2], l), (Object[]) contents[3].split("\\\\")), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), String.format(LangID.getStringByID(contents[2], l), (Object[]) contents[3].split("\\\\")));
             } catch (Exception e) {
-                replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID(contents[2], l));
             }
         } else {
-            replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID(contents[2], l));
         }
     }
 

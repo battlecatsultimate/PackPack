@@ -20,6 +20,6 @@ public class UnregisterLogging extends ConstraintCommand {
 
         MessageChannel ch = loader.getChannel();
 
-        createMessageWithNoPings(ch, "Logging channel unregistered");
+        replyToMessageSafely(ch, loader.getMessage(), "Logging channel unregistered");
     }
 }

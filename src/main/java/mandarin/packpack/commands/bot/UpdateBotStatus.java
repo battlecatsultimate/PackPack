@@ -19,31 +19,31 @@ public class UpdateBotStatus extends ConstraintCommand {
         ShardManager manager = loader.getClient().getShardManager();
 
         if (manager == null) {
-            replyToMessageSafely(loader.getChannel(), "Failed to get shard manager from client...", loader.getMessage(), a -> a);
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Failed to get shard manager from client...");
 
             return;
         }
 
-        replyToMessageSafely(loader.getChannel(), "Updating status of top.gg...", loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of top.gg...");
 
         BotListPlatformHandler.handleTopGG(manager, loader.getClient().getSelfUser().getId(), true);
 
-        replyToMessageSafely(loader.getChannel(), "Updating status of discord bot list...", loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of discord bot list...");
 
         BotListPlatformHandler.handleDiscordBotList(manager, loader.getClient().getSelfUser().getId(), true);
 
-        replyToMessageSafely(loader.getChannel(), "Updating status of Korean discord list...", loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of Korean discord list...");
 
         BotListPlatformHandler.handleKoreanDiscordList(manager, loader.getClient().getSelfUser().getId(), true);
 
-        replyToMessageSafely(loader.getChannel(), "Updating status of discord bot gg...", loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of discord bot gg...");
 
         BotListPlatformHandler.handleDiscordBotGG(manager, loader.getClient().getSelfUser().getId(), true);
 
-        replyToMessageSafely(loader.getChannel(), "Updating bot status message", loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating bot status message");
 
         StaticStore.updateStatus();
 
-        replyToMessageSafely(loader.getChannel(), "Successfully updated bot status", loader.getMessage(), a -> a);
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Successfully updated bot status");
     }
 }

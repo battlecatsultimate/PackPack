@@ -22,13 +22,13 @@ public class SuggestBan extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            ch.sendMessage("This command requires user ID!").queue();
+            replyToMessageSafely(ch, loader.getMessage(), "This command requires user ID!");
         } else {
             String reason = getReason(loader.getContent());
 
             StaticStore.suggestBanned.put(contents[1], reason.isBlank() ? "None" : reason);
 
-            ch.sendMessage("Banned "+contents[1]).queue();
+            replyToMessageSafely(ch, loader.getMessage(), "Banned "+contents[1]);
         }
     }
 

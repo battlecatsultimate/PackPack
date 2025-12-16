@@ -57,15 +57,22 @@ public abstract class Command {
         return m.setComponents(ActionRow.of(components));
     }
 
-    public static List<MessageTopLevelComponent> withConfirmButtons(List<MessageTopLevelComponent> components, CommonStatic.Lang.Locale lang) {
+    public static void messageWithConfirmButtons(List<MessageTopLevelComponent> components, CommonStatic.Lang.Locale lang) {
         components.add(
                 ActionRow.of(
                         Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
                         Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
                 )
         );
+    }
 
-        return components;
+    public static void containerWithConfirmButtons(List<ContainerChildComponent> components, CommonStatic.Lang.Locale lang) {
+        components.add(
+                ActionRow.of(
+                        Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
+                )
+        );
     }
 
     public static MessageCreateAction registerSearchComponents(MessageCreateAction m, int dataSize, List<String> data, CommonStatic.Lang.Locale lang) {
@@ -318,6 +325,34 @@ public abstract class Command {
             }
         } else {
             ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, String content, Consumer<Message> onSuccess) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            } else {
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().queue(onSuccess);
+            }
+        } else {
+            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, Message reference, String content, Consumer<Message> onSuccess, Consumer<Throwable> onError) {
+        if (ch instanceof GuildMessageChannel gc) {
+            Guild g = gc.getGuild();
+
+            if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+            } else {
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().queue(onSuccess, onError);
+            }
+        } else {
+            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
         }
     }
 
