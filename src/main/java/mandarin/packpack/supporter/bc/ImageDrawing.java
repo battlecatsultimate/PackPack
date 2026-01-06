@@ -2853,7 +2853,8 @@ public class ImageDrawing {
         if(yw.divide(xw, Equation.context).compareTo(BigDecimal.valueOf(10)) > 0 || yw.compareTo(BigDecimal.ZERO) == 0)
             keepRatio = true;
 
-        AtomicReference<String> text = new AtomicReference<>(" ");
+        AtomicReference<String> xText = new AtomicReference<>(" ");
+        AtomicReference<String> yText = new AtomicReference<>(" ");
 
         boolean finalKeepRatio = keepRatio;
 
@@ -3029,10 +3030,12 @@ public class ImageDrawing {
                     g.drawLine(x0, y0, x1, y1);
                 }
 
-                text.set(String.format(
-                        LangID.getStringByID("plot.success", lang),
+                xText.set(LangID.getStringByID("plot.success.xRange", lang).formatted(
                         Equation.formatNumber(centerX.subtract(xw.divide(BigDecimal.valueOf(2), Equation.context))),
-                        Equation.formatNumber(centerX.add(xw.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerX.add(xw.divide(BigDecimal.valueOf(2), Equation.context)))
+                ));
+
+                yText.set(LangID.getStringByID("plot.success.yRange", lang).formatted(
                         Equation.formatNumber(centerY.subtract(yw.divide(BigDecimal.valueOf(2), Equation.context))),
                         Equation.formatNumber(centerY.add(yw.divide(BigDecimal.valueOf(2), Equation.context)))
                 ));
@@ -3049,7 +3052,7 @@ public class ImageDrawing {
 
         waiter.await();
 
-        return new Object[] { image, text.get() };
+        return new Object[] { image, xText.get(), yText.get() };
     }
 
     public static Object[] plotTGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, BigDecimal[] tRange, boolean keepRatio, CommonStatic.Lang.Locale lang) throws Exception {
@@ -3069,7 +3072,9 @@ public class ImageDrawing {
         if(yw.divide(xw, Equation.context).compareTo(BigDecimal.valueOf(10)) > 0 || yw.compareTo(BigDecimal.ZERO) == 0)
             keepRatio = true;
 
-        AtomicReference<String> text = new AtomicReference<>("");
+        AtomicReference<String> tText = new AtomicReference<>(" ");
+        AtomicReference<String> xText = new AtomicReference<>(" ");
+        AtomicReference<String> yText = new AtomicReference<>(" ");
 
         boolean finalKeepRatio = keepRatio;
 
@@ -3245,12 +3250,17 @@ public class ImageDrawing {
                     g.drawLine(x0, y0, x1, y1);
                 }
 
-                text.set(String.format(
-                        LangID.getStringByID("tPlot.success", lang),
+                tText.set(LangID.getStringByID("tPlot.success.tRange", lang).formatted(
                         Equation.formatNumber(tRange[0]),
-                        Equation.formatNumber(tRange[1]),
+                        Equation.formatNumber(tRange[1])
+                ));
+
+                xText.set(LangID.getStringByID("tPlot.success.xRange", lang).formatted(
                         Equation.formatNumber(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                        Equation.formatNumber(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context)))
+                ));
+
+                yText.set(LangID.getStringByID("tPlot.success.yRange", lang).formatted(
                         Equation.formatNumber(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
                         Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
                 ));
@@ -3267,7 +3277,7 @@ public class ImageDrawing {
 
         waiter.await();
 
-        return new Object[] { image, text.get() };
+        return new Object[] { image, tText.get(), xText.get(), yText.get() };
     }
 
     public static Object[] plotXYGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, CommonStatic.Lang.Locale lang) throws Exception {
@@ -3618,7 +3628,10 @@ public class ImageDrawing {
 
         CountDownLatch waiter = new CountDownLatch(1);
 
-        AtomicReference<String> text = new AtomicReference<>("");
+        AtomicReference<String> rText = new AtomicReference<>("");
+        AtomicReference<String> tText = new AtomicReference<>("");
+        AtomicReference<String> xText = new AtomicReference<>("");
+        AtomicReference<String> yText = new AtomicReference<>("");
 
         StaticStore.renderManager.createRenderer(plotWidthHeight, plotWidthHeight, temp, connector -> {
             connector.queue(g -> {
@@ -4026,14 +4039,22 @@ public class ImageDrawing {
                     }
                 }
 
-                text.set(String.format(
-                        LangID.getStringByID("rPlot.success", lang),
-                        DataToString.df.format(tRange[0]),
-                        DataToString.df.format(tRange[1]),
+                rText.set(LangID.getStringByID("rPlot.success.rRange", lang).formatted(
                         DataToString.df.format(rRange[0]),
-                        DataToString.df.format(rRange[1]),
+                        DataToString.df.format(rRange[1])
+                ));
+
+                tText.set(LangID.getStringByID("rPlot.success.tRange", lang).formatted(
+                        DataToString.df.format(rRange[0]),
+                        DataToString.df.format(rRange[1])
+                ));
+
+                xText.set(LangID.getStringByID("rPlot.success.xRange", lang).formatted(
                         DataToString.df.format(centerX - xWidth / 2.0),
-                        DataToString.df.format(centerX + xWidth / 2.0),
+                        DataToString.df.format(centerX + xWidth / 2.0)
+                ));
+
+                yText.set(LangID.getStringByID("rPlot.success.yRange", lang).formatted(
                         DataToString.df.format(centerY - yWidth / 2.0),
                         DataToString.df.format(centerY + yWidth / 2.0)
                 ));
@@ -4050,7 +4071,7 @@ public class ImageDrawing {
 
         waiter.await();
 
-        return new Object[] { image, text.get() };
+        return new Object[] { image, rText.get(), tText.get(), xText.get(), yText.get() };
     }
 
     public static File plotDPSGraph(BigDecimal[][] coordinates, @Nullable BigDecimal[][] withTreasure, BigDecimal[] xRange, BigDecimal[] yRange, CommonStatic.Lang.Locale lang) throws Exception {

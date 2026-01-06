@@ -10,12 +10,22 @@ import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import javax.annotation.Nonnull;
+
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +41,7 @@ public class RTheta extends TimedConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noFormula", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("plot.failed.noFormula", lang));
 
             return;
         }
@@ -46,7 +56,7 @@ public class RTheta extends TimedConstraintCommand {
         String[] test = f.split("=");
 
         if(test.length > 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.invalidFormat", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("plot.failed.invalidFormat", lang));
 
             return;
         }
@@ -54,7 +64,7 @@ public class RTheta extends TimedConstraintCommand {
         Formula formula = new Formula(f, 2, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Formula.getErrorMessage());
 
             return;
         }
@@ -100,9 +110,21 @@ public class RTheta extends TimedConstraintCommand {
         Object[] plots = ImageDrawing.plotRThetaGraph(formula, xRange, yRange, rr, tr, lang);
 
         if(plots == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noImage", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("plot.failed.noImage", lang));
         } else {
-            sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", loader.getMessage());
+            List<ContainerChildComponent> components = new ArrayList<>();
+
+            components.add(TextDisplay.of("## " + LangID.getStringByID("rPlot.result", lang)));
+            components.add(Separator.create(true, Separator.Spacing.LARGE));
+            components.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData((File) plots[0], "plot.png"))));
+            components.add(Separator.create(true, Separator.Spacing.LARGE));
+            components.add(TextDisplay.of(plots[1] + "\n" + plots[2] + "\n\n" + plots[3] + "\n" + plots[4]));
+
+            replyToMessageSafely(ch, loader.getMessage(), msg -> StaticStore.deleteFile((File) plots[0], true), e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/RThetaPlot::doSomething - Failed to send plot image file");
+
+                StaticStore.deleteFile((File) plots[0], true);
+            }, Container.of(components));
         }
     }
 

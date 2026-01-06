@@ -132,8 +132,13 @@ public class SolutionHolder extends SearchHolder {
             children.add(ActionRow.of(buttons));
         }
 
-        children.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang))));
+        children.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.close", lang))));
 
         return Container.of(children);
+    }
+
+    @Override
+    public String getCancelText() {
+        return LangID.getStringByID("solve.close", lang);
     }
 }

@@ -25,7 +25,7 @@ public class Calculator extends ConstraintCommand {
         String[] equation = loader.getContent().split(" ", 2);
 
         if(equation.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("calculator.failed.noEquation", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("calculator.failed.noEquation", lang));
 
             return;
         }
@@ -41,9 +41,9 @@ public class Calculator extends ConstraintCommand {
                 value = Equation.formatNumber(result);
             }
 
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("calculator.result", lang), value), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("calculator.result", lang).formatted(value));
         } else {
-            replyToMessageSafely(ch, Equation.getErrorMessage(), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Equation.getErrorMessage());
         }
     }
 }

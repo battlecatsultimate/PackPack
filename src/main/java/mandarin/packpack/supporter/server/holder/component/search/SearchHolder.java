@@ -54,7 +54,7 @@ public abstract class SearchHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
-        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("ui.search.expired", lang)))
+        message.editMessageComponents(TextDisplay.of(getCancelText()))
                 .setAllowedMentions(new ArrayList<>())
                 .useComponentsV2()
                 .mentionRepliedUser(false)
@@ -128,7 +128,7 @@ public abstract class SearchHolder extends ComponentHolder {
     }
 
     public void cancel(GenericComponentInteractionCreateEvent event) {
-        event.deferEdit().setComponents(TextDisplay.of(LangID.getStringByID("ui.search.canceled", lang)))
+        event.deferEdit().setComponents(TextDisplay.of(getCancelText()))
                 .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
@@ -239,6 +239,10 @@ public abstract class SearchHolder extends ComponentHolder {
 
     public String getSearchSummary() {
         return LangID.getStringByID("ui.search.severalResult", lang).formatted(keyword, getDataSize());
+    }
+
+    public String getCancelText() {
+        return LangID.getStringByID("ui.search.canceled", lang);
     }
 
     protected void apply(IMessageEditCallback event) {

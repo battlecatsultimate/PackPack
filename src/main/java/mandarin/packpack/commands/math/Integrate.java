@@ -9,11 +9,17 @@ import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +35,7 @@ public class Integrate extends TimedConstraintCommand {
         String[] contents = loader.getContent().split(" ", 2);
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("integration.failed.noFormulaRange", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("integration.failed.noFormulaRange", lang));
 
             return;
         }
@@ -39,7 +45,7 @@ public class Integrate extends TimedConstraintCommand {
         String f = filterFormula(command).trim();
 
         if(f.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("differentiate.failed.noFormula", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("integration.failed.noFormula", lang));
 
             return;
         }
@@ -47,7 +53,7 @@ public class Integrate extends TimedConstraintCommand {
         Formula formula = new Formula(f, 1, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Formula.getErrorMessage());
 
             return;
         }
@@ -55,13 +61,13 @@ public class Integrate extends TimedConstraintCommand {
         String[] r = findRange(command);
 
         if(r == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("integration.failed.noRange", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("integration.failed.noRange", lang));
 
             return;
         }
 
         if(r.length > 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("integration.failed.tooManyRange", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("integration.failed.tooManyRange", lang));
 
             return;
         }
@@ -71,7 +77,7 @@ public class Integrate extends TimedConstraintCommand {
         range[0] = Equation.calculate(r[0], null, false, lang);
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("integration.failed.rangeFailed", lang)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Equation.getErrorMessage(LangID.getStringByID("integration.failed.rangeFailed", lang)));
 
             return;
         }
@@ -79,7 +85,7 @@ public class Integrate extends TimedConstraintCommand {
         range[1] = Equation.calculate(r[1], null, false, lang);
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("integration.failed.rangeFailed", lang)), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Equation.getErrorMessage(LangID.getStringByID("integration.failed.rangeFailed", lang)));
 
             return;
         }
@@ -94,7 +100,7 @@ public class Integrate extends TimedConstraintCommand {
             BigDecimal trial = Equation.calculate(s, null, false, lang);
 
             if(!Equation.error.isEmpty()) {
-                replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("integration.failed.rangeNumberFailed", lang)), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), Equation.getErrorMessage(LangID.getStringByID("integration.failed.rangeNumberFailed", lang)));
 
                 return;
             }
@@ -103,7 +109,7 @@ public class Integrate extends TimedConstraintCommand {
         }
 
         if(section <= 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("integration.failed.invalidSection", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("integration.failed.invalidSection", lang));
 
             return;
         }
@@ -113,9 +119,24 @@ public class Integrate extends TimedConstraintCommand {
         BigDecimal result = formula.integrate(range[0], range[1], section, algorithm, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(Formula.getErrorMessage()), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Equation.getErrorMessage(Formula.getErrorMessage()));
         } else {
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("integration.success", lang), Equation.formatNumber(result), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), section, getAlgorithmName(algorithm)), loader.getMessage(), a -> a);
+            List<ContainerChildComponent> components = new ArrayList<>();
+
+            components.add(TextDisplay.of("## " + LangID.getStringByID("integration.result", lang)));
+            components.add(Separator.create(true, Separator.Spacing.LARGE));
+            components.add(TextDisplay.of(
+                    LangID.getStringByID("integration.success.description", lang) + "\n\n" +
+                            LangID.getStringByID("integration.success.result", lang).formatted(Equation.formatNumber(result))
+            ));
+            components.add(Separator.create(true, Separator.Spacing.LARGE));
+            components.add(TextDisplay.of(
+                    LangID.getStringByID("integration.success.range", lang).formatted(Equation.formatNumber(range[0]), Equation.formatNumber(range[1])) + "\n\n" +
+                    LangID.getStringByID("integration.success.algorithm", lang).formatted(getAlgorithmName(algorithm)) + "\n" +
+                    LangID.getStringByID("integration.success.section", lang).formatted(section)
+            ));
+            
+            replyToMessageSafely(ch, loader.getMessage(), Container.of(components));
         }
     }
 

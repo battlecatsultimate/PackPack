@@ -1253,7 +1253,7 @@
         }
     },
     "differentiate" : {
-        "success" : "Successfully differentiated formula\n\n**f'(%s) = %s**\n\nUsed algorithm : %s\nStep size : %s",
+        "result" : "Differentiation Result",
         "failed" : {
             "calculationFailed" : "Failed to calculate the provided value",
             "invalidPoint" : "Can't differentiate at this point",
@@ -1262,6 +1262,12 @@
             "noValue" : "You didn't specify the value!",
             "stepFailed" : "Failed to calculate the provided step value",
             "zeroStep" : "Step can't be zero!"
+        },
+        "success" : {
+            "algorithm" : "Used Algorithm : %s",
+            "description" : "Successfully differentiated formula",
+            "formula" : "**f'(%s) = %s**",
+            "step" : "Step size : %s"
         }
     },
     "donate" : {
@@ -2407,7 +2413,7 @@
         }
     },
     "integration" : {
-        "success" : "Success fully integrated formula!\n\n**Result : %s**\n\nRange : [%s, %s]\nNumber of section : %d\nUsed algorithm : %s",
+        "result" : "Integration Result",
         "failed" : {
             "integrationFailed" : "Failed to integrate formula",
             "invalidSection" : "Number of section cannot be zero or less!",
@@ -2421,6 +2427,13 @@
                 "simpson1/3" : "Number of section must be multiple of 2 to use Simpson's Rule (Simpson's 1/3 Rule)",
                 "simpson3/8" : "Number of section must be multiple of 3 to use Simpson's 3/8 Rule"
             }
+        },
+        "success" : {
+            "algorithm" : "Used algorithm : %s",
+            "description" : "Successfully integrated formula",
+            "range" : "Range : [%s, %s]",
+            "result" : "**Result : %s**",
+            "section" : "Number of section : %d"
         }
     },
     "locale" : {
@@ -2457,11 +2470,16 @@
     "plot" : {
         "calculating" : "Calculating f(x,y) graph...",
         "generating" : "Generating f(x,y) image...",
-        "success" : "Generated plot image successfully!\nX Range : [%s, %s]\nY Range : [%s, %s]",
+        "result" : "Plotting Result",
         "failed" : {
             "invalidFormat" : "Invalid format, only f(x), f(x,y), f(x)=g(x), f(x,y)=g(x,y) formats are allowed",
             "noFormula" : "Please specify the formula!",
             "noImage" : "Failed to generate plot image..."
+        },
+        "success" : {
+            "description" : "Generated plot image successfully",
+            "xRange" : "X Range : [%s, %s]",
+            "yRange" : "Y Range : [%s, %s]"
         }
     },
     "prefix" : {
@@ -2485,7 +2503,15 @@
         }
     },
     "rPlot" : {
-        "success" : "Generated plot image successfully!\nθ Range : [%s, %s]\nr Range : [%s, %s]\n\nX Range : [%s, %s]\nY Range : [%s, %s]"
+        "result" : "Plotting Result",
+        "success" : {
+            "description" : "Generated plot image successfully",
+            "rRange" : "r Range : [%s, %s]",
+            "tRange" : "θ Range : [%s, %s]",
+            "xRange" : "X Range : [%s, %s]",
+            "yRange" : "Y Range : [%s, %s]"
+
+        }
     },
     "save" : {
         "done" : "完了!",
@@ -2944,6 +2970,7 @@
         }
     },
     "solve" : {
+        "close" : "Root list closed",
         "noRoot" : "Bot couldn't find root in this range, [%s, %s], or fail to calculate formula in this range",
         "root" : "\u001B[1;37mSolution \u001B[32m#%d\n\n\u001B[0m\u001B[1;31mRoot : \u001B[4m\u001B[1;37m%s\u001B[0;0m\n\u001B[1;34mRange : \u001B[0m[%s, %s] \u001B[0;0m| \u001B[1;34mRelative Error : \u001B[0m%s%%",
         "failed" : {
@@ -3064,12 +3091,18 @@
         }
     },
     "tPlot" : {
-        "success" : "Generated plot image successfully!\nT Range : [%s, %s]\nX Range : [%s, %s]\nY Range : [%s, %s]",
+        "result" : "Plotting Result",
         "failed" : {
             "noFunction" : {
                 "x" : "You didn't specify x(t)!",
                 "y" : "You didn't specify y(t)!"
             }
+        },
+        "success" : {
+            "description" : "Generated plot image successfully",
+            "tRange" : "T Range : [%s, %s]",
+            "xRange" : "X Range : [%s, %s]",
+            "yRange" : "Y Range : [%s, %s]"
         }
     },
     "talentAnalyzer" : {

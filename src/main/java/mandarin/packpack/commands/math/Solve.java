@@ -12,7 +12,12 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SolutionHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -49,7 +54,7 @@ public class Solve extends TimedConstraintCommand {
         String[] commands = loader.getContent().split(" ", 2);
 
         if(commands.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot.failed.noFormula", lang), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("plot.failed.noFormula", lang));
 
             return;
         }
@@ -66,7 +71,7 @@ public class Solve extends TimedConstraintCommand {
             String[] side = formula.split("=");
 
             if(side.length > 2) {
-                replyToMessageSafely(ch, LangID.getStringByID("solve.failed.invalidFormat", lang), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("solve.failed.invalidFormat", lang));
 
                 return;
             }
@@ -77,7 +82,7 @@ public class Solve extends TimedConstraintCommand {
         Formula f = new Formula(formula, 1, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Formula.getErrorMessage());
 
             return;
         }
@@ -132,7 +137,7 @@ public class Solve extends TimedConstraintCommand {
         }
 
         if(targetRanges.isEmpty()) {
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("solve.noRoot", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1])), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("solve.noRoot", lang).formatted(Equation.formatNumber(range[0]), Equation.formatNumber(range[1])));
 
             return;
         }
@@ -181,7 +186,7 @@ public class Solve extends TimedConstraintCommand {
             targetRanges.clear();
             targetRanges.addAll(actualResults);
 
-            summary = String.format(LangID.getStringByID("solve.success.error", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, Equation.formatNumber(error), getAlgorithmName(ROOT));
+            summary = LangID.getStringByID("solve.success.error", lang).formatted(Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, Equation.formatNumber(error), getAlgorithmName(ROOT));
         } else {
             for(int i = 0; i < targetRanges.size(); i++) {
                 NumericalResult result = f.solveByIteration(targetRanges.get(i)[0], targetRanges.get(i)[1], iteration, ROOT, lang);
@@ -219,40 +224,16 @@ public class Solve extends TimedConstraintCommand {
         }
 
         if(!targetRanges.isEmpty() && success == 0) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, loader.getMessage(), Formula.getErrorMessage());
 
             return;
         }
 
-        StringBuilder sb = new StringBuilder("```ansi\n");
-
-        List<String> data = accumulateListData(solutions, targetRanges);
-
-        for(int i = 0; i < data.size(); i++) {
-            sb.append(data.get(i));
-            
-            if(i < data.size() - 1)
-                sb.append("\n\n");
-            else
-                sb.append("\n");
-        }
-
-        if(solutions.size() > 5) {
-            int totalPage = solutions.size() / 5;
-
-            if(solutions.size() % 5 != 0)
-                totalPage++;
-
-            sb.append(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)).append("\n");
-        }
-
-        sb.append("```");
-
-        replyToMessageSafely(ch, summary + sb, loader.getMessage(), a -> a.setComponents(getComponents(solutions)), msg -> {
-            if(solutions.size() > 5) {
+        replyToMessageSafely(ch, loader.getMessage(), msg -> {
+            if (solutions.size() > 5) {
                 StaticStore.putHolder(u.getId(), new SolutionHolder(loader.getMessage(), u.getId(), ch.getId(), msg, config.searchLayout, summary, targetRanges, solutions, lang));
             }
-        });
+        }, getComponents(accumulateListData(solutions, targetRanges), summary));
     }
 
     private Formula.ROOT findAlgorithm(String command) {
@@ -354,10 +335,7 @@ public class Solve extends TimedConstraintCommand {
     public List<String> accumulateListData(List<NumericalResult> solutions, List<BigDecimal[]> targetRanges) {
         List<String> result = new ArrayList<>();
 
-        for(int i = 0; i < 5; i++) {
-            if(i >= solutions.size())
-                break;
-
+        for(int i = 0; i < solutions.size(); i++) {
             NumericalResult solution = solutions.get(i);
 
             result.add(String.format(
@@ -373,32 +351,62 @@ public class Solve extends TimedConstraintCommand {
         return result;
     }
 
-    public List<ActionRow> getComponents(List<NumericalResult> solutions) {
-        int totalPage = solutions.size() / 5;
+    public Container getComponents(List<String> listData, String summary) {
+        int totalPage = SearchHolder.getTotalPage(listData.size(), 5);
 
-        if(solutions.size() % 5 != 0)
-            totalPage++;
+        List<ContainerChildComponent> children = new ArrayList<>();
 
-        List<ActionRow> rows = new ArrayList<>();
+        children.add(TextDisplay.of(summary));
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-        if(solutions.size() > 5) {
+        switch (config.searchLayout) {
+            case ConfigHolder.SearchLayout.FANCY_BUTTON, ConfigHolder.SearchLayout.FANCY_LIST -> {
+                for (int i = 0; i < listData.size(); i++) {
+                    children.add(TextDisplay.of("```ansi\n" + listData.get(i) + "\n```"));
+
+                    if (i < listData.size() - 1) {
+                        children.add(Separator.create(false, Separator.Spacing.SMALL));
+                    }
+                }
+            }
+            case ConfigHolder.SearchLayout.COMPACTED -> {
+                StringBuilder builder = new StringBuilder();
+
+                for (int i = 0; i < listData.size(); i++) {
+                    builder.append(i + 1).append(". ").append(listData.get(i));
+
+                    if (i < listData.size() - 1) {
+                        builder.append("\n");
+                    }
+                }
+
+                children.add(TextDisplay.of("```ansi\n" + builder + "\n```"));
+            }
+        }
+
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        children.add(TextDisplay.of(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)));
+
+        if(listData.size() > 5) {
             List<Button> buttons = new ArrayList<>();
 
             if(totalPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).withDisabled(true));
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
-
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).withDisabled(true));
             buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
 
             if(totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
             }
 
-            rows.add(ActionRow.of(buttons));
+            children.add(ActionRow.of(buttons));
         }
 
-        return rows;
+        children.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("ui.button.close", lang))));
+
+        return Container.of(children);
     }
 }
