@@ -1872,6 +1872,33 @@ public class DataToString extends Data {
         return result.toString();
     }
 
+    public static String getChallengeRewards(Stage s, CommonStatic.Lang.Locale lang) {
+        if (s == null || !s.getCont().info.hasAbyssChallenge || !(s.info instanceof DefStageInfo info) || info.challengeRewards.isEmpty())
+            return null;
+
+        ArrayList<Integer> clearTimes = new ArrayList<>(info.challengeRewards.keySet());
+
+        System.out.println(info.challengeRewards.keySet());
+
+        clearTimes.sort(Integer::compareTo);
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < clearTimes.size(); i++) {
+            Map.Entry<Integer, Integer> set = info.challengeRewards.get(clearTimes.get(i));
+
+            if (set == null)
+                continue;
+
+            builder.append(clearTimes.get(i)).append(" | " ).append(MultiLangCont.getStageDrop(set.getKey(), lang)).append(" | ").append(set.getValue());
+
+            if (i < clearTimes.size() - 1)
+                builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
     public static String getRewards(Stage s, CommonStatic.Lang.Locale lang) {
         if(s == null || !(s.info instanceof DefStageInfo info) || info.drop == null || info.drop.length == 0)
             return null;

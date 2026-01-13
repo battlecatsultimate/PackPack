@@ -1012,6 +1012,7 @@
                     "score" : "Награды за Очки"
                 },
                 "type" : {
+                    "challenge" : "Challenge Drops (Clear | Reward | Amount)",
                     "number" : "Награда (Ном. | Награда | Количество)",
                     "score" : "Награда за Очки (Очки | Награда | Количество)",
                     "chance" : {

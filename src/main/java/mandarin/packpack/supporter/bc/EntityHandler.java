@@ -1214,6 +1214,12 @@ public class EntityHandler {
             if(score != null) {
                 spec.addField(LangID.getStringByID("data.stage.reward.type.score", lang), score, false);
             }
+
+            String challenge = DataToString.getChallengeRewards(st, lang);
+
+            if (challenge != null) {
+                spec.addField(LangID.getStringByID("data.stage.reward.type.challenge", lang), challenge, false);
+            }
         }
 
         if(schemeLink != null) {

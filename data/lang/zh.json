@@ -1012,6 +1012,7 @@
                     "score" : "積分掉落獎勵"
                 },
                 "type" : {
+                    "challenge" : "Challenge Drops (Clear | Reward | Amount)",
                     "number" : "掉落獎勵 (No. | 獎勵 | 數量)",
                     "score" : "積分掉落獎勵 (積分 | 獎勵 | 數量)",
                     "chance" : {

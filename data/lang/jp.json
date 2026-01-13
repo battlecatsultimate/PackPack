@@ -1012,6 +1012,7 @@
                     "score" : "採点報酬"
                 },
                 "type" : {
+                    "challenge" : "Challenge Drops (Clear | Reward | Amount)",
                     "number" : "(No. | 報酬 | 数)",
                     "score" : "スコア (スコア | 報酬 | 数)",
                     "chance" : {

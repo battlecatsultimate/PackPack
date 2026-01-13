@@ -1012,6 +1012,7 @@
                     "score" : "Score Drops"
                 },
                 "type" : {
+                    "challenge" : "Challenge Drops (Clear | Reward | Amount)",
                     "number" : "Drops (No. | Reward | Amount)",
                     "score" : "Score Drops (Score | Reward | Amount)",
                     "chance" : {
