@@ -62,7 +62,7 @@ public class PackBot {
 
     public static RestAction<Message> statusMessage = null;
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Logger.writeLog(Logger.BotInstance.PACK_PACK)));
         Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
                 StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Uncaught exception found : " + t.getName())
@@ -396,7 +396,7 @@ public class PackBot {
         for(Guild g : guilds) {
             String gID = g.getId();
 
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(gID, k -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(gID, _ -> new IDHolder(g));
 
             boolean[] done = new boolean[EventFactor.supportedVersions.length];
             boolean[] gachaChange = new boolean[EventFactor.supportedVersions.length];
@@ -641,7 +641,7 @@ public class PackBot {
         List<Guild> guilds = client.getGuilds();
 
         for (Guild g : guilds) {
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
 
             for (CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
                 int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
