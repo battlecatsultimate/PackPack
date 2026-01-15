@@ -205,8 +205,6 @@ class RenderSession {
 
         graphics.blend = blend
 
-        GLFW.glfwSwapBuffers(windowID)
-
         export()
 
         progress++
