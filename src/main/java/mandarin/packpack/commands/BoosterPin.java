@@ -102,7 +102,7 @@ public class BoosterPin extends ConstraintCommand {
                 pinNumber.set(list.size());
 
                 countdown.countDown();
-            },  e -> countdown.countDown());
+            },  _ -> countdown.countDown());
 
             countdown.await();
         } catch (Exception e) {

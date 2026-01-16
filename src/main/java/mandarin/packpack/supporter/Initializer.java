@@ -49,9 +49,6 @@ public class Initializer {
             List<UpdateCheck.Downloader> asset, music, lang;
             List<String> langFile = new ArrayList<>();
 
-            langFile.add("Difficulty.txt");
-            CommonStatic.getConfig().localLangMap.put("Difficulty.txt", StaticStore.langs.getOrDefault("Difficulty.txt", ""));
-
             for(String f : folder) {
                 for(String fi : file) {
                     langFile.add(f + fi);
@@ -87,7 +84,7 @@ public class Initializer {
 
             for(UpdateCheck.Downloader d : asset) {
                 System.out.println("Downloading File : "+d.target.getName());
-                d.run((v) -> {});
+                d.run((_) -> {});
             }
 
             AssetLoader.merge();
@@ -98,7 +95,7 @@ public class Initializer {
 
             for(UpdateCheck.Downloader d : music) {
                 System.out.println("Downloading Music : "+d.target.getName());
-                d.run((v) -> {});
+                d.run((_) -> {});
 
                 StaticStore.musics.put(d.target.getName().replace(".ogg", ""), CommonStatic.getConfig().localMusicMap.get(StaticStore.safeParseInt(d.target.getName().replace(".ogg", ""))));
             }
@@ -116,7 +113,7 @@ public class Initializer {
                     System.out.println("Downloading Language File : "+d.target.getName());
                 }
 
-                d.run((v) -> {});
+                d.run((_) -> {});
             }
 
             for(String key : CommonStatic.getConfig().localLangMap.keySet()) {
@@ -148,9 +145,9 @@ public class Initializer {
         System.out.println("Initializing Profile...");
         CommonStatic.ctx.initProfile();
         System.out.println("Loading Assets...");
-        AssetLoader.load((v) -> {});
+        AssetLoader.load((_) -> {});
         System.out.println("Loading BC Data...");
-        UserProfile.getBCData().load(System.out::println, (v) -> {});
+        UserProfile.getBCData().load(System.out::println, (_) -> {});
         System.out.println("Reading Language Data...");
 
         MultiLangCont.getStatic().FNAME.clear();
@@ -564,52 +561,6 @@ public class Initializer {
             String json = new String(medalJson.getData().getBytes(), StandardCharsets.UTF_8);
 
             StaticStore.medalData = JsonParser.parseString(json).getAsJsonObject().get("iconID");
-        }
-
-        File g = new File("./data/assets/lang/Difficulty.txt");
-
-        if(g.exists()) {
-            VFile vf = VFile.getFile(g);
-
-            if(vf != null) {
-                Queue<String> qs = vf.getData().readLine();
-
-                for(String line : qs) {
-                    if(line == null)
-                        continue;
-
-                    String[] str = line.trim().split("\t");
-
-                    if(str.length < 2)
-                        continue;
-
-                    String num = str[1].trim();
-                    String[] numbers = str[0].trim().split("-");
-
-                    if(numbers.length < 3)
-                        continue;
-
-                    int id0 = CommonStatic.parseIntN(numbers[0].trim());
-                    int id1 = CommonStatic.parseIntN(numbers[1].trim());
-                    int id2 = CommonStatic.parseIntN(numbers[2].trim());
-
-                    MapColc mc = MapColc.get(Data.hex(id0));
-
-                    if(mc == null || id1 >= mc.maps.getList().size() || id1 < 0)
-                        continue;
-
-                    StageMap stm = mc.maps.getList().get(id1);
-
-                    if(stm == null || id2 >= stm.list.getList().size() || id2 < 0)
-                        continue;
-
-                    Stage st = stm.list.getList().get(id2);
-
-                    if(st.info instanceof DefStageInfo) {
-                        ((DefStageInfo) st.info).diff = Integer.parseInt(num);
-                    }
-                }
-            }
         }
 
         for(MapColc mc : MapColc.values()) {

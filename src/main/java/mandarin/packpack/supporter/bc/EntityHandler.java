@@ -793,6 +793,7 @@ public class EntityHandler {
         if (configData.showDropInfo) {
             String drops = DataToString.getRewards(st, lang);
             String score = DataToString.getScoreDrops(st, lang);
+            String challenge = DataToString.getChallengeRewards(st, lang);
 
             if(drops != null) {
                 if(drops.endsWith("!!number!!")) {
@@ -817,6 +818,13 @@ public class EntityHandler {
                 children.add(TextDisplay.of(
                         "**" + LangID.getStringByID("data.stage.reward.type.score", lang) + "**\n" +
                                 score
+                ));
+            }
+
+            if (challenge != null) {
+                children.add(TextDisplay.of(
+                        "**" + LangID.getStringByID("data.stage.reward.type.challenge", lang) + "**\n" +
+                                challenge
                 ));
             }
         }
@@ -2446,7 +2454,7 @@ public class EntityHandler {
                 });
 
                 return kotlin.Unit.INSTANCE;
-            }, progress -> image, () -> {
+            }, _ -> image, () -> {
                 waiter.countDown();
 
                 return kotlin.Unit.INSTANCE;
@@ -2596,7 +2604,7 @@ public class EntityHandler {
         Container container = Container.of(children).withAccentColor(c);
 
         if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(img, true), e -> {
+            Command.replyToMessageSafely(ch, reference, _ -> StaticStore.deleteFile(img, true), e -> {
                 StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to upload form image");
 
                 StaticStore.deleteFile(img, true);
@@ -2607,7 +2615,7 @@ public class EntityHandler {
                     .useComponentsV2()
                     .setAllowedMentions(new ArrayList<>())
                     .mentionRepliedUser(false)
-                    .queue(unused -> StaticStore.deleteFile(img, true), e -> {
+                    .queue(_ -> StaticStore.deleteFile(img, true), e -> {
                         StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Failed to upload form image");
 
                         StaticStore.deleteFile(img, true);
@@ -2684,14 +2692,14 @@ public class EntityHandler {
         Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
 
         if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(img, true), container);
+            Command.replyToMessageSafely(ch, reference, _ -> StaticStore.deleteFile(img, true), container);
         } else if (sender instanceof IMessageEditCallback event) {
             event.deferEdit()
                     .setComponents(container)
                     .useComponentsV2()
                     .setAllowedMentions(new ArrayList<>())
                     .mentionRepliedUser(false)
-                    .queue(unused -> StaticStore.deleteFile(img, true), e -> {
+                    .queue(_ -> StaticStore.deleteFile(img, true), e -> {
                         StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyImage - Failed to send enemy image");
 
                         StaticStore.deleteFile(img, true);
@@ -3045,7 +3053,7 @@ public class EntityHandler {
                 .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
-                .queue(m -> {
+                .queue(_ -> {
                     StaticStore.deleteFile(img, true);
 
                     onSuccess.run();
@@ -3383,7 +3391,7 @@ public class EntityHandler {
                 .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
-                .queue(m -> {
+                .queue(_ -> {
                     StaticStore.deleteFile(img, true);
 
                     onSuccess.run();
@@ -3825,7 +3833,7 @@ public class EntityHandler {
                 .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
-                .queue(m -> {
+                .queue(_ -> {
                     StaticStore.deleteFile(img, true);
 
                     onSuccess.run();
@@ -3915,7 +3923,7 @@ public class EntityHandler {
             });
 
             return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return kotlin.Unit.INSTANCE;
@@ -4005,7 +4013,7 @@ public class EntityHandler {
             });
 
             return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return kotlin.Unit.INSTANCE;
@@ -4044,14 +4052,14 @@ public class EntityHandler {
         Container container = Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.RED]);
 
         if (sender instanceof MessageChannel ch) {
-            Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(image, true), container);
+            Command.replyToMessageSafely(ch, reference, _ -> StaticStore.deleteFile(image, true), container);
         } else if (sender instanceof IMessageEditCallback event) {
             event.deferEdit()
                     .setComponents(container)
                     .useComponentsV2()
                     .setAllowedMentions(new ArrayList<>())
                     .mentionRepliedUser(false)
-                    .queue(unused -> StaticStore.deleteFile(image, true), err -> {
+                    .queue(_ -> StaticStore.deleteFile(image, true), err -> {
                         StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::generateEnemySprite - Failed to upload enemy sprite");
 
                         StaticStore.deleteFile(image, true);
@@ -4099,7 +4107,7 @@ public class EntityHandler {
             });
 
             return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return kotlin.Unit.INSTANCE;
@@ -4118,7 +4126,7 @@ public class EntityHandler {
 
         children.add(MediaGallery.of(MediaGalleryItem.fromFile(FileUpload.fromData(image))));
 
-        Command.replyToMessageSafely(ch, reference, unused -> StaticStore.deleteFile(image, true), e -> {
+        Command.replyToMessageSafely(ch, reference, _ -> StaticStore.deleteFile(image, true), e -> {
             StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulSprite - Failed to send soul sprite");
 
             StaticStore.deleteFile(image, true);
@@ -4147,7 +4155,7 @@ public class EntityHandler {
         } else {
             ch.sendMessage(LangID.getStringByID("statAnalyzer.success", lang))
                     .addFiles(FileUpload.fromData(result, "stat.png"))
-                    .queue(m -> {
+                    .queue(_ -> {
                         if(result.exists() && !result.delete()) {
                             StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
                         }
@@ -4171,7 +4179,7 @@ public class EntityHandler {
         } else {
             ch.sendMessage(LangID.getStringByID("statAnalyzer.success", lang))
                     .addFiles(FileUpload.fromData(result, "stat.png"))
-                    .queue(msg -> {
+                    .queue(_ -> {
                         if(result.exists() && !result.delete()) {
                             StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
                         }
@@ -4303,7 +4311,7 @@ public class EntityHandler {
                 ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
                     if(m == null) {
                         ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang))
-                                .queue(message -> {
+                                .queue(_ -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                                     }
@@ -4332,7 +4340,7 @@ public class EntityHandler {
 
                     if(link == null) {
                         m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
-                                .queue(message -> {
+                                .queue(_ -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                                     }
@@ -4347,7 +4355,7 @@ public class EntityHandler {
                         long finalEnd = System.currentTimeMillis();
 
                         m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                                .queue(message -> {
+                                .queue(_ -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                                     }
@@ -4365,7 +4373,7 @@ public class EntityHandler {
             } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
                 ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
                         .addFiles(FileUpload.fromData(img, "result.mp4"))
-                        .queue(message -> {
+                        .queue(_ -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                             }
@@ -4426,7 +4434,7 @@ public class EntityHandler {
                     if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
                         ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.imgur", lang)).queue(m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(_ -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -4454,7 +4462,7 @@ public class EntityHandler {
                             if(link == null) {
                                 m.editMessage(LangID.getStringByID("data.animation.gif.failed.imgur", lang))
                                         .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
+                                        .queue(_ -> {
                                             if(img.exists() && !img.delete()) {
                                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                             }
@@ -4470,7 +4478,7 @@ public class EntityHandler {
 
                                 m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.imgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
+                                        .queue(_ -> {
                                             if(img.exists() && !img.delete()) {
                                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                             }
@@ -4486,7 +4494,7 @@ public class EntityHandler {
                     } else if(img.length() < 200 * 1024 * 1024) {
                         ch.sendMessage(LangID.getStringByID("data.animation.gif.alternative.catbox", lang)).queue(m -> {
                             if(m == null) {
-                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(message -> {
+                                ch.sendMessage(LangID.getStringByID("data.animation.gif.failed.unknown", lang)).queue(_ -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
@@ -4514,7 +4522,7 @@ public class EntityHandler {
                             if(link == null) {
                                 m.editMessage(LangID.getStringByID("data.animation.gif.failed.catbox", lang))
                                         .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
+                                        .queue(_ -> {
                                             if(img.exists() && !img.delete()) {
                                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                             }
@@ -4530,7 +4538,7 @@ public class EntityHandler {
 
                                 m.editMessage(LangID.getStringByID("data.animation.gif.uploaded.catbox", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
                                         .setAllowedMentions(new ArrayList<>())
-                                        .queue(message -> {
+                                        .queue(_ -> {
                                             if(img.exists() && !img.delete()) {
                                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                             }
@@ -4547,7 +4555,7 @@ public class EntityHandler {
                 } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
                     ch.sendMessage(LangID.getStringByID("data.animation.gif.uploaded.default", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .queue(message -> {
+                            .queue(_ -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
                                 }
@@ -4722,7 +4730,7 @@ public class EntityHandler {
             });
 
             return kotlin.Unit.INSTANCE;
-        }, progress -> img, () -> {
+        }, _ -> img, () -> {
             waiter.countDown();
 
             return kotlin.Unit.INSTANCE;
@@ -5217,7 +5225,7 @@ public class EntityHandler {
             });
 
             return kotlin.Unit.INSTANCE;
-        }, progress -> img, () -> {
+        }, _ -> img, () -> {
             waiter.countDown();
 
             return kotlin.Unit.INSTANCE;
@@ -5304,7 +5312,7 @@ public class EntityHandler {
             });
 
             return kotlin.Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return kotlin.Unit.INSTANCE;
@@ -5355,7 +5363,7 @@ public class EntityHandler {
                 });
 
                 return kotlin.Unit.INSTANCE;
-            }, progress -> image, () -> {
+            }, _ -> image, () -> {
                 waiter.countDown();
 
                 return kotlin.Unit.INSTANCE;
@@ -6123,7 +6131,7 @@ public class EntityHandler {
                 i++;
             }
 
-            action.queue(m -> {
+            action.queue(_ -> {
                 while(!done.isEmpty()) {
                     File target = done.poll();
 
