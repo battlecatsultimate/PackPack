@@ -107,7 +107,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
             StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getId()+")"+"\nSize : "+g.getMemberCount());
 
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
 
             StaticStore.saveServerInfo();
 
@@ -139,7 +139,7 @@ public class AllEventAdapter extends ListenerAdapter {
             Guild g = event.getGuild();
             String roleID = event.getRole().getId();
 
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
 
             if (roleID.equals(holder.moderator)) {
                 holder.moderator = null;
@@ -367,7 +367,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     msg.delete().queue();
                 }
 
-                IDHolder idh = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+                IDHolder idh = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
 
                 String userPrefix = StaticStore.getPrefix(u.getId()).toLowerCase(java.util.Locale.ENGLISH);
 
@@ -377,7 +377,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     m.getUser().openPrivateChannel().queue(pc ->
                             pc.sendMessage(LangID.getStringByID("bot.denied.reason.prefixBanned.all", finalLocale).formatted(g.getName(), StaticStore.globalPrefix)).queue(null, e ->
                                     StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Failed to send prefix banned DM to user")
-                            ), e -> {}
+                            ), _ -> {}
                     );
 
                     return;
@@ -388,7 +388,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     m.getUser().openPrivateChannel().queue(pc ->
                             pc.sendMessage(LangID.getStringByID("bot.denied.reason.prefixBanned.specific", finalLocale).formatted(g.getName(), finalPrefix, StaticStore.globalPrefix, StaticStore.globalPrefix)).queue(null, e ->
                                     StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Failed to send prefix banned DM to user")
-                            ), e -> {}
+                            ), _ -> {}
                     );
 
                     return;
@@ -899,7 +899,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     if (g == null) {
                         idh = null;
                     } else {
-                        idh = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+                        idh = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
                     }
 
                     boolean channelPermitted = false;
@@ -1307,7 +1307,7 @@ public class AllEventAdapter extends ListenerAdapter {
         List<Guild> l = client.getGuilds().stream().filter(Objects::nonNull).toList();
 
         for (Guild guild : l) {
-            IDHolder id = StaticStore.idHolder.computeIfAbsent(guild.getId(), k -> new IDHolder(guild));
+            IDHolder id = StaticStore.idHolder.computeIfAbsent(guild.getId(), _ -> new IDHolder(guild));
             List<Role> roles = guild.getRoles();
 
             //Validate Role
