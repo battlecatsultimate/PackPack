@@ -101,6 +101,9 @@ object YDKEValidator {
     }
 
     fun loadCDBData() {
+        aliasData.clear()
+        cardName.clear()
+
         val cdbList = arrayListOf("cards.cdb", "BCTC.cdb")
 
         cdbList.forEach { cdb ->

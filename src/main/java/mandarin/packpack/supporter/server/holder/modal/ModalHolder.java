@@ -56,6 +56,32 @@ public abstract class ModalHolder extends Holder {
         throw new IllegalStateException(builder.toString());
     }
 
+    @Nonnull
+    public List<Message.Attachment> getAttachmentFromMap(List<ModalMapping> mappings, String key) {
+        for(int i = 0; i < mappings.size(); i++) {
+            ModalMapping mapping = mappings.get(i);
+
+            if(mapping.getCustomId().equals(key)) {
+                return mapping.getAsAttachmentList();
+            }
+        }
+
+        StringBuilder builder = new StringBuilder("E/ModalHolder::getValueFromMap - No such key ")
+                .append(key)
+                .append(" found in this mappings\n\nMapping : [\n");
+
+        for(int i = 0; i < mappings.size(); i++) {
+            builder.append(mappings.get(i).getCustomId())
+                    .append(" [")
+                    .append(mappings.get(i).getType())
+                    .append("] -> ")
+                    .append(mappings.get(i).getAsString())
+                    .append("\n");
+        }
+
+        throw new IllegalStateException(builder.toString());
+    }
+
     @Override
     public final Type getType() {
         return Type.MODAL;

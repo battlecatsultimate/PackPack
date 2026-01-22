@@ -6,7 +6,9 @@ import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.StaticStore
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -16,6 +18,8 @@ import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
 
 @Suppress("unused")
 object CardData {
@@ -256,6 +260,27 @@ object CardData {
     |                       Methods                       |
     -------------------------------------------------------
      */
+
+    fun userToMember(client: JDA, user: User) : Member? {
+        val g = client.getGuildById(guild) ?: return null
+
+        val member = AtomicReference<Member>()
+        val countdown = CountDownLatch(1)
+
+        g.retrieveMember(user).queue({ m ->
+            member.set(m)
+
+            countdown.countDown()
+        }, { e ->
+            StaticStore.logger.uploadErrorLog(e, "E/CardData::userToMember - Failed to get member data from user")
+
+            countdown.countDown()
+        })
+
+        countdown.await()
+
+        return member.get()
+    }
 
     fun isManager(member: Member) : Boolean {
         val roleList = member.roles.map { r -> r.id }

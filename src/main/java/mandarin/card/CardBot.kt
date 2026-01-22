@@ -724,6 +724,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}addecc",
             "${globalPrefix}aecc" -> AddECC()
             "${globalPrefix}ydke" -> YDKE()
+            "${globalPrefix}uploadydke",
+            "${globalPrefix}uy" -> UploadYDKE()
             else -> {
                 val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 
