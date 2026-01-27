@@ -8,8 +8,11 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.config.user.ConfigButtonHolder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -35,14 +38,33 @@ public class Config extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        CommonStatic.Lang.Locale language = config.lang;
+        replyToMessageSafely(ch, loader.getMessage(), msg -> {
+            CommonStatic.Lang.Locale locale = config.lang == null ? holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang : config.lang;
 
-        String locale;
+            StaticStore.putHolder(loader.getUser().getId(), new ConfigButtonHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, config, holder, locale));
+        }, getComponents());
+    }
 
-        if (language == null) {
-            locale = LangID.getStringByID("config.locale.auto", lang);
+    private Container getComponents() {
+        List<ContainerChildComponent> components = new ArrayList<>();
+
+        components.add(Section.of(
+                Button.secondary("defLevels", LangID.getStringByID("config.defaultLevel.set.title", lang)).withEmoji(Emoji.fromUnicode("⚙️")),
+                TextDisplay.of(
+                        "### " + LangID.getStringByID("config.defaultLevel.title", lang) + "\n" +
+                               "**" + LangID.getStringByID("config.defaultLevel.value", lang).formatted(config.defLevel) + "**\n\n" +
+                               LangID.getStringByID("config.defaultLevel.description", lang).formatted(config.defLevel)
+                )
+        ));
+
+        components.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        String language;
+
+        if (config.lang == null) {
+            language = LangID.getStringByID("config.locale.auto", lang);
         } else {
-            locale = switch (language) {
+            language = switch(config.lang) {
                 case EN -> LangID.getStringByID("bot.language.en", lang);
                 case JP -> LangID.getStringByID("bot.language.jp", lang);
                 case KR -> LangID.getStringByID("bot.language.kr", lang);
@@ -56,64 +78,64 @@ public class Config extends ConstraintCommand {
             };
         }
 
-        String compactTitle = LangID.getStringByID(config.compact ? "data.true" : "data.false", lang);
-        String compactDescription = LangID.getStringByID(config.compact ? "config.compactEmbed.description.true" : "config.compactEmbed.description.false", lang);
+        String currentLocale = LangID.getStringByID("config.locale.value", lang).formatted(language);
 
-        String message = "**" + LangID.getStringByID("config.defaultLevel.title", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
-                LangID.getStringByID("config.defaultLevel.description", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
-                "**" + LangID.getStringByID("config.locale.title", lang).replace("_", locale) + "**" + "\n\n" +
-                "**" + LangID.getStringByID("config.compactEmbed.title", lang).replace("_", compactTitle) + "**" + "\n\n" +
-                compactDescription;
+        components.add(TextDisplay.of(
+                "### " + LangID.getStringByID("config.locale.title", lang) + "\n" +
+                       "**" + currentLocale + "**"
+        ));
 
-        List<SelectOption> languages = new ArrayList<>();
+        List<SelectOption> localeOptions = new ArrayList<>();
 
-        languages.add(SelectOption.of(LangID.getStringByID("config.locale.auto", lang), "auto").withDefault(config.lang == null));
+        localeOptions.add(SelectOption.of(LangID.getStringByID("config.locale.auto", lang), "auto").withDefault(config.lang == null));
 
-        for (CommonStatic.Lang.Locale loc : StaticStore.supportedLanguages) {
-            String l = LangID.getStringByID("bot.language." + loc.code, config.lang);
+        for (CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
+            Emoji emoji = Emoji.fromUnicode(StaticStore.langUnicode[locale.ordinal()]);
 
-            languages.add(SelectOption.of(LangID.getStringByID("config.locale.title", lang).replace("_", l), loc.name()).withDefault(config.lang == loc));
+            localeOptions.add(SelectOption.of(LangID.getStringByID("bot.language." + locale.code, holder.config.lang), locale.name()).withEmoji(emoji).withDefault(config.lang == locale));
         }
 
-        List<Button> components = new ArrayList<>();
+        components.add(ActionRow.of(StringSelectMenu.create("locale").addOptions(localeOptions).setPlaceholder(LangID.getStringByID("locale.selectList", lang)).setRequiredRange(1, 1).build()));
 
-        components.add(Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)));
-        components.add(Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)));
+        components.add(Separator.create(true, Separator.Spacing.LARGE));
 
-        List<Button> pages = new ArrayList<>();
+        Emoji compactEmbedSwitch;
+        String compactEmbedValue;
+        String compactEmbedDescription;
 
-        pages.add(Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-        pages.add(Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT));
-
-        Button compact;
-
-        if(config.compact) {
-            compact = Button.secondary("compact", LangID.getStringByID("config.compactEmbed.title", lang).replace("_", LangID.getStringByID("data.true", lang))).withEmoji(EmojiStore.SWITCHON);
+        if (config.compact) {
+            compactEmbedSwitch = EmojiStore.SWITCHON;
+            compactEmbedValue = LangID.getStringByID("data.true", lang);
+            compactEmbedDescription = LangID.getStringByID("config.compactEmbed.description.true", lang);
         } else {
-            compact = Button.secondary("compact", LangID.getStringByID("config.compactEmbed.title", lang).replace("_", LangID.getStringByID("data.false", lang))).withEmoji(EmojiStore.SWITCHOFF);
+            compactEmbedSwitch = EmojiStore.SWITCHOFF;
+            compactEmbedValue = LangID.getStringByID("data.false", lang);
+            compactEmbedDescription = LangID.getStringByID("config.compactEmbed.description.false", lang);
         }
 
-        replyToMessageSafely(ch, message, loader.getMessage(), a -> a.setComponents(
-                ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config.defaultLevel.set.title", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
-                ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
-                ActionRow.of(compact),
-                ActionRow.of(pages),
-                ActionRow.of(components)
-        ), msg -> {
-            Message author = loader.getMessage();
+        components.add(Section.of(
+                Button.secondary("compact", compactEmbedValue).withEmoji(compactEmbedSwitch),
+                TextDisplay.of(
+                        "### " + LangID.getStringByID("config.compactEmbed.title", lang) + "\n" +
+                               "**" + LangID.getStringByID("config.compactEmbed.value", lang).formatted(compactEmbedValue) + "**\n\n" +
+                               compactEmbedDescription
+                )
+        ));
 
-            User u = author.getAuthor();
+        components.add(Separator.create(true, Separator.Spacing.LARGE));
 
-            CommonStatic.Lang.Locale l;
+        components.add(ActionRow.of(
+                Button.secondary("prev", LangID.getStringByID("ui.search.previous", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled(),
+                Button.secondary("next", LangID.getStringByID("ui.search.next", lang)).withEmoji(EmojiStore.NEXT)
+        ));
 
-            if (config.lang == null) {
-                l = holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang;
-            } else {
-                l = config.lang;
-            }
+        components.add(Separator.create(false, Separator.Spacing.SMALL));
 
+        components.add(ActionRow.of(
+                Button.primary("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
+        ));
 
-            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, u.getId(), ch.getId(), msg, config, holder, l));
-        });
+        return Container.of(components);
     }
 }

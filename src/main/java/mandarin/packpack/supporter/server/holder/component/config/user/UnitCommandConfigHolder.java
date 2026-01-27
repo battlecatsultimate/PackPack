@@ -7,9 +7,15 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
-import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
@@ -20,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +65,10 @@ public class UnitCommandConfigHolder extends ComponentHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.applied", lang))
-                        .setComponents()
-                        .setEmbeds()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.applied", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 if (!StaticStore.config.containsKey(userID)) {
@@ -75,9 +83,10 @@ public class UnitCommandConfigHolder extends ComponentHolder {
                 }
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.canceled", backup.lang))
-                        .setComponents()
-                        .setEmbeds()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.canceled", backup.lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 end(true);
@@ -96,9 +105,9 @@ public class UnitCommandConfigHolder extends ComponentHolder {
             StaticStore.config.put(userID, backup);
         }
 
-        message.editMessage(LangID.getStringByID("config.expired", lang))
-                .setComponents()
-                .setEmbeds()
+        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("config.expired", lang)))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -110,113 +119,136 @@ public class UnitCommandConfigHolder extends ComponentHolder {
 
     private void applyResult(IMessageEditCallback event) {
         event.deferEdit()
-                .setContent(getContents())
-                .setEmbeds(getEmbed())
                 .setComponents(getComponents())
+                .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
 
-    private String getContents() {
-        return LangID.getStringByID("config.command.check.unit", lang);
-    }
-
-    private MessageEmbed getEmbed() {
-        EmbedBuilder builder = new EmbedBuilder();
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> components = new ArrayList<>();
 
         String iconLink = StaticStore.assetManager.uploadIf("CONFIG-EMBED-UNIT-ICON", new File("./data/bot/defaultAssets/iconExample.png"));
 
-        builder.setThumbnail(iconLink);
-        builder.setColor(StaticStore.rainbow[StaticStore.YELLOW]);
+        String healthKb = "10000 - 5";
+        String costCooldownSpeed = "5000 - " + (config.useFrame ? "100f" : "100s") + " - 10";
+        String attackTimings = (config.useFrame ? "100f" : "100s") + " : " + (config.useFrame ? "50f" : "50s") + " -> " + (config.useFrame ? "20f" : "20s") + " -> " + (config.useFrame ? "50f" : "50s");
+        String damageDPS = "123456 [123456]";
 
-        if (config.compact) {
-            builder.setTitle(LangID.getStringByID("config.command.embed.unit.title", lang) + " [123-456]");
+        List<ContainerChildComponent> children = new ArrayList<>();
 
-            String healthKb = "10000 - 5";
-            String costCooldownSpeed = "5000 - " + (config.useFrame ? "100f" : "100s") + " - 10";
-            String attackTimings = (config.useFrame ? "100f" : "100s") + " : " + (config.useFrame ? "50f" : "50s") + " -> " + (config.useFrame ? "20f" : "20s") + " -> " + (config.useFrame ? "50f" : "50s");
-            String damageDPS = "123456 [123456]";
-
-            builder.addField(LangID.getStringByID("data.unit.level", lang), String.valueOf(config.defLevel), false);
-            builder.addField(LangID.getStringByID("data.compact.healthKb", lang), healthKb, false);
-
-            builder.addField(LangID.getStringByID("data.compact.costCooldownSpeed", lang), costCooldownSpeed, true);
-            builder.addField(LangID.getStringByID("data.range", lang), "400", true);
-
-            builder.addField(LangID.getStringByID("data.compact.attackTimings", lang), attackTimings, false);
-            builder.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", LangID.getStringByID("data.attackTypes.area", lang)), damageDPS, false);
+        if (iconLink != null) {
+            children.add(Section.of(
+                    Thumbnail.fromUrl(iconLink),
+                    TextDisplay.of("## " + LangID.getStringByID("config.command.embed.unit.title", lang) + " [123-456]"),
+                    TextDisplay.of(
+                            "**" + LangID.getStringByID("data.unit.level", lang) + "**\n" +
+                                    config.defLevel
+                    ),
+                    TextDisplay.of(
+                            "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                                    healthKb
+                    )
+            ));
         } else {
-            builder.setTitle(LangID.getStringByID("config.command.embed.unit.title", lang));
+            children.add(TextDisplay.of("## " + LangID.getStringByID("config.command.embed.unit.title", lang) + " [123-456]"));
 
-            builder.addField(LangID.getStringByID("data.id", lang), "123-456", true);
-            builder.addField(LangID.getStringByID("data.unit.level", lang), String.valueOf(config.defLevel), true);
-            builder.addField(LangID.getStringByID("data.hp", lang), "10000", true);
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.unit.level", lang) + "**\n" +
+                            config.defLevel
+            ));
 
-            builder.addField(LangID.getStringByID("data.kb", lang), "5", true);
-            builder.addField(LangID.getStringByID("data.unit.cooldown", lang), config.useFrame ? "100f" : "100s", true);
-            builder.addField(LangID.getStringByID("data.speed", lang), "10", true);
-
-            builder.addField(LangID.getStringByID("data.unit.cost", lang), "5000", true);
-            builder.addField(LangID.getStringByID("data.range", lang), "400", true);
-            builder.addField(LangID.getStringByID("data.attackTime", lang), config.useFrame ? "100f" : "100s", true);
-
-            builder.addField(LangID.getStringByID("data.foreswing", lang), config.useFrame ? "50f" : "50s", true);
-            builder.addField(LangID.getStringByID("data.backswing", lang), config.useFrame ? "20f" : "20s", true);
-            builder.addField(LangID.getStringByID("data.tba", lang), config.useFrame ? "50f" : "50s", true);
-
-            builder.addField(LangID.getStringByID("data.attackType", lang), LangID.getStringByID("data.attackTypes.area", lang), true);
-            builder.addField(LangID.getStringByID("data.dps", lang), "123456", true);
-            builder.addField(LangID.getStringByID("data.useAbility", lang), LangID.getStringByID("data.true", lang), true);
-
-            builder.addField(LangID.getStringByID("data.damage", lang), "123456", true);
-            builder.addField(LangID.getStringByID("data.trait", lang), LangID.getStringByID("config.command.embed.unit.trait", lang), true);
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                            healthKb
+            ));
         }
 
-        builder.addField(LangID.getStringByID("data.ability", lang), LangID.getStringByID("config.command.embed.unit.abilities", lang), false);
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.costCooldownSpeed", lang) + "**\n" +
+                        costCooldownSpeed
+        ));
 
-        if (config.showUnitDescription) {
-            builder.addField(LangID.getStringByID("data.unit.description", lang), LangID.getStringByID("config.command.embed.unit.description", lang), false);
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.range", lang) + "**\n400"
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.attackTimings", lang) + "**\n" +
+                        attackTimings
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.damageDPS", lang).formatted(LangID.getStringByID("data.attackTypes.area", lang)) + "**\n" +
+                        damageDPS
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.trait", lang) + "**\n" +
+                        LangID.getStringByID("config.command.embed.unit.trait", lang)
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.ability", lang) + "**\n" +
+                        LangID.getStringByID("config.command.embed.unit.abilities", lang)
+        ));
+
+        if(config.showUnitDescription) {
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.unit.description", lang) + "**\n" +
+                            LangID.getStringByID("config.command.embed.unit.description", lang)
+            ));
         }
 
-        if (config.showEvolveDescription) {
-            builder.addField(LangID.getStringByID("data.unit.evolve", lang), LangID.getStringByID("config.command.embed.unit.evolve", lang), false);
+        if (config.showEvolveDescription || config.showEvolveImage) {
+            children.add(TextDisplay.of("**" + LangID.getStringByID("data.unit.evolve", lang) + "**"));
+
+            if (config.showEnemyDescription) {
+                children.add(TextDisplay.of(LangID.getStringByID("config.command.embed.unit.evolve", lang)));
+            }
+
+            if (config.showEvolveImage) {
+                String trueFormImage = StaticStore.assetManager.uploadIf("CONFIG-EMBED-UNIT-EVOLVE", new File("./data/bot/defaultAssets/evolveCostExample.png"));
+
+                if (trueFormImage != null) {
+                    children.add(MediaGallery.of(MediaGalleryItem.fromUrl(trueFormImage)));
+                }
+            }
         }
 
-        if (config.showEvolveImage) {
-            String link = StaticStore.assetManager.uploadIf("CONFIG-EMBED-UNIT-EVOLVE", new File("./data/bot/defaultAssets/evolveCostExample.png"));
+        components.add(Container.of(children).withAccentColor(StaticStore.rainbow[StaticStore.YELLOW]));
 
-            builder.setImage(link);
-        }
+        List<ContainerChildComponent> panelComponents = new ArrayList<>();
 
-        return builder.build();
-    }
+        panelComponents.add(TextDisplay.of(LangID.getStringByID("config.command.check.unit", lang)));
 
-    private List<MessageTopLevelComponent> getComponents() {
-        List<MessageTopLevelComponent> result = new ArrayList<>();
+        panelComponents.add(Separator.create(true, Separator.Spacing.LARGE));
 
         Emoji showUnitDescription = config.showUnitDescription ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
         Emoji showEvolveDescription = config.showEvolveDescription ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
         Emoji showEvolveImage = config.showEvolveImage ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("description", LangID.getStringByID("config.command.button.unit.description", lang)).withEmoji(showUnitDescription)
         ));
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("evolve", LangID.getStringByID("config.command.button.unit.evolve", lang)).withEmoji(showEvolveDescription)
         ));
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("image", LangID.getStringByID("config.command.button.unit.image", lang)).withEmoji(showEvolveImage)
         ));
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
                 Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
                 Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
         ));
 
-        return result;
+        components.add(Container.of(panelComponents));
+
+        return components;
     }
 }

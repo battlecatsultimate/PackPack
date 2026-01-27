@@ -5,12 +5,15 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
-import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
-import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
@@ -64,9 +67,10 @@ public class StageCommandConfigHolder extends ComponentHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.applied", lang))
-                        .setComponents()
-                        .setEmbeds()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.applied", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 if (!StaticStore.config.containsKey(userID)) {
@@ -81,9 +85,10 @@ public class StageCommandConfigHolder extends ComponentHolder {
                 }
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.canceled", backup.lang))
-                        .setComponents()
-                        .setEmbeds()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.canceled", backup.lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 end(true);
@@ -102,9 +107,9 @@ public class StageCommandConfigHolder extends ComponentHolder {
             StaticStore.config.put(userID, backup);
         }
 
-        message.editMessage(LangID.getStringByID("config.expired", lang))
-                .setComponents()
-                .setEmbeds()
+        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("config.expired", lang)))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -116,16 +121,101 @@ public class StageCommandConfigHolder extends ComponentHolder {
 
     private void applyResult(IMessageEditCallback event) {
         event.deferEdit()
-                .setContent(getContents())
-                .setEmbeds(getEmbed())
                 .setComponents(getComponents())
+                .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
 
     private List<MessageTopLevelComponent> getComponents() {
-        List<MessageTopLevelComponent> result = new ArrayList<>();
+        List<MessageTopLevelComponent> components = new ArrayList<>();
+
+        String schemeLink = StaticStore.assetManager.uploadIf("CONFIG-EMBED-STAGE-SCHEME", new File("./data/bot/defaultAssets/stageSchemeExample.png"));
+
+        List<ContainerChildComponent> children = new ArrayList<>();
+
+        String idDifficultyLevel = "ID-123-456 - ★1 - " + EmojiStore.CROWN_ON.getFormatted() + EmojiStore.CROWN_OFF.getFormatted().repeat(3) + " (100%)";
+        String energyBaseXP = "100 - 10000 - 1000";
+        String limitContinuableLength = "10 - " + LangID.getStringByID("data.true", lang) + " - 3000";
+        String musicBackgroundCastle = "033 - 000 - 000";
+        String guardBarrier = LangID.getStringByID("data.active", lang);
+
+        children.add(TextDisplay.of("### " + LangID.getStringByID("config.command.embed.stage.title", lang)));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.idDifficultyLevel", lang) + "**\n" +
+                        idDifficultyLevel
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.energyBaseXP", lang) + "**\n" +
+                        energyBaseXP
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.limitContinuableLength", lang) + "**\n" +
+                        limitContinuableLength
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.musicBackgroundCastle", lang).formatted(0) + "**\n" +
+                        musicBackgroundCastle
+        ));
+
+        children.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.stage.guardBarrier", lang) + "**\n" +
+                        guardBarrier
+        ));
+
+        if(config.showMiscellaneous) {
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.stage.misc.title", lang) + "**\n" +
+                            LangID.getStringByID("config.command.embed.stage.miscellaneous", lang)
+            ));
+        }
+
+        if (config.showExtraStage) {
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.stage.misc.exStage", lang) + "**\n" +
+                            LangID.getStringByID("config.command.embed.stage.extra", lang)
+            ));
+        }
+
+        if (config.showMaterialDrop) {
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.stage.material.title", lang) + "**\n" +
+                            LangID.getStringByID("config.command.embed.stage.material", lang)
+            ));
+        }
+
+        if (config.showDropInfo) {
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.stage.reward.type.chance.normal", lang) + "**\n" +
+                            LangID.getStringByID("config.command.embed.stage.drop" , lang)
+            ));
+
+            children.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.stage.reward.type.score", lang) + "**\n" +
+                            LangID.getStringByID("config.command.embed.stage.score", lang)
+            ));
+        }
+
+        if(schemeLink != null) {
+            children.add(Separator.create(true, Separator.Spacing.LARGE));
+            children.add(TextDisplay.of("**" + LangID.getStringByID("data.stage.scheme", lang) + "**"));
+            children.add(MediaGallery.of(MediaGalleryItem.fromUrl(schemeLink)));
+        }
+
+        children.add(TextDisplay.of("-# " + LangID.getStringByID("data.compact.minimumRespawn", lang).formatted(config.useFrame ? "1f" : "1s")));
+
+        components.add(Container.of(children).withAccentColor(StaticStore.rainbow[0]));
+
+        List<ContainerChildComponent> panelComponents = new ArrayList<>();
+
+        panelComponents.add(TextDisplay.of(LangID.getStringByID("config.command.check.stage", lang)));
+
+        panelComponents.add(Separator.create(true, Separator.Spacing.LARGE));
 
         Emoji showMiscellaneous = config.showMiscellaneous ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
         Emoji showExtraStage = config.showExtraStage ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
@@ -133,109 +223,32 @@ public class StageCommandConfigHolder extends ComponentHolder {
         Emoji showDropInfo = config.showDropInfo ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
 
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("misc", LangID.getStringByID("config.command.button.stage.miscellaneous", lang)).withEmoji(showMiscellaneous)
         ));
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("extra", LangID.getStringByID("config.command.button.stage.extra", lang)).withEmoji(showExtraStage)
         ));
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("material", LangID.getStringByID("config.command.button.stage.material", lang)).withEmoji(showMaterialDrop)
         ));
 
-        result.add(ActionRow.of(
+        panelComponents.add(ActionRow.of(
                 Button.secondary("drop", LangID.getStringByID("config.command.button.stage.drop", lang)).withEmoji(showDropInfo)
         ));
 
-        result.add(ActionRow.of(
+        panelComponents.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        panelComponents.add(ActionRow.of(
                 Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
                 Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
                 Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
         ));
 
-        return result;
-    }
+        components.add(Container.of(panelComponents));
 
-    private String getContents() {
-        return LangID.getStringByID("config.command.check.stage", lang);
-    }
-
-    private MessageEmbed getEmbed() {
-        EmbedBuilder builder = new EmbedBuilder();
-
-        builder.setTitle(LangID.getStringByID("config.command.embed.stage.title", lang));
-        builder.setColor(StaticStore.rainbow[StaticStore.RED]);
-
-        TreasureHolder treasure = StaticStore.treasure.getOrDefault(userID, TreasureHolder.global);
-
-        if (treasure.differentFromGlobal()) {
-            builder.setDescription(LangID.getStringByID("data.unit.treasure", lang));
-        }
-
-        if (config.compact) {
-            String idDifficultyLevel = "ID-123-456 - ★1 - " + EmojiStore.CROWN_ON.getFormatted() + EmojiStore.CROWN_OFF.getFormatted().repeat(3) + " (100%)";
-            String energyBaseXP = "100 - 10000 - 1000";
-            String limitContinuableLength = "10 - " + LangID.getStringByID("data.true", lang) + " - 3000";
-            String musicBackgroundCastle = "033 - 000 - 000";
-            String guardBarrier = LangID.getStringByID("data.active", lang);
-
-            builder.addField(LangID.getStringByID("data.compact.idDifficultyLevel", lang), idDifficultyLevel, false);
-            builder.addField(LangID.getStringByID("data.compact.energyBaseXP", lang), energyBaseXP, false);
-            builder.addField(LangID.getStringByID("data.compact.limitContinuableLength", lang), limitContinuableLength, false);
-            builder.addField(LangID.getStringByID("data.compact.musicBackgroundCastle", lang).replace("_BBB_", "0"), musicBackgroundCastle, false);
-            builder.addField(LangID.getStringByID("data.stage.guardBarrier", lang), guardBarrier, false);
-
-            builder.setFooter(LangID.getStringByID("data.compact.minimumRespawn", lang).replace("_RRR_", config.useFrame ? "1f" : "1s"));
-        } else {
-            builder.addField(LangID.getStringByID("data.id", lang), "ID-123-456", true);
-            builder.addField(LangID.getStringByID("data.unit.level", lang), EmojiStore.CROWN_ON.getFormatted() + EmojiStore.CROWN_OFF.getFormatted().repeat(3) + " (100%)", true);
-            builder.addField(LangID.getStringByID("data.stage.energy", lang), "100", true);
-
-            builder.addField(LangID.getStringByID("data.stage.baseHealth", lang), "10000", true);
-            builder.addField(LangID.getStringByID("data.stage.xp", lang), "1000", true);
-            builder.addField(LangID.getStringByID("data.stage.difficulty", lang), "★1", true);
-
-            builder.addField(LangID.getStringByID("data.stage.continuable", lang), LangID.getStringByID("data.true", lang), true);
-            builder.addField(LangID.getStringByID("data.stage.music", lang), "033", true);
-            builder.addField("<0%", "000", true);
-
-            builder.addField(LangID.getStringByID("data.stage.enemyLimit", lang), "10", true);
-            builder.addField(LangID.getStringByID("data.stage.background", lang), "000", true);
-            builder.addField(LangID.getStringByID("data.stage.castle", lang), "000", true);
-
-            builder.addField(LangID.getStringByID("data.stage.length", lang), "3000", true);
-            builder.addField(LangID.getStringByID("data.stage.minimumRespawn", lang), config.useFrame ? "1f" : "1s", true);
-            builder.addField(LangID.getStringByID("data.stage.guardBarrier", lang), LangID.getStringByID("data.active", lang), true);
-        }
-
-        builder.addField(LangID.getStringByID("data.stage.limit.title", lang), LangID.getStringByID("config.command.embed.stage.limit", lang), false);
-
-        if (config.showMiscellaneous) {
-            builder.addField(LangID.getStringByID("data.stage.misc.title", lang), LangID.getStringByID("config.command.embed.stage.miscellaneous", lang), false);
-        }
-
-        if (config.showExtraStage) {
-            builder.addField(LangID.getStringByID("data.stage.misc.exStage", lang), LangID.getStringByID("config.command.embed.stage.extra", lang), false);
-        }
-
-        if (config.showMaterialDrop) {
-            builder.addField(LangID.getStringByID("data.stage.material.title", lang), LangID.getStringByID("config.command.embed.stage.material", lang), false);
-        }
-
-        if (config.showDropInfo) {
-            builder.addField(LangID.getStringByID("data.stage.reward.type.chance.normal", lang), LangID.getStringByID("config.command.embed.stage.drop" , lang), false);
-
-            builder.addField(LangID.getStringByID("data.stage.reward.type.score", lang), LangID.getStringByID("config.command.embed.stage.score", lang), false);
-        }
-
-        String link = StaticStore.assetManager.uploadIf("CONFIG-EMBED-STAGE-SCHEME", new File("./data/bot/defaultAssets/stageSchemeExample.png"));
-
-        if (link != null) {
-            builder.setImage(link);
-        }
-
-        return builder.build();
+        return components;
     }
 }

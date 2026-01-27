@@ -7,9 +7,13 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
-import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
@@ -48,9 +52,10 @@ public class EnemyCommandConfigHolder extends ComponentHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.applied", lang))
-                        .setComponents()
-                        .setEmbeds()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.applied", lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 if (!StaticStore.config.containsKey(userID)) {
@@ -65,9 +70,10 @@ public class EnemyCommandConfigHolder extends ComponentHolder {
                 }
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.canceled", backup.lang))
-                        .setComponents()
-                        .setEmbeds()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.canceled", backup.lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 end(true);
@@ -86,9 +92,9 @@ public class EnemyCommandConfigHolder extends ComponentHolder {
             StaticStore.config.put(userID, backup);
         }
 
-        message.editMessage(LangID.getStringByID("config.expired", lang))
-                .setComponents()
-                .setEmbeds()
+        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("config.expired", lang)))
+                .useComponentsV2()
+                .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
@@ -100,92 +106,117 @@ public class EnemyCommandConfigHolder extends ComponentHolder {
 
     private void applyResult(IMessageEditCallback event) {
         event.deferEdit()
-                .setContent(getContents())
-                .setEmbeds(getEmbed())
                 .setComponents(getComponents())
+                .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
 
-    private String getContents() {
-        return LangID.getStringByID("config.command.check.enemy", lang);
-    }
+    private List<MessageTopLevelComponent> getComponents() {
+        List<MessageTopLevelComponent> components = new ArrayList<>();
 
-    private MessageEmbed getEmbed() {
-        EmbedBuilder builder = new EmbedBuilder();
+        List<ContainerChildComponent> containerComponents = new ArrayList<>();
 
         String iconLink = StaticStore.assetManager.uploadIf("CONFIG-EMBED-ENEMY-ICON", new File("./data/bot/defaultAssets/enemyIconExample.png"));
 
-        builder.setColor(StaticStore.rainbow[StaticStore.RED]);
-        builder.setThumbnail(iconLink);
+        String healthKb = "10000 - 10";
+        String dropBarrierSpeed = "1000 - " + LangID.getStringByID("data.none", lang) + " - 10";
+        String attackTimings = (config.useFrame ? "100f" : "100s") + " : " + (config.useFrame ? "50f" : "50s") + " -> " + (config.useFrame ? "20f" : "20s") + " -> " + (config.useFrame ? "50f" : "50s");
+        String damageDPS = "123456 [123456]";
 
-        if (config.compact) {
-            builder.setTitle(LangID.getStringByID("config.command.embed.enemy.title", lang) + " [123]");
-
-            String healthKb = "10000 - 10";
-            String dropBarrierSpeed = "1000 - " + LangID.getStringByID("data.none", lang) + " - 10";
-            String attackTimings = (config.useFrame ? "100f" : "100s") + " : " + (config.useFrame ? "50f" : "50s") + " -> " + (config.useFrame ? "20f" : "20s") + " -> " + (config.useFrame ? "50f" : "50s");
-            String damageDPS = "123456 [123456]";
-
-            builder.addField(LangID.getStringByID("data.enemy.magnification", lang), "100%", false);
-            builder.addField(LangID.getStringByID("data.compact.healthKb", lang), healthKb, false);
-
-            builder.addField(LangID.getStringByID("data.compact.dropBarrierSpeed", lang), dropBarrierSpeed, true);
-            builder.addField(LangID.getStringByID("data.range", lang), "400", true);
-
-            builder.addField(LangID.getStringByID("data.compact.attackTimings", lang), attackTimings, false);
-            builder.addField(LangID.getStringByID("data.compact.damageDPS", lang).replace("_TTT_", LangID.getStringByID("data.attackTypes.area", lang)), damageDPS, false);
-            builder.addField(LangID.getStringByID("data.trait", lang), LangID.getStringByID("config.command.embed.unit.trait", lang), false);
+        if (iconLink != null) {
+            containerComponents.add(Section.of(
+                    Thumbnail.fromUrl(iconLink),
+                    TextDisplay.of("## " + LangID.getStringByID("config.command.embed.enemy.title", lang) + "[123]"),
+                    TextDisplay.of(
+                            "**" + LangID.getStringByID("data.enemy.magnification", lang) + "**\n" +
+                                    "100%"
+                    ),
+                    TextDisplay.of(
+                            "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                                    healthKb
+                    )
+            ));
         } else {
-            builder.setTitle(LangID.getStringByID("config.command.embed.enemy.title", lang));
+            containerComponents.add(TextDisplay.of("## " + LangID.getStringByID("config.command.embed.enemy.title", lang) + "[123]"));
 
-            builder.addField(LangID.getStringByID("data.enemy.magnification", lang), "100%", true);
-            builder.addField(LangID.getStringByID("data.hp", lang), "10000", true);
-            builder.addField(LangID.getStringByID("data.kb", lang), "10", true);
+            containerComponents.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.enemy.magnification", lang) + "**\n" +
+                            "100%"
+            ));
 
-            builder.addField(LangID.getStringByID("data.enemy.barrier", lang), LangID.getStringByID("data.none", lang), true);
-            builder.addField(LangID.getStringByID("data.speed", lang), "10", true);
-            builder.addField(LangID.getStringByID("data.attackTime", lang), config.useFrame ? "100f" : "100s", true);
-
-            builder.addField(LangID.getStringByID("data.foreswing", lang), config.useFrame ? "50f" : "50s", true);
-            builder.addField(LangID.getStringByID("data.backswing", lang), config.useFrame ? "20f" : "20s", true);
-            builder.addField(LangID.getStringByID("data.tba", lang), config.useFrame ? "50f" : "50s", true);
-
-            builder.addField(LangID.getStringByID("data.attackType", lang), LangID.getStringByID("data.attackTypes.area", lang), true);
-            builder.addField(LangID.getStringByID("data.dps", lang), "123456", true);
-            builder.addField(LangID.getStringByID("data.useAbility", lang), LangID.getStringByID("data.true", lang), true);
-
-            builder.addField(LangID.getStringByID("data.damage", lang), "123456", true);
-            builder.addField(LangID.getStringByID("data.trait", lang), LangID.getStringByID("config.command.embed.unit.trait", lang), true);
+            containerComponents.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.compact.healthKb", lang) + "**\n" +
+                            healthKb
+            ));
         }
 
-        builder.addField(LangID.getStringByID("data.ability", lang), LangID.getStringByID("config.command.embed.unit.abilities", lang), false);
+        containerComponents.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.dropBarrierSpeed", lang) + "**\n" +
+                        dropBarrierSpeed
+        ));
 
-        if (config.showEnemyDescription) {
-            builder.addField(LangID.getStringByID("data.enemy.description", lang), LangID.getStringByID("config.command.embed.enemy.description", lang), false);
+        containerComponents.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.range", lang) + "**\n" +
+                        "400"
+        ));
+
+        containerComponents.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.attackTimings", lang) + "**\n" +
+                        attackTimings
+        ));
+
+        containerComponents.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.compact.damageDPS", lang).formatted(LangID.getStringByID("data.attackTypes.area", lang)) + "**\n" +
+                        damageDPS
+        ));
+
+        containerComponents.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.trait", lang) + "**\n" +
+                        LangID.getStringByID("config.command.embed.unit.trait", lang)
+        ));
+
+        containerComponents.add(TextDisplay.of(
+                "**" + LangID.getStringByID("data.ability", lang) + "**\n" +
+                        LangID.getStringByID("config.command.embed.unit.abilities", lang)
+        ));
+
+        if(config.showEnemyDescription) {
+            containerComponents.add(Separator.create(true, Separator.Spacing.LARGE));
+
+            containerComponents.add(TextDisplay.of(
+                    "**" + LangID.getStringByID("data.enemy.description", lang) + "**\n" +
+                            LangID.getStringByID("config.command.embed.enemy.description", lang)
+            ));
         }
 
-        builder.setFooter(LangID.getStringByID("enemyStat.source", lang));
+        components.add(Container.of(containerComponents).withAccentColor(StaticStore.rainbow[0]));
 
-        return builder.build();
-    }
+        components.add(Separator.create(false, Separator.Spacing.LARGE));
 
-    private List<MessageTopLevelComponent> getComponents() {
-        List<MessageTopLevelComponent> result = new ArrayList<>();
+        List<ContainerChildComponent> buttonPanelComponents = new ArrayList<>();
+
+        buttonPanelComponents.add(TextDisplay.of(LangID.getStringByID("config.command.check.enemy", lang)));
+
+        buttonPanelComponents.add(Separator.create(true, Separator.Spacing.LARGE));
 
         Emoji showEnemyDescription = config.showEnemyDescription ? EmojiStore.SWITCHON : EmojiStore.SWITCHOFF;
 
-        result.add(ActionRow.of(
+        buttonPanelComponents.add(ActionRow.of(
                 Button.secondary("description", LangID.getStringByID("config.command.button.enemy.description", lang)).withEmoji(showEnemyDescription)
         ));
 
-        result.add(ActionRow.of(
+        buttonPanelComponents.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        buttonPanelComponents.add(ActionRow.of(
                 Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
                 Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
                 Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
         ));
 
-        return result;
+        components.add(Container.of(buttonPanelComponents));
+
+        return components;
     }
 }

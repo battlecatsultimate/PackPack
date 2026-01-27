@@ -353,9 +353,9 @@
                 }
             },
             "check" : {
-                "enemy" : "Check enemy embed below to see how config would affect the embed",
-                "stage" : "Check stage embed below to see how each configs would effect the embed",
-                "unit" : "Check unit embed below to see how each configs would effect the embed"
+                "enemy" : "Check enemy embed above to see how config would affect the embed",
+                "stage" : "Check stage embed above to see how each configs would effect the embed",
+                "unit" : "Check unit embed above to see how each configs would effect the embed"
             },
             "embed" : {
                 "enemy" : {
@@ -402,30 +402,32 @@
             }
         },
         "compactEmbed" : {
-            "title" : "Use compact embed : _",
+            "title" : "Use compact embed",
+            "value" : "Current Value : %s",
             "description" : {
                 "false" : "When you call `p!fs`, `p!es`, `p!si`, `p!fst` command, you have to call `-c` parameter to see compressed stat embed",
                 "true" : "When you call `p!fs`, `p!es`, `p!si`, `p!fst` command, bot will compress stat embed without calling `-c` parameter, so when you are on mobile Discord, it won't flood the chat"
             }
         },
         "defaultLevel" : {
-            "description" : "When you call `p!fs` command, bot will apply Lv. _ automatically to unit instead of 30",
-            "title" : "Default level : Lv. _",
+            "description" : "When you call `p!fs` command, bot will apply Lv. %d automatically to unit instead of 30",
+            "title" : "Default level",
+            "value" : "現在のレベル : %d",
             "set" : {
                 "inputTagName" : "レベル",
                 "invalidRange" : "レベルは 1 ~ 60 の範囲である必要があります!",
                 "notNumber" : "レベルを設定するときのみ数値を渡す必要があります!",
                 "placeholder" : "ここでレベルを設定してください",
                 "tagName" : "レベル設定",
-                "title" : "デフォルトのレベルを設定してください (現在のレベル : %d)"
+                "title" : "デフォルトのレベルを設定してください"
             }
         },
         "defaultUnit" : {
             "description" : "When bot shows unit/enemy/stage stats, all time-related data will be shown with unit above",
             "frame" : "Frame",
             "second" : "Second",
-            "title" : "Default stat unit : _",
-            "unit" : "Unit : _"
+            "title" : "Default stat unit",
+            "unit" : "Current unit : %s"
         },
         "extraInformation" : {
             "title" : "Show extra information : _",
@@ -436,17 +438,20 @@
         },
         "locale" : {
             "auto" : "Auto (Following server's locale config)",
-            "title" : "Language : _"
+            "title" : "Language",
+            "value" : "Current language : %s"
         },
         "treasure" : {
-            "title" : "お宝を考慮した値を表示します : %s",
+            "title" : "お宝を考慮した値を表示します",
+            "value" : "Current value : %s",
             "description" : {
                 "false" : "お宝を考慮したステータスを表示するには`p!fs`に`-tr`を追加で渡す必要があります",
                 "true" : "Botは`p!fs`に`-tr`を追加で渡さなくてもお宝を考慮したステータスを表示します"
             }
         },
         "trueForm" : {
-            "title" : "第三形態検索モード : %s",
+            "title" : "第三形態検索モード",
+            "value" : "Current Value : %s",
             "description" : {
                 "false" : "第三形態検索モードではユーザーが選択しなくてもBotが第三形態を自動で選択します(第三形態がない場合は第二形態) 例えば、`ソドム` と検索すると三つの形態が表示されます。第三形態検索モードでは重複したユニットを除外し、第二形態か第三形態を選択します\n\nこの検索モードを有効にするには`p!fs`に`-tf`を渡す必要があります",
                 "true" : "第三形態検索モードではユーザーが選択しなくてもBotが第三形態を自動で選択します(第三形態がない場合は第二形態) 例えば、`ソドム` と検索すると三つの形態が表示されます。第三形態検索モードでは重複したユニットを除外し、第二形態か第三形態を選択します\n\nこの検索モードのを有効にするために`p!fs`に`-tf`を渡す必要がなくなります"

@@ -353,9 +353,9 @@
                 }
             },
             "check" : {
-                "enemy" : "Check enemy embed below to see how config would affect the embed",
-                "stage" : "Check stage embed below to see how each configs would effect the embed",
-                "unit" : "Check unit embed below to see how each configs would effect the embed"
+                "enemy" : "Check enemy embed above to see how config would affect the embed",
+                "stage" : "Check stage embed above to see how each configs would effect the embed",
+                "unit" : "Check unit embed above to see how each configs would effect the embed"
             },
             "embed" : {
                 "enemy" : {
@@ -402,30 +402,32 @@
             }
         },
         "compactEmbed" : {
-            "title" : "Use compact embed : _",
+            "title" : "Use compact embed",
+            "value" : "Current Value : %s",
             "description" : {
                 "false" : "When you call `p!fs`, `p!es`, `p!si`, `p!fst` command, you have to call `-c` parameter to see compressed stat embed",
                 "true" : "When you call `p!fs`, `p!es`, `p!si`, `p!fst` command, bot will compress stat embed without calling `-c` parameter, so when you are on mobile Discord, it won't flood the chat"
             }
         },
         "defaultLevel" : {
-            "description" : "When you call `p!fs` command, bot will apply Lv. _ automatically to unit instead of 30",
-            "title" : "Default level : Lv. _",
+            "description" : "When you call `p!fs` command, bot will apply Lv. %d automatically to unit instead of 30",
+            "title" : "Default level",
+            "value" : "Current Level : Lv. %d",
             "set" : {
                 "inputTagName" : "Level",
                 "invalidRange" : "Level must be in range of 1 ~ 60!",
                 "notNumber" : "You have to pass number only when setting the level!",
                 "placeholder" : "Please specify the level here",
                 "tagName" : "Level Setting",
-                "title" : "Set Default Level (Current Level : %d)"
+                "title" : "Set Default Level"
             }
         },
         "defaultUnit" : {
             "description" : "When bot shows unit/enemy/stage stats, all time-related data will be shown with unit above",
             "frame" : "Frame",
             "second" : "Second",
-            "title" : "Default stat unit : _",
-            "unit" : "Unit : _"
+            "title" : "Default stat unit",
+            "unit" : "Current unit : %s"
         },
         "extraInformation" : {
             "title" : "Show extra information : _",
@@ -436,17 +438,20 @@
         },
         "locale" : {
             "auto" : "Auto (Following server's locale config)",
-            "title" : "Language : _"
+            "title" : "Language",
+            "value" : "Current language : %s"
         },
         "treasure" : {
-            "title" : "Display values with treasure : %s",
+            "title" : "Display values with treasure",
+            "value" : "Current value : %s",
             "description" : {
                 "false" : "You will have to pass `-tr` parameter in `p!fs` to see effect stat values considering the treasure",
                 "true" : "Bot will show stats with effective value after passing treasures together even though you don't pass `-tr` parameter in `p!fs` command"
             }
         },
         "trueForm" : {
-            "title" : "True form search mode : %s",
+            "title" : "True form search mode",
+            "value" : "Current Value : %s",
             "description" : {
                 "false" : "True form search mode allows bot to directly select true form (evolved form if unit doesn't have true form) first without user manually selecting it. For example, searching `sodom` will give 3 forms of sodom, but being same unit, because all 3 forms contain word `sodom`. True form search mode filters out such overlapped unit, picking 3rd or 2nd form\n\nYou will have to call `-tf` parameter to activate this search mode when using `p!fs` command",
                 "true" : "True form search mode allows bot to directly select true form (evolved form if unit doesn't have true form) first without user manually selecting it. For example, searching `sodom` will give 3 forms of sodom, but being same unit, because all 3 forms contain word `sodom`. True form search mode filters out such overlapped unit, picking 3rd or 2nd form\n\nYou won't need to call `-tf` parameter to activate this search mode when using `p!fs` command"

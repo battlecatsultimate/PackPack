@@ -7,12 +7,15 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
@@ -62,8 +65,9 @@ public class CommandListHolder extends ComponentHolder {
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.applied", lang))
-                        .setComponents()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.applied", lang)))
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 if (!StaticStore.config.containsKey(userID)) {
@@ -78,8 +82,10 @@ public class CommandListHolder extends ComponentHolder {
                 }
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("config.canceled", backup.lang))
-                        .setComponents()
+                        .setComponents(TextDisplay.of(LangID.getStringByID("config.canceled", backup.lang)))
+                        .useComponentsV2()
+                        .setAllowedMentions(new ArrayList<>())
+                        .mentionRepliedUser(false)
                         .queue();
 
                 end(true);
@@ -117,50 +123,16 @@ public class CommandListHolder extends ComponentHolder {
 
     private void applyResult(IMessageEditCallback event) {
         event.deferEdit()
-                .setContent(getContents())
                 .setComponents(getComponents())
-                .setEmbeds()
+                .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
 
-    private List<MessageTopLevelComponent> getComponents() {
-        List<MessageTopLevelComponent> result = new ArrayList<>();
+    private Container getComponents() {
+        List<ContainerChildComponent> components = new ArrayList<>();
 
-        List<SelectOption> options = new ArrayList<>();
-
-        EmbedConfig[] values = EmbedConfig.values();
-
-        for (int i = 0; i < values.length; i++) {
-            EmbedConfig c = values[i];
-
-            String label = switch (c) {
-                case ENEMY -> LangID.getStringByID("config.commandList.list.type.menu.enemy", lang);
-                case STAGE -> LangID.getStringByID("config.commandList.list.type.menu.stage", lang);
-                case UNIT -> LangID.getStringByID("config.commandList.list.type.menu.unit", lang);
-            };
-
-            options.add(SelectOption.of(label.formatted(i + 1), c.name()));
-        }
-
-        result.add(ActionRow.of(
-                StringSelectMenu.create("embed")
-                        .addOptions(options)
-                        .setPlaceholder(LangID.getStringByID("config.commandList.list.placeholder", lang))
-                        .build()
-        ));
-
-        result.add(ActionRow.of(
-                Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
-                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
-                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
-        ));
-
-        return result;
-    }
-
-    private String getContents() {
         StringBuilder builder = new StringBuilder();
 
         builder.append(LangID.getStringByID("config.commandList.title", lang)).append("\n\n").append(LangID.getStringByID("config.commandList.description", lang)).append("\n\n");
@@ -181,6 +153,39 @@ public class CommandListHolder extends ComponentHolder {
             builder.append("\n");
         }
 
-        return builder.toString();
+        components.add(TextDisplay.of(builder.toString()));
+
+        components.add(Separator.create(true, Separator.Spacing.LARGE));
+
+        List<SelectOption> options = new ArrayList<>();
+
+        for (int i = 0; i < values.length; i++) {
+            EmbedConfig c = values[i];
+
+            String label = switch (c) {
+                case ENEMY -> LangID.getStringByID("config.commandList.list.type.menu.enemy", lang);
+                case STAGE -> LangID.getStringByID("config.commandList.list.type.menu.stage", lang);
+                case UNIT -> LangID.getStringByID("config.commandList.list.type.menu.unit", lang);
+            };
+
+            options.add(SelectOption.of(label.formatted(i + 1), c.name()));
+        }
+
+        components.add(ActionRow.of(
+                StringSelectMenu.create("embed")
+                        .addOptions(options)
+                        .setPlaceholder(LangID.getStringByID("config.commandList.list.placeholder", lang))
+                        .build()
+        ));
+
+        components.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        components.add(ActionRow.of(
+                Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK),
+                Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).withEmoji(EmojiStore.CHECK),
+                Button.danger("cancel", LangID.getStringByID("ui.button.cancel", lang)).withEmoji(EmojiStore.CROSS)
+        ));
+
+        return Container.of(components);
     }
 }
