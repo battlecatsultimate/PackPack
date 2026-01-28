@@ -8,6 +8,7 @@ import com.dropbox.core.oauth.DbxCredential;
 import com.dropbox.core.oauth.DbxRefreshResult;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.UploadErrorException;
 import com.dropbox.core.v2.files.UploadUploader;
 import com.dropbox.core.v2.sharing.RequestedLinkAccessLevel;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
@@ -185,7 +186,11 @@ public class BackupHolder {
 
             backupList.put(unixTime, result.getName());
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to upload backup file for instance : " + instance);
+            if (e instanceof UploadErrorException de) {
+                StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to upload backup file for instance : " + instance + "\n" + de.errorValue.toStringMultiline());
+            } else {
+                StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to upload backup file for instance : " + instance);
+            }
 
             return "";
         }
