@@ -613,6 +613,9 @@ public class PackBot {
                         continue;
                     }
 
+                    if (!ch.canTalk())
+                        continue;
+
                     if (!sentChannels.contains(config.channelID)) {
                         sent = true;
 
@@ -660,6 +663,9 @@ public class PackBot {
                 GuildChannel gc = g.getGuildChannelById(config.newVersionChannelID);
 
                 if (!(gc instanceof GuildMessageChannel ch))
+                    continue;
+
+                if (!ch.canTalk())
                     continue;
 
                 String gameName = switch (locale) {
