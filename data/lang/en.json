@@ -1626,14 +1626,16 @@
                 "7" : "EX Cost/Cooldown Buff",
                 "8" : "UR Deploy Duplication",
                 "9" : "Rarity Deploy Limit",
-                "10" : "Cannon Multiplier Buff",
+                "10" : "Cannon Damage Buff",
                 "11" : "Identical Unit/Enemy Speed",
                 "12" : "EX Deploy Duplication",
                 "13" : "Low UR Cost",
                 "14" : "Cooldown Limit",
                 "15" : "Money Limit/UR Cooldown Buff",
                 "16" : "Low Cost",
-                "17" : "UR Cost Up/Triple UR Deploy"
+                "17" : "UR Cost Up/Triple UR Deploy",
+                "18" : "Identical Unit/Enemy Speed",
+                "19" : "Cannon Damage Buff"
             }
         },
         "section" : {

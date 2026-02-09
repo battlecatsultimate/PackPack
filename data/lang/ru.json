@@ -1633,7 +1633,9 @@
                 "14" : "Ограниченная Перезарядка",
                 "15" : "Money Limit/Uber Rare Cooldown Buff",
                 "16" : "Low Cost",
-                "17" : "UR Cost Up/Triple UR Deploy"
+                "17" : "UR Cost Up/Triple UR Deploy",
+                "18" : "Identical Unit/Enemy Speed",
+                "19" : "Cannon Damage Buff"
             }
         },
         "section" : {
