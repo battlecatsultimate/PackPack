@@ -764,7 +764,7 @@
                 "title" : "Study Combo"
             },
             "villain" : {
-                "description" : "Gives 2.5x atk/def multiplier to villain enemies",
+                "description" : "Gives 2.5x atk/def multiplier against villain enemies",
                 "title" : "Villain Slayer"
             },
             "wallet" : {
@@ -1867,7 +1867,7 @@
         "assetBrowser" : {
             "alias" : "`abrowser`, `assetb`, `ab`",
             "description" : "Bring asset browser, and upload picked file data. **This can be used by only trusted users because it gives raw files of BC**",
-            "usage" : "`%saasetbrowser`"
+            "usage" : "`%sassetbrowser`"
         },
         "background" : {
             "alias" : "`bg`",

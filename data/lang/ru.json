@@ -764,7 +764,7 @@
                 "title" : "Комбо Опыта"
             },
             "villain" : {
-                "description" : "Gives 2.5x atk/def multiplier to villain enemies",
+                "description" : "Gives 2.5x atk/def multiplier against villain enemies",
                 "title" : "Villain Slayer"
             },
             "wallet" : {
@@ -1865,7 +1865,7 @@
         "assetBrowser" : {
             "alias" : "`abrowser`, `assetb`, `ab`",
             "description" : "Возьмите ассеты и загрузите данные из выбранного файла. **Его могут использовать только доверенные пользователи, поскольку он предоставляет необработанные файлы BC**",
-            "usage" : "`%saasetbrowser`"
+            "usage" : "`%sassetbrowser`"
         },
         "background" : {
             "alias" : "`bg`",
