@@ -11,8 +11,8 @@
         },
         "failed" : {
             "noName" : "You have to specify alias name",
-            "noPermission" : "You don't have permission to manipulate aliases",
-            "noType" : "Please specify which type of data you want to manipulate",
+            "noPermission" : "You don't have permission to edit aliases",
+            "noType" : "Please specify which type of data you want to search for",
             "removeFail" : "_ doesn't have such alias",
             "noAlias" : {
                 "enemy" : "You have to specify enemy's name",

@@ -11,8 +11,8 @@
         },
         "failed" : {
             "noName" : "Вам необходимо указать название этапа",
-            "noPermission" : "У вас недостаточно прав для управления псевдонимами",
-            "noType" : "Укажите, каким типом данных вы хотите манипулировать",
+            "noPermission" : "You don't have permission to edit aliases",
+            "noType" : "Please specify which type of data you want to search for",
             "removeFail" : "нет такого псевдонима : _",
             "noAlias" : {
                 "enemy" : "Вам необходимо указать название врага",

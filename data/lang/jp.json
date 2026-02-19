@@ -11,8 +11,8 @@
         },
         "failed" : {
             "noName" : "有効なエイリアスの名前を使用する必要があります。",
-            "noPermission" : "エイリアスを操作する権限を持っていません。",
-            "noType" : "どのタイプのデータを操作したいか選択してください。",
+            "noPermission" : "You don't have permission to edit aliases",
+            "noType" : "Please specify which type of data you want to search for",
             "removeFail" : "_ はエイリアスを持っていません。",
             "noAlias" : {
                 "enemy" : "有効な敵の名前を指定してください。",
