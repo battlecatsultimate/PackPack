@@ -118,6 +118,7 @@ public class DataToString extends Data {
         addTalentData(65, "data.abilities.miniSurge", "MINIVOLC");
         addTalentData(66, "data.abilities.sageSlayer", "data.abilities.sageSlayer");
         addTalentData(67, "data.abilities.blastAttack", "data.abilities.blastAttack");
+        addTalentData(68, "data.abilities.counterSurge", "data.abilities.counterSurge");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
