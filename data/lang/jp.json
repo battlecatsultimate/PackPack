@@ -974,9 +974,14 @@
                 "speed" : {
                     "title" : "- **Speed Adjustment Limit**",
                     "description" : {
-                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
-                        "enemy" : "Enemies' speed set to %d",
-                        "unit" : "Units' speed set to %d"
+                        "enemy" : {
+                            "multiply" : "Enemies' speed has %d%% multiplier",
+                            "set" : "Enemies' speed set to %d"
+                        },
+                        "unit" : {
+                            "multiply" : "Units' speed has %d%% multiplier",
+                            "set" : "Units' speed set to %d"
+                        }
                     }
                 }
             },
@@ -1635,7 +1640,9 @@
                 "16" : "二束三文",
                 "17" : "大勝負",
                 "18" : "等速直線運動",
-                "19" : "にゃんこ砲超強化"
+                "19" : "にゃんこ砲超強化",
+                "20" : "UR Cost/Cooldown Buff/Deploy Limit",
+                "21" : "High Speed"
             }
         },
         "section" : {

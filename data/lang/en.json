@@ -974,9 +974,14 @@
                 "speed" : {
                     "title" : "- **Speed Adjustment Limit**",
                     "description" : {
-                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
-                        "enemy" : "Enemies' speed set to %d",
-                        "unit" : "Units' speed set to %d"
+                        "enemy" : {
+                            "multiply" : "Enemies' speed has %d%% multiplier",
+                            "set" : "Enemies' speed set to %d"
+                        },
+                        "unit" : {
+                            "multiply" : "Units' speed has %d%% multiplier",
+                            "set" : "Units' speed set to %d"
+                        }
                     }
                 }
             },
@@ -1635,7 +1640,9 @@
                 "16" : "Low Cost",
                 "17" : "UR Cost Up/Triple UR Deploy",
                 "18" : "Identical Unit/Enemy Speed",
-                "19" : "Cannon Damage Buff"
+                "19" : "Cannon Damage Buff",
+                "20" : "UR Cost/Cooldown Buff/Deploy Limit",
+                "21" : "High Speed"
             }
         },
         "section" : {

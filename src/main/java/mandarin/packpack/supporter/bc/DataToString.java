@@ -1537,21 +1537,26 @@ public class DataToString extends Data {
                 );
             }
 
-            if (l.stageLimit.unitSpeedOverride != -1 && l.stageLimit.enemySpeedOverride != -1) {
-                res.add(
-                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.both", lang).formatted(l.stageLimit.unitSpeedOverride, l.stageLimit.enemySpeedOverride)
-                );
-            } else if (l.stageLimit.unitSpeedOverride != -1) {
-                res.add(
-                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.unit", lang).formatted(l.stageLimit.unitSpeedOverride)
-                );
-            } else if (l.stageLimit.enemySpeedOverride != -1) {
-                res.add(
-                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.enemy", lang).formatted(l.stageLimit.enemySpeedOverride)
-                );
+            if (l.stageLimit.unitSpeedOverride != -1 || l.stageLimit.enemySpeedOverride != -1) {
+                String description = LangID.getStringByID("data.stage.limit.speed.title", lang);
+
+                if (l.stageLimit.unitSpeedOverride != -1) {
+                    if (l.stageLimit.unitSpeedOverrideMode == StageLimit.SpeedOverrideMode.SET) {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.unit.set", lang).formatted(l.stageLimit.unitSpeedOverride);
+                    } else {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.unit.multiply", lang).formatted(l.stageLimit.unitSpeedOverride);
+                    }
+                }
+
+                if (l.stageLimit.enemySpeedOverride != -1) {
+                    if (l.stageLimit.enemySpeedOverrideMode == StageLimit.SpeedOverrideMode.SET) {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.enemy.set", lang).formatted(l.stageLimit.enemySpeedOverride);
+                    } else {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.enemy.multiply", lang).formatted(l.stageLimit.enemySpeedOverride);
+                    }
+                }
+
+                res.add(description);
             }
         }
 
