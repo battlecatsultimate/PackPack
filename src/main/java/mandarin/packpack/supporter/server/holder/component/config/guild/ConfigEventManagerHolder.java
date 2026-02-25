@@ -47,7 +47,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     return;
 
                 if (e.getValues().isEmpty()) {
-                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).channelID = -1L;
+                    holder.eventData.computeIfAbsent(locale, _ -> new EventDataConfigHolder()).channelID = -1L;
 
                     applyResult(event);
                 } else {
@@ -73,7 +73,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                         return;
                     }
 
-                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).channelID = channel.getIdLong();
+                    holder.eventData.computeIfAbsent(locale, _ -> new EventDataConfigHolder()).channelID = channel.getIdLong();
 
                     applyResult(event);
                 }
@@ -83,7 +83,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     return;
 
                 if (e.getValues().isEmpty()) {
-                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).newVersionChannelID = -1L;
+                    holder.eventData.computeIfAbsent(locale, _ -> new EventDataConfigHolder()).newVersionChannelID = -1L;
 
                     applyResult(event);
                 } else {
@@ -109,7 +109,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                         return;
                     }
 
-                    holder.eventData.computeIfAbsent(locale, l -> new EventDataConfigHolder()).newVersionChannelID = channel.getIdLong();
+                    holder.eventData.computeIfAbsent(locale, _ -> new EventDataConfigHolder()).newVersionChannelID = channel.getIdLong();
 
                     applyResult(event);
                 }
@@ -129,10 +129,10 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), userID, channelID, message, holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder()), lang, forEventData));
+                connectTo(new EventAdditionalMessageHolder(getAuthorMessage(), userID, channelID, message, holder.eventData.computeIfAbsent(locale, _ -> new EventDataConfigHolder()), lang, forEventData));
             }
             case "sort" -> {
-                EventDataConfigHolder config = holder.eventData.computeIfAbsent(locale, k -> new EventDataConfigHolder());
+                EventDataConfigHolder config = holder.eventData.computeIfAbsent(locale, _ -> new EventDataConfigHolder());
 
                 config.eventRaw = !config.eventRaw;
 
