@@ -50,25 +50,25 @@ public class CustomStageMap extends StageMap {
             stars = new int[len];
 
             for(int i = 0; i < len; i++) {
-                stars[i] = StaticStore.safeParseInt(option[2 + i]);
+                stars[i] = StaticStore.safeParseInt(option[3 + i]);
             }
 
-            starMask = StaticStore.safeParseInt(option[12]);
+            starMask = StaticStore.safeParseInt(option[13]);
 
             info = new StageMapInfo(this);
 
-            if(!option[7].equals("0")) {
-                info.resetMode = StaticStore.safeParseInt(option[7]);
-            }
-
             if(!option[8].equals("0")) {
-                info.clearLimit = StaticStore.safeParseInt(option[8]);
+                info.resetMode = StaticStore.safeParseInt(option[8]);
             }
 
-            info.hiddenUponClear = !option[13].equals("0");
+            if(!option[9].equals("0")) {
+                info.clearLimit = StaticStore.safeParseInt(option[9]);
+            }
 
-            if(!option[10].equals("0")) {
-                info.waitTime = StaticStore.safeParseInt(option[10]);
+            info.hiddenUponClear = !option[14].equals("0");
+
+            if(!option[11].equals("0")) {
+                info.waitTime = StaticStore.safeParseInt(option[11]);
             }
         } else {
             stars = new int[] { 100 };

@@ -11,8 +11,8 @@
         },
         "failed" : {
             "noName" : "Вам необходимо указать название этапа",
-            "noPermission" : "У вас недостаточно прав для управления псевдонимами",
-            "noType" : "Укажите, каким типом данных вы хотите манипулировать",
+            "noPermission" : "You don't have permission to edit aliases",
+            "noType" : "Please specify which type of data you want to search for",
             "removeFail" : "нет такого псевдонима : %s",
             "noAlias" : {
                 "enemy" : "Вам необходимо указать название противника",
@@ -1002,9 +1002,14 @@
                 "speed" : {
                     "title" : "- **Ограничение Скорости**",
                     "description" : {
-                        "both" : "Скорость юнитов - %d, скорость противников - %d",
-                        "enemy" : "Скорость противников - %d",
-                        "unit" : "Скорость юнитов - %d"
+                        "enemy" : {
+                            "multiply" : "Enemies' speed has %d%% multiplier",
+                            "set" : "Enemies' speed set to %d"
+                        },
+                        "unit" : {
+                            "multiply" : "Units' speed has %d%% multiplier",
+                            "set" : "Units' speed set to %d"
+                        }
                     }
                 }
             },
@@ -1678,7 +1683,11 @@
                 "14" : "Ограниченная Перезарядка",
                 "15" : "Ограниченные Деньги/Уменьшение Перезарядки Убер Редких",
                 "16" : "Низкая Цена",
-                "17" : "Убер Редкие: Увеличенная Цена/Появление Трижды"
+                "17" : "Убер Редкие: Увеличенная Цена/Появление Трижды",
+                "18" : "Identical Unit/Enemy Speed",
+                "19" : "Cannon Damage Buff",
+                "20" : "UR Cost/Cooldown Buff/Deploy Limit",
+                "21" : "High Speed"
             }
         },
         "section" : {

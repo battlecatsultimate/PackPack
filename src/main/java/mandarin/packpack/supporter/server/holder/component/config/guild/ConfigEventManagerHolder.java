@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -58,7 +58,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     if (g == null)
                         return;
 
-                    TextChannel channel = g.getTextChannelById(id);
+                    StandardGuildMessageChannel channel = g.getChannelById(StandardGuildMessageChannel.class, id);
 
                     if (channel == null)
                         return;
@@ -94,7 +94,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     if (g == null)
                         return;
 
-                    TextChannel channel = g.getTextChannelById(id);
+                    StandardGuildMessageChannel channel = g.getChannelById(StandardGuildMessageChannel.class, id);
 
                     if (channel == null)
                         return;
