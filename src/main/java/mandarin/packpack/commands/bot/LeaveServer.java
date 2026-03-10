@@ -31,7 +31,7 @@ public class LeaveServer extends ConstraintCommand {
             return;
         }
 
-        String id = contents[1];
+        long id = StaticStore.safeParseLong(contents[1]);
 
         ShardManager manager = loader.getClient().getShardManager();
 
