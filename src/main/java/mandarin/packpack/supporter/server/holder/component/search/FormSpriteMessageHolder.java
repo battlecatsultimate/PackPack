@@ -20,7 +20,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
 
     private final int mode;
 
-    public FormSpriteMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, CommonStatic.Lang.Locale lang) {
+    public FormSpriteMessageHolder(ArrayList<Form> form, @Nullable Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.form = form;

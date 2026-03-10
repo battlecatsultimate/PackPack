@@ -28,7 +28,7 @@ public class ServerConfig extends ConstraintCommand {
             return;
 
         replyToMessageSafely(loader.getChannel(), LangID.getStringByID("serverConfig.category.title", lang), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
-                StaticStore.putHolder(loader.getMember().getId(), new ConfigCategoryHolder(loader.getMessage(), loader.getMember().getId(), loader.getChannel().getId(), msg, holder, lang))
+                StaticStore.putHolder(loader.getMember().getIdLong(), new ConfigCategoryHolder(loader.getMessage(), loader.getMember().getIdLong(), loader.getChannel().getIdLong(), msg, holder, lang))
         );
     }
 

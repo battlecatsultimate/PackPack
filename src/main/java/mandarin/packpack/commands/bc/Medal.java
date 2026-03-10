@@ -61,7 +61,7 @@ public class Medal extends ConstraintCommand {
             replyToMessageSafely(ch, loader.getMessage(), msg -> {
                 User u = loader.getUser();
 
-                StaticStore.putHolder(u.getId(), new MedalMessageHolder(id, loader.getMessage(), u.getId(), ch.getId(), msg, realContents[1], config.searchLayout, lang));
+                StaticStore.putHolder(u.getIdLong(), new MedalMessageHolder(id, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, realContents[1], config.searchLayout, lang));
             }, getSearchComponents(id.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(realContents[1], id.size()), id, this::accumulateTextData, config.searchLayout, lang));
         }
     }

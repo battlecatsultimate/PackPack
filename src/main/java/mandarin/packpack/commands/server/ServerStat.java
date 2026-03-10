@@ -54,9 +54,9 @@ public class ServerStat extends Command {
         long member = 0L;
 
         for(int i = 0; i < members.size(); i++) {
-            if(holder.member != null && StaticStore.rolesToString(members.get(i).getRoles()).contains(holder.member)) {
+            if(holder.member != -1L && StaticStore.rolesToID(members.get(i).getRoles()).contains(holder.member)) {
                 member++;
-            } else if(holder.member == null) {
+            } else if(holder.member == -1L) {
                 member++;
             }
         }
@@ -64,15 +64,15 @@ public class ServerStat extends Command {
         result.append(LangID.getStringByID("serverStat.member", lang).replace("_", String.valueOf(member)).replace("=", df.format(member * 100.0 / allUsers)));
 
         for(String name : holder.ID.keySet()) {
-            String id = holder.ID.get(name);
+            long id = holder.ID.get(name);
 
-            if(id == null)
+            if(id == -1L)
                 continue;
 
             long c = 0L;
 
             for(int i = 0; i < members.size(); i++) {
-                if(!members.get(i).getUser().isBot() && StaticStore.rolesToString(members.get(i).getRoles()).contains(id))
+                if(!members.get(i).getUser().isBot() && StaticStore.rolesToID(members.get(i).getRoles()).contains(id))
                     c++;
             }
 

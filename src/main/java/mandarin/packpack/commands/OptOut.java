@@ -21,10 +21,10 @@ public class OptOut extends ConstraintCommand {
 
         User u = loader.getUser();
 
-        String id = u.getId();
+        long id = u.getIdLong();
 
         replyToMessageSafely(ch, LangID.getStringByID("optOut.warn", lang), loader.getMessage(), a -> registerConfirmButtons(a, lang), m ->
-            StaticStore.putHolder(id, new ConfirmButtonHolder(loader.getMessage(), id, ch.getId(), m, lang, () -> {
+            StaticStore.putHolder(id, new ConfirmButtonHolder(loader.getMessage(), id, ch.getIdLong(), m, lang, () -> {
                 StaticStore.optoutMembers.add(id);
 
                 StaticStore.spamData.remove(id);

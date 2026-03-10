@@ -41,7 +41,7 @@ public class AnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public AnimMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
+    public AnimMessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
         super(author, userID, channelID, message, lang);
 
         this.container = container;
@@ -269,7 +269,7 @@ public class AnimMessageHolder extends MessageHolder {
         try {
             MessageChannel ch = event.getMessage().getChannel();
 
-            if(!ch.getId().equals(channelID)) {
+            if(ch.getIdLong() != channelID) {
                 return STATUS.WAIT;
             }
 

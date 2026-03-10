@@ -57,7 +57,7 @@ public class BCAnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public BCAnimMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, boolean performance, CommonStatic.Lang.Locale lang, File container, MessageChannel ch, boolean zombie) throws Exception {
+    public BCAnimMessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, boolean performance, CommonStatic.Lang.Locale lang, File container, MessageChannel ch, boolean zombie) throws Exception {
         super(author, userID, channelID, message, lang);
         
         this.performance = performance;
@@ -134,7 +134,7 @@ public class BCAnimMessageHolder extends MessageHolder {
         try {
             MessageChannel ch = event.getMessage().getChannel();
 
-            if(!ch.getId().equals(channelID))
+            if(ch.getIdLong() != channelID)
                 return STATUS.WAIT;
 
             AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());

@@ -319,10 +319,10 @@ public class PackBot {
                         try {
                             BotListPlatformHandler.handleUpdatingBotStatus(client, false);
 
-                            Set<String> guilds = new HashSet<>();
+                            Set<Long> guilds = new HashSet<>();
 
                             for(JDA shard : client.getShards()) {
-                                guilds.addAll(shard.getGuilds().stream().map(ISnowflake::getId).toList());
+                                guilds.addAll(shard.getGuilds().stream().map(ISnowflake::getIdLong).toList());
                             }
 
                             StaticStore.holders.entrySet().removeIf(e -> guilds.contains(e.getKey()));
@@ -409,7 +409,7 @@ public class PackBot {
         boolean sent = false;
 
         for(Guild g : guilds) {
-            String gID = g.getId();
+            long gID = g.getIdLong();
 
             IDHolder holder = StaticStore.idHolder.computeIfAbsent(gID, _ -> new IDHolder(g));
 
@@ -659,7 +659,7 @@ public class PackBot {
         List<Guild> guilds = client.getGuilds();
 
         for (Guild g : guilds) {
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getIdLong(), _ -> new IDHolder(g));
 
             for (CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
                 int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);

@@ -35,8 +35,8 @@ import kotlin.math.min
 
 class SlotMachineCurrencyRewardHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCurrencyContent,

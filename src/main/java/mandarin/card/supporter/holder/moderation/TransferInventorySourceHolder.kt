@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 
-class TransferInventorySourceHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class TransferInventorySourceHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var transferMode = CardData.TransferMode.INJECT
     private var reset = false
 

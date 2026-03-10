@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 
-class AuctionCreateHolder(author: Message, userID: String, channelID: String, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionCreateHolder(author: Message, userID: Long, channelID: Long, message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var selectedCard: Card? = null
     private var amount = -1
     private var endTime = -1L

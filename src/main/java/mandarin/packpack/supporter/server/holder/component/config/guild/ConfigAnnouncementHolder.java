@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigAnnouncementHolder extends ServerConfigHolder {
-    public ConfigAnnouncementHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigAnnouncementHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 
@@ -41,14 +41,14 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 }
 
                 if (e.getValues().isEmpty()) {
-                    holder.announceChannel = null;
+                    holder.announceChannel = -1L;
 
                     applyResult(event);
 
                     return;
                 }
 
-                holder.announceChannel = e.getValues().getFirst().getId();
+                holder.announceChannel = e.getValues().getFirst().getIdLong();
 
                 applyResult(event);
             }
@@ -135,7 +135,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
 
         String channel;
 
-        if (holder.announceChannel == null) {
+        if (holder.announceChannel == -1L) {
             channel = LangID.getStringByID("data.none", lang);
         } else {
             channel = "<#" + holder.announceChannel + ">";
@@ -186,7 +186,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
                 .setPlaceholder(LangID.getStringByID("serverConfig.announcement.selectChannel", lang));
 
-        if (holder.announceChannel != null) {
+        if (holder.announceChannel != -1L) {
             channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(holder.announceChannel)).setRequiredRange(0, 1);
         }
 

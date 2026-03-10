@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigPermissionHolder extends ServerConfigHolder {
-    public ConfigPermissionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigPermissionHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 

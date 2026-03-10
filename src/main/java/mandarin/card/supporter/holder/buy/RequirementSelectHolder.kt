@@ -24,7 +24,7 @@ class RequirementSelectHolder : ComponentHolder {
     private val role: CardData.Role
     private val reward: Consumer<GenericComponentInteractionCreateEvent>
 
-    constructor(author: Message, userID: String, channelID: String, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: Long, channelID: Long, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.inventory = inventory
         this.role = role
@@ -32,7 +32,7 @@ class RequirementSelectHolder : ComponentHolder {
         reward = Consumer {  }
     }
 
-    constructor(author: Message, userID: String, channelID: String, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: Long, channelID: Long, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.product = product
         this.inventory = inventory
         this.reward = reward

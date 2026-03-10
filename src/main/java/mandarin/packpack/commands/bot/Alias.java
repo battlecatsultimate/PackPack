@@ -85,7 +85,7 @@ public class Alias extends ConstraintCommand {
                         }
                     }
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
+                    List<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
                         replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("alias.noAlias.unit", lang).formatted(fname));
@@ -113,7 +113,7 @@ public class Alias extends ConstraintCommand {
                     }
                 } else {
                     replyToMessageSafely(ch, loader.getMessage(), msg ->
-                                StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, AliasHolder.MODE.GET, lang, formName, null))
+                                StaticStore.putHolder(u.getIdLong(), new AliasFormMessageHolder(forms, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, AliasHolder.MODE.GET, lang, formName, null))
                             , getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(formName, forms.size()), forms, this::accumulateFormName, config.searchLayout, lang)
                     );
                 }
@@ -140,7 +140,7 @@ public class Alias extends ConstraintCommand {
                     if (eName.isBlank())
                         eName = Data.trio(Objects.requireNonNull(enemies.getFirst().id).id);
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
+                    List<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
                         replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("alias.noAlias.unit", lang).formatted(eName));
@@ -169,7 +169,7 @@ public class Alias extends ConstraintCommand {
                     }
                 } else {
                     replyToMessageSafely(ch, loader.getMessage(), msg ->
-                            StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), msg, AliasHolder.MODE.GET, lang, enemyName, null)),
+                            StaticStore.putHolder(u.getIdLong(), new AliasEnemyMessageHolder(enemies, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, AliasHolder.MODE.GET, lang, enemyName, null)),
                             getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateEnemyName, config.searchLayout, lang)
                     );
                 }
@@ -206,7 +206,7 @@ public class Alias extends ConstraintCommand {
                     if (stName == null || stName.isBlank())
                         stName = stages.getFirst().getCont().getSID() + "-" + Data.trio(Objects.requireNonNull(stages.getFirst().getCont().id).id) + "-" + Data.trio(Objects.requireNonNull(stages.getFirst().id).id);
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
+                    List<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
                         replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("alias.noAlias.unit", lang).formatted(stName));
@@ -241,7 +241,7 @@ public class Alias extends ConstraintCommand {
                     final String finalSummary = summary;
                     
                     replyToMessageSafely(ch, loader.getMessage(), msg ->
-                                StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(finalStages, loader.getMessage(), u.getId(), ch.getId(), msg, AliasHolder.MODE.GET, lang, generateSearchName(names), null, finalSummary))
+                                StaticStore.putHolder(u.getIdLong(), new AliasStageMessageHolder(finalStages, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, AliasHolder.MODE.GET, lang, generateSearchName(names), null, finalSummary))
                             , getSearchComponents(stages.size(), finalSummary, stages, this::accumulateStageName, config.searchLayout, lang)
                     );
                 }

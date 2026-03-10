@@ -17,7 +17,7 @@ class CatFoodRate : Command(CommonStatic.Lang.Locale.EN, true) {
         val member = loader.member
         val ch = loader.channel
 
-        if (!CardData.isManager(member) && member.id != StaticStore.MANDARIN_SMELL) {
+        if (!CardData.isManager(member) && member.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 
@@ -30,7 +30,7 @@ class CatFoodRate : Command(CommonStatic.Lang.Locale.EN, true) {
                 "Maximum Cat Food : ${EmojiStore.ABILITY["CF"]?.formatted} ${CardData.maximumCatFoods}\n" +
                 "\n" +
                 "Cooldown : $timeText", loader.message, { a -> a.setComponents(getComponents()) }) { m ->
-            StaticStore.putHolder(loader.member.id, CatFoodRateConfigHolder(loader.message, member.id, loader.channel.id, m))
+            StaticStore.putHolder(loader.member.idLong, CatFoodRateConfigHolder(loader.message, member.idLong, loader.channel.idLong, m))
         }
     }
 

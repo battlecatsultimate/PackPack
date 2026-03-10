@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.min
 
-class ActivatorHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ActivatorHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val banners = CardData.banners
 
     private var page = 0

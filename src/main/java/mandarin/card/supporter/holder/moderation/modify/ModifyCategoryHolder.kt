@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 
-class ModifyCategoryHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ModifyCategoryHolder(author: Message, userID: Long, channelID: Long, message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(FIVE_MIN)
     }

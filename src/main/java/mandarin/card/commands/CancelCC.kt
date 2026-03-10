@@ -58,7 +58,7 @@ class CancelCC : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, builder.toString(), loader.message, { a -> registerConfirmButtons(a, lang) }) { msg ->
-            StaticStore.putHolder(loader.user.id, CCCancelHolder(loader.message, loader.user.id, loader.channel.id, msg, CCCancelHolder.CancelMode.CC))
+            StaticStore.putHolder(loader.user.idLong, CCCancelHolder(loader.message, loader.user.idLong, loader.channel.idLong, msg, CCCancelHolder.CancelMode.CC))
         }
     }
 }

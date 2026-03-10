@@ -32,7 +32,7 @@ import java.util.List;
 public class ConfigBoosterChannelHolder extends ServerConfigHolder {
     private int page = 0;
 
-    public ConfigBoosterChannelHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigBoosterChannelHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 
@@ -53,8 +53,8 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                 List<String> reasons = new ArrayList<>();
 
                 for (GuildChannel channel : channels) {
-                    if (holder.boosterPinChannel.contains(channel.getId())) {
-                        holder.boosterPinChannel.remove(channel.getId());
+                    if (holder.boosterPinChannel.contains(channel.getIdLong())) {
+                        holder.boosterPinChannel.remove(channel.getIdLong());
                     } else {
                         boolean invalid = false;
 
@@ -69,7 +69,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                         }
 
                         if (!invalid) {
-                            holder.boosterPinChannel.add(channel.getId());
+                            holder.boosterPinChannel.add(channel.getIdLong());
                         }
                     }
                 }
@@ -194,7 +194,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                     int size = Math.min(holder.boosterPinChannel.size(), (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
                     for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
-                        String channel = holder.boosterPinChannel.get(i);
+                        long channel = holder.boosterPinChannel.get(i);
 
                         builder.append(i + 1).append(". ").append("<#").append(channel).append("> [").append(channel).append("]");
 

@@ -143,7 +143,7 @@ public class FormStat extends ConstraintCommand {
             if (forms.size() == 1) {
                 Form f = forms.getFirst();
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getIdLong(), TreasureHolder.global);
 
                 Message author = loader.getNullableMessage();
 
@@ -152,7 +152,7 @@ public class FormStat extends ConstraintCommand {
                 EntityHandler.generateUnitEmbed(f, sender, author, config, f.unit.forms.length >= 3, treasure, configData, lang, false, result -> {
                     User u = loader.getUser();
 
-                    StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.getFirst(), author, u.getId(), ch.getId(), result, config, treasure, configData, lang));
+                    StaticStore.putHolder(u.getIdLong(), new FormButtonHolder(forms.getFirst(), author, u.getIdLong(), ch.getIdLong(), result, config, treasure, configData, lang));
                 });
             } else if (forms.isEmpty()) {
                 if (loader.fromMessage) {
@@ -164,9 +164,9 @@ public class FormStat extends ConstraintCommand {
                 Consumer<Message> onSuccess = res -> {
                     User u = loader.getUser();
 
-                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, loader.getNullableMessage(), u.getId(), ch.getId(), res, name, config, treasure, configData, lang));
+                    StaticStore.putHolder(u.getIdLong(), new FormStatMessageHolder(forms, loader.getNullableMessage(), u.getIdLong(), ch.getIdLong(), res, name, config, treasure, configData, lang));
                 };
 
                 if (loader.fromMessage) {

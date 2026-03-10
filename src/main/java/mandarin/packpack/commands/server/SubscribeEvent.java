@@ -31,7 +31,7 @@ public class SubscribeEvent extends ConstraintCommand {
         MessageChannel ch = loader.getChannel();
 
         replyToMessageSafely(ch, getContents(), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
-                StaticStore.putHolder(loader.getUser().getId(), new ConfigEventVersionSelectHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, holder, lang))
+                StaticStore.putHolder(loader.getUser().getIdLong(), new ConfigEventVersionSelectHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, holder, lang))
         );
     }
 

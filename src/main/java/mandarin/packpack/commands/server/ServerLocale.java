@@ -43,7 +43,7 @@ public class ServerLocale extends ConstraintCommand {
         }
 
         replyToMessageSafely(ch, LangID.getStringByID("locale.select", holder.config.lang).formatted(emoji, localeName), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new LocaleSettingHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, holder.config, holder, true, lang))
+            StaticStore.putHolder(loader.getUser().getIdLong(), new LocaleSettingHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, holder.config, holder, true, lang))
         );
     }
 

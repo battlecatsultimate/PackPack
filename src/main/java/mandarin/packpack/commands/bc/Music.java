@@ -37,8 +37,8 @@ public class Music extends GlobalTimedConstraintCommand {
 
         User u = interaction.getUser();
 
-        if(StaticStore.config.containsKey(u.getId())) {
-            lang =  StaticStore.config.get(u.getId()).lang;
+        if(StaticStore.config.containsKey(u.getIdLong())) {
+            lang =  StaticStore.config.get(u.getIdLong()).lang;
         }
 
         if(ms != null && ms.id != null) {

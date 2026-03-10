@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 public class AnnouncementAdditionalMessageHolder extends ModalHolder {
     private final IDHolder holder;
 
-    public AnnouncementAdditionalMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
+    public AnnouncementAdditionalMessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.holder = holder;

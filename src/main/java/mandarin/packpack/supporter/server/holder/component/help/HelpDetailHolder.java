@@ -27,7 +27,7 @@ public class HelpDetailHolder extends ComponentHolder {
 
     private final int color;
 
-    public HelpDetailHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, @Nonnull String selectedCommand, int color) {
+    public HelpDetailHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, @Nonnull String selectedCommand, int color) {
         super(author, userID, channelID, message, lang);
 
         this.selectedCommand = selectedCommand;
@@ -74,7 +74,7 @@ public class HelpDetailHolder extends ComponentHolder {
         String prefix;
 
         if (message.getChannel() instanceof GuildChannel) {
-            IDHolder holder = StaticStore.idHolder.get(message.getGuild().getId());
+            IDHolder holder = StaticStore.idHolder.get(message.getGuild().getIdLong());
 
             if (holder == null) {
                 prefix = StaticStore.globalPrefix;

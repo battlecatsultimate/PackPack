@@ -24,7 +24,7 @@ public class StageLineupHolder extends ComponentHolder {
     private final Stage st;
     private final StageInfo.StageInfoConfig configData;
 
-    public StageLineupHolder(Stage st, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+    public StageLineupHolder(Stage st, @Nullable Message author, long userID, long channelID, @Nonnull Message message, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.st = st;

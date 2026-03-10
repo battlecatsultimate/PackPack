@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 
-class AuctionPlaceSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val guild: Guild) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionPlaceSelectHolder(author: Message, userID: Long, channelID: Long, message: Message, private val guild: Guild) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     init {

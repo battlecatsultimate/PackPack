@@ -75,7 +75,7 @@ public class AliasAdd extends ConstraintCommand {
                     if (fname.isBlank())
                         fname = Data.trio(Objects.requireNonNull(forms.getFirst().unit.id).id) + "-" + Data.trio(forms.getFirst().fid);
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
+                    List<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
 
                     if (alias == null)
                         alias = new ArrayList<>();
@@ -103,7 +103,7 @@ public class AliasAdd extends ConstraintCommand {
                     StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + u.getAsMention());
                 } else {
                     replyToMessageSafely(ch, loader.getMessage(), msg ->
-                                    StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, AliasHolder.MODE.ADD, lang, unitName, getAliasName(loader.getContent())))
+                                    StaticStore.putHolder(u.getIdLong(), new AliasFormMessageHolder(forms, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, AliasHolder.MODE.ADD, lang, unitName, getAliasName(loader.getContent())))
                             , getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(unitName, forms.size()), forms, this::accumulateFormName, config.searchLayout, lang)
                     );
                 }
@@ -129,7 +129,7 @@ public class AliasAdd extends ConstraintCommand {
                     if (eName.isBlank())
                         eName = Data.trio(Objects.requireNonNull(enemies.getFirst().id).id);
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
+                    List<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
 
                     if (alias == null)
                         alias = new ArrayList<>();
@@ -157,7 +157,7 @@ public class AliasAdd extends ConstraintCommand {
                     StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + u.getAsMention());
                 } else {
                     replyToMessageSafely(ch, loader.getMessage(), msg ->
-                                    StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), msg, AliasHolder.MODE.ADD, lang, enemyName, getAliasName(loader.getContent()))),
+                                    StaticStore.putHolder(u.getIdLong(), new AliasEnemyMessageHolder(enemies, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, AliasHolder.MODE.ADD, lang, enemyName, getAliasName(loader.getContent()))),
                             getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateEnemyName, config.searchLayout, lang)
                     );
                 }
@@ -198,7 +198,7 @@ public class AliasAdd extends ConstraintCommand {
                                 "-" +
                                 Data.trio(Objects.requireNonNull(stages.getFirst().id).id);
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
+                    List<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
 
                     if (alias == null)
                         alias = new ArrayList<>();
@@ -234,7 +234,7 @@ public class AliasAdd extends ConstraintCommand {
                     final String finalSummary = summary;
 
                     replyToMessageSafely(ch, loader.getMessage(), msg ->
-                                    StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(finalStages, loader.getMessage(), u.getId(), ch.getId(), msg, AliasHolder.MODE.ADD, lang, generateSearchName(names), getAliasName(loader.getContent()), finalSummary))
+                                    StaticStore.putHolder(u.getIdLong(), new AliasStageMessageHolder(finalStages, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, AliasHolder.MODE.ADD, lang, generateSearchName(names), getAliasName(loader.getContent()), finalSummary))
                             , getSearchComponents(stages.size(), finalSummary, stages, this::accumulateStageName, config.searchLayout, lang)
                     );
                 }

@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScamLinkSubscriptionHolder extends ComponentHolder {
-    private final String targetChannel;
+    private final long targetChannel;
     private final String mute;
 
     private ScamLinkHandler.ACTION action = ScamLinkHandler.ACTION.MUTE;
     private boolean noticeAll = false;
 
-    public ScamLinkSubscriptionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, String targetChannel, String mute) {
+    public ScamLinkSubscriptionHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, long targetChannel, String mute) {
         super(author, userID, channelID, message, lang);
 
         this.targetChannel = targetChannel;
@@ -74,11 +74,11 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
             }
             case "confirm" -> {
                 if (action != ScamLinkHandler.ACTION.MUTE || mute != null) {
-                    ScamLinkHandler handler = new ScamLinkHandler(userID, g.getId(), targetChannel, mute, action, noticeAll);
+                    ScamLinkHandler handler = new ScamLinkHandler(userID, g.getIdLong(), targetChannel, mute, action, noticeAll);
 
-                    StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
+                    StaticStore.scamLinkHandlers.servers.put(g.getIdLong(), handler);
 
-                    Command.replyToMessageSafely(ch, LangID.getStringByID("subscribeScamDetector.done", lang).replace("_", targetChannel), message, a -> a);
+                    Command.replyToMessageSafely(ch, LangID.getStringByID("subscribeScamDetector.done", lang).formatted(targetChannel), message, a -> a);
 
                     event.deferEdit()
                             .setContent(parseMessage())

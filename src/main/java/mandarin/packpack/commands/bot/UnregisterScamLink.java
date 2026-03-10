@@ -21,7 +21,7 @@ public class UnregisterScamLink extends ConstraintCommand {
         MessageChannel ch = loader.getChannel();
         Guild g = loader.getGuild();
 
-        if(!StaticStore.scamLink.servers.contains(g.getId())) {
+        if(!StaticStore.scamLink.servers.contains(g.getIdLong())) {
             replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("scamLinkRegister.failed.noPermission", lang));
 
             return;

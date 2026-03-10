@@ -50,7 +50,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private final int castle;
     private final int music;
 
-    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, @Nullable Message author, String keyword, ConfigHolder.SearchLayout layout, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, boolean orOperate, boolean hasBoss, boolean monthly, TreasureHolder treasure, StageInfo.StageInfoConfig configData, int background, int castle, int music, CommonStatic.Lang.Locale lang) {
+    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, @Nullable Message author, String keyword, ConfigHolder.SearchLayout layout, long userID, long channelID, @Nonnull Message msg, boolean orOperate, boolean hasBoss, boolean monthly, TreasureHolder treasure, StageInfo.StageInfoConfig configData, int background, int castle, int music, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, msg, keyword, layout, lang);
 
         this.enemySequences = enemySequences;
@@ -138,17 +138,17 @@ public class StageEnemyMessageHolder extends SearchHolder {
                         .queue();
             } else if(stages.size() == 1) {
                 EntityHandler.generateStageEmbed(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
-                    if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
-                        StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
+                    if(StaticStore.timeLimit.containsKey(author.getAuthor().getIdLong())) {
+                        StaticStore.timeLimit.get(author.getAuthor().getIdLong()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
                         Map<String, Long> memberLimit = new HashMap<>();
 
                         memberLimit.put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
 
-                        StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
+                        StaticStore.timeLimit.put(author.getAuthor().getIdLong(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, treasure, configData, false, lang));
+                    StaticStore.putHolder(author.getAuthor().getIdLong(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, treasure, configData, false, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("findStage.several", lang)).append("```md\n");
@@ -171,7 +171,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 sb.append("```");
 
                 createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly).queue(res ->
-                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), userID, ch.getId(), res, keyword, layout, treasure, configData, lang))
+                    StaticStore.putHolder(author.getAuthor().getIdLong(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), userID, ch.getIdLong(), res, keyword, layout, treasure, configData, lang))
                 );
 
                 message.delete().queue();

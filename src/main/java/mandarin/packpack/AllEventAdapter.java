@@ -85,11 +85,11 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             Guild g = event.getGuild();
 
-            StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getId()+")");
+            StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getIdLong()+")");
 
-            StaticStore.idHolder.remove(g.getId());
+            StaticStore.idHolder.remove(g.getIdLong());
 
-            StaticStore.holders.values().forEach(hub -> hub.handleGuildDelete(g.getId()));
+            StaticStore.holders.values().forEach(hub -> hub.handleGuildDelete(g.getIdLong()));
 
             StaticStore.saveServerInfo();
 
@@ -106,9 +106,9 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             Guild g = event.getGuild();
 
-            StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getId()+")"+"\nSize : "+g.getMemberCount());
+            StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getIdLong()+")"+"\nSize : "+g.getMemberCount());
 
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getIdLong(), _ -> new IDHolder(g));
 
             StaticStore.saveServerInfo();
 
@@ -138,23 +138,23 @@ public class AllEventAdapter extends ListenerAdapter {
 
         try {
             Guild g = event.getGuild();
-            String roleID = event.getRole().getId();
+            long roleID = event.getRole().getIdLong();
 
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getIdLong(), _ -> new IDHolder(g));
 
-            if (roleID.equals(holder.moderator)) {
-                holder.moderator = null;
+            if (roleID == holder.moderator) {
+                holder.moderator = -1L;
             }
 
-            if (roleID.equals(holder.member)) {
-                holder.member = null;
+            if (roleID == holder.member) {
+                holder.member = -1L;
             }
 
-            if (roleID.equals(holder.booster)) {
-                holder.booster = null;
+            if (roleID == holder.booster) {
+                holder.booster = -1L;
             }
 
-            holder.ID.entrySet().removeIf(entry -> roleID.equals(entry.getValue()));
+            holder.ID.entrySet().removeIf(entry -> roleID == entry.getValue());
 
             StaticStore.saveServerInfo();
         } catch (Exception e) {
@@ -167,7 +167,7 @@ public class AllEventAdapter extends ListenerAdapter {
         ChannelUnion channel = event.getChannel();
 
         if (channel instanceof MessageChannel mc && !mc.canTalk()) {
-            StaticStore.holders.values().forEach(hub -> hub.handleChannelDelete(mc.getId()));
+            StaticStore.holders.values().forEach(hub -> hub.handleChannelDelete(mc.getIdLong()));
         }
     }
 
@@ -179,13 +179,13 @@ public class AllEventAdapter extends ListenerAdapter {
             Guild g = event.getGuild();
             Channel ch = event.getChannel();
 
-            IDHolder idh = StaticStore.idHolder.get(g.getId());
+            IDHolder idh = StaticStore.idHolder.get(g.getIdLong());
 
             if(idh == null)
                 return;
 
-            if(idh.announceChannel != null && idh.announceChannel.equals(ch.getId()))
-                idh.announceChannel = null;
+            if(idh.announceChannel != -1L && idh.announceChannel == ch.getIdLong())
+                idh.announceChannel = -1L;
 
             for(CommonStatic.Lang.Locale key : idh.eventData.keySet()) {
                 EventDataConfigHolder config = idh.eventData.get(key);
@@ -203,24 +203,24 @@ public class AllEventAdapter extends ListenerAdapter {
                 }
             }
 
-            if(idh.logDM != null && idh.logDM.equals(ch.getId()))
-                idh.logDM = null;
+            if(idh.logDM != -1L && idh.logDM == ch.getIdLong())
+                idh.logDM = -1L;
 
-            idh.status.remove(ch.getId());
+            idh.status.remove(ch.getIdLong());
 
-            StaticStore.idHolder.put(g.getId(), idh);
+            StaticStore.idHolder.put(g.getIdLong(), idh);
 
-            if(StaticStore.scamLinkHandlers.servers.containsKey(g.getId())) {
-                String channel = StaticStore.scamLinkHandlers.servers.get(g.getId()).getChannel();
+            if(StaticStore.scamLinkHandlers.servers.containsKey(g.getIdLong())) {
+                long channel = StaticStore.scamLinkHandlers.servers.get(g.getIdLong()).getChannel();
 
-                if(channel != null && channel.equals(ch.getId())) {
-                    StaticStore.scamLinkHandlers.servers.remove(g.getId());
+                if(channel != -1L && channel == ch.getIdLong()) {
+                    StaticStore.scamLinkHandlers.servers.remove(g.getIdLong());
                 }
             }
 
-            idh.boosterPinChannel.remove(ch.getId());
+            idh.boosterPinChannel.remove(ch.getIdLong());
 
-            StaticStore.holders.values().forEach(hub -> hub.handleChannelDelete(ch.getId()));
+            StaticStore.holders.values().forEach(hub -> hub.handleChannelDelete(ch.getIdLong()));
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onChannelDelete - Error happened");
         }
@@ -238,29 +238,29 @@ public class AllEventAdapter extends ListenerAdapter {
 
             Guild g = event.getGuild();
 
-            if(!StaticStore.idHolder.containsKey(g.getId()))
+            if(!StaticStore.idHolder.containsKey(g.getIdLong()))
                 return;
 
-            IDHolder holder = StaticStore.idHolder.get(g.getId());
+            IDHolder holder = StaticStore.idHolder.get(g.getIdLong());
 
-            if(holder.booster == null)
+            if(holder.booster == -1L)
                 return;
 
-            if(!StaticStore.boosterData.containsKey(g.getId()))
+            if(!StaticStore.boosterData.containsKey(g.getIdLong()))
                 return;
 
-            BoosterHolder booster = StaticStore.boosterData.get(g.getId());
+            BoosterHolder booster = StaticStore.boosterData.get(g.getIdLong());
 
-            if(!booster.serverBooster.containsKey(m.getId()))
+            if(!booster.serverBooster.containsKey(m.getIdLong()))
                 return;
 
-            BoosterData data = booster.serverBooster.get(m.getId());
+            BoosterData data = booster.serverBooster.get(m.getIdLong());
 
-            if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
-                String role = data.getRole();
-                String emoji = data.getEmoji();
+            if(!StaticStore.rolesToID(m.getRoles()).contains(holder.booster)) {
+                long role = data.getRole();
+                long emoji = data.getEmoji();
 
-                if(role != null) {
+                if(role != -1L) {
                     Role r = g.getRoleById(role);
 
                     if(r != null) {
@@ -268,7 +268,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     }
                 }
 
-                if(emoji != null) {
+                if(emoji != -1L) {
                     RichCustomEmoji e = g.getEmojiById(emoji);
 
                     if(e != null) {
@@ -276,7 +276,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     }
                 }
 
-                booster.serverBooster.remove(m.getId());
+                booster.serverBooster.remove(m.getIdLong());
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildMemberUpdate - Error happened");
@@ -308,19 +308,19 @@ public class AllEventAdapter extends ListenerAdapter {
 
             User u = event.getAuthor();
 
-            if(u.getId().equals(event.getJDA().getSelfUser().getId()) || u.isBot())
+            if(u.getIdLong() == event.getJDA().getSelfUser().getIdLong() || u.isBot())
                 return;
 
-            if(StaticStore.optoutMembers.contains(u.getId())) {
+            if(StaticStore.optoutMembers.contains(u.getIdLong())) {
                 return;
             }
 
             MessageChannel mc = event.getChannel();
             Message msg = event.getMessage();
 
-            boolean mandarin = u.getId().equals(StaticStore.MANDARIN_SMELL);
+            boolean mandarin = u.getIdLong() == StaticStore.MANDARIN_SMELL;
 
-            String prefix = StaticStore.getPrefix(u.getId());
+            String prefix = StaticStore.getPrefix(u.getIdLong());
 
             if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(StaticStore.globalPrefix))
                 prefix = StaticStore.globalPrefix;
@@ -329,15 +329,15 @@ public class AllEventAdapter extends ListenerAdapter {
 
             ConfigHolder c;
 
-            if(StaticStore.config.containsKey(u.getId())) {
-                lang = StaticStore.config.get(u.getId()).lang;
-                c = StaticStore.config.get(u.getId());
+            if(StaticStore.config.containsKey(u.getIdLong())) {
+                lang = StaticStore.config.get(u.getIdLong()).lang;
+                c = StaticStore.config.get(u.getIdLong());
             } else {
                 c = null;
             }
 
-            if(StaticStore.holderContainsKey(u.getId())) {
-                HolderHub holder = StaticStore.getHolderHub(u.getId());
+            if(StaticStore.holderContainsKey(u.getIdLong())) {
+                HolderHub holder = StaticStore.getHolderHub(u.getIdLong());
 
                 holder.handleEvent(event);
             }
@@ -345,7 +345,7 @@ public class AllEventAdapter extends ListenerAdapter {
             if(mc instanceof PrivateChannel) {
                 SelfUser self = event.getJDA().getSelfUser();
 
-                if(event.getAuthor().getId().equals(self.getId())) {
+                if(event.getAuthor().getIdLong() == self.getIdLong()) {
                     return;
                 }
 
@@ -356,7 +356,7 @@ public class AllEventAdapter extends ListenerAdapter {
                         content = content.substring(0, 997)+"...";
                     }
 
-                    if(!StaticStore.optoutMembers.contains(msg.getAuthor().getId())) {
+                    if(!StaticStore.optoutMembers.contains(msg.getAuthor().getIdLong())) {
                         notifyModerators(event.getJDA(), msg.getAuthor(), content);
                     }
                 }
@@ -373,22 +373,22 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 Guild g = event.getGuild();
 
-                if(!u.isBot() && !StaticStore.optoutMembers.contains(u.getId()) && StaticStore.scamLinkHandlers.servers.containsKey(g.getId()) && ScamLinkHandler.validScammingUser(msg.getContentRaw())) {
+                if(!u.isBot() && !StaticStore.optoutMembers.contains(u.getIdLong()) && StaticStore.scamLinkHandlers.servers.containsKey(g.getIdLong()) && ScamLinkHandler.validScammingUser(msg.getContentRaw())) {
                     String link = ScamLinkHandler.getLinkFromMessage(msg.getContentRaw());
 
                     if(link != null) {
                         link = link.replace("http://", "").replace("https://", "");
                     }
 
-                    StaticStore.scamLinkHandlers.servers.get(g.getId()).takeAction(link, m, g);
-                    StaticStore.logger.uploadLog("I caught compromised user\nLINK : "+link+"\nGUILD : "+g.getName()+" ("+g.getId()+")\nMEMBER : "+m.getEffectiveName()+" ("+u.getId()+")");
+                    StaticStore.scamLinkHandlers.servers.get(g.getIdLong()).takeAction(link, m, g);
+                    StaticStore.logger.uploadLog("I caught compromised user\nLINK : "+link+"\nGUILD : "+g.getName()+" ("+g.getIdLong()+")\nMEMBER : "+m.getEffectiveName()+" ("+u.getIdLong()+")");
 
                     msg.delete().queue();
                 }
 
-                IDHolder idh = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
+                IDHolder idh = StaticStore.idHolder.computeIfAbsent(g.getIdLong(), _ -> new IDHolder(g));
 
-                String userPrefix = StaticStore.getPrefix(u.getId()).toLowerCase(java.util.Locale.ENGLISH);
+                String userPrefix = StaticStore.getPrefix(u.getIdLong()).toLowerCase(java.util.Locale.ENGLISH);
 
                 if (idh.disableCustomPrefix && !prefix.equals(StaticStore.globalPrefix) && userPrefix.equals(prefix.toLowerCase(java.util.Locale.ENGLISH))) {
                     final CommonStatic.Lang.Locale finalLocale = lang;
@@ -415,18 +415,18 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 boolean isMod;
 
-                String moderatorID = idh.moderator;
+                long moderatorID = idh.moderator;
                 List<Role> roles = m.getRoles();
 
-                if (moderatorID != null) {
-                    isMod = roles.stream().anyMatch(r -> r.getId().equals(moderatorID)) || m.isOwner();
+                if (moderatorID != -1L) {
+                    isMod = roles.stream().anyMatch(r -> r.getIdLong() == moderatorID) || m.isOwner();
                 } else {
                     isMod = m.hasPermission(Permission.MANAGE_SERVER) || m.hasPermission(Permission.ADMINISTRATOR) || m.isOwner();
                 }
 
                 boolean channelPermitted = false;
 
-                ArrayList<String> channels = idh.getAllAllowedChannels(m);
+                ArrayList<Long> channels = idh.getAllAllowedChannels(m);
 
                 if(channels == null)
                     channelPermitted = true;
@@ -434,20 +434,20 @@ public class AllEventAdapter extends ListenerAdapter {
                     if (mc instanceof ThreadChannel tc) {
                         IThreadContainerUnion parent = tc.getParentChannel();
 
-                        channelPermitted = channels.contains(tc.getId());
+                        channelPermitted = channels.contains(tc.getIdLong());
 
                         if (parent instanceof ForumChannel) {
-                            channelPermitted |= channels.contains(parent.getId());
+                            channelPermitted |= channels.contains(parent.getIdLong());
                         }
                     } else {
-                        channelPermitted = channels.contains(mc.getId());
+                        channelPermitted = channels.contains(mc.getIdLong());
                     }
                 }
 
                 if(!mandarin && !isMod && !channelPermitted)
                     return;
 
-                if(!mandarin && idh.banned.contains(u.getId()))
+                if(!mandarin && idh.banned.contains(u.getIdLong()))
                     return;
 
                 if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(idh.config.prefix))
@@ -468,18 +468,18 @@ public class AllEventAdapter extends ListenerAdapter {
             if(ch instanceof GuildMessageChannel) {
                 Guild g = event.getGuild();
 
-                data += "\n\n" + "Guild : " + g.getName() + " (" + g.getId() + ")";
+                data += "\n\n" + "Guild : " + g.getName() + " (" + g.getIdLong() + ")";
             }
 
             if(m != null) {
-                data += "\n\nMember  : " + m.getEffectiveName() + " (" + m.getId() + ")";
+                data += "\n\nMember  : " + m.getEffectiveName() + " (" + m.getIdLong() + ")";
             } else {
                 User u = event.getAuthor();
 
-                data += "\n\nUser : " + u.getName() + " (" + u.getId() + ")";
+                data += "\n\nUser : " + u.getName() + " (" + u.getIdLong() + ")";
             }
 
-            data += "\n\nChannel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+            data += "\n\nChannel : " + ch.getName() + "(" + ch.getIdLong() + "|" + ch.getType().name() + ")";
 
             StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
         }
@@ -841,9 +841,7 @@ public class AllEventAdapter extends ListenerAdapter {
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {
         super.onMessageDelete(event);
 
-        String messageID = event.getMessageId();
-
-        StaticStore.holders.values().forEach(hub -> hub.handleMessageDelete(messageID));
+        StaticStore.holders.values().forEach(hub -> hub.handleMessageDelete(event.getMessageIdLong()));
     }
 
     @Override
@@ -856,8 +854,8 @@ public class AllEventAdapter extends ListenerAdapter {
             if(u == null)
                 return;
 
-            if(StaticStore.holderContainsKey(u.getId())) {
-                HolderHub hub = StaticStore.getHolderHub(u.getId());
+            if(StaticStore.holderContainsKey(u.getIdLong())) {
+                HolderHub hub = StaticStore.getHolderHub(u.getIdLong());
 
                 hub.handleEvent(event);
             }
@@ -875,22 +873,22 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             switch (event) {
                 case GenericComponentInteractionCreateEvent c -> {
-                    if (StaticStore.holderContainsKey(u.getId())) {
-                        HolderHub holder = StaticStore.getHolderHub(u.getId());
+                    if (StaticStore.holderContainsKey(u.getIdLong())) {
+                        HolderHub holder = StaticStore.getHolderHub(u.getIdLong());
 
                         holder.handleEvent(c);
                     }
                 }
                 case ModalInteractionEvent m -> {
-                    if (StaticStore.holderContainsKey(u.getId())) {
-                        HolderHub holder = StaticStore.getHolderHub(u.getId());
+                    if (StaticStore.holderContainsKey(u.getIdLong())) {
+                        HolderHub holder = StaticStore.getHolderHub(u.getIdLong());
 
                         holder.handleEvent(m);
                     }
                 }
                 case GenericCommandInteractionEvent i -> {
-                    if (StaticStore.spamData.containsKey(u.getId())) {
-                        SpamPrevent spam = StaticStore.spamData.get(u.getId());
+                    if (StaticStore.spamData.containsKey(u.getIdLong())) {
+                        SpamPrevent spam = StaticStore.spamData.get(u.getIdLong());
 
                         String result = spam.isPrevented(event);
 
@@ -907,12 +905,12 @@ public class AllEventAdapter extends ListenerAdapter {
                     MessageChannel mc = event.getMessageChannel();
 
                     IDHolder idh;
-                    boolean mandarin = u.getId().equals(StaticStore.MANDARIN_SMELL);
+                    boolean mandarin = u.getIdLong() == StaticStore.MANDARIN_SMELL;
 
                     if (g == null) {
                         idh = null;
                     } else {
-                        idh = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
+                        idh = StaticStore.idHolder.computeIfAbsent(g.getIdLong(), _ -> new IDHolder(g));
                     }
 
                     boolean channelPermitted = false;
@@ -923,7 +921,7 @@ public class AllEventAdapter extends ListenerAdapter {
                         Member m = event.getMember();
 
                         if (m != null) {
-                            ArrayList<String> channels = idh.getAllAllowedChannels(m);
+                            ArrayList<Long> channels = idh.getAllAllowedChannels(m);
 
                             if(channels == null)
                                 channelPermitted = true;
@@ -931,19 +929,19 @@ public class AllEventAdapter extends ListenerAdapter {
                                 if (mc instanceof ThreadChannel tc) {
                                     IThreadContainerUnion parent = tc.getParentChannel();
 
-                                    channelPermitted = channels.contains(tc.getId());
+                                    channelPermitted = channels.contains(tc.getIdLong());
 
                                     if (parent instanceof ForumChannel) {
-                                        channelPermitted |= channels.contains(parent.getId());
+                                        channelPermitted |= channels.contains(parent.getIdLong());
                                     }
                                 } else {
-                                    channelPermitted = channels.contains(mc.getId());
+                                    channelPermitted = channels.contains(mc.getIdLong());
                                 }
                             }
                         }
                     }
 
-                    ConfigHolder c = StaticStore.config.get(event.getUser().getId());
+                    ConfigHolder c = StaticStore.config.get(event.getUser().getIdLong());
 
                     CommonStatic.Lang.Locale lang;
 
@@ -966,7 +964,7 @@ public class AllEventAdapter extends ListenerAdapter {
                         return;
                     }
 
-                    if (!mandarin && idh != null && idh.banned.contains(u.getId())) {
+                    if (!mandarin && idh != null && idh.banned.contains(u.getIdLong())) {
                         i.deferReply()
                                 .setContent(LangID.getStringByID("bot.denied.reason.banned", lang))
                                 .setEphemeral(true)
@@ -983,10 +981,10 @@ public class AllEventAdapter extends ListenerAdapter {
         } catch (Exception e) {
             String message = "E/AllEventAdapter::onGenericInteractionCreate - Error happened";
 
-            if(StaticStore.holderContainsKey(u.getId())) {
-                message += "\n\nTried to handle the holder : " + StaticStore.getHolderHub(u.getId()).getClass().getName();
+            if(StaticStore.holderContainsKey(u.getIdLong())) {
+                message += "\n\nTried to handle the holder : " + StaticStore.getHolderHub(u.getIdLong()).getClass().getName();
 
-                HolderHub hub = StaticStore.getHolderHub(u.getId());
+                HolderHub hub = StaticStore.getHolderHub(u.getIdLong());
 
                 if(hub.componentHolder != null) {
                     Message author = hub.componentHolder.getAuthorMessage();
@@ -994,13 +992,13 @@ public class AllEventAdapter extends ListenerAdapter {
                     MessageChannel ch = author.getChannel();
 
                     message += "\n\nCommand : " + author.getContentRaw() + "\n\n" +
-                            "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+                            "Member  : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                            "Channel : " + ch.getName() + "(" + ch.getIdLong() + "|" + ch.getType().name() + ")";
 
                     if(ch instanceof GuildChannel) {
                         Guild g = author.getGuild();
 
-                        message += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                        message += "\n\nGuild : " + g.getName() + " (" + g.getIdLong() + ")";
                     }
                 }
             }
@@ -1028,10 +1026,10 @@ public class AllEventAdapter extends ListenerAdapter {
         if (g == null) {
             holder = null;
         } else {
-            holder = StaticStore.idHolder.get(g.getId());
+            holder = StaticStore.idHolder.get(g.getIdLong());
         }
 
-        ConfigHolder config = StaticStore.config.get(event.getUser().getId());
+        ConfigHolder config = StaticStore.config.get(event.getUser().getIdLong());
 
         CommonStatic.Lang.Locale locale;
 
@@ -1272,12 +1270,12 @@ public class AllEventAdapter extends ListenerAdapter {
         List<Guild> guilds = client.getGuilds();
 
         for(Guild g : guilds) {
-            String gID = g.getId();
+            long gID = g.getIdLong();
 
-            Member m = g.getMemberById(u.getId());
+            Member m = g.getMemberById(u.getIdLong());
 
             if(m != null) {
-                IDHolder holder = StaticStore.idHolder.get(g.getId());
+                IDHolder holder = StaticStore.idHolder.get(g.getIdLong());
 
                 if(holder == null) {
                     StaticStore.logger.uploadLog("W/AllEventAdapter::notifyModerators - No ID Holder found for guild ID : "+gID);
@@ -1285,7 +1283,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     return;
                 }
 
-                if(holder.logDM != null && StaticStore.isNumeric(holder.logDM)) {
+                if(holder.logDM != -1L) {
                     GuildChannel ch = g.getGuildChannelById(holder.logDM);
 
                     if(ch != null) {
@@ -1293,7 +1291,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
                         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                                 .setDescription(LangID.getStringByID("watchDM.suspiciousLink", holder.config.lang))
-                                .setAuthor(m.getEffectiveName()+" ("+m.getId()+")", null, m.getAvatarUrl())
+                                .setAuthor(m.getEffectiveName()+" ("+m.getIdLong()+")", null, m.getAvatarUrl())
                                 .addField(LangID.getStringByID("watchDM.embed.content", holder.config.lang), content, true);
 
                         if(ch instanceof GuildMessageChannel) {
@@ -1330,28 +1328,28 @@ public class AllEventAdapter extends ListenerAdapter {
         List<Guild> l = client.getGuilds().stream().filter(Objects::nonNull).toList();
 
         for (Guild guild : l) {
-            IDHolder id = StaticStore.idHolder.computeIfAbsent(guild.getId(), _ -> new IDHolder(guild));
+            IDHolder id = StaticStore.idHolder.computeIfAbsent(guild.getIdLong(), _ -> new IDHolder(guild));
             List<Role> roles = guild.getRoles();
 
             //Validate Role
-            if (id.moderator != null && roles.stream().noneMatch(r -> r.getId().equals(id.moderator))) {
-                id.moderator = null;
+            if (id.moderator != -1L && roles.stream().noneMatch(r -> r.getIdLong() == id.moderator)) {
+                id.moderator = -1L;
             }
 
-            if (id.member != null && roles.stream().noneMatch(r -> r.getId().equals(id.member))) {
-                id.member = null;
+            if (id.member != -1L && roles.stream().noneMatch(r -> r.getIdLong() == id.member)) {
+                id.member = -1L;
             }
 
-            if (id.booster != null && roles.stream().noneMatch(r -> r.getId().equals(id.booster))) {
-                id.booster = null;
+            if (id.booster != -1L && roles.stream().noneMatch(r -> r.getIdLong() == id.booster)) {
+                id.booster = -1L;
             }
 
-            id.ID.entrySet().removeIf(entry -> roles.stream().noneMatch(r -> r.getId().equals(entry.getValue())));
+            id.ID.entrySet().removeIf(entry -> roles.stream().noneMatch(r -> r.getIdLong() == entry.getValue()));
         }
 
         System.out.println("Sending online status for shard " + client.getShardInfo() + "...");
 
-        for(String key : StaticStore.idHolder.keySet()) {
+        for(long key : StaticStore.idHolder.keySet()) {
             try {
                 IDHolder holder = StaticStore.idHolder.get(key);
 
@@ -1408,7 +1406,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
         System.out.println("Filtering out url format prefixes...");
 
-        for(String key : StaticStore.config.keySet()) {
+        for(long key : StaticStore.config.keySet()) {
             ConfigHolder config = StaticStore.config.get(key);
 
             if(config == null)

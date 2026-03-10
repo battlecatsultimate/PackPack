@@ -71,15 +71,15 @@ class TransferCatFood : Command(CommonStatic.Lang.Locale.EN, true) {
 
                         a.setComponents(ActionRow.of(components))
                     }) { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, loader.channel.id, msg, lang) {
+                StaticStore.putHolder(m.idLong, ConfirmButtonHolder(loader.message, m.idLong, loader.channel.idLong, msg, lang) {
                     val thatInventory = Inventory.getInventory(mem.idLong)
 
                     thatInventory.catFoods += amount
                     thisInventory.catFoods -= amount
 
-                    replyToMessageSafely(loader.channel, "Successfully transferred ${EmojiStore.ABILITY["CF"]?.formatted} $amount!\n" +
-                            "\n" +
-                            "Now you have ${EmojiStore.ABILITY["CF"]?.formatted} ${thisInventory.catFoods}, and user ${mem.asMention} has ${EmojiStore.ABILITY["CF"]?.formatted} ${thatInventory.catFoods}", loader.message) { a -> a }
+                    replyToMessageSafely(
+                        loader.channel, "Successfully transferred ${EmojiStore.ABILITY["CF"]?.formatted} $amount!\n" + "\n" + "Now you have ${EmojiStore.ABILITY["CF"]?.formatted} ${thisInventory.catFoods}, and user ${mem.asMention} has ${EmojiStore.ABILITY["CF"]?.formatted} ${thatInventory.catFoods}", loader.message
+                    ) { a -> a }
 
                     TransactionLogger.logCatFoodTransfer(m.id, mem.id, amount)
                 })

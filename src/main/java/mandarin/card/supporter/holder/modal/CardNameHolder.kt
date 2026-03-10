@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.io.File
 import kotlin.math.abs
 
-class CardNameHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card, private val createMode: Boolean) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardNameHolder(author: Message, userID: Long, channelID: Long, message: Message, private val card: Card, private val createMode: Boolean) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "cardName") {
             return

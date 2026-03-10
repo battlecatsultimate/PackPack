@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineContentSortHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineContentSortHolder(author: Message, userID: Long, channelID: Long, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {

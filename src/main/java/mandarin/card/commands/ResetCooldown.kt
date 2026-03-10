@@ -21,12 +21,12 @@ class ResetCooldown : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
         replyToMessageSafely(loader.channel, "Select pack to reset cooldown of it", loader.message, { a -> a.addComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.id, ResetCooldownHolder(loader.message, m.id, loader.channel.id, msg))
+            StaticStore.putHolder(m.idLong, ResetCooldownHolder(loader.message, m.idLong, loader.channel.idLong, msg))
         }
     }
 

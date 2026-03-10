@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.max
 import kotlin.math.min
 
-class CardSelectHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardSelectHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = ArrayList<Card>(CardData.cards)
 
     private var page = 0

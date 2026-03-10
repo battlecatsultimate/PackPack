@@ -22,7 +22,7 @@ public class AliasEnemyMessageHolder extends SearchHolder {
     private final AliasHolder.MODE mode;
     private final String aliasName;
 
-    public AliasEnemyMessageHolder(ArrayList<Enemy> enemies, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName) {
+    public AliasEnemyMessageHolder(ArrayList<Enemy> enemies, @Nullable Message author, long userID, long channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName) {
         super(author, userID, channelID, msg, keyword, ConfigHolder.SearchLayout.FANCY_LIST, lang);
 
         this.enemies = enemies;
@@ -92,7 +92,7 @@ public class AliasEnemyMessageHolder extends SearchHolder {
         if(eName.isBlank())
             eName = Data.trio(enemies.get(index).id.id);
 
-        ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.ENEMY, lang, enemies.get(index));
+        List<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.ENEMY, lang, enemies.get(index));
 
         switch (mode) {
             case GET -> {

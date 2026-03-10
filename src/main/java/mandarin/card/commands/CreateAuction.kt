@@ -22,7 +22,7 @@ class CreateAuction : Command(CommonStatic.Lang.Locale.EN, true) {
         val m = loader.member
         val ch = loader.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
@@ -63,7 +63,7 @@ class CreateAuction : Command(CommonStatic.Lang.Locale.EN, true) {
                 "End Time : __Need to be decided__\n" +
                 "Initial Price : __Need to be decided__",
             loader.message, { a -> a.setComponents(getComponents(anonymous)) }) { msg ->
-            StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, m.id, ch.id, msg, targetMember?.idLong ?: -1L, placeChannel, anonymous))
+            StaticStore.putHolder(m.idLong, AuctionCreateHolder(loader.message, m.idLong, ch.idLong, msg, targetMember?.idLong ?: -1L, placeChannel, anonymous))
         }
     }
 

@@ -12,7 +12,7 @@ class ApproveAuction : Command(CommonStatic.Lang.Locale.EN, true) {
         val m = loader.member
         val ch = loader.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
@@ -25,7 +25,7 @@ class ApproveAuction : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(ch, "Are you sure you want to approve this auction?", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(m.idLong, ConfirmButtonHolder(loader.message, m.idLong, ch.idLong, msg, CommonStatic.Lang.Locale.EN) {
                 val warnMessage = auctionSession.performAuction(m.idLong)
 
                 if (warnMessage.isNotEmpty()) {

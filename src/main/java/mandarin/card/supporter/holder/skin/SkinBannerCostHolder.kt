@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinBannerCostHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinBannerCostHolder(author: Message, userID: Long, channelID: Long, message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
 
     private var page = 0
 

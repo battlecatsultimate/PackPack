@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinCardSelectHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinCardSelectHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = CardData.cards.sortedWith(CardComparator()).toMutableList()
 
     private var page = 0

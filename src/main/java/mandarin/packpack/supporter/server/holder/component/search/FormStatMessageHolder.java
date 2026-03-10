@@ -23,7 +23,7 @@ public class FormStatMessageHolder extends SearchHolder {
     private final FormStat.FormStatConfig configData;
     private final TreasureHolder t;
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder config, TreasureHolder t, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, long userID, long channelID, Message message, String keyword, ConfigHolder config, TreasureHolder t, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, config.searchLayout, lang);
 
         this.form = form;
@@ -89,9 +89,9 @@ public class FormStatMessageHolder extends SearchHolder {
             EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, result -> {
                 User u = event.getUser();
 
-                StaticStore.removeHolder(u.getId(), FormStatMessageHolder.this);
+                StaticStore.removeHolder(u.getIdLong(), FormStatMessageHolder.this);
 
-                StaticStore.putHolder(u.getId(), new FormButtonHolder(form.get(index), hasAuthorMessage() ? getAuthorMessage() : null, u.getId(), channelID, result, config, t, configData, lang));
+                StaticStore.putHolder(u.getIdLong(), new FormButtonHolder(form.get(index), hasAuthorMessage() ? getAuthorMessage() : null, u.getIdLong(), channelID, result, config, t, configData, lang));
             });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormStatMessageHolder::onSelected - Failed to perform showing unit embed");

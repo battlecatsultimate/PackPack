@@ -46,8 +46,8 @@ import kotlin.text.toInt
 
 class PackPayHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val member: Member,
     private val pack: CardPack,
@@ -159,7 +159,7 @@ class PackPayHolder(
             }
             "back" -> {
                 if (containers.any { container -> container.pickedCards.isNotEmpty() }) {
-                    StaticStore.removeHolder(authorMessage.author.id, this)
+                    StaticStore.removeHolder(authorMessage.author.idLong, this)
 
                     registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared")
 

@@ -69,20 +69,15 @@
         }
     },
     "boosterEmoji" : {
-        "downloading" : "Downloading image to verify : -",
-        "failed" : {
-            "alreadyAssigned" : "This member already has assigned booster emoji. You have to remove emoji by calling `p!boosteremojiremove` command first!",
-            "downloadFail" : "Failed to download image file...",
-            "imageFail" : "Couldn't create image data...",
-            "invalidImage" : "Image seems to be invalid png file!",
-            "noFile" : "Please upload png file when using this command!",
-            "noName" : "Please specify emoji name!",
-            "tooBig" : "Image's size seems to be larger than 256KB!",
-            "unknown" : "Failed to add emoji... Did you check available emoji slot left?"
+        "select" : "Please select the member you want to manage",
+        "description" :{
+            "explanation" : "Sometimes you may want to offer unique perk to boosters that they can have their own emoji as long as they are boosting your server. But if they stopped boosting the server, said perk has to be removed from them as well. Such manual management is very tedious and hard to track. For this case, bot can check if assigned users have booster role or not, and automatically manage emojis for boosters. If users stop boosting the server, since booster role will be taken away, bot will be able to detect this and remove assigned emojis accordingly",
+            "title" : "## Adding Booster Emoji",
+            "member" : "**Member** : <@%d> (%d)"
         },
-        "success" : {
-            "animated" : "Added `:_EEE_:` (<a:_EEE_:_III_>) emoji to <@_MMM_>!",
-            "default" : "Added `:_EEE_:` (<:_EEE_:_III_>) emoji to <@_MMM_>!"
+        "failed" : {
+            "noBooster" : "This user doesn't have assigned booster role (<@&%d>!)",
+            "noRole" : "It seems that you haven't assigned booster role to the bot yet. Please assign it using `p!idset` or `p!sc` command!"
         }
     },
     "boosterEmojiRemove" : {
@@ -114,7 +109,7 @@
             "noMember" : "Member's ID isn't specified!",
             "noRegisteredRole" : "No booster role is set in this server! Please specify booster role via `p!idset` command",
             "noRoleName" : "I can't find any role name. You have to specify role name by wrapping it with \" quotation marks, and name must not be white spaces!",
-            "notBooster" : "This member doesn't have server booster role (<@&_RRR_>)!",
+            "notBooster" : "This member doesn't have server booster role (<@&%d>)!",
             "notRGB" : "Please specify full rgb color to make things clarified!"
         }
     },
@@ -128,7 +123,7 @@
     },
     "bot" : {
         "announcement" : "<@%d> Announcement",
-        "spamBanned" : "Now <@_UUU_> can't use any commands for _TTT_due to spamming of command. More spamming in future will lengthen time of ban!",
+        "spamBanned" : "Now <@%d> can't use any commands for %sdue to spamming of command. More spamming in future will lengthen time of ban!",
         "command" : {
             "timeLimit" : "You can run this command after _ sec later!"
         },
@@ -2540,7 +2535,7 @@
     },
     "scamDetector" : {
         "compromisedReport" : "Compromised Account Report",
-        "directMessage" : "Bot took action because it detected that you sent scam link in message. If this is false, contact moderator manually\n\nServer : _NNN_ (_III_)",
+        "directMessage" : "Bot took action because it detected that you sent scam link in message. If this is false, contact moderator manually\n\nServer : %s (%d)",
         "title" : "Scam Link Auto-Detector",
         "action" : {
             "ban" : "Ban",
@@ -2975,10 +2970,10 @@
         "role" : "There are _MMM_ users who has _NNN_ role in this server. It takes about =% of the total number of people\n"
     },
     "setup" : {
-        "already" : "This role <@&_RRR_> is already decided to be set as moderator role! Please select other role",
+        "already" : "This role <@&%d> is already decided to be set as moderator role! Please select other role",
         "canceled" : "Canceled setup",
         "confirmation" : "It seems this server already has set up ID data, are you sure that you want to override these data?",
-        "done" : "Done!\n\nUsers who have <@&_MOD_> will be able to use moderator-only commands\nUsers who have <@&_MEM_> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it",
+        "done" : "Done!\n\nUsers who have <@&%d> will be able to use moderator-only commands\nUsers who have <@&%d> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it",
         "expired" : "Setup expired",
         "selectRole" : "Select role",
         "select" : {
@@ -2986,8 +2981,8 @@
             "moderator" : "Select moderator role"
         },
         "selected" : {
-            "member" : "Member role is selected as <@&_RRR_>",
-            "moderator" : "Moderator role is selected as <@&_RRR_>"
+            "member" : "Member role is selected as <@&%d>",
+            "moderator" : "Moderator role is selected as <@&%d>"
         }
     },
     "solve" : {
@@ -3075,7 +3070,7 @@
     },
     "subscribeScamDetector" : {
         "canceled" : "Canceled scam link auto-detector subscription",
-        "done" : "Now bot will upload compromised account information new in <#_>",
+        "done" : "Now bot will upload compromised account information new in <#%d>",
         "expired" : "Subscription time expired",
         "decision" : {
             "ban" : "Action when bot could catch compromised account = **Ban**\n\n**__:warning: Warning! :warning:__**\n\nBanning user directly may lead to bad situation when bot caught non-scam link. It's not recommended, so consider using other options",

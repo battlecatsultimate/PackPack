@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 
-class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinPurchasePayHolder(author: Message, userID: Long, channelID: Long, message: Message, private val skin: Skin) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     private val containers = Array(skin.cost.cardsCosts.size) {
@@ -120,7 +120,7 @@ class SkinPurchasePayHolder(author: Message, userID: String, channelID: String, 
             }
             "back" -> {
                 if (containers.any { container -> container.pickedCards.isNotEmpty() }) {
-                    StaticStore.removeHolder(authorMessage.author.id, this)
+                    StaticStore.removeHolder(authorMessage.author.idLong, this)
 
                     registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared")
 

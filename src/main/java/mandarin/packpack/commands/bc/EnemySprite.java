@@ -76,7 +76,7 @@ public class EnemySprite extends TimedConstraintCommand {
                 replyToMessageSafely(ch, loader.getMessage(), msg -> {
                     User u = loader.getUser();
 
-                    StaticStore.putHolder(u.getId(), new EnemySpriteMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), msg, enemyName, config.searchLayout, mode, lang));
+                    StaticStore.putHolder(u.getIdLong(), new EnemySpriteMessageHolder(enemies, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, enemyName, config.searchLayout, mode, lang));
                 }, getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateTextData, config.searchLayout, lang));
 
                 disableTimer();

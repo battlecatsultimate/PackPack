@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigCategoryHolder extends ServerConfigHolder {
-    public ConfigCategoryHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
+    public ConfigCategoryHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, lang);
     }
 

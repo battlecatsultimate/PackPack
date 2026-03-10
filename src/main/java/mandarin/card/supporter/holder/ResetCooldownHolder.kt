@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ResetCooldownHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ResetCooldownHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {

@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 
-class CraftCostHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CraftCostHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val size = 2
 
     private var page = 0
@@ -55,7 +55,7 @@ class CraftCostHolder(author: Message, userID: String, channelID: String, messag
             "collab",
             "t3",
             "t4"-> {
-                val craftMode = when(event.componentId) {
+                val craftMode = when (event.componentId) {
                     "t2" -> CardData.CraftMode.T2
                     "seasonal" -> CardData.CraftMode.SEASONAL
                     "collab" -> CardData.CraftMode.COLLAB
@@ -63,21 +63,15 @@ class CraftCostHolder(author: Message, userID: String, channelID: String, messag
                     else -> CardData.CraftMode.T4
                 }
 
-                val input = TextInput.create("cost", TextInputStyle.SHORT)
-                    .setPlaceholder("Define amount of platinum shards that will be spent upon craft")
-                    .setRequired(true)
-                    .setValue(craftMode.cost.toString())
-                    .build()
+                val input = TextInput.create("cost", TextInputStyle.SHORT).setPlaceholder("Define amount of platinum shards that will be spent upon craft").setRequired(true).setValue(craftMode.cost.toString()).build()
 
-                val modal = Modal.create("craftCost", "Cost of Crafting")
-                    .addComponents(Label.of("Cost", input))
-                    .build()
+                val modal = Modal.create("craftCost", "Cost of Crafting").addComponents(Label.of("Cost", input)).build()
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CraftCostModifyHolder(authorMessage, userID, channelID, message, craftMode) {
+                StaticStore.putHolder(authorMessage.author.idLong, CraftCostModifyHolder(authorMessage, userID, channelID, message, craftMode) {
                     applyResult()
-                })
+                });
             }
             "confirm" -> {
                 event.deferEdit()

@@ -20,12 +20,12 @@ import kotlin.math.min
 
 class ManageBanner : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        if (loader.user.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member)) {
+        if (loader.user.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member)) {
             return
         }
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(loader.user.id, BannerManageHolder(loader.message, loader.user.id, loader.channel.id, msg))
+            StaticStore.putHolder(loader.user.idLong, BannerManageHolder(loader.message, loader.user.idLong, loader.channel.idLong, msg))
         }
     }
 

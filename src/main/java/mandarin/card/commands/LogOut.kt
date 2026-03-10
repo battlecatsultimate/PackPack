@@ -16,7 +16,7 @@ class LogOut : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
 
-        if (u.id != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid"))
+        if (u.idLong != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid"))
             return
 
         val ch = loader.channel
@@ -57,7 +57,7 @@ class LogOut : Command(CommonStatic.Lang.Locale.EN, false) {
         registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), CommonStatic.Lang.Locale.EN).queue { msg ->
             StaticStore.logger.uploadLog("Logging out : ${loader.user.asMention}")
 
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, u.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(u.idLong, ConfirmButtonHolder(loader.message, u.idLong, ch.idLong, msg, CommonStatic.Lang.Locale.EN) {
                 val self = ch.jda.selfUser.asMention
                 val channel = if (CardBot.test) {
                     null

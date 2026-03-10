@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class BannerNameHolder(author: Message, userID: String, channelID: String, message: Message, private val banner: Banner) : ModalHolder(author, userID, channelID, message, Locale.EN) {
+class BannerNameHolder(author: Message, userID: Long, channelID: Long, message: Message, private val banner: Banner) : ModalHolder(author, userID, channelID, message, Locale.EN) {
     override fun clean() {
 
     }

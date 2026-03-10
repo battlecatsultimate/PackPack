@@ -31,7 +31,7 @@ public class PrintStageEvent extends ConstraintCommand {
         if(now) {
             User u = loader.getUser();
 
-            t = StaticStore.timeZones.getOrDefault(u.getId(), 0);
+            t = StaticStore.timeZones.getOrDefault(u.getIdLong(), 0);
 
             String content;
 
@@ -47,7 +47,7 @@ public class PrintStageEvent extends ConstraintCommand {
 
         User u = loader.getUser();
 
-        if(full && !StaticStore.contributors.contains(u.getId())) {
+        if(full && !StaticStore.contributors.contains(u.getIdLong())) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event.ignoreFull", lang));

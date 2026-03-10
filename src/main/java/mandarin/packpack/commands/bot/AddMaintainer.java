@@ -51,13 +51,13 @@ public class AddMaintainer extends ConstraintCommand {
             return;
         }
 
-        if (StaticStore.maintainers.contains(id)) {
+        if (StaticStore.maintainers.contains(StaticStore.safeParseLong(id))) {
             replyToMessageSafely(loader.getChannel(), loader.getMessage(), "User <@%s> (%s) is already maintainer of this bot".formatted(id, id));
 
             return;
         }
 
-        StaticStore.maintainers.add(id);
+        StaticStore.maintainers.add(StaticStore.safeParseLong(id));
 
         replyToMessageSafely(loader.getChannel(), loader.getMessage(), "User <@%s> (%s) is now a maintainer of this bot".formatted(id, id));
     }

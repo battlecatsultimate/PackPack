@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.min
 
-class CardSalvageHolder(author: Message, userID: String, channelID: String, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardSalvageHolder(author: Message, userID: Long, channelID: Long, message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     companion object {
         const val PAGE_CHUNK = 15
     }
@@ -220,10 +220,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
                         }
                     }
 
-                    it.deferReply()
-                        .setContent("Successfully added all of your cards! Keep in mind that you can't undo the task once you salvage the cards")
-                        .setEphemeral(true)
-                        .queue()
+                    it.deferReply().setContent("Successfully added all of your cards! Keep in mind that you can't undo the task once you salvage the cards").setEphemeral(true).queue()
 
                     filterCards()
 
@@ -231,7 +228,7 @@ class CardSalvageHolder(author: Message, userID: String, channelID: String, mess
 
                     applyResult()
 
-                    StaticStore.putHolder(authorMessage.author.id, this)
+                    StaticStore.putHolder(authorMessage.author.idLong, this);
                 }
 
                 registerPopUp(event, "Are you sure you want to add all cards?")

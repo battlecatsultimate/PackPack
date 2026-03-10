@@ -63,7 +63,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
-        boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
+        boolean isTrusted = StaticStore.contributors.contains(u.getIdLong()) || u.getIdLong() == StaticStore.MANDARIN_SMELL;
 
         String[] list = loader.getContent().split(" ");
 
@@ -166,7 +166,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     primary.append(LangID.getStringByID("data.animation.gif.ignoring", lang)).append("\n\n");
                 }
 
-                StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), res, primary, enemyName, config.searchLayout, mode, frame, transparent, debug, lang, true, raw && isTrusted, gif));
+                StaticStore.putHolder(u.getIdLong(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), u.getIdLong(), ch.getIdLong(), res, primary, enemyName, config.searchLayout, mode, frame, transparent, debug, lang, true, raw && isTrusted, gif));
             }, getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateTextData, config.searchLayout, lang));
 
             disableTimer();

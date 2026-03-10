@@ -177,9 +177,9 @@ public class AnimAnalyzer extends ConstraintCommand {
 
                 try {
                     if(bc) {
-                        new BCAnimMessageHolder(msg, loader.getUser().getId(), ch.getId(), m, performance, lang, container, ch, zombie);
+                        new BCAnimMessageHolder(msg, loader.getUser().getIdLong(), ch.getIdLong(), m, performance, lang, container, ch, zombie);
                     } else {
-                        new AnimMessageHolder(msg, loader.getUser().getId(), ch.getId(), m, lang, container, performance, debug, ch, raw, finalAnim);
+                        new AnimMessageHolder(msg, loader.getUser().getIdLong(), ch.getIdLong(), m, lang, container, performance, debug, ch, raw, finalAnim);
                     }
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/AnimAnalyzer::doSomething - Failed to initialize holder");

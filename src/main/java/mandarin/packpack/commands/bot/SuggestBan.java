@@ -26,7 +26,7 @@ public class SuggestBan extends ConstraintCommand {
         } else {
             String reason = getReason(loader.getContent());
 
-            StaticStore.suggestBanned.put(contents[1], reason.isBlank() ? "None" : reason);
+            StaticStore.suggestBanned.put(StaticStore.safeParseLong(contents[1]), reason.isBlank() ? "None" : reason);
 
             replyToMessageSafely(ch, loader.getMessage(), "Banned "+contents[1]);
         }

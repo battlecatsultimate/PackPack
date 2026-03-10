@@ -24,7 +24,7 @@ public class TreasureButtonHolder extends ComponentHolder {
     private final TreasureHolder treasure;
     private final TreasureHolder backup;
 
-    public TreasureButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
+    public TreasureButtonHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.treasure = treasure;

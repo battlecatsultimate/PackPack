@@ -42,7 +42,7 @@ public abstract class SearchHolder extends ComponentHolder {
     protected int chunk;
     protected ConfigHolder.SearchLayout layout;
 
-    public SearchHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
+    public SearchHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.keyword = keyword;

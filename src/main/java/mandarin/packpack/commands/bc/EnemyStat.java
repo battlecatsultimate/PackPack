@@ -130,9 +130,9 @@ public class EnemyStat extends ConstraintCommand {
 
                 Message m = loader.getNullableMessage();
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getIdLong(), TreasureHolder.global);
 
-                EntityHandler.generateEnemyEmbed(enemies.getFirst(), sender, m, treasure, configData, false, lang, msg -> StaticStore.putHolder(loader.getUser().getId(), new EnemyButtonHolder(m, loader.getUser().getId(), ch.getId(), msg, enemies.getFirst(), treasure, configData, lang)));
+                EntityHandler.generateEnemyEmbed(enemies.getFirst(), sender, m, treasure, configData, false, lang, msg -> StaticStore.putHolder(loader.getUser().getIdLong(), new EnemyButtonHolder(m, loader.getUser().getIdLong(), ch.getIdLong(), msg, enemies.getFirst(), treasure, configData, lang)));
             } else if(enemies.isEmpty()) {
                 if (loader.fromMessage) {
                     replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("enemyStat.fail.noEnemy", lang).formatted(getSearchKeyword(enemyName)));
@@ -144,17 +144,17 @@ public class EnemyStat extends ConstraintCommand {
                     replyToMessageSafely(ch, loader.getMessage(), msg -> {
                         User u = loader.getUser();
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), msg, enemyName, config.searchLayout, treasure, configData, lang));
+                        StaticStore.putHolder(u.getIdLong(), new EnemyStatMessageHolder(enemies, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, enemyName, config.searchLayout, treasure, configData, lang));
                     }, getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateTextData, config.searchLayout, lang));
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), msg -> {
                         User u = loader.getUser();
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, loader.getNullableMessage(), u.getId(), ch.getId(), msg, enemyName, config.searchLayout, treasure, configData, lang));
+                        StaticStore.putHolder(u.getIdLong(), new EnemyStatMessageHolder(enemies, loader.getNullableMessage(), u.getIdLong(), ch.getIdLong(), msg, enemyName, config.searchLayout, treasure, configData, lang));
                     }, getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateTextData, config.searchLayout, lang));
                 }
             }

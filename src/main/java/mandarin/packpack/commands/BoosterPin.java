@@ -35,11 +35,11 @@ public class BoosterPin extends ConstraintCommand {
         if(holder == null)
             return;
 
-        if(holder.booster == null) {
+        if(holder.booster == -1L) {
             return;
         }
 
-        if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
+        if(!StaticStore.rolesToID(m.getRoles()).contains(holder.booster)) {
             return;
         }
 
@@ -56,9 +56,9 @@ public class BoosterPin extends ConstraintCommand {
                 pinAllowed = true;
             } else {
                 if(ch instanceof ThreadChannel t) {
-                    pinAllowed = holder.boosterPinChannel.contains(t.getParentChannel().getId());
+                    pinAllowed = holder.boosterPinChannel.contains(t.getParentChannel().getIdLong());
                 } else {
-                    pinAllowed = holder.boosterPinChannel.contains(ch.getId());
+                    pinAllowed = holder.boosterPinChannel.contains(ch.getIdLong());
                 }
             }
 

@@ -67,9 +67,9 @@ public class BotListPlatformHandler {
     }
 
     public static void handleUpdatingBotStatus(@Nonnull ShardManager manager, boolean printResponse) {
-        String botID = getBotID(manager);
+        long botID = getBotID(manager);
 
-        if (botID == null)
+        if (botID == -1L)
             return;
 
         handleTopGG(manager, botID, printResponse);
@@ -78,7 +78,7 @@ public class BotListPlatformHandler {
         handleDiscordBotGG(manager, botID, printResponse);
     }
 
-    public static void handleTopGG(@Nonnull ShardManager manager, String botID, boolean printResponse) {
+    public static void handleTopGG(@Nonnull ShardManager manager, long botID, boolean printResponse) {
         if (topGGToken == null)
             return;
 
@@ -127,7 +127,7 @@ public class BotListPlatformHandler {
         }
     }
 
-    public static void handleDiscordBotList(@Nonnull ShardManager manager, String botID, boolean printResponse) {
+    public static void handleDiscordBotList(@Nonnull ShardManager manager, long botID, boolean printResponse) {
         if (discordBotListToken == null)
             return;
 
@@ -176,7 +176,7 @@ public class BotListPlatformHandler {
         }
     }
 
-    public static void handleKoreanDiscordList(@Nonnull ShardManager manager, String botID, boolean printResponse) {
+    public static void handleKoreanDiscordList(@Nonnull ShardManager manager, long botID, boolean printResponse) {
         if (koreanDiscordListToken == null)
             return;
 
@@ -218,7 +218,7 @@ public class BotListPlatformHandler {
         }
     }
 
-    public static void handleDiscordBotGG(ShardManager manager, String botID, boolean printResponse) {
+    public static void handleDiscordBotGG(ShardManager manager, long botID, boolean printResponse) {
         if (discordBotGGToken == null)
             return;
 
@@ -313,13 +313,13 @@ public class BotListPlatformHandler {
         return manager.getShards().size();
     }
 
-    private static String getBotID(@Nonnull ShardManager manager) {
+    private static long getBotID(@Nonnull ShardManager manager) {
         List<JDA> shards = manager.getShards();
 
         if (shards.isEmpty()) {
-            return null;
+            return -1L;
         } else {
-            return shards.getFirst().getSelfUser().getId();
+            return shards.getFirst().getSelfUser().getIdLong();
         }
     }
 }

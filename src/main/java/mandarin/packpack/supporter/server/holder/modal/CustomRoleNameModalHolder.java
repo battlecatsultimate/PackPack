@@ -15,7 +15,7 @@ public class CustomRoleNameModalHolder extends ModalHolder {
 
     private final Consumer<String> onSelected;
 
-    public CustomRoleNameModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang, Consumer<String> onSelected) {
+    public CustomRoleNameModalHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang, Consumer<String> onSelected) {
         super(author, userID, channelID, message, lang);
 
         this.holder = holder;
@@ -49,9 +49,9 @@ public class CustomRoleNameModalHolder extends ModalHolder {
         }
 
         if (holder.ID.containsKey(value)) {
-            String id = holder.ID.get(value);
+            long id = holder.ID.get(value);
 
-            if (id != null) {
+            if (id != -1L) {
                 event.deferReply()
                         .setContent(LangID.getStringByID("serverConfig.general.custom.nameRegistered", lang).formatted("<@&" + id + ">"))
                         .setEphemeral(true)

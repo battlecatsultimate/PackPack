@@ -34,7 +34,7 @@ import java.util.List;
 public class ConfigPrefixBanHolder extends ServerConfigHolder {
     private int page = 0;
 
-    public ConfigPrefixBanHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigPrefixBanHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 

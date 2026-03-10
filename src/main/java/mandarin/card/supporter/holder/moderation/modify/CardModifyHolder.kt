@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.min
 
-class CardModifyHolder(author: Message, userID: String, channelID: String, message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardModifyHolder(author: Message, userID: Long, channelID: Long, message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val cards = ArrayList<Card>(
         if (isAdd) {
             CardData.cards.sortedWith(CardComparator())

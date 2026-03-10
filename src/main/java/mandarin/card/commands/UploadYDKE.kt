@@ -28,7 +28,7 @@ class UploadYDKE : Command(CommonStatic.Lang.Locale.EN, false) {
             return
         }
 
-        if (u.id != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid") && !CardData.isManager(m))
+        if (u.idLong != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid") && !CardData.isManager(m))
             return
 
         loader.channel.sendMessageComponents(getContainer())
@@ -37,7 +37,7 @@ class UploadYDKE : Command(CommonStatic.Lang.Locale.EN, false) {
             .setAllowedMentions(arrayListOf())
             .mentionRepliedUser(false)
             .queue({ msg ->
-                StaticStore.putHolder(u.id, YDKEUploadHolder(loader.message, u.id, loader.channel.id, msg))
+                StaticStore.putHolder(u.idLong, YDKEUploadHolder(loader.message, u.idLong, loader.channel.idLong, msg));
             }, { e -> StaticStore.logger.uploadErrorLog(e, "E/UploadYDKE::doSomething - Failed to send YDKE file type selection message")})
     }
 

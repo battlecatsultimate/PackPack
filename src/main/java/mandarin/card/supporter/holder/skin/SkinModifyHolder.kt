@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit
 
 class SkinModifyHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val skin: Skin,
     private val new: Boolean

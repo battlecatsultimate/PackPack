@@ -15,7 +15,7 @@ class ReplaceSave : Command(CommonStatic.Lang.Locale.EN, true) {
         val ch = loader.channel
         val msg = loader.message
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
             return
         }
 

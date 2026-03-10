@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.max
 import kotlin.math.min
 
-class CardBannerSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardBannerSelectHolder(author: Message, userID: Long, channelID: Long, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
         set(value) {
             field = value

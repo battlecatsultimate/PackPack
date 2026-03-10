@@ -32,7 +32,7 @@ public class EnemyCommandConfigHolder extends ComponentHolder {
     private final ConfigHolder config;
     private final ConfigHolder backup;
 
-    public EnemyCommandConfigHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, ConfigHolder backup, CommonStatic.Lang.Locale lang) {
+    public EnemyCommandConfigHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, ConfigHolder config, ConfigHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.config = config;

@@ -69,7 +69,7 @@ public class HelpCommandHolder extends ComponentHolder {
 
     private int page = 0;
 
-    public HelpCommandHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, @Nonnull Help.HelpCategory selectedCategory, int color) {
+    public HelpCommandHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, @Nonnull Help.HelpCategory selectedCategory, int color) {
         super(author, userID, channelID, message, lang);
 
         this.color = color;
@@ -149,7 +149,7 @@ public class HelpCommandHolder extends ComponentHolder {
         String prefix;
 
         if (message.getChannel() instanceof GuildChannel) {
-            IDHolder holder = StaticStore.idHolder.get(message.getGuild().getId());
+            IDHolder holder = StaticStore.idHolder.get(message.getGuild().getIdLong());
 
             if (holder == null) {
                 prefix = StaticStore.globalPrefix;
@@ -190,7 +190,7 @@ public class HelpCommandHolder extends ComponentHolder {
         String prefix;
 
         if (message.getChannel() instanceof GuildChannel) {
-            IDHolder holder = StaticStore.idHolder.get(message.getGuild().getId());
+            IDHolder holder = StaticStore.idHolder.get(message.getGuild().getIdLong());
 
             if (holder == null) {
                 prefix = StaticStore.globalPrefix;

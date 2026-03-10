@@ -29,7 +29,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
     private final List<String> requiredFiles;
     private final List<Integer> fileDownloaded = new ArrayList<>();
 
-    public FileAnalyzerHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, File container, List<String> requiredFiles, CommonStatic.Lang.Locale lang) {
+    public FileAnalyzerHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, File container, List<String> requiredFiles, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.msg = message;
@@ -52,7 +52,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
     public STATUS onReceivedEvent(MessageReceivedEvent event) {
         MessageChannel ch = event.getChannel();
 
-        if(!ch.getId().equals(channelID))
+        if(ch.getIdLong() != channelID)
             return STATUS.WAIT;
 
         Message m = event.getMessage();

@@ -13,7 +13,7 @@ class CloseAuction : Command(CommonStatic.Lang.Locale.EN, true) {
         val m = loader.member
         val ch = loader.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val auctionSession = CardData.auctionSessions.find { s -> s.channel == loader.channel.idLong }
@@ -25,7 +25,7 @@ class CloseAuction : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, "Are you sure you want to close this auction? This process cannot be undone\n\n**__This command performs transaction. If you want to close the auction AND NOT perform the transaction, please call `${CardBot.globalPrefix}cancelauction`__**", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, loader.channel.id, msg, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(m.idLong, ConfirmButtonHolder(loader.message, m.idLong, loader.channel.idLong, msg, CommonStatic.Lang.Locale.EN) {
                 val warnMessage = auctionSession.closeSession(m.idLong, false)
 
                 if (warnMessage.isNotEmpty()) {

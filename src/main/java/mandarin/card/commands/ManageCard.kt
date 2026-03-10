@@ -14,12 +14,12 @@ import net.dv8tion.jda.api.components.buttons.Button
 
 class ManageCard : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
-        if (loader.member.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member)) {
+        if (loader.member.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member)) {
             return
         }
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(loader.user.id, CardModeHolder(loader.message, loader.user.id, loader.channel.id, msg))
+            StaticStore.putHolder(loader.user.idLong, CardModeHolder(loader.message, loader.user.idLong, loader.channel.idLong, msg))
         }
     }
 

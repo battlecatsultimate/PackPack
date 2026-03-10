@@ -26,8 +26,9 @@ import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
+import kotlin.Long
 
-class SkinTierCostHolder(author: Message, userID: String, channelID: String, message: Message, private val skin: Skin, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinTierCostHolder(author: Message, userID: Long, channelID: Long, message: Message, private val skin: Skin, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }
@@ -89,19 +90,18 @@ class SkinTierCostHolder(author: Message, userID: String, channelID: String, mes
             "back" -> {
                 if (new) {
                     registerPopUp(
-                        event,
-                        "Are you sure you want to cancel creating card cost and go back? This can't be undone"
+                        event, "Are you sure you want to cancel creating card cost and go back? This can't be undone"
                     )
 
-                    StaticStore.removeHolder(authorMessage.author.id, this)
+                    StaticStore.removeHolder(authorMessage.author.idLong, this)
 
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
+                    StaticStore.putHolder(authorMessage.author.idLong, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                         goBackTo(e, SkinCostManageHolder::class.java)
                     }, { e ->
-                        StaticStore.putHolder(authorMessage.author.id, this)
+                        StaticStore.putHolder(authorMessage.author.idLong, this)
 
                         applyResult(e)
-                    }, CommonStatic.Lang.Locale.EN))
+                    }, CommonStatic.Lang.Locale.EN));
                 } else {
                     if (skin in CardData.skins) {
                         CardBot.saveCardData()
@@ -113,30 +113,26 @@ class SkinTierCostHolder(author: Message, userID: String, channelID: String, mes
             }
             "delete" -> {
                 registerPopUp(
-                    event,
-                    "Are you sure you want to delete card cost? This can't be undone"
+                    event, "Are you sure you want to delete card cost? This can't be undone"
                 )
 
-                StaticStore.removeHolder(authorMessage.author.id, this)
+                StaticStore.removeHolder(authorMessage.author.idLong, this)
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
+                StaticStore.putHolder(authorMessage.author.idLong, ConfirmPopUpHolder(authorMessage, userID, channelID, message, { e ->
                     skin.cost.cardsCosts.remove(cardCost)
 
                     if (skin in CardData.skins) {
                         CardBot.saveCardData()
                     }
 
-                    e.deferReply()
-                        .setContent("Successfully deleted card cost!")
-                        .setEphemeral(true)
-                        .queue()
+                    e.deferReply().setContent("Successfully deleted card cost!").setEphemeral(true).queue()
 
                     goBack()
                 }, { e ->
-                    StaticStore.putHolder(authorMessage.author.id, this)
+                    StaticStore.putHolder(authorMessage.author.idLong, this)
 
                     applyResult(e)
-                }, CommonStatic.Lang.Locale.EN))
+                }, CommonStatic.Lang.Locale.EN));
             }
         }
     }

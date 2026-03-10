@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 
-class SalvageCostHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SalvageCostHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val size = 2
 
     private var page = 0
@@ -56,7 +56,7 @@ class SalvageCostHolder(author: Message, userID: String, channelID: String, mess
             "collab",
             "t3",
             "t4" -> {
-                val salvageMode = when(event.componentId) {
+                val salvageMode = when (event.componentId) {
                     "t1" -> CardData.SalvageMode.T1
                     "t2" -> CardData.SalvageMode.T2
                     "seasonal" -> CardData.SalvageMode.SEASONAL
@@ -65,21 +65,15 @@ class SalvageCostHolder(author: Message, userID: String, channelID: String, mess
                     else -> CardData.SalvageMode.T4
                 }
 
-                val input = TextInput.create("cost", TextInputStyle.SHORT)
-                    .setPlaceholder("Define amount of platinum shards that will be given upon salvage")
-                    .setRequired(true)
-                    .setValue(salvageMode.cost.toString())
-                    .build()
+                val input = TextInput.create("cost", TextInputStyle.SHORT).setPlaceholder("Define amount of platinum shards that will be given upon salvage").setRequired(true).setValue(salvageMode.cost.toString()).build()
 
-                val modal = Modal.create("salvageCost", "Cost of Salvaging")
-                    .addComponents(Label.of("Cost", input))
-                    .build()
+                val modal = Modal.create("salvageCost", "Cost of Salvaging").addComponents(Label.of("Cost", input)).build()
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, SalvageCostModifyHolder(authorMessage, userID, channelID, message, salvageMode) {
+                StaticStore.putHolder(authorMessage.author.idLong, SalvageCostModifyHolder(authorMessage, userID, channelID, message, salvageMode) {
                     applyResult()
-                })
+                });
             }
             "confirm" -> {
                 event.deferEdit()

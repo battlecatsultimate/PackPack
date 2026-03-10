@@ -19,13 +19,13 @@ class ListGuild : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL)
+        if (m.idLong != StaticStore.MANDARIN_SMELL)
             return
 
         val jda = loader.client
 
         replyToMessageSafely(loader.channel, getContents(jda), loader.message, { a -> a.setComponents(getComponents(jda)) }) { msg ->
-            StaticStore.putHolder(m.id, GuildListHolder(loader.message, m.id, loader.channel.id, msg))
+            StaticStore.putHolder(m.idLong, GuildListHolder(loader.message, m.idLong, loader.channel.idLong, msg))
         }
     }
 

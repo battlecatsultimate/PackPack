@@ -32,7 +32,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
     private int page = 0;
 
-    public ConfigCommandHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigCommandHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 

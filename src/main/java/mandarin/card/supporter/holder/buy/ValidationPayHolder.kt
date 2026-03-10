@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.min
 
-class ValidationPayHolder(author: Message, userID: String, channelID: String, message: Message, private val cards: List<Card>, private val cardList: ArrayList<Card>, private val amount: Int) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ValidationPayHolder(author: Message, userID: Long, channelID: Long, message: Message, private val cards: List<Card>, private val cardList: ArrayList<Card>, private val amount: Int) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var page = 0

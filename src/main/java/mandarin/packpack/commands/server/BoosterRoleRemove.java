@@ -35,16 +35,16 @@ public class BoosterRoleRemove extends ConstraintCommand {
         Member m = g.getMemberById(id);
 
         if(m != null) {
-            if(StaticStore.boosterData.containsKey(g.getId())) {
-                BoosterHolder holder = StaticStore.boosterData.get(g.getId());
+            if(StaticStore.boosterData.containsKey(g.getIdLong())) {
+                BoosterHolder holder = StaticStore.boosterData.get(g.getIdLong());
 
-                if(holder.serverBooster.containsKey(m.getId())) {
-                    BoosterData data = holder.serverBooster.get(m.getId());
+                if(holder.serverBooster.containsKey(m.getIdLong())) {
+                    BoosterData data = holder.serverBooster.get(m.getIdLong());
 
-                    if(data.getRole() == null) {
+                    if(data.getRole() == -1L) {
                         createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.failed.noAssignedRole", lang));
                     } else {
-                        String r = data.getRole();
+                        long r = data.getRole();
 
                         Role role = g.getRoleById(r);
 
@@ -52,15 +52,15 @@ public class BoosterRoleRemove extends ConstraintCommand {
                             boolean leave = leaveRole(loader.getContent());
 
                             if(leave) {
-                                g.removeRoleFromMember(UserSnowflake.fromId(m.getId()), role).queue();
+                                g.removeRoleFromMember(UserSnowflake.fromId(m.getIdLong()), role).queue();
                             } else {
                                 role.delete().queue();
                             }
 
                             data.removeRole();
 
-                            if(data.getEmoji() == null) {
-                                holder.serverBooster.remove(m.getId());
+                            if(data.getEmoji() == -1L) {
+                                holder.serverBooster.remove(m.getIdLong());
                             }
 
                             createMessageWithNoPings(ch, LangID.getStringByID("boosterRoleRemove.success", lang).replace("_", m.getId()));

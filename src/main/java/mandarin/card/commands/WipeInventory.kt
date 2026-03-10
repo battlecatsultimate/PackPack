@@ -16,11 +16,11 @@ class WipeInventory : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.id, InventoryWipeHolder(loader.message, m.id, loader.channel.id, msg))
+            StaticStore.putHolder(m.idLong, InventoryWipeHolder(loader.message, m.idLong, loader.channel.idLong, msg));
         }
     }
 

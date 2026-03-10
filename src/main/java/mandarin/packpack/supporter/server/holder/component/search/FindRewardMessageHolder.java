@@ -38,7 +38,7 @@ public class FindRewardMessageHolder extends SearchHolder {
     private final TreasureHolder treasure;
     private final StageInfo.StageInfoConfig configData;
 
-    public FindRewardMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, String keyword, ConfigHolder.SearchLayout layout, List<Integer> rewards, double chance, int amount, StageInfo.StageInfoConfig configData, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
+    public FindRewardMessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message msg, String keyword, ConfigHolder.SearchLayout layout, List<Integer> rewards, double chance, int amount, StageInfo.StageInfoConfig configData, TreasureHolder treasure, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, msg, keyword, layout, lang);
 
         this.rewards = rewards;
@@ -114,17 +114,17 @@ public class FindRewardMessageHolder extends SearchHolder {
                         .queue();
             } else if(stages.size() == 1) {
                 EntityHandler.generateStageEmbed(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
-                    if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
-                        StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
+                    if(StaticStore.timeLimit.containsKey(author.getAuthor().getIdLong())) {
+                        StaticStore.timeLimit.get(author.getAuthor().getIdLong()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
                         Map<String, Long> memberLimit = new HashMap<>();
 
                         memberLimit.put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
 
-                        StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
+                        StaticStore.timeLimit.put(author.getAuthor().getIdLong(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, treasure, configData, false, lang));
+                    StaticStore.putHolder(author.getAuthor().getIdLong(), new StageInfoButtonHolder(stages.getFirst(), author, userID, channelID, result, treasure, configData, false, lang));
                 });
             } else {
                 event.deferEdit()
@@ -132,7 +132,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                         .useComponentsV2()
                         .setAllowedMentions(new ArrayList<>())
                         .mentionRepliedUser(false)
-                        .queue(hook -> hook.retrieveOriginal().queue(msg -> StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, userID, ch.getId(), msg, keyword, layout, "", treasure, configData, lang))));
+                        .queue(hook -> hook.retrieveOriginal().queue(msg -> StaticStore.putHolder(author.getAuthor().getIdLong(), new StageInfoMessageHolder(stages, author, userID, ch.getIdLong(), msg, keyword, layout, "", treasure, configData, lang))));
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FindRewardMessageHolder::onSelected - Failed to perform interaction");

@@ -54,7 +54,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
-        boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
+        boolean isTrusted = StaticStore.contributors.contains(u.getIdLong()) || u.getIdLong() == StaticStore.MANDARIN_SMELL;
 
         String[] list = loader.getContent().split(" ");
 
@@ -151,7 +151,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 }
 
                 replyToMessageSafely(ch, loader.getMessage(), msg ->
-                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, primary, formName, config.searchLayout, mode, frame, transparent, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif))
+                    StaticStore.putHolder(u.getIdLong(), new FormAnimMessageHolder(forms, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, primary, formName, config.searchLayout, mode, frame, transparent, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif))
                 , getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(formName, forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
 
                 disableTimer();

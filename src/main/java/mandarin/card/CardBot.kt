@@ -505,10 +505,10 @@ object CardBot : ListenerAdapter() {
 
         val segments = event.message.contentRaw.lowercase().split(" ")
 
-        if (locked && u.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
+        if (locked && u.idLong != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
-        val hub = StaticStore.getHolderHub(u.id)
+        val hub = StaticStore.getHolderHub(u.idLong)
 
         hub?.componentHolder?.handleMessageDetected(event.message)
 
@@ -540,7 +540,7 @@ object CardBot : ListenerAdapter() {
             else -> null
         }
 
-        if (globalCommand != null && globalCommand.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
+        if (globalCommand != null && globalCommand.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.idLong != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
             return
         }
 
@@ -550,7 +550,7 @@ object CardBot : ListenerAdapter() {
             return
         }
 
-        if (u.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
+        if (u.idLong != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
             return
 
         val command = when(firstSegment) {
@@ -743,7 +743,7 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        if (command.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
+        if (command.javaClass in CardData.lockedCommands && !CardData.isManager(m) && m.idLong != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
             return
         }
 
@@ -760,7 +760,7 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        StaticStore.holders.values.forEach { hub -> hub.handleMessageDelete(event.messageId) }
+        StaticStore.holders.values.forEach { hub -> hub.handleMessageDelete(event.messageIdLong) }
     }
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {
@@ -849,7 +849,7 @@ object CardBot : ListenerAdapter() {
         when(event) {
             is ModalInteractionEvent,
             is GenericComponentInteractionCreateEvent-> {
-                StaticStore.getHolderHub(m.id)?.handleEvent(event)
+                StaticStore.getHolderHub(m.idLong)?.handleEvent(event)
             }
         }
     }
@@ -874,7 +874,7 @@ object CardBot : ListenerAdapter() {
 
         Notification.initialize(event.jda)
 
-        StaticStore.loggingChannel = ServerData.get("loggingChannel")
+        StaticStore.loggingChannel = ServerData.get("loggingChannel").toLong()
 
         val manager = event.jda.shardManager
 

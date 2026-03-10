@@ -16,7 +16,7 @@ class TempRestore : Command(CommonStatic.Lang.Locale.EN, true) {
         val ch = loader.channel
         val msg = loader.message
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
@@ -52,11 +52,11 @@ class TempRestore : Command(CommonStatic.Lang.Locale.EN, true) {
                 msg,
                 { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }
             ) { message ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(msg, m.id, ch.id, message, CommonStatic.Lang.Locale.EN) {
+                StaticStore.putHolder(m.idLong, ConfirmButtonHolder(msg, m.idLong, ch.idLong, message, CommonStatic.Lang.Locale.EN) {
                     restoreCards(foundCard)
 
                     replyToMessageSafely(ch, "Successfully merged with old card save for card ID $id", msg) { a -> a }
-                })
+                });
             }
         } else {
             replyToMessageSafely(ch,
@@ -64,11 +64,11 @@ class TempRestore : Command(CommonStatic.Lang.Locale.EN, true) {
                 msg,
                 { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }
             ) { message ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(msg, m.id, ch.id, message, CommonStatic.Lang.Locale.EN) {
+                StaticStore.putHolder(m.idLong, ConfirmButtonHolder(msg, m.idLong, ch.idLong, message, CommonStatic.Lang.Locale.EN) {
                     restoreCards(foundCard)
 
                     replyToMessageSafely(ch, "Successfully restored with old card save for card ID $id", msg) { a -> a }
-                })
+                });
             }
         }
     }

@@ -21,7 +21,7 @@ public class EnemyButtonHolder extends ComponentHolder {
     private final TreasureHolder t;
     private final EnemyStat.EnemyStatConfig configData;
 
-    public EnemyButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Enemy e, TreasureHolder t, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public EnemyButtonHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, Enemy e, TreasureHolder t, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
         this.e = e;
 

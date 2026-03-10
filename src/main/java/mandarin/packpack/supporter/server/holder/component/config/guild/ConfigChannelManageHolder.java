@@ -28,13 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigChannelManageHolder extends ServerConfigHolder {
-    private final String role;
+    private final long role;
     @Nullable
-    private List<String> channels;
+    private List<Long> channels;
 
     private int page = 0;
 
-    public ConfigChannelManageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, String role, CommonStatic.Lang.Locale lang) {
+    public ConfigChannelManageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, long role, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
 
         this.role = role;
@@ -49,11 +49,11 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
                     return;
 
                 if (channels == null)
-                    channels = holder.channel.computeIfAbsent(role, k -> new ArrayList<>());
+                    channels = holder.channel.computeIfAbsent(role, _ -> new ArrayList<>());
 
-                List<String> ids = e.getValues().stream().map(ISnowflake::getId).toList();
+                List<Long> ids = e.getValues().stream().map(ISnowflake::getIdLong).toList();
 
-                for (String id : ids) {
+                for (long id : ids) {
                     if (channels.contains(id))
                         channels.remove(id);
                     else
@@ -75,7 +75,7 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
             }
             case "no" -> {
                 if (channels == null)
-                    channels = holder.channel.computeIfAbsent(role, k -> new ArrayList<>());
+                    channels = holder.channel.computeIfAbsent(role, _ -> new ArrayList<>());
                 else
                     channels.clear();
 
@@ -162,7 +162,7 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
 
         String roleMention;
 
-        if (role.equals("Member")) {
+        if (role == IDHolder.MEMBER_INDICATOR) {
             roleMention = "@everyone";
         } else {
             roleMention = "<@&" + role + ">";

@@ -22,7 +22,7 @@ public class AliasFormMessageHolder extends SearchHolder {
     private final AliasHolder.MODE mode;
     private final String aliasName;
 
-    public AliasFormMessageHolder(ArrayList<Form> forms, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName) {
+    public AliasFormMessageHolder(ArrayList<Form> forms, @Nullable Message author, long userID, long channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName) {
         super(author, userID, channelID, msg, keyword, ConfigHolder.SearchLayout.FANCY_LIST, lang);
 
         this.forms = forms;
@@ -90,7 +90,7 @@ public class AliasFormMessageHolder extends SearchHolder {
         if(fname.isBlank())
             fname = Data.trio(forms.get(index).unit.id.id)+"-"+Data.trio(forms.get(index).fid);
 
-        ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.FORM, lang, forms.get(index));
+        List<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.FORM, lang, forms.get(index));
 
         switch (mode) {
             case GET -> {

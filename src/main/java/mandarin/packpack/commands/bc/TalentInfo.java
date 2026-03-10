@@ -104,13 +104,13 @@ public class TalentInfo extends ConstraintCommand {
                     replyToMessageSafely(ch, loader.getMessage(), msg -> {
                         User u = loader.getUser();
 
-                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getMessage(), u.getId(), ch.getId(), msg, name, config.searchLayout, forms, isFrame, lang));
+                        StaticStore.putHolder(u.getIdLong(), new TalentMessageHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, name, config.searchLayout, forms, isFrame, lang));
                     }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(getSearchKeyword(name), forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), msg -> {
                         User u = loader.getUser();
 
-                        StaticStore.putHolder(u.getId(), new TalentMessageHolder(loader.getNullableMessage(), u.getId(), ch.getId(), msg, name, config.searchLayout, forms, isFrame, lang));
+                        StaticStore.putHolder(u.getIdLong(), new TalentMessageHolder(loader.getNullableMessage(), u.getIdLong(), ch.getIdLong(), msg, name, config.searchLayout, forms, isFrame, lang));
                     }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(getSearchKeyword(name), forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
                 }
             }

@@ -100,31 +100,31 @@ public class FindReward extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getIdLong(), TreasureHolder.global);
 
                 EntityHandler.generateStageEmbed(stages.getFirst(), ch, loader.getMessage(), "", treasure, configData, false, false, lang, result -> {
                     User u = loader.getUser();
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, u.getId(), ch.getId(), result, treasure, configData, false, lang));
+                    StaticStore.putHolder(u.getIdLong(), new StageInfoButtonHolder(stages.getFirst(), msg, u.getIdLong(), ch.getIdLong(), result, treasure, configData, false, lang));
                 });
             } else {
                 replyToMessageSafely(ch, loader.getMessage(), msg -> {
                     User u = loader.getUser();
 
-                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, loader.getMessage(), u.getId(), ch.getId(), msg,  rewardName, config.searchLayout, "", treasure, configData, lang));
+                    StaticStore.putHolder(u.getIdLong(), new StageInfoMessageHolder(stages, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg,  rewardName, config.searchLayout, "", treasure, configData, lang));
                 }, getSearchComponents(stages.size(), LangID.getStringByID("findReward.several.stage", lang).formatted(validateName(rewardName)), stages, this::accumulateStageTextData, config.searchLayout, lang));
             }
         } else {
             replyToMessageSafely(ch, loader.getMessage(), msg -> {
                 User u = loader.getUser();
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(loader.getMessage(), u.getId(), ch.getId(), msg, rewardName, config.searchLayout, rewards, chance, amount, configData, treasure, lang));
+                StaticStore.putHolder(u.getIdLong(), new FindRewardMessageHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, rewardName, config.searchLayout, rewards, chance, amount, configData, treasure, lang));
             }, getSearchComponents(rewards.size(), LangID.getStringByID("findReward.several.reward", lang).formatted(validateName(rewardName)), rewards, this::accumulateRewardTextData, config.searchLayout, lang));
 
             disableTimer();

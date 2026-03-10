@@ -23,7 +23,7 @@ public class ComboMessageHolder extends SearchHolder {
 
     private final String unitName;
 
-    public ComboMessageHolder(ArrayList<Combo> combo, Message author, String userID, String channelID, Message message, String unitName, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
+    public ComboMessageHolder(ArrayList<Combo> combo, Message author, long userID, long channelID, Message message, String unitName, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.combo = combo;
@@ -109,14 +109,14 @@ public class ComboMessageHolder extends SearchHolder {
 
             User u = event.getUser();
 
-            if(StaticStore.timeLimit.containsKey(u.getId())) {
-                StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+            if(StaticStore.timeLimit.containsKey(u.getIdLong())) {
+                StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
             } else {
                 Map<String, Long> memberLimit = new HashMap<>();
 
                 memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
 
-                StaticStore.timeLimit.put(u.getId(), memberLimit);
+                StaticStore.timeLimit.put(u.getIdLong(), memberLimit);
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/ComboMessageHolder::onSelected - Failed to upload combo embed");

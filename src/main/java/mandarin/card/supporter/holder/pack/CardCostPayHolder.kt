@@ -31,8 +31,8 @@ import kotlin.math.min
 
 class CardCostPayHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>

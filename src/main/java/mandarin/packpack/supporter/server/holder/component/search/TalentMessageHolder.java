@@ -21,7 +21,7 @@ public class TalentMessageHolder extends SearchHolder {
 
     private final boolean isFrame;
 
-    public TalentMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, List<Form> form, boolean isFrame, CommonStatic.Lang.Locale lang) {
+    public TalentMessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, List<Form> form, boolean isFrame, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.form = form;

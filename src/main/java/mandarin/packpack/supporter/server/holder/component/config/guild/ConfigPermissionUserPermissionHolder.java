@@ -30,17 +30,23 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
+    private enum RoleLevel {
+        MEMBER,
+        BOOSTER,
+        CUSTOM;
+    }
+
     private static final int PAGE_CHUNK = 10;
 
-    private final String userID;
+    private final long userID;
 
     private Member member;
 
-    private final List<Pair<String, String>> adjustableChannelPermission;
+    private final List<Pair<RoleLevel, Pair<String, Long>>> adjustableChannelPermission;
 
     private int page = 0;
 
-    public ConfigPermissionUserPermissionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, @Nonnull Guild g, CommonStatic.Lang.Locale lang) {
+    public ConfigPermissionUserPermissionHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, @Nonnull Guild g, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
 
         this.userID = userID;
@@ -79,9 +85,9 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
                 if (!(event instanceof StringSelectInteractionEvent e))
                     return;
 
-                String id = e.getValues().getFirst();
+                long id = StaticStore.safeParseLong(e.getValues().getFirst());
 
-                List<String> deactivatedChannelPermission = holder.channelException.computeIfAbsent(userID, k -> new ArrayList<>());
+                List<Long> deactivatedChannelPermission = holder.channelException.computeIfAbsent(userID, _ -> new ArrayList<>());
 
                 if (deactivatedChannelPermission.contains(id)) {
                     deactivatedChannelPermission.remove(id);
@@ -171,44 +177,32 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
         if (member == null)
             return;
 
-        if (holder.member != null) {
-            adjustableChannelPermission.add(new Pair<>("", "MEMBER|" + holder.member));
+        if (holder.member != -1L) {
+            adjustableChannelPermission.add(new Pair<>(RoleLevel.MEMBER, new Pair<>("", holder.member)));
         }
 
-        if (holder.booster != null) {
-            adjustableChannelPermission.add(new Pair<>("", "BOOSTER|" + holder.booster));
+        if (holder.booster != -1L) {
+            adjustableChannelPermission.add(new Pair<>(RoleLevel.BOOSTER, new Pair<>("", holder.booster)));
         }
 
         for (String key : holder.ID.keySet()) {
-            String id = holder.ID.get(key);
+            long id = holder.ID.get(key);
 
-            if (id == null)
+            if (id == -1L)
                 continue;
 
-            adjustableChannelPermission.add(new Pair<>(key, id));
+            adjustableChannelPermission.add(new Pair<>(RoleLevel.CUSTOM, new Pair<>(key, id)));
         }
 
-        List<String> roleID = member.getRoles().stream().map(Role::getId).toList();
+        List<Long> roleID = member.getRoles().stream().map(Role::getIdLong).toList();
 
-        adjustableChannelPermission.removeIf((pair) -> {
-            String id;
-
-            if (pair.getSecond().startsWith("MEMBER|")) {
-                id = pair.getSecond().replace("MEMBER|", "");
-            } else if (pair.getSecond().startsWith("BOOSTER|")) {
-                id = pair.getSecond().replace("BOOSTER|", "");
-            } else {
-                id = pair.getSecond();
-            }
-
-            return !roleID.contains(id);
-        });
+        adjustableChannelPermission.removeIf((pair) -> !roleID.contains(pair.getSecond().getSecond()));
     }
 
     private String getContents() {
         StringBuilder builder = new StringBuilder();
 
-        List<String> deactivatedChannelPermission = holder.channelException.get(userID);
+        List<Long> deactivatedChannelPermission = holder.channelException.get(userID);
 
         builder.append(LangID.getStringByID("serverConfig.permission.documentation.title", lang)).append("\n")
                 .append(LangID.getStringByID("serverConfig.permission.documentation.permissionBan.title", lang).formatted(Emoji.fromUnicode("🔧"))).append("\n")
@@ -221,19 +215,17 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
             int size = Math.min(adjustableChannelPermission.size(), (page + 1) * PAGE_CHUNK);
 
             for (int i = page * PAGE_CHUNK; i < size; i++) {
-                String id = adjustableChannelPermission.get(i).getSecond();
+                long id = adjustableChannelPermission.get(i).getSecond().getSecond();
                 String name;
 
                 boolean isCustom = false;
 
-                if (id.startsWith("MEMBER|")) {
-                    id = id.replace("MEMBER|", "");
+                if (adjustableChannelPermission.get(i).getFirst() == RoleLevel.MEMBER) {
                     name = LangID.getStringByID("serverConfig.channelPermission.role.member.text", lang);
-                } else if (id.startsWith("BOOSTER|")) {
-                    id = id.replace("BOOSTER|", "");
+                } else if (adjustableChannelPermission.get(i).getFirst() == RoleLevel.BOOSTER) {
                     name = LangID.getStringByID("serverConfig.channelPermission.role.booster.text", lang);
                 } else {
-                    name = LangID.getStringByID("serverConfig.channelPermission.role.custom.text", lang).formatted(adjustableChannelPermission.get(i).getFirst());
+                    name = LangID.getStringByID("serverConfig.channelPermission.role.custom.text", lang).formatted(adjustableChannelPermission.get(i).getSecond().getFirst());
                     isCustom = true;
                 }
 
@@ -270,7 +262,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
     private List<MessageTopLevelComponent> getComponents() {
         List<MessageTopLevelComponent> result = new ArrayList<>();
 
-        List<String> deactivatedChannelPermission = holder.channelException.get(userID);
+        List<Long> deactivatedChannelPermission = holder.channelException.get(userID);
 
         List<SelectOption> activatedOption = new ArrayList<>();
 
@@ -280,17 +272,15 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
             int size = Math.min(adjustableChannelPermission.size(), (page + 1) * PAGE_CHUNK);
 
             for (int i = page * PAGE_CHUNK; i < size; i++) {
-                String id = adjustableChannelPermission.get(i).getSecond();
+                long id = adjustableChannelPermission.get(i).getSecond().getSecond();
                 String label;
 
-                if (id.startsWith("MEMBER|")) {
-                    id = id.replace("MEMBER|", "");
+                if (adjustableChannelPermission.get(i).getFirst() == RoleLevel.MEMBER) {
                     label = LangID.getStringByID("serverConfig.channelPermission.role.member.type", lang);
-                } else if (id.startsWith("BOOSTER|")) {
-                    id = id.replace("BOOSTER|", "");
+                } else if (adjustableChannelPermission.get(i).getFirst() == RoleLevel.BOOSTER) {
                     label = LangID.getStringByID("serverConfig.channelPermission.role.booster.type", lang);
                 } else {
-                    label = adjustableChannelPermission.get(i).getFirst() + " <" + LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang) + ">";
+                    label = adjustableChannelPermission.get(i).getSecond().getFirst() + " <" + LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang) + ">";
                 }
 
                 boolean activated = deactivatedChannelPermission == null || !deactivatedChannelPermission.contains(id);
@@ -302,7 +292,7 @@ public class ConfigPermissionUserPermissionHolder extends ServerConfigHolder {
                 else
                     emoji = EmojiStore.SWITCHOFF;
 
-                activatedOption.add(SelectOption.of(label, id).withDescription(id).withEmoji(emoji));
+                activatedOption.add(SelectOption.of(label, String.valueOf(id)).withDescription(String.valueOf(id)).withEmoji(emoji));
             }
         }
 

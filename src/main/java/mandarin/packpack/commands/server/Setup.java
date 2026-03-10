@@ -47,7 +47,7 @@ public class Setup extends ConstraintCommand {
                         Message author = loader.getMessage();
                         Member member = loader.getMember();
 
-                        StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, member.getId(), ch.getId(), m, lang, () -> initializeSetup(ch, author)));
+                        StaticStore.putHolder(member.getIdLong(), new ConfirmButtonHolder(author, member.getIdLong(), ch.getIdLong(), m, lang, () -> initializeSetup(ch, author)));
                     });
         } else {
             Message author = loader.getMessage();
@@ -68,7 +68,7 @@ public class Setup extends ConstraintCommand {
             if(m == null)
                 return;
 
-            StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(author, author.getAuthor().getId(), ch.getId(), m, holder, lang));
+            StaticStore.putHolder(author.getAuthor().getIdLong(), new SetupModButtonHolder(author, author.getAuthor().getIdLong(), ch.getIdLong(), m, holder, lang));
         });
     }
 
@@ -76,7 +76,7 @@ public class Setup extends ConstraintCommand {
         if(holder == null)
             throw new IllegalStateException("E/Setup::alreadySet - IDHolder must not be null");
 
-        if(holder.moderator != null) {
+        if(holder.moderator != -1L) {
             Role r = g.getRoleById(holder.moderator);
 
             if(r == null) {
@@ -85,9 +85,9 @@ public class Setup extends ConstraintCommand {
                 return false;
             }
 
-            return !r.getName().equals("PackPackMod") || holder.member != null;
+            return !r.getName().equals("PackPackMod") || holder.member != -1L;
         } else {
-            StaticStore.logger.uploadLog("Invalid ID holder data found, moderator role ID was null\nServer ID : "+g.getId()+" | "+g.getName()+"\n-----ID Holder-----\n\n"+holder);
+            StaticStore.logger.uploadLog("Invalid ID holder data found, moderator role ID was null\nServer ID : "+g.getIdLong()+" | "+g.getName()+"\n-----ID Holder-----\n\n"+holder);
         }
 
         return false;

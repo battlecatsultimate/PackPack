@@ -1,7 +1,9 @@
 package mandarin.packpack.supporter.server;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import common.CommonStatic;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -20,15 +22,27 @@ public class SpamPrevent {
     public static final long MINIMUM_INTERVAL = 500;
     public static final long PREVENT_TIME = 300000;
 
-    public static Map<String, SpamPrevent> parseJsonMap(JsonArray arr) {
-        Map<String, SpamPrevent> result = new HashMap<>();
+    public static Map<Long, SpamPrevent> parseJsonMap(JsonArray arr) {
+        Map<Long, SpamPrevent> result = new HashMap<>();
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject obj = arr.get(i).getAsJsonObject();
 
             if(obj.has("key") && obj.has("val")) {
+                JsonElement keyElement = obj.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                    continue;
+
+                long key;
+
+                if (keyPrimitive.isString()) {
+                    key = StaticStore.safeParseLong(keyPrimitive.getAsString());
+                } else {
+                    key = keyPrimitive.getAsLong();
+                }
+
                 SpamPrevent spam = parseJson(obj.getAsJsonObject("val"));
-                String key = obj.get("key").getAsString();
 
                 result.put(key, spam);
             }
@@ -40,7 +54,7 @@ public class SpamPrevent {
     public static JsonArray jsonfyMap() {
         JsonArray arr = new JsonArray();
 
-        for(String key : StaticStore.spamData.keySet()) {
+        for(long key : StaticStore.spamData.keySet()) {
             SpamPrevent spam = StaticStore.spamData.get(key);
 
             if(spam != null) {
@@ -83,7 +97,7 @@ public class SpamPrevent {
     long preventTime = 0;
     long scale = 1;
 
-    public boolean isPrevented(MessageChannel ch, CommonStatic.Lang.Locale lang, String id) {
+    public boolean isPrevented(MessageChannel ch, CommonStatic.Lang.Locale lang, long id) {
         long current = System.currentTimeMillis();
 
         if(preventTime > 0 && current - lastTime > preventTime) {
@@ -123,12 +137,12 @@ public class SpamPrevent {
                     Guild g = gc.getGuild();
 
                     builder.append(", Guild : ")
-                            .append(g.getId());
+                            .append(g.getIdLong());
                 }
 
                 StaticStore.logger.uploadLog(builder.toString());
 
-                ch.sendMessage(LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
+                ch.sendMessage(LangID.getStringByID("bot.spamBanned", lang).formatted(id, beautifyMillis(lang))).queue();
 
                 return true;
             }
@@ -168,14 +182,14 @@ public class SpamPrevent {
 
                 User u = interaction.getUser();
 
-                if(StaticStore.config.containsKey(u.getId())) {
-                    lang =  StaticStore.config.get(u.getId()).lang;
+                if(StaticStore.config.containsKey(u.getIdLong())) {
+                    lang =  StaticStore.config.get(u.getIdLong()).lang;
                 }
 
                 StringBuilder builder = new StringBuilder("I/SpamPrevent::isPrevented - Spammer found from slash command : User <@")
-                        .append(u.getId())
+                        .append(u.getIdLong())
                         .append("> [")
-                        .append(u.getId())
+                        .append(u.getIdLong())
                         .append("], Current Time : ")
                         .append(current)
                         .append(", Last Time : ")
@@ -189,12 +203,12 @@ public class SpamPrevent {
 
                 if (g != null) {
                     builder.append(", Guild : ")
-                            .append(g.getId());
+                            .append(g.getIdLong());
                 }
 
                 StaticStore.logger.uploadLog(builder.toString());
 
-                return LangID.getStringByID("bot.spamBanned", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", u.getId());
+                return LangID.getStringByID("bot.spamBanned", lang).formatted(u.getIdLong(), beautifyMillis(lang));
             }
         }
 

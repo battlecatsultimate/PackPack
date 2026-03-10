@@ -36,7 +36,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
     private final String command;
     private final StringBuilder primary;
 
-    public EnemyAnimMessageHolder(ArrayList<Enemy> enemies, Message author, String userID, String channelID, Message message, StringBuilder primary, String keyword, ConfigHolder.SearchLayout layout, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
+    public EnemyAnimMessageHolder(ArrayList<Enemy> enemies, Message author, long userID, long channelID, Message message, StringBuilder primary, String keyword, ConfigHolder.SearchLayout layout, int mode, int frame, boolean transparent, boolean debug, CommonStatic.Lang.Locale lang, boolean isGif, boolean raw, boolean gifMode) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.enemies = enemies;
@@ -169,13 +169,13 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                 User u = event.getUser();
 
                 try {
-                    if (StaticStore.timeLimit.containsKey(u.getId()) && StaticStore.timeLimit.get(u.getId()).containsKey(StaticStore.COMMAND_ENEMYIMAGE_ID)) {
-                        long time = StaticStore.timeLimit.get(u.getId()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
+                    if (StaticStore.timeLimit.containsKey(u.getIdLong()) && StaticStore.timeLimit.get(u.getIdLong()).containsKey(StaticStore.COMMAND_ENEMYIMAGE_ID)) {
+                        long time = StaticStore.timeLimit.get(u.getIdLong()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
 
                         if (System.currentTimeMillis() - time > 10000) {
                             EntityHandler.generateEnemyImage(e, event, getAuthorMessage(), debug, transparent, frame, mode, lang);
 
-                            StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+                            StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                         } else {
                             event.deferEdit()
                                     .setComponents(TextDisplay.of(LangID.getStringByID("bot.command.timeLimit", lang).formatted(DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))))
@@ -184,10 +184,10 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                                     .mentionRepliedUser(false)
                                     .queue();
                         }
-                    } else if (StaticStore.timeLimit.containsKey(u.getId())) {
+                    } else if (StaticStore.timeLimit.containsKey(u.getIdLong())) {
                         EntityHandler.generateEnemyImage(e, event, getAuthorMessage(), debug, transparent, frame, mode, lang);
 
-                        StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+                        StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                     } else {
                         EntityHandler.generateEnemyImage(e, event, getAuthorMessage(), debug, transparent, frame, mode, lang);
 
@@ -195,7 +195,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
                         memberLimit.put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
 
-                        StaticStore.timeLimit.put(u.getId(), memberLimit);
+                        StaticStore.timeLimit.put(u.getIdLong(), memberLimit);
                     }
                 } catch (Exception exception) {
                     StaticStore.logger.uploadErrorLog(exception, "E/EnemyAnimMessageHolder::onSelected - Failed to generate enemy image");

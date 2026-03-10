@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinPurchaseSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinPurchaseSelectHolder(author: Message, userID: Long, channelID: Long, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private enum class FilterMode {
         NONE,
         PURCHASE_AMOUNT,

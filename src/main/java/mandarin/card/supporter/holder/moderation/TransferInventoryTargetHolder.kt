@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.components.selections.EntitySelectMenu
 
 class TransferInventoryTargetHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val sourceUser: Long,
     mode: CardData.TransferMode,

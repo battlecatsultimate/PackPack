@@ -38,7 +38,7 @@ public class IDSet extends ConstraintCommand {
             return;
 
         replyToMessageSafely(ch, getContents(), loader.getMessage(), a -> a.setComponents(getComponents(g)), msg ->
-            StaticStore.putHolder(u.getId(), new ConfigRoleRegistrationHolder(loader.getMessage(), u.getId(), ch.getId(), msg, holder, lang))
+            StaticStore.putHolder(u.getIdLong(), new ConfigRoleRegistrationHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, holder, lang))
         );
     }
 
@@ -48,7 +48,7 @@ public class IDSet extends ConstraintCommand {
 
         String moderatorRole;
 
-        if (holder.moderator == null) {
+        if (holder.moderator == -1L) {
             moderatorRole = LangID.getStringByID("serverConfig.general.role.anyManager", lang);
         } else {
             moderatorRole = "<@&" + holder.moderator + ">";
@@ -65,7 +65,7 @@ public class IDSet extends ConstraintCommand {
 
         String memberRole;
 
-        if (holder.member == null) {
+        if (holder.member == -1L) {
             memberRole = "@everyone";
         } else {
             memberRole = "<@&" + holder.member + ">";
@@ -78,7 +78,7 @@ public class IDSet extends ConstraintCommand {
 
         String boosterRole;
 
-        if (holder.booster == null) {
+        if (holder.booster == -1L) {
             boosterRole = LangID.getStringByID("data.none", lang);
         } else {
             boosterRole = "<@&" + holder.booster + ">";
@@ -101,23 +101,23 @@ public class IDSet extends ConstraintCommand {
 
         EntitySelectMenu.DefaultValue moderator = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.moderator))
+                .filter(r -> r.getIdLong() == holder.moderator)
                 .findAny()
-                .map(role -> EntitySelectMenu.DefaultValue.role(role.getId()))
+                .map(role -> EntitySelectMenu.DefaultValue.role(role.getIdLong()))
                 .orElse(null);
 
         EntitySelectMenu.DefaultValue member = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.member))
+                .filter(r -> r.getIdLong() == holder.member)
                 .findAny()
-                .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
+                .map(r -> EntitySelectMenu.DefaultValue.role(r.getIdLong()))
                 .orElse(null);
 
         EntitySelectMenu.DefaultValue booster = roles
                 .stream()
-                .filter(r -> r.getId().equals(holder.booster))
+                .filter(r -> r.getIdLong() == holder.booster)
                 .findAny()
-                .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
+                .map(r -> EntitySelectMenu.DefaultValue.role(r.getIdLong()))
                 .orElse(null);
 
         result.add(

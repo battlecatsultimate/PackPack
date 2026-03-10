@@ -18,7 +18,7 @@ public class RegisterLogging extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        StaticStore.loggingChannel = ch.getId();
+        StaticStore.loggingChannel = ch.getIdLong();
 
         replyToMessageSafely(ch, loader.getMessage(), "Logging channel is registered [<#"+StaticStore.loggingChannel+">]");
     }

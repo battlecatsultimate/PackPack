@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit
 
 class CardPackAdjustHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val pack: CardPack,
     private val new: Boolean

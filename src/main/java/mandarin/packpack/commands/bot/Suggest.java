@@ -31,8 +31,8 @@ public class Suggest extends TimedConstraintCommand {
 
         User u = loader.getUser();
 
-        if(StaticStore.suggestBanned.containsKey(u.getId())) {
-            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("suggest.failed.banned", lang).formatted(StaticStore.suggestBanned.get(u.getId())));
+        if(StaticStore.suggestBanned.containsKey(u.getIdLong())) {
+            replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("suggest.failed.banned", lang).formatted(StaticStore.suggestBanned.get(u.getIdLong())));
 
             disableTimer();
 
@@ -78,7 +78,7 @@ public class Suggest extends TimedConstraintCommand {
 
                 Guild g = loader.getGuild();
 
-                builder.setFooter("From " + g.getName() + " | " + g.getId(), null);
+                builder.setFooter("From " + g.getName() + " | " + g.getIdLong(), null);
 
                 me.openPrivateChannel().flatMap(pc -> pc.sendMessageEmbeds(builder.build())).queue();
             }

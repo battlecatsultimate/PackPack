@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class CardPackCostHolder(author: Message, userID: String, channelID: String, message: Message, private val pack: CardPack) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardPackCostHolder(author: Message, userID: Long, channelID: Long, message: Message, private val pack: CardPack) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }

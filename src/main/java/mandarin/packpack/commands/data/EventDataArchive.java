@@ -102,7 +102,7 @@ public class EventDataArchive extends ConstraintCommand {
 
             Message msg = loader.getMessage();
 
-            StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(msg, u.getId(), ch.getId(), res, config.searchLayout, files, fileName, lang));
+            StaticStore.putHolder(u.getIdLong(), new EventDataArchiveHolder(msg, u.getIdLong(), ch.getIdLong(), res, config.searchLayout, files, fileName, lang));
         });
     }
 

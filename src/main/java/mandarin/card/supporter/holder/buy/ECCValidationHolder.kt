@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
 import kotlin.collections.set
 
-class ECCValidationHolder(author: Message, userID: String, channelID: String, message: Message, private val validationWay: Inventory.ECCValidationWay) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ECCValidationHolder(author: Message, userID: Long, channelID: Long, message: Message, private val validationWay: Inventory.ECCValidationWay) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private val seasonalCards = ArrayList<Card>()

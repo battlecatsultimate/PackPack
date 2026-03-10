@@ -27,7 +27,7 @@ import java.util.Locale;
 public class HelpCategoryHolder extends ComponentHolder {
     private final int color;
 
-    public HelpCategoryHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, int color) {
+    public HelpCategoryHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, int color) {
         super(author, userID, channelID, message, lang);
 
         this.color = color;

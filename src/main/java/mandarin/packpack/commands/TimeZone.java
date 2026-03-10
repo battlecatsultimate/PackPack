@@ -36,7 +36,7 @@ public class TimeZone extends ConstraintCommand {
 
         User u = loader.getUser();
 
-        StaticStore.timeZones.put(u.getId(), timeZone);
+        StaticStore.timeZones.put(u.getIdLong(), timeZone);
 
         if(timeZone >= 0) {
             replyToMessageSafely(ch, LangID.getStringByID("timeZone.done", lang).replace("_", "+" + timeZone), loader.getMessage(), a -> a);

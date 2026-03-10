@@ -66,7 +66,7 @@ public class HasRole extends ConstraintCommand {
                 a.addEmbeds(getEmbed(members, role));
 
                 return a;
-            }, msg -> StaticStore.putHolder(loader.getMember().getId(), new HasRolePageHolder(loader.getMessage(), loader.getMember().getId(), loader.getChannel().getId(), msg, members, role, lang)));
+            }, msg -> StaticStore.putHolder(loader.getMember().getIdLong(), new HasRolePageHolder(loader.getMessage(), loader.getMember().getIdLong(), loader.getChannel().getIdLong(), msg, members, role, lang)));
         });
     }
 
@@ -112,7 +112,7 @@ public class HasRole extends ConstraintCommand {
         for (int i = 0; i < size; i++) {
             Member m = members.get(i);
 
-            builder.append(i + 1).append(". ").append(m.getUser().getName()).append(" ").append(m.getAsMention()).append(" [").append(m.getId()).append("]");
+            builder.append(i + 1).append(". ").append(m.getUser().getName()).append(" ").append(m.getAsMention()).append(" [").append(m.getIdLong()).append("]");
 
             if (i < size - 1) {
                 builder.append("\n");

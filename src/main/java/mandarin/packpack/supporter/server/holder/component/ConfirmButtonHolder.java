@@ -18,7 +18,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
      */
     private final boolean ensureDeletion;
 
-    public ConfirmButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, Runnable action) {
+    public ConfirmButtonHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, Runnable action) {
         super(author, userID, channelID, message, lang);
 
         this.action = action;
@@ -28,7 +28,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
         registerAutoExpiration(FIVE_MIN);
     }
 
-    public ConfirmButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, boolean ensureDeletion, Runnable action) {
+    public ConfirmButtonHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, boolean ensureDeletion, Runnable action) {
         super(author, userID, channelID, message, lang);
 
         this.action = action;

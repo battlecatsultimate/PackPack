@@ -10,13 +10,13 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 class SlotMachineNameModalHolder : ModalHolder {
     private val slotMachine: SlotMachine?
 
-    constructor(author: Message, userID: String, channelID: String, message: Message) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: Long, channelID: Long, message: Message) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.message = message
 
         slotMachine = null
     }
 
-    constructor(author: Message, userID: String, channelID: String, message: Message, slotMachine: SlotMachine) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: Long, channelID: Long, message: Message, slotMachine: SlotMachine) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.slotMachine = slotMachine
     }
 

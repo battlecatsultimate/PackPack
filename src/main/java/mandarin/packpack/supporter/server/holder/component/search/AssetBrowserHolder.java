@@ -35,7 +35,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     private final List<VFile> files = new ArrayList<>();
 
-    public AssetBrowserHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder.SearchLayout layout, @Nonnull VFile vf, CommonStatic.Lang.Locale lang) {
+    public AssetBrowserHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, ConfigHolder.SearchLayout layout, @Nonnull VFile vf, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, "",  layout, lang);
 
         this.vf = vf;

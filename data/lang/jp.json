@@ -114,7 +114,7 @@
             "noMember" : "このメンバーのIDが有効ではありません!",
             "noRegisteredRole" : "ブースターロールがこのサーバーで設定されていません! `p!idset`コマンドでブースターロールを追加してください。",
             "noRoleName" : "PackPackはロールの名前を取得できませんでした。ダブルクオーテーションマーク`\"`で囲んでそしてスペースを含めないでください!",
-            "notBooster" : "このメンバーはサーバーブースターロール(<@&_RRR_>)を持っていません!",
+            "notBooster" : "このメンバーはサーバーブースターロール(<@&%d>)を持っていません!",
             "notRGB" : "RGBを適切に設定してください!"
         }
     },
@@ -128,7 +128,7 @@
     },
     "bot" : {
         "announcement" : "<@%d> Announcement",
-        "spamBanned" : "<@_UUU_> あなたがコマンドをスパムしたので _TTT_ の間コマンドを実行できません。 何回もスパムを続けるとBANされる可能性があります!",
+        "spamBanned" : "<@%d> あなたがコマンドをスパムしたので %s の間コマンドを実行できません。 何回もスパムを続けるとBANされる可能性があります!",
         "command" : {
             "timeLimit" : " _ 秒後にコマンドを実行できます!"
         },
@@ -2537,7 +2537,7 @@
     },
     "scamDetector" : {
         "compromisedReport" : "Compromised Account Report",
-        "directMessage" : "Bot took action because it detected that you sent scam link in message. If this is false, contact moderator manually\n\nServer : _NNN_ (_III_)",
+        "directMessage" : "Bot took action because it detected that you sent scam link in message. If this is false, contact moderator manually\n\nServer : %s (%d)",
         "title" : "Scam Link Auto-Detector",
         "action" : {
             "ban" : "Ban",
@@ -2972,10 +2972,10 @@
         "role" : "このサーバーには_NNN_のロールを持つ人が_MMM_人います。これは全体の約=%を占めています。\n"
     },
     "setup" : {
-        "already" : "This role <@&_RRR_> is already decided to be set as moderator role! Please select other role",
+        "already" : "This role <@&%d> is already decided to be set as moderator role! Please select other role",
         "canceled" : "setupをキャンセルしました。",
         "confirmation" : "このサーバーではすでにロールとIDが設定されているようです。データを上書きしてもよろしいですか？",
-        "done" : "完了!\n\n<@&_MOD_>のロールを持っている人は管理者専用のコマンドを使うことができます。\n<@&_MEM_>のロールを持っている人はPackPackの基本的なコマンドを使うことができます。\n\n`p!channelpermission`コマンドで一部のチャンネルだけでコマンドを使用するように設定することもできます。`p!help chp`コマンドで詳細を確認してください。",
+        "done" : "完了!\n\n<@&%d>のロールを持っている人は管理者専用のコマンドを使うことができます。\n<@&%d>のロールを持っている人はPackPackの基本的なコマンドを使うことができます。\n\n`p!channelpermission`コマンドで一部のチャンネルだけでコマンドを使用するように設定することもできます。`p!help chp`コマンドで詳細を確認してください。",
         "expired" : "タイムアウトしました。",
         "selectRole" : "ロールの選択",
         "select" : {
@@ -2983,8 +2983,8 @@
             "moderator" : "管理者のロールを選択してください。"
         },
         "selected" : {
-            "member" : "メンバーのロールは<@&_RRR_>が選択されました！",
-            "moderator" : "管理者のロールは<@&_RRR_>が選択されました！"
+            "member" : "メンバーのロールは<@&%d>が選択されました！",
+            "moderator" : "管理者のロールは<@&%d>が選択されました！"
         }
     },
     "solve" : {
@@ -3072,7 +3072,7 @@
     },
     "subscribeScamDetector" : {
         "canceled" : "Canceled scam link auto-detector subscription",
-        "done" : "Now bot will upload compromised account information new in <#_>",
+        "done" : "Now bot will upload compromised account information new in <#%d>",
         "expired" : "Subscription time expired",
         "decision" : {
             "ban" : "Action when bot could catch compromised account = **Ban**\n\n**__:warning: Warning! :warning:__**\n\nBanning user directly may lead to bad situation when bot caught non-scam link. It's not recommended, so consider using other options",

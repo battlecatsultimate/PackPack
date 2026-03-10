@@ -41,7 +41,7 @@ public class Config extends ConstraintCommand {
         replyToMessageSafely(ch, loader.getMessage(), msg -> {
             CommonStatic.Lang.Locale locale = config.lang == null ? holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang : config.lang;
 
-            StaticStore.putHolder(loader.getUser().getId(), new ConfigButtonHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, config, holder, locale));
+            StaticStore.putHolder(loader.getUser().getIdLong(), new ConfigButtonHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, config, holder, locale));
         }, getComponents());
     }
 

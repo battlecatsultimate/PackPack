@@ -90,7 +90,7 @@ public class EnemyImage extends TimedConstraintCommand {
 
                     User u = loader.getUser();
 
-                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), u.getId(), ch.getId(), msg, new StringBuilder(), enemyName, config.searchLayout, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                    StaticStore.putHolder(u.getIdLong(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, new StringBuilder(), enemyName, config.searchLayout, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                 }, getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateTextData, config.searchLayout, lang));
 
                 disableTimer();

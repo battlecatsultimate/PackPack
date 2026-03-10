@@ -34,7 +34,7 @@ public class ContributorAdd extends ConstraintCommand {
         }
 
         validUser(contents[1], client, () -> {
-            String id = contents[1].replaceAll("<@!|<@|>", "");
+            long id = StaticStore.safeParseLong(contents[1].replaceAll("<@!|<@|>", ""));
 
             if(!StaticStore.contributors.contains(id))
                 StaticStore.contributors.add(id);

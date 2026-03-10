@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
 
-class CardModeHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardModeHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "modify" -> {

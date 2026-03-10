@@ -46,7 +46,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
     private int page = 0;
 
-    public ConfigButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, IDHolder holder, CommonStatic.Lang.Locale lang) {
+    public ConfigButtonHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, ConfigHolder config, IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
         
         this.config = config;

@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.min
 
-class CardRankingListHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardRankingListHolder(author: Message, userID: Long, channelID: Long, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     companion object {
         const val CHUNK_SIZE = 15
     }

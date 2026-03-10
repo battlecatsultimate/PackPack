@@ -1,6 +1,7 @@
 package mandarin.packpack.commands.server;
 
 import common.CommonStatic;
+import kotlin.Pair;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
@@ -23,6 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChannelPermission extends ConstraintCommand {
+    private enum RoleLevel {
+        MEMBER,
+        BOOSTER,
+        CUSTOM
+    }
     public ChannelPermission(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
     }
@@ -34,24 +40,34 @@ public class ChannelPermission extends ConstraintCommand {
 
         MessageChannel ch = loader.getChannel();
 
-        List<String> roles = new ArrayList<>();
+        List<Pair<RoleLevel, Pair<String, Long>>> roles = new ArrayList<>();
 
-        if (holder.member != null) {
-            roles.add("MEMBER|" + holder.member);
+        if (holder.member != -1L) {
+            roles.add(new Pair<>(RoleLevel.MEMBER, new Pair<>("", holder.member)));
         }
 
-        if (holder.booster != null) {
-            roles.add("BOOSTER|" + holder.booster);
+        if (holder.booster != -1L) {
+            roles.add(new Pair<>(RoleLevel.BOOSTER, new Pair<>("", holder.booster)));
         }
 
-        roles.addAll(holder.ID.values());
+        for (String key : holder.ID.keySet()) {
+            if (key == null)
+                continue;
+
+            Long id = holder.ID.get(key);
+
+            if (id == null)
+                continue;
+
+            roles.add(new Pair<>(RoleLevel.CUSTOM, new Pair<>(key, id)));
+        }
 
         replyToMessageSafely(ch, getContents(roles), loader.getMessage(), a -> a.setComponents(getComponents(roles)), msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new ConfigChannelRoleSelectHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, holder, lang))
+            StaticStore.putHolder(loader.getUser().getIdLong(), new ConfigChannelRoleSelectHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, holder, lang))
         );
     }
 
-    private String getContents(List<String> roles) {
+    private String getContents(List<Pair<RoleLevel, Pair<String, Long>>> roles) {
         if (holder == null)
             return "";
 
@@ -68,31 +84,21 @@ public class ChannelPermission extends ConstraintCommand {
             int size = Math.min(roles.size(), ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             for (int i = 0; i < size; i++) {
-                String id = roles.get(i);
+                long id = roles.get(i).getSecond().getSecond();
                 boolean isCustom = true;
 
                 builder.append(i + 1).append(". ");
 
-                if (id.startsWith("MEMBER|")) {
-                    id = id.replace("MEMBER|", "");
+                if (roles.get(i).getFirst() == RoleLevel.MEMBER) {
                     isCustom = false;
 
                     builder.append(LangID.getStringByID("serverConfig.channelPermission.role.member.text", lang));
-                } else if (id.startsWith("BOOSTER|")) {
-                    id = id.replace("BOOSTER|", "");
+                } else if (roles.get(i).getFirst() == RoleLevel.BOOSTER) {
                     isCustom = false;
 
                     builder.append(LangID.getStringByID("serverConfig.channelPermission.role.booster.text", lang));
                 } else {
-                    final String finalID = id;
-
-                    String foundRoleName = holder.ID.keySet().stream().filter(k -> {
-                        String v = holder.ID.get(k);
-
-                        return v != null && v.equals(finalID);
-                    }).findAny().orElse("UNKNOWN");
-
-                    builder.append(LangID.getStringByID("serverConfig.channelPermission.role.custom.text", lang).formatted(foundRoleName));
+                    builder.append(LangID.getStringByID("serverConfig.channelPermission.role.custom.text", lang).formatted(roles.get(i).getSecond().getFirst()));
                 }
 
                 builder.append("<@&").append(id).append("> [").append(id).append("]");
@@ -116,7 +122,7 @@ public class ChannelPermission extends ConstraintCommand {
         return builder.toString();
     }
 
-    private List<MessageTopLevelComponent> getComponents(List<String> roles) {
+    private List<MessageTopLevelComponent> getComponents(List<Pair<RoleLevel, Pair<String, Long>>> roles) {
         List<MessageTopLevelComponent> result = new ArrayList<>();
 
         if (holder == null)
@@ -130,29 +136,18 @@ public class ChannelPermission extends ConstraintCommand {
             int size = Math.min(roles.size(), ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             for (int i = 0; i < size; i++) {
-                String id = roles.get(i);
+                long id = roles.get(i).getSecond().getSecond();
                 String label;
-                String value;
 
-                if (id.startsWith("MEMBER|")) {
-                    id = id.replace("MEMBER|", "");
-                    value = id;
+                if (roles.get(i).getFirst() == RoleLevel.MEMBER) {
                     label = LangID.getStringByID("serverConfig.channelPermission.role.member.type", lang);
-                } else if (id.startsWith("BOOSTER|")) {
-                    id = id.replace("BOOSTER|", "");
-                    value = id;
+                } else if (roles.get(i).getFirst() == RoleLevel.BOOSTER) {
                     label = LangID.getStringByID("serverConfig.channelPermission.role.booster.type", lang);
                 } else {
-                    value = id;
-
-                    label = holder.ID.keySet().stream().filter(k -> {
-                        String v = holder.ID.get(k);
-
-                        return v != null && v.equals(value);
-                    }).findAny().orElse("UNKNOWN") + " <" + LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang) + ">";
+                    label = roles.get(i).getSecond().getFirst() + " <" + LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang) + ">";
                 }
 
-                roleOptions.add(SelectOption.of(label, value).withDescription(id));
+                roleOptions.add(SelectOption.of(label, String.valueOf(id)).withDescription(String.valueOf(id)));
             }
         }
 

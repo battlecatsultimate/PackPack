@@ -64,7 +64,7 @@ class Slot : Command(CommonStatic.Lang.Locale.EN, false){
         val yes = "-y" in contents || "-yes" in contents
 
         replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(loader.user, possibleSlotMachines)) }) { msg ->
-            StaticStore.putHolder(loader.user.id, SlotMachineSelectHolder(loader.message, loader.user.id, loader.channel.id, msg, m, skip, yes))
+            StaticStore.putHolder(loader.user.idLong, SlotMachineSelectHolder(loader.message, loader.user.idLong, loader.channel.idLong, msg, m, skip, yes));
         }
     }
 

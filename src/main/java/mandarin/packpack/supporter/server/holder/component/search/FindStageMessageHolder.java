@@ -39,7 +39,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
     private FindStage.MONTHLY selected = FindStage.MONTHLY.ALL;
 
-    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nullable Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.stage = stage;
@@ -115,7 +115,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
-        String mid = getAuthorMessage().getId();
+        long mid = getAuthorMessage().getIdLong();
 
         if(StaticStore.timeLimit.containsKey(mid)) {
             StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
@@ -129,7 +129,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
         try {
             EntityHandler.generateStageEmbed(actualStage.get(index), event, getAuthorMessage(), "", treasure, configData, true, false, lang, msg ->
-                StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(index), getAuthorMessage(), userID, channelID, msg, treasure, configData, false, lang))
+                StaticStore.putHolder(getAuthorMessage().getAuthor().getIdLong(), new StageInfoButtonHolder(actualStage.get(index), getAuthorMessage(), userID, channelID, msg, treasure, configData, false, lang))
             );
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FindStageMessageHolder::onSelected - Failed to upload stage embed");

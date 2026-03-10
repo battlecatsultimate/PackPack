@@ -233,7 +233,7 @@ public class StatAnalyzer extends ConstraintCommand {
                 if(msg == null)
                     return;
 
-                new StatAnalyzerMessageHolder(author, loader.getUser().getId(), ch.getId(), msg, uid, len, isSecond, cellData, procData, abilData, traitData, container, level, finalName, lang, requiredFiles);
+                new StatAnalyzerMessageHolder(author, loader.getUser().getIdLong(), ch.getIdLong(), msg, uid, len, isSecond, cellData, procData, abilData, traitData, container, level, finalName, lang, requiredFiles);
             });
         }
     }

@@ -15,7 +15,7 @@ public class LevelModalHolder extends ModalHolder {
     private final ConfigHolder config;
     private final Consumer<ModalInteractionEvent> editor;
 
-    public LevelModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, Consumer<ModalInteractionEvent> editor, CommonStatic.Lang.Locale lang) {
+    public LevelModalHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, ConfigHolder config, Consumer<ModalInteractionEvent> editor, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.config = config;

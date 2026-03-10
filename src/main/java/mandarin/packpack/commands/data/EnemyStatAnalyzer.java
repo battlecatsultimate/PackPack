@@ -190,7 +190,7 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
                 if(msg == null)
                     return;
 
-                new EnemyStatAnalyzerHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, container, requiredFiles, cellData, procData, abilData, traitData, eid, isSecond, magnification, finalName, lang);
+                new EnemyStatAnalyzerHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, container, requiredFiles, cellData, procData, abilData, traitData, eid, isSecond, magnification, finalName, lang);
             });
         }
     }

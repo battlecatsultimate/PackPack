@@ -24,7 +24,7 @@ public class FormButtonHolder extends ComponentHolder {
     private final FormStat.FormStatConfig configData;
     private final TreasureHolder t;
 
-    public FormButtonHolder(Form f, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder config, TreasureHolder t, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public FormButtonHolder(Form f, @Nullable Message author, long userID, long channelID, @Nonnull Message message, ConfigHolder config, TreasureHolder t, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.config = config;

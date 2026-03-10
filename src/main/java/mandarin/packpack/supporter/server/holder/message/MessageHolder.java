@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class MessageHolder extends Holder {
-    public MessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+    public MessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
     }
 
@@ -45,13 +45,13 @@ public abstract class MessageHolder extends Holder {
     }
 
     private boolean canHandleEvent(MessageReceivedEvent event) {
-        return event.getChannel().getId().equals(channelID)
-                && event.getAuthor().getId().equals(userID);
+        return event.getChannel().getIdLong() == channelID
+                && event.getAuthor().getIdLong() == userID;
     }
 
     private boolean canHandleEvent(MessageReactionAddEvent event) {
-        return event.getChannel().getId().equals(channelID)
-                && event.getMessageId().equals(message.getId())
-                && event.getUserId().equals(userID);
+        return event.getChannel().getIdLong() == channelID
+                && event.getMessageIdLong() == message.getIdLong()
+                && event.getUserIdLong() == userID;
     }
 }

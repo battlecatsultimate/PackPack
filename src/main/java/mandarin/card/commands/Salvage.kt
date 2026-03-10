@@ -42,14 +42,14 @@ class Salvage : Command(CommonStatic.Lang.Locale.EN, false) {
             retriever.get() ?: return
         }
 
-        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 
         replyToMessageSafely(ch, "Select tier of the cards that will be salvaged", loader.message, { a ->
             a.setComponents(assignComponents())
         }, { message ->
-            StaticStore.putHolder(m.id, SalvageTierSelectHolder(loader.message, m.id, ch.id, message))
+            StaticStore.putHolder(m.idLong, SalvageTierSelectHolder(loader.message, m.idLong, ch.idLong, message))
         })
     }
 

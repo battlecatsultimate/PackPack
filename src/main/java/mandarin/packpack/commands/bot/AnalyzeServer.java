@@ -42,7 +42,7 @@ public class AnalyzeServer extends ConstraintCommand {
 
         int i = 1;
 
-        for(String id : StaticStore.idHolder.keySet()) {
+        for(long id : StaticStore.idHolder.keySet()) {
             try {
                 Guild g = client.getGuildById(id);
 
@@ -69,7 +69,7 @@ public class AnalyzeServer extends ConstraintCommand {
         });
 
         for (Guild g : guilds) {
-            String id = g.getId();
+            long id = g.getIdLong();
             IDHolder idHolder = StaticStore.idHolder.get(id);
 
             if (idHolder == null) {
@@ -111,13 +111,13 @@ public class AnalyzeServer extends ConstraintCommand {
 
                     builder.append(user.getEffectiveName())
                             .append(" (")
-                            .append(user.getId())
+                            .append(user.getIdLong())
                             .append(")")
                             .append("\n");
                 }
 
                 running.set(false);
-            }, e -> running.set(false));
+            }, _ -> running.set(false));
 
             while(true) {
                 if (!running.get())
@@ -126,7 +126,7 @@ public class AnalyzeServer extends ConstraintCommand {
 
             Role role;
 
-            if (idHolder.moderator == null) {
+            if (idHolder.moderator == -1L) {
                 role = null;
             } else {
                 role = g.getRoleById(idHolder.moderator);
@@ -138,7 +138,7 @@ public class AnalyzeServer extends ConstraintCommand {
                 builder.append("isProperlySet? : ")
                         .append(!role.getName().equals("PackPackMod"))
                         .append("\nisFully Set? :")
-                        .append(!role.getName().equals("PackPackMod") && idHolder.member != null)
+                        .append(!role.getName().equals("PackPackMod") && idHolder.member != -1L)
                         .append("\n\n");
             }
 
@@ -174,7 +174,7 @@ public class AnalyzeServer extends ConstraintCommand {
         ch.sendMessageComponents(TextDisplay.of("Analyzed " + StaticStore.idHolder.size() + " servers"), FileDisplay.fromFile(FileUpload.fromData(text, "Analysis.txt")))
                 .setMessageReference(loader.getMessage())
                 .mentionRepliedUser(false)
-                .queue(unused -> StaticStore.deleteFile(text, true), e -> {
+                .queue(_ -> StaticStore.deleteFile(text, true), e -> {
                     StaticStore.logger.uploadErrorLog(e, "E/AnalyzeServer::doSomething - Failed to send analyzed result message");
 
                     StaticStore.deleteFile(text, true);

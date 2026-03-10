@@ -31,8 +31,8 @@ import kotlin.math.min
 
 class SlotMachineCardChancePairHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val slotMachine: SlotMachine,
     private val cardChancePairList: CardChancePairList,

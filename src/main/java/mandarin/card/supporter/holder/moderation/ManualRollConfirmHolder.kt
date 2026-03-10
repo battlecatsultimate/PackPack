@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.utils.FileUpload
 
-class ManualRollConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val member: Member, private val pack: CardPack, private val users: List<String>) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ManualRollConfirmHolder(author: Message, userID: Long, channelID: Long, message: Message, private val member: Member, private val pack: CardPack, private val users: List<String>) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(FIVE_MIN)
     }

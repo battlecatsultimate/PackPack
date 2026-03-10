@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
-class SkinSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SkinSelectHolder(author: Message, userID: Long, channelID: Long, message: Message, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val skins = CardData.skins.filter { s -> s.card == card }.toMutableList()
 
     private var page = 0

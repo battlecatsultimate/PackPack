@@ -27,7 +27,7 @@ import java.util.List;
 public class ConfigUserBanHolder extends ServerConfigHolder {
     private int page = 0;
 
-    public ConfigUserBanHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigUserBanHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 
@@ -40,15 +40,15 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
 
                 List<String> cantBan = new ArrayList<>();
                 List<User> users = e.getMentions().getUsers();
-                List<String> ids = new ArrayList<>();
+                List<Long> ids = new ArrayList<>();
 
                 for (User u : users) {
                     if (u.isBot()) {
-                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("serverConfig.commandBan.cantBan.reason.bot", lang));
-                    } else if (u.getId().equals(getAuthorMessage().getAuthor().getId())) {
-                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("serverConfig.commandBan.cantBan.reason.self", lang));
+                        cantBan.add("- <@" + u.getIdLong() + "> [" + u.getIdLong() + "] : " + LangID.getStringByID("serverConfig.commandBan.cantBan.reason.bot", lang));
+                    } else if (u.getIdLong() == getAuthorMessage().getAuthor().getIdLong()) {
+                        cantBan.add("- <@" + u.getIdLong() + "> [" + u.getIdLong() + "] : " + LangID.getStringByID("serverConfig.commandBan.cantBan.reason.self", lang));
                     } else {
-                        ids.add(u.getId());
+                        ids.add(u.getIdLong());
                     }
                 }
 
@@ -72,7 +72,7 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
                     }
                 }
 
-                for (String id : ids) {
+                for (long id : ids) {
                     if (holder.banned.contains(id)) {
                         holder.banned.remove(id);
                     } else {

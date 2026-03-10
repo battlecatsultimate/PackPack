@@ -32,7 +32,7 @@ public class ClearCache extends ConstraintCommand {
         messageWithConfirmButtons(components, lang);
 
         replyToMessageSafely(ch, loader.getMessage(), components, msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new ConfirmButtonHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, lang, () -> {
+            StaticStore.putHolder(loader.getUser().getIdLong(), new ConfirmButtonHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, lang, () -> {
                 StaticStore.imgur.clear();
 
                 replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("clearCache.cleared", lang));

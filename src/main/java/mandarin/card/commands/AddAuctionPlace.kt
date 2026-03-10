@@ -14,7 +14,7 @@ class AddAuctionPlace : Command(CommonStatic.Lang.Locale.EN, true) {
         val m = loader.member
         val ch = loader.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val segments = loader.content.split(Regex(" "), 2)

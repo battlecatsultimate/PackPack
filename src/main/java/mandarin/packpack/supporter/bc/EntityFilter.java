@@ -634,7 +634,7 @@ public class EntityFilter {
         return distance;
     }
 
-    private static <T> ArrayList<T> filterData(List<T> preData, String name, CommonStatic.Lang.Locale lang, MultiLangCont<T, ArrayList<String>> aliasData, boolean dynamicMode, Function2<T, CommonStatic.Lang.Locale, String> nameGenerator, Function<T, String> idRegexGenerator) {
+    private static <T> ArrayList<T> filterData(List<T> preData, String name, CommonStatic.Lang.Locale lang, MultiLangCont<T, List<String>> aliasData, boolean dynamicMode, Function2<T, CommonStatic.Lang.Locale, String> nameGenerator, Function<T, String> idRegexGenerator) {
         String keyword = name.replaceAll(spaceRegex, " ").replaceAll(apostropheRegex, "'").replaceAll("\\.", "").toLowerCase(Locale.ENGLISH);
 
         if (dynamicMode && lang == CommonStatic.Lang.Locale.KR) {
@@ -672,7 +672,7 @@ public class EntityFilter {
                     if (aliasData != null) {
                         boolean added = false;
 
-                        ArrayList<String> aliasList = aliasData.getCont(data, locale);
+                        List<String> aliasList = aliasData.getCont(data, locale);
 
                         if (aliasList != null && !aliasList.isEmpty()) {
                             for (String a : aliasList) {
@@ -729,7 +729,7 @@ public class EntityFilter {
                         scoreMap.entrySet().removeIf(e -> e.getValue() > score);
                     }
                 } else if (aliasData != null) {
-                    ArrayList<String> aliasList = aliasData.getCont(data, lang);
+                    List<String> aliasList = aliasData.getCont(data, lang);
 
                     if (aliasList != null && !aliasList.isEmpty()) {
                         for (String a : aliasList) {

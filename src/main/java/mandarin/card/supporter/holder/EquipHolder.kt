@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import kotlin.math.min
 
-class EquipHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class EquipHolder(author: Message, userID: Long, channelID: Long, message: Message, private val inventory: Inventory) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {

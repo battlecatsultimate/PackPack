@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.holder.component.config.guild;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.EmojiStore;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -25,42 +26,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
-    private final List<String> roles;
+    private final List<Long> roles;
 
     private int page = 0;
 
-    public ConfigChannelRoleSelectHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigChannelRoleSelectHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
 
         roles = new ArrayList<>();
 
-        if (holder.member != null) {
-            roles.add("MEMBER|" + holder.member);
-        } else {
-            roles.add("MEMBER|");
-        }
+        roles.add(holder.member);
 
-        if (holder.booster != null) {
-            roles.add("BOOSTER|" + holder.booster);
-        }
+        roles.add(holder.booster);
 
         roles.addAll(holder.ID.values());
     }
 
-    public ConfigChannelRoleSelectHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
+    public ConfigChannelRoleSelectHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, lang);
 
         roles = new ArrayList<>();
 
-        if (holder.member != null) {
-            roles.add("MEMBER|" + holder.member);
-        } else {
-            roles.add("MEMBER|");
-        }
+        roles.add(holder.member);
 
-        if (holder.booster != null) {
-            roles.add("BOOSTER|" + holder.booster);
-        }
+        roles.add(holder.booster);
 
         roles.addAll(holder.ID.values());
     }
@@ -73,7 +62,7 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
                     return;
                 }
 
-                String id = e.getValues().getFirst();
+                long id = StaticStore.safeParseLong(e.getValues().getFirst());
 
                 connectTo(event, new ConfigChannelManageHolder(getAuthorMessage(), userID, channelID, message, holder, backup, id, lang));
             }
@@ -164,35 +153,41 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
         } else {
             int size = Math.min(roles.size(), (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
+            int index = 0;
+
             for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
-                String id = roles.get(i);
+                long id = roles.get(i);
                 boolean isCustom = true;
 
-                builder.append(i + 1).append(". ");
+                builder.append(index + 1).append(". ");
 
-                if (id.startsWith("MEMBER|")) {
-                    id = id.replace("MEMBER|", "");
+                if (i == 0 && id != -1L) {
+                    index++;
+
                     isCustom = false;
 
                     builder.append(LangID.getStringByID("serverConfig.channelPermission.role.member.text", lang));
-                } else if (id.startsWith("BOOSTER|")) {
-                    id = id.replace("BOOSTER|", "");
+                } else if (i == 1 && id != -1L) {
+                    index++;
+
                     isCustom = false;
 
                     builder.append(LangID.getStringByID("serverConfig.channelPermission.role.booster.text", lang));
                 } else {
-                    final String finalID = id;
+                    index++;
+
+                    final long finalID = id;
 
                     String foundRoleName = holder.ID.keySet().stream().filter(k -> {
-                        String v = holder.ID.get(k);
+                        long v = holder.ID.get(k);
 
-                        return v != null && v.equals(finalID);
+                        return v != -1L && v == finalID;
                     }).findAny().orElse("UNKNOWN");
 
                     builder.append(LangID.getStringByID("serverConfig.channelPermission.role.custom.text", lang).formatted(foundRoleName));
                 }
 
-                if (id.isEmpty()) {
+                if (id == -1L) {
                     builder.append("@everyone");
                 } else {
                     builder.append("<@&").append(id).append("> [").append(id).append("]");
@@ -228,38 +223,40 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
             int size = Math.min(roles.size(), (page + 1) * ConfigHolder.SearchLayout.COMPACTED.chunkSize);
 
             for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
-                String id = roles.get(i);
+                long id = roles.get(i);
                 String label;
-                String value;
+                long value;
 
-                if (id.startsWith("MEMBER|")) {
-                    id = id.replace("MEMBER|", "");
-
-                    if (id.isEmpty()) {
-                        value = "Member";
+                if (i == 0) {
+                    if (id == -1L) {
+                        value = IDHolder.MEMBER_INDICATOR;
                     } else {
                         value = id;
                     }
 
                     label = LangID.getStringByID("serverConfig.channelPermission.role.member.type", lang);
-                } else if (id.startsWith("BOOSTER|")) {
-                    id = id.replace("BOOSTER|", "");
+                } else if (i == 1) {
+                    if (id == -1L) {
+                        continue;
+                    }
+
                     value = id;
+
                     label = LangID.getStringByID("serverConfig.channelPermission.role.booster.type", lang);
                 } else {
                     value = id;
 
                     label = holder.ID.keySet().stream().filter(k -> {
-                        String v = holder.ID.get(k);
+                        long v = holder.ID.get(k);
 
-                        return v != null && v.equals(value);
+                        return v != -1L && v == value;
                     }).findAny().orElse("UNKNOWN") + " <" + LangID.getStringByID("serverConfig.channelPermission.role.custom.type", lang) + ">";
                 }
 
-                if (id.isEmpty()) {
-                    roleOptions.add(SelectOption.of(label, value).withDescription("@everyone"));
+                if (id == -1L) {
+                    roleOptions.add(SelectOption.of(label, String.valueOf(value)).withDescription("@everyone"));
                 } else {
-                    roleOptions.add(SelectOption.of(label, value).withDescription(id));
+                    roleOptions.add(SelectOption.of(label, String.valueOf(value)).withDescription(String.valueOf(id)));
                 }
             }
         }

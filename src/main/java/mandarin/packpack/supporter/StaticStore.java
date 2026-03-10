@@ -93,30 +93,30 @@ public class StaticStore {
 
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, String> musics = new HashMap<>();
-    public static final Map<String, Integer> timeZones = new HashMap<>();
-    public static Map<String, ConfigHolder> config = new HashMap<>();
-    public static Map<String, TreasureHolder> treasure = new HashMap<>();
+    public static final Map<Long, Integer> timeZones = new HashMap<>();
+    public static Map<Long, ConfigHolder> config = new HashMap<>();
+    public static Map<Long, TreasureHolder> treasure = new HashMap<>();
 
     public static final Map<CommonStatic.Lang.Locale, String> announcements = new HashMap<>();
 
-    public static Map<String, String> suggestBanned = new HashMap<>();
+    public static Map<Long, String> suggestBanned = new HashMap<>();
 
-    public static ArrayList<String> contributors = new ArrayList<>();
-    public static ArrayList<String> maintainers = new ArrayList<>();
+    public static List<Long> contributors = new ArrayList<>();
+    public static List<Long> maintainers = new ArrayList<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
     public static final Map<String, TimeBoolean> canDo = new HashMap<>();
 
-    public static Map<String, SpamPrevent> spamData = new HashMap<>();
+    public static Map<Long, SpamPrevent> spamData = new HashMap<>();
 
-    public static Map<String, BoosterHolder> boosterData = new HashMap<>();
+    public static Map<Long, BoosterHolder> boosterData = new HashMap<>();
 
-    public static ArrayList<String> needFixing = new ArrayList<>();
+    public static List<Long> needFixing = new ArrayList<>();
 
     public static final EventHolder event = new EventHolder();
 
-    public static ArrayList<String> optoutMembers = new ArrayList<>();
+    public static List<Long> optoutMembers = new ArrayList<>();
 
     public static final ScamLinkHolder scamLink = new ScamLinkHolder();
     public static final ScamLinkHandlerHolder scamLinkHandlers = new ScamLinkHandlerHolder();
@@ -134,13 +134,13 @@ public class StaticStore {
 
     public static Map<Identifier<Background>, Integer> backgroundStageLength = new HashMap<>();
 
-    public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
+    public static final Map<Long, Map<String, Long>> timeLimit = new HashMap<>();
 
     public static Timer saver = null;
     public static Renderer renderManager = null;
     public static final FixedScheduleHandler executorHandler = new FixedScheduleHandler(5);
 
-    public static final Map<String, HolderHub> holders = new HashMap<>();
+    public static final Map<Long, HolderHub> holders = new HashMap<>();
     private static final List<String> queuedFileNames = new ArrayList<>();
 
     public static final String[] langUnicode = {
@@ -249,7 +249,7 @@ public class StaticStore {
     public static final BigDecimal doubleMax = new BigDecimal(Double.toString(Double.MAX_VALUE));
     public static final BigDecimal doubleMin = new BigDecimal(Double.toString(Double.MIN_VALUE));
 
-    public static final String MANDARIN_SMELL = "460409259021172781";
+    public static final long MANDARIN_SMELL = 460409259021172781L;
 
     public static final String UDP_LINK = "https://api.github.com/repos/ThanksFeanor/UDP-Data/contents";
 
@@ -261,13 +261,13 @@ public class StaticStore {
 
     public static final String ERROR_MSG = "`INTERNAL_ERROR`";
 
-    public static Map<String, IDHolder> idHolder = new HashMap<>();
+    public static Map<Long, IDHolder> idHolder = new HashMap<>();
 
-    public static String loggingChannel = "";
+    public static long loggingChannel = -1L;
 
     public static final List<Integer> availableUDP = new ArrayList<>();
 
-    public static List<String> cultist = new ArrayList<>();
+    public static List<Long> cultist = new ArrayList<>();
 
     public static final Map<String, String> conflictedAnimation = new HashMap<>();
 
@@ -279,14 +279,8 @@ public class StaticStore {
         }
     }
 
-    public static String rolesToString(List<Role> roles) {
-        StringBuilder builder = new StringBuilder();
-
-        for(Role role : roles) {
-            builder.append(role.getId()).append(", ");
-        }
-
-        return builder.toString();
+    public static List<Long> rolesToID(List<Role> roles) {
+        return new ArrayList<>(roles.stream().map(Role::getIdLong).toList());
     }
 
     public static File getDownPackFile() {
@@ -315,7 +309,7 @@ public class StaticStore {
         }
     }
 
-    public static String getPrefix(String id) {
+    public static String getPrefix(long id) {
         ConfigHolder holder = config.get(id);
 
         String pre = holder == null ? null : holder.prefix;
@@ -335,10 +329,10 @@ public class StaticStore {
             return "";
     }
 
-    public static JsonArray mapToJsonIDHolder(Map<String, IDHolder> map) {
+    public static JsonArray mapToJsonIDHolder(Map<Long, IDHolder> map) {
         JsonArray arr = new JsonArray();
 
-        for(String key : map.keySet()) {
+        for(long key : map.keySet()) {
             IDHolder value = map.get(key);
 
             if(value == null) {
@@ -357,10 +351,10 @@ public class StaticStore {
         return arr;
     }
 
-    public static JsonArray mapToJsonTreasureHolder(Map<String, TreasureHolder> map) {
+    public static JsonArray mapToJsonTreasureHolder(Map<Long, TreasureHolder> map) {
         JsonArray arr = new JsonArray();
 
-        for(String key : map.keySet()) {
+        for(long key : map.keySet()) {
             TreasureHolder value = map.get(key);
 
             if(value == null)
@@ -399,10 +393,32 @@ public class StaticStore {
         return arr;
     }
 
-    public static JsonArray mapToJsonBoosterHolder(Map<String, BoosterHolder> map) {
+    public static JsonArray mapToJsonLong(Map<Long, String> map) {
         JsonArray arr = new JsonArray();
 
-        for(String key : map.keySet()) {
+        for(long key : map.keySet()) {
+            String value = map.get(key);
+
+            if(value == null) {
+                System.out.println("Warning! : Key "+key+" returns null!");
+                continue;
+            }
+
+            JsonObject set = new JsonObject();
+
+            set.addProperty("key", key);
+            set.addProperty("val", value);
+
+            arr.add(set);
+        }
+
+        return arr;
+    }
+
+    public static JsonArray mapToJsonBoosterHolder(Map<Long, BoosterHolder> map) {
+        JsonArray arr = new JsonArray();
+
+        for(long key : map.keySet()) {
             BoosterHolder holder = map.get(key);
 
             if(holder == null)
@@ -419,10 +435,10 @@ public class StaticStore {
         return arr;
     }
 
-    public static JsonArray mapToJsonConfigHolder(Map<String, ConfigHolder> map) {
+    public static JsonArray mapToJsonConfigHolder(Map<Long, ConfigHolder> map) {
         JsonArray arr = new JsonArray();
 
-        for(String key : map.keySet()) {
+        for(long key : map.keySet()) {
             ConfigHolder holder = map.get(key);
 
             if(holder == null)
@@ -453,6 +469,16 @@ public class StaticStore {
         JsonArray arr = new JsonArray();
 
         for(int i : list) {
+            arr.add(i);
+        }
+
+        return arr;
+    }
+
+    public static JsonArray listToJsonLong(List<Long> list) {
+        JsonArray arr = new JsonArray();
+
+        for(long i : list) {
             arr.add(i);
         }
 
@@ -513,19 +539,58 @@ public class StaticStore {
         return arr;
     }
 
-    public static Map<String, IDHolder> jsonToMapIDHolder(JsonArray arr) {
-        Map<String, IDHolder> map = new HashMap<>();
+    public static Map<Long, IDHolder> jsonToMapIDHolder(JsonArray arr) {
+        Map<Long, IDHolder> map = new HashMap<>();
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject obj = arr.get(i).getAsJsonObject();
 
             if(obj.has("val") && obj.has("key")) {
                 JsonObject val = obj.getAsJsonObject("val");
-                String key = obj.get("key").getAsString();
+
+                JsonElement keyElement = obj.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                    continue;
+
+                long key;
+
+                if (keyPrimitive.isString()) {
+                    key = safeParseLong(keyPrimitive.getAsString());
+                } else {
+                    key = keyPrimitive.getAsLong();
+                }
 
                 IDHolder holder = IDHolder.jsonToIDHolder(val);
 
                 map.put(key, holder);
+            }
+        }
+
+        return map;
+    }
+
+    public static Map<Long, String> jsonToMapLong(JsonArray arr) {
+        Map<Long, String> map = new HashMap<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject obj = arr.get(i).getAsJsonObject();
+
+            if(obj.has("key") && obj.has("val")) {
+                JsonElement keyElement = obj.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                    continue;
+
+                long key;
+
+                if (keyPrimitive.isString()) {
+                    key = safeParseLong(keyPrimitive.getAsString());
+                } else {
+                    key = keyPrimitive.getAsLong();
+                }
+
+                map.put(key, obj.get("val").getAsString());
             }
         }
 
@@ -546,14 +611,26 @@ public class StaticStore {
         return map;
     }
 
-    public static Map<String, BoosterHolder> jsonToMapBoosterHolder(JsonArray arr) {
-        Map<String, BoosterHolder> map = new HashMap<>();
+    public static Map<Long, BoosterHolder> jsonToMapBoosterHolder(JsonArray arr) {
+        Map<Long, BoosterHolder> map = new HashMap<>();
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject set = arr.get(i).getAsJsonObject();
 
             if(set.has("key") && set.has("val")) {
-                String key = set.get("key").getAsString();
+                JsonElement keyElement = set.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                    continue;
+
+                long key;
+
+                if (keyPrimitive.isString()) {
+                    key = safeParseLong(keyPrimitive.getAsString());
+                } else {
+                    key = keyPrimitive.getAsLong();
+                }
+
                 BoosterHolder val = BoosterHolder.parseJson(set.get("val").getAsJsonArray());
 
                 map.put(key, val);
@@ -563,14 +640,26 @@ public class StaticStore {
         return map;
     }
 
-    public static Map<String, ConfigHolder> jsonToMapConfigHolder(JsonArray arr) {
-        Map<String, ConfigHolder> map = new HashMap<>();
+    public static Map<Long, ConfigHolder> jsonToMapConfigHolder(JsonArray arr) {
+        Map<Long, ConfigHolder> map = new HashMap<>();
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject set = arr.get(i).getAsJsonObject();
 
             if(set.has("key") && set.has("val")) {
-                String key = set.get("key").getAsString();
+                JsonElement keyElement = set.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                    continue;
+
+                long key;
+
+                if (keyPrimitive.isString()) {
+                    key = safeParseLong(keyPrimitive.getAsString());
+                } else {
+                    key = keyPrimitive.getAsLong();
+                }
+
                 ConfigHolder val = ConfigHolder.fromJson(set.get("val").getAsJsonObject());
 
                 map.put(key, val);
@@ -580,14 +669,27 @@ public class StaticStore {
         return map;
     }
 
-    public static Map<String, TreasureHolder> jsonToMapTreasureHolder(JsonArray arr) {
-        Map<String, TreasureHolder> map = new HashMap<>();
+    public static Map<Long, TreasureHolder> jsonToMapTreasureHolder(JsonArray arr) {
+        Map<Long, TreasureHolder> map = new HashMap<>();
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject set = arr.get(i).getAsJsonObject();
 
             if(set.has("key") && set.has("val")) {
-                map.put(set.get("key").getAsString(), TreasureHolder.toData(set.getAsJsonObject("val")));
+                JsonElement keyElement = set.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                    continue;
+
+                long key;
+
+                if (keyPrimitive.isString()) {
+                    key = safeParseLong(keyPrimitive.getAsString());
+                } else {
+                    key = keyPrimitive.getAsLong();
+                }
+
+                map.put(key, TreasureHolder.toData(set.getAsJsonObject("val")));
             }
         }
 
@@ -619,7 +721,7 @@ public class StaticStore {
         return map;
     }
 
-    public static ArrayList<String> jsonToListString(JsonArray arr) {
+    public static List<String> jsonToListString(JsonArray arr) {
         ArrayList<String> result = new ArrayList<>();
 
         for(int i = 0; i < arr.size(); i++) {
@@ -634,6 +736,29 @@ public class StaticStore {
 
         for(int i = 0; i < arr.size(); i++) {
             result.add(arr.get(i).getAsInt());
+        }
+
+        return result;
+    }
+
+    public static List<Long> jsonToListLong(JsonArray arr) {
+        ArrayList<Long> result = new ArrayList<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonElement keyElement = arr.get(i);
+
+            if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                continue;
+
+            long key;
+
+            if (keyPrimitive.isString()) {
+                key = safeParseLong(keyPrimitive.getAsString());
+            } else {
+                key = keyPrimitive.getAsLong();
+            }
+
+            result.add(key);
         }
 
         return result;
@@ -762,21 +887,21 @@ public class StaticStore {
         obj.add("treasure", mapToJsonTreasureHolder(treasure));
         obj.add("imgur", imgur.getData());
         obj.add("idholder", mapToJsonIDHolder(idHolder));
-        obj.add("suggestBanned", mapToJsonString(suggestBanned));
+        obj.add("suggestBanned", mapToJsonLong(suggestBanned));
         obj.add("alias", AliasHolder.jsonfy());
-        obj.add("contributor", listToJsonString(contributors));
-        obj.add("maintainers", listToJsonString(maintainers));
+        obj.add("contributor", listToJsonLong(contributors));
+        obj.add("maintainers", listToJsonLong(maintainers));
         obj.add("spam", SpamPrevent.jsonfyMap());
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
-        obj.add("needFixing", listToJsonString(needFixing));
+        obj.add("needFixing", listToJsonLong(needFixing));
         obj.add("gachaCache", mapToJsonLocaleList(event.gachaCache));
         obj.add("itemCache", mapToJsonLocaleList(event.itemCache));
         obj.add("stageCache", mapToJsonLocaleList(event.stageCache));
         obj.add("scamLink", scamLink.jsonfy());
         obj.add("scamLinkHandlers", scamLinkHandlers.jsonfy());
-        obj.add("optoutMembers", listToJsonString(optoutMembers));
-        obj.add("cultist", listToJsonString(cultist));
+        obj.add("optoutMembers", listToJsonLong(optoutMembers));
+        obj.add("cultist", listToJsonLong(cultist));
         obj.add("eventNewWay", mapToJsonLocaleBoolean(EventFileGrabber.newWay));
         obj.add("backgroundStageLength", mapToJsonBackgroundInteger(backgroundStageLength));
         obj.add("bannerHolder", bannerHolder.toJson());
@@ -898,7 +1023,7 @@ public class StaticStore {
                     if (prefix == null)
                         continue;
 
-                    ConfigHolder holder = config.computeIfAbsent(id, k -> new ConfigHolder());
+                    ConfigHolder holder = config.computeIfAbsent(safeParseLong(id), _ -> new ConfigHolder());
 
                     holder.prefix = prefix;
                 }
@@ -917,15 +1042,15 @@ public class StaticStore {
             }
 
             if(obj.has("suggestBanned")) {
-                suggestBanned = jsonToMapString(obj.getAsJsonArray("suggestBanned"));
+                suggestBanned = jsonToMapLong(obj.getAsJsonArray("suggestBanned"));
             }
 
             if(obj.has("contributor")) {
-                contributors = jsonToListString(obj.getAsJsonArray("contributor"));
+                contributors = jsonToListLong(obj.getAsJsonArray("contributor"));
             }
 
             if (obj.has("maintainers")) {
-                maintainers = jsonToListString(obj.getAsJsonArray("maintainers"));
+                maintainers = jsonToListLong(obj.getAsJsonArray("maintainers"));
             }
 
             if(obj.has("spam")) {
@@ -937,11 +1062,23 @@ public class StaticStore {
             }
 
             if(obj.has("logging")) {
-                loggingChannel = obj.get("logging").getAsString();
+                JsonElement channelElement = obj.get("logging");
+
+                if (channelElement instanceof JsonPrimitive channelPrimitive) {
+                    long channelID;
+
+                    if (channelPrimitive.isString()) {
+                        channelID = safeParseLong(channelPrimitive.getAsString());
+                    } else {
+                        channelID = channelPrimitive.getAsLong();
+                    }
+
+                    loggingChannel = channelID;
+                }
             }
 
             if(obj.has("needFixing")) {
-                needFixing = jsonToListString(obj.getAsJsonArray("needFixing"));
+                needFixing = jsonToListLong(obj.getAsJsonArray("needFixing"));
             }
 
             if(obj.has("bcenVersionCode")) {
@@ -981,11 +1118,11 @@ public class StaticStore {
             }
 
             if(obj.has("optoutMembers")) {
-                optoutMembers = jsonToListString(obj.getAsJsonArray("optoutMembers"));
+                optoutMembers = jsonToListLong(obj.getAsJsonArray("optoutMembers"));
             }
 
             if(obj.has("cultist")) {
-                cultist = jsonToListString(obj.getAsJsonArray("cultist"));
+                cultist = jsonToListLong(obj.getAsJsonArray("cultist"));
             }
 
             if(obj.has("eventNewWay")) {
@@ -1261,7 +1398,7 @@ public class StaticStore {
         return new UpdateCheck.Downloader(target, temp, "", false, url);
     }
 
-    synchronized public static void putHolder(String id, Holder holder) {
+    synchronized public static void putHolder(long id, Holder holder) {
         if (holder instanceof Conflictable c) {
             handleConflict(c);
         }
@@ -1298,7 +1435,7 @@ public class StaticStore {
         }
     }
 
-    synchronized public static void removeHolder(String id, Holder holder) {
+    synchronized public static void removeHolder(long id, Holder holder) {
         if(holders.containsKey(id)) {
             HolderHub hub = holders.get(id);
 
@@ -1312,7 +1449,7 @@ public class StaticStore {
         }
     }
 
-    synchronized public static HolderHub getHolderHub(String id) {
+    synchronized public static HolderHub getHolderHub(long id) {
         return holders.get(id);
     }
 
@@ -1328,7 +1465,7 @@ public class StaticStore {
         }
     }
 
-    public static boolean holderContainsKey(String id) {
+    public static boolean holderContainsKey(long id) {
         return holders.containsKey(id);
     }
 
@@ -1416,14 +1553,14 @@ public class StaticStore {
                 double per = 100.0 * (t - f) / m;
 
                 PackBot.statusMessage.queue(msg -> {
-                    if (msg.getJDA().getSelfUser().getId().equals(msg.getAuthor().getId())) {
+                    if (msg.getJDA().getSelfUser().getIdLong() == msg.getAuthor().getIdLong()) {
                         msg.editMessage(LangID.getStringByID("stat.info", CommonStatic.Lang.Locale.EN)
                                 .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
                                 .replace("_CCC_", String.valueOf(StaticStore.executed))
                                 .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +
                                 "- In Group : " + Thread.activeCount() + "\n" +
                                 "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
-                                "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, e -> {
+                                "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, _ -> {
                         });
                     }
                 });

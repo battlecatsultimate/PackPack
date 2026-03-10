@@ -67,7 +67,7 @@ public class SwitchEventGrabber extends ConstraintCommand {
         replyToMessageSafely(ch, loader.getMessage(), msg -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang));
+            StaticStore.putHolder(u.getIdLong(), new EventGrabberHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, lang));
         }, Container.of(components));
 
     }

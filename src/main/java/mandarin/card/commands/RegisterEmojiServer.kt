@@ -11,7 +11,7 @@ class RegisterEmojiServer : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid"))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid"))
             return
 
         val contents = loader.content.trim().split(" ")

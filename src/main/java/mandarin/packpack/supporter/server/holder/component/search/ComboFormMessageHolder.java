@@ -27,7 +27,7 @@ public class ComboFormMessageHolder extends SearchHolder {
     private final String cName;
     private final String fName;
 
-    public ComboFormMessageHolder(ArrayList<Form> form, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, String cName, String fName, ConfigHolder.SearchLayout layout) {
+    public ComboFormMessageHolder(ArrayList<Form> form, @Nullable Message author, long userID, long channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang, String cName, String fName, ConfigHolder.SearchLayout layout) {
         super(author, userID, channelID, message, fName, layout, lang);
 
         this.form = form;
@@ -100,14 +100,14 @@ public class ComboFormMessageHolder extends SearchHolder {
             } else if(combos.size() == 1) {
                 User u = event.getUser();
 
-                if(StaticStore.timeLimit.containsKey(u.getId())) {
-                    StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+                if(StaticStore.timeLimit.containsKey(u.getIdLong())) {
+                    StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
                 } else {
                     Map<String, Long> memberLimit = new HashMap<>();
 
                     memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
 
-                    StaticStore.timeLimit.put(u.getId(), memberLimit);
+                    StaticStore.timeLimit.put(u.getIdLong(), memberLimit);
                 }
 
                 try {

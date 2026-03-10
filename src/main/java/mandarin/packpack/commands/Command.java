@@ -776,15 +776,15 @@ public abstract class Command {
 
         SpamPrevent spam;
 
-        if(StaticStore.spamData.containsKey(u.getId()) && loader.fromMessage) {
-            spam = StaticStore.spamData.get(u.getId());
+        if(StaticStore.spamData.containsKey(u.getIdLong()) && loader.fromMessage) {
+            spam = StaticStore.spamData.get(u.getIdLong());
 
-            if(spam.isPrevented(ch, lang, u.getId()))
+            if(spam.isPrevented(ch, lang, u.getIdLong()))
                 return;
-        } else if(!StaticStore.spamData.containsKey(u.getId())) {
+        } else if(!StaticStore.spamData.containsKey(u.getIdLong())) {
             spam = new SpamPrevent();
 
-            StaticStore.spamData.put(u.getId(), spam);
+            StaticStore.spamData.put(u.getIdLong(), spam);
         }
 
         StaticStore.executed++;
@@ -832,18 +832,18 @@ public abstract class Command {
 
                 if (loader.fromMessage) {
                     data = "Command : " + loader.getContent() + "\n\n" +
-                            "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                            "Member  : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                            "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
                 } else {
                     data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
-                            "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                            "Member : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                            "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
                 }
 
                 if (ch instanceof GuildChannel) {
                     Guild g = loader.getGuild();
 
-                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getIdLong() + ")";
                 }
 
                 StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
@@ -862,18 +862,18 @@ public abstract class Command {
 
             if (loader.fromMessage) {
                 data = "Command : " + loader.getContent() + "\n\n" +
-                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                        "Member  : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
             } else {
                 data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
-                        "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                        "Member : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
             }
 
             if (ch instanceof GuildChannel) {
                 Guild g = loader.getGuild();
 
-                data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                data += "\n\nGuild : " + g.getName() + " (" + g.getIdLong() + ")";
             }
 
             StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);

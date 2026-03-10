@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.max
 import kotlin.math.min
 
-class CardInventoryHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardInventoryHolder(author: Message, userID: Long, channelID: Long, message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private enum class FilterMode {
         NONE,
         FAVORITE_ONLY,

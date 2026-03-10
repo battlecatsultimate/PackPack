@@ -42,9 +42,9 @@ public class BoosterRole extends ConstraintCommand {
             return;
         }
 
-        IDHolder holder = StaticStore.idHolder.get(g.getId());
+        IDHolder holder = StaticStore.idHolder.get(g.getIdLong());
 
-        if(holder.booster == null) {
+        if(holder.booster == -1L) {
             createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRegisteredRole", lang));
             return;
         }
@@ -71,18 +71,18 @@ public class BoosterRole extends ConstraintCommand {
         Member m = g.getMemberById(id);
 
         if(m != null) {
-            if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
-                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).replace("_RRR_", holder.booster));
+            if(!StaticStore.rolesToID(m.getRoles()).contains(holder.booster)) {
+                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).formatted(holder.booster));
                 return;
             }
 
-            if(StaticStore.boosterData.containsKey(g.getId())) {
-                BoosterHolder bHolder = StaticStore.boosterData.get(g.getId());
+            if(StaticStore.boosterData.containsKey(g.getIdLong())) {
+                BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
 
-                if(bHolder.serverBooster.containsKey(m.getId())) {
-                    BoosterData data = bHolder.serverBooster.get(m.getId());
+                if(bHolder.serverBooster.containsKey(m.getIdLong())) {
+                    BoosterData data = bHolder.serverBooster.get(m.getIdLong());
 
-                    if(data.getRole() != null) {
+                    if(data.getRole() != -1L) {
                         createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.alreadyRegistered", lang));
                         return;
                     }
@@ -103,54 +103,54 @@ public class BoosterRole extends ConstraintCommand {
                                 ch.sendMessage(LangID.getStringByID("boosterRole.failed.move", lang)).queue();
                             });
 
-                            if(StaticStore.boosterData.containsKey(g.getId())) {
-                                BoosterHolder bHolder = StaticStore.boosterData.get(g.getId());
+                            if(StaticStore.boosterData.containsKey(g.getIdLong())) {
+                                BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
 
-                                if(bHolder.serverBooster.containsKey(m.getId())) {
-                                    BoosterData data = bHolder.serverBooster.get(m.getId());
+                                if(bHolder.serverBooster.containsKey(m.getIdLong())) {
+                                    BoosterData data = bHolder.serverBooster.get(m.getIdLong());
 
-                                    int result = data.setRole(r.getId());
+                                    int result = data.setRole(r.getIdLong());
 
                                     if(result == BoosterData.ERR_ALREADY_ROLE_SET) {
                                         createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.alreadyRegistered", lang));
                                     } else {
-                                        g.addRoleToMember(UserSnowflake.fromId(m.getId()), r).queue(null, e -> {
+                                        g.addRoleToMember(UserSnowflake.fromId(m.getIdLong()), r).queue(null, e -> {
                                             StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
 
                                             createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
                                         });
 
-                                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).formatted(r.getIdLong(), m.getIdLong()));
                                     }
                                 } else {
-                                    BoosterData data = new BoosterData(r.getId(), BoosterData.INITIAL.ROLE);
+                                    BoosterData data = new BoosterData(r.getIdLong(), BoosterData.INITIAL.ROLE);
 
-                                    g.addRoleToMember(UserSnowflake.fromId(m.getId()), r).queue(null, e -> {
+                                    g.addRoleToMember(UserSnowflake.fromId(m.getIdLong()), r).queue(null, e -> {
                                         StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
 
                                         createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
                                     });
 
-                                    bHolder.serverBooster.put(m.getId(), data);
+                                    bHolder.serverBooster.put(m.getIdLong(), data);
 
-                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).formatted(r.getIdLong(), m.getIdLong()));
                                 }
                             } else {
                                 BoosterHolder bHolder = new BoosterHolder();
 
-                                BoosterData data = new BoosterData(r.getId(), BoosterData.INITIAL.ROLE);
+                                BoosterData data = new BoosterData(r.getIdLong(), BoosterData.INITIAL.ROLE);
 
-                                g.addRoleToMember(UserSnowflake.fromId(m.getId()), r).queue(null, e -> {
+                                g.addRoleToMember(UserSnowflake.fromId(m.getIdLong()), r).queue(null, e -> {
                                     StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
 
                                     createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
                                 });
 
-                                bHolder.serverBooster.put(m.getId(), data);
+                                bHolder.serverBooster.put(m.getIdLong(), data);
 
-                                StaticStore.boosterData.put(g.getId(), bHolder);
+                                StaticStore.boosterData.put(g.getIdLong(), bHolder);
 
-                                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).formatted(r.getIdLong(), m.getIdLong()));
                             }
                         }, e -> StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to create role"));
             } else {

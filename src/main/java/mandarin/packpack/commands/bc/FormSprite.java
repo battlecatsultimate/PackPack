@@ -99,7 +99,7 @@ public class FormSprite extends TimedConstraintCommand {
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new FormSpriteMessageHolder(forms, msg, u.getId(), ch.getId(), res, search, config.searchLayout, mode, lang));
+                    StaticStore.putHolder(u.getIdLong(), new FormSpriteMessageHolder(forms, msg, u.getIdLong(), ch.getIdLong(), res, search, config.searchLayout, mode, lang));
                 });
 
                 disableTimer();

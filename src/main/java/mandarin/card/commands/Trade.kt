@@ -21,7 +21,7 @@ class Trade : Command(CommonStatic.Lang.Locale.EN, true) {
         val g = loader.guild
         val m = loader.member
 
-        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 

@@ -20,7 +20,7 @@ public class EnemyDPSHolder extends SearchHolder {
 
     private final TreasureHolder t;
 
-    public EnemyDPSHolder(ArrayList<Enemy> enemies, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder t, int magnification, CommonStatic.Lang.Locale lang) {
+    public EnemyDPSHolder(ArrayList<Enemy> enemies, Message author, long userID, long channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder t, int magnification, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.enemies = enemies;

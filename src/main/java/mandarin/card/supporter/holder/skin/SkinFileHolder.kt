@@ -26,12 +26,12 @@ class SkinFileHolder : ComponentHolder, MessageDetector {
 
     private var downloading = false
 
-    constructor(author: Message, userID: String, channelID: String, message: Message, card: Card) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: Long, channelID: Long, message: Message, card: Card) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.skin = null
         this.card = card
     }
 
-    constructor(author: Message, userID: String, channelID: String, message: Message, card: Card, skin: Skin) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+    constructor(author: Message, userID: Long, channelID: Long, message: Message, card: Card, skin: Skin) : super(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
         this.skin = skin
         this.card = card
     }

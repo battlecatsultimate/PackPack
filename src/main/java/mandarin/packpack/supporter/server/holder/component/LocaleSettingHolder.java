@@ -27,7 +27,7 @@ public class LocaleSettingHolder extends ComponentHolder {
     @Nullable
     private final IDHolder holder;
 
-    public LocaleSettingHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull ConfigHolder config, @Nullable IDHolder holder, boolean forServer, CommonStatic.Lang.Locale lang) {
+    public LocaleSettingHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull ConfigHolder config, @Nullable IDHolder holder, boolean forServer, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.config = config;

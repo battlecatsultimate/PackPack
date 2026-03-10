@@ -13,7 +13,7 @@ import java.util.Locale;
 public class ServerPrefixModalHolder extends ModalHolder {
     private final IDHolder holder;
 
-    public ServerPrefixModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
+    public ServerPrefixModalHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.holder = holder;

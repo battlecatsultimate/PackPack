@@ -42,7 +42,7 @@ public class RegisterFixing extends ConstraintCommand {
         Guild g = client.getGuildById(contents[1]);
 
         if(g != null) {
-            StaticStore.needFixing.add(contents[1]);
+            StaticStore.needFixing.add(StaticStore.safeParseLong(contents[1]));
 
             replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Added `" + contents[1] + "` [**" + g.getName() + "**] as fixing server");
         } else {

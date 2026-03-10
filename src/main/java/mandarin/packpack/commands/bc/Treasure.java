@@ -28,10 +28,10 @@ public class Treasure extends ConstraintCommand {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
 
-        TreasureHolder treasure = StaticStore.treasure.getOrDefault(u.getId(), new TreasureHolder());
+        TreasureHolder treasure = StaticStore.treasure.getOrDefault(u.getIdLong(), new TreasureHolder());
 
         replyToMessageSafely(ch, generateText(treasure), loader.getMessage(), this::attachUIComponents, result ->
-                StaticStore.putHolder(u.getId(), new TreasureButtonHolder(loader.getMessage(), u.getId(), ch.getId(), result, treasure, lang))
+                StaticStore.putHolder(u.getIdLong(), new TreasureButtonHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), result, treasure, lang))
         );
     }
 

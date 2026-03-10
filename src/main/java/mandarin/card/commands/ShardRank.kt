@@ -35,7 +35,7 @@ class ShardRank : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, getRankList(users, shards, m.idLong), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
-            StaticStore.putHolder(m.id, RankListHolder(loader.message, m.id, loader.channel.id, msg, users, shards, false))
+            StaticStore.putHolder(m.idLong, RankListHolder(loader.message, m.idLong, loader.channel.idLong, msg, users, shards, false))
         }
     }
 

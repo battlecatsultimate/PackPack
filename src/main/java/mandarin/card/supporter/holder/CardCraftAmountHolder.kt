@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardCraftAmountHolder(author: Message, userID: String, channelID: String, message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardCraftAmountHolder(author: Message, userID: Long, channelID: Long, message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var amount = 1
@@ -76,23 +76,17 @@ class CardCraftAmountHolder(author: Message, userID: String, channelID: String, 
                 applyResult(event)
             }
             "amount" -> {
-                val input = TextInput.create("amount", TextInputStyle.SHORT)
-                    .setPlaceholder("Define amount of card that will be crafted")
-                    .setRequired(true)
-                    .setValue(amount.toString())
-                    .build()
+                val input = TextInput.create("amount", TextInputStyle.SHORT).setPlaceholder("Define amount of card that will be crafted").setRequired(true).setValue(amount.toString()).build()
 
-                val modal = Modal.create("amount", "Amount of Card")
-                    .addComponents(Label.of("Amount", input))
-                    .build()
+                val modal = Modal.create("amount", "Amount of Card").addComponents(Label.of("Amount", input)).build()
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CraftAmountHolder(authorMessage, userID, channelID, message) { a ->
+                StaticStore.putHolder(authorMessage.author.idLong, CraftAmountHolder(authorMessage, userID, channelID, message) { a ->
                     amount = a
 
                     applyResult()
-                })
+                });
             }
             "craft" -> {
                 val emoji = when(craftMode) {

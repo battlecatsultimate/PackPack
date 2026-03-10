@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.min
 
-class AuctionCardSelectHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory?, private val onSelected: (Card, Int) -> Unit) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class AuctionCardSelectHolder(author: Message, userID: Long, channelID: Long, message: Message, private val inventory: Inventory?, private val onSelected: (Card, Int) -> Unit) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     private val cards = ArrayList<Card>()

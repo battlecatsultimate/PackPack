@@ -38,7 +38,7 @@ import java.util.List;
 public class ConfigRoleCustomHolder extends ServerConfigHolder {
     private int page = 0;
 
-    public ConfigRoleCustomHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigRoleCustomHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 
@@ -59,14 +59,14 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                 if (roleAlreadyRegistered(event, r))
                     return;
 
-                if (holder.ID.containsValue(r.getId())) {
+                if (holder.ID.containsValue(r.getIdLong())) {
                     String name = holder.ID.keySet().stream().filter(k -> {
-                        String id = holder.ID.get(k);
+                        long id = holder.ID.get(k);
 
-                        if (id == null)
+                        if (id == -1L)
                             return false;
 
-                        return id.equals(r.getId());
+                        return id == r.getIdLong();
                     }).findAny().orElse("UNKNOWN");
 
                     event.deferReply()
@@ -87,7 +87,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     event.replyModal(modal).queue();
 
                     connectTo(new CustomRoleNameModalHolder(getAuthorMessage(), userID, channelID, message, holder, lang, name -> {
-                        holder.ID.put(name, r.getId());
+                        holder.ID.put(name, r.getIdLong());
 
                         applyResult();
                     }));
@@ -102,21 +102,21 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                 if (values.isEmpty())
                     return;
 
-                String id = values.getFirst();
+                long id = StaticStore.safeParseLong(values.getFirst());
 
                 registerPopUp(e, LangID.getStringByID("serverConfig.general.custom.unregisterConfirm", lang).formatted(id));
 
                 connectTo(new ConfirmPopUpHolder(getAuthorMessage(), userID, channelID, message, ev -> {
                     holder.ID.entrySet().removeIf(entry -> {
-                        String targetID = entry.getValue();
+                        long targetID = entry.getValue();
 
-                        boolean remove = targetID != null && targetID.equals(id);
+                        boolean remove = targetID != -1L && targetID == id;
 
                         if (remove) {
                             holder.channel.remove(targetID);
                         }
 
-                        StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), this);
+                        StaticStore.putHolder(getAuthorMessage().getAuthor().getIdLong(), this);
 
                         applyResult();
 
@@ -235,12 +235,12 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
             int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize + 1;
 
             for (String name : holder.ID.keySet()) {
-                String id = holder.ID.get(name);
+                Long id = holder.ID.get(name);
 
                 if (id == null)
                     continue;
 
-                Role role = roles.stream().filter(r -> r.getId().equals(id)).findAny().orElse(null);
+                Role role = roles.stream().filter(r -> r.getIdLong() == id).findAny().orElse(null);
 
                 if (role != null) {
                     builder.append(LangID.getStringByID("serverConfig.general.custom.documentation.format.default", lang).formatted(i, name, role.getAsMention(), id));
@@ -284,12 +284,12 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
             List<Role> roles = g.getRoles();
 
             for (String name : holder.ID.keySet()) {
-                String id = holder.ID.get(name);
+                Long id = holder.ID.get(name);
 
                 if (id == null)
                     continue;
 
-                Role role = roles.stream().filter(r -> r.getId().equals(id)).findAny().orElse(null);
+                Role role = roles.stream().filter(r -> r.getIdLong() == id).findAny().orElse(null);
 
                 String description;
                 Emoji e;
@@ -315,7 +315,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     e = null;
                 }
 
-                roleOptions.add(SelectOption.of(name, id).withDescription(description).withEmoji(e));
+                roleOptions.add(SelectOption.of(name, String.valueOf(id)).withDescription(description).withEmoji(e));
             }
         }
 
@@ -360,9 +360,9 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
     }
 
     private boolean roleAlreadyRegistered(GenericComponentInteractionCreateEvent event, Role role) {
-        String id = role.getId();
+        long id = role.getIdLong();
 
-        if (id.equals(holder.moderator)) {
+        if (id == holder.moderator) {
             event.deferReply()
                     .setContent(LangID.getStringByID("serverConfig.general.custom.already.moderator", lang))
                     .setAllowedMentions(new ArrayList<>())
@@ -370,7 +370,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.member)) {
+        } else if (id == holder.member) {
             event.deferReply()
                     .setContent(LangID.getStringByID("serverConfig.general.custom.already.member", lang))
                     .setAllowedMentions(new ArrayList<>())
@@ -378,7 +378,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     .queue();
 
             return true;
-        } else if (id.equals(holder.booster)) {
+        } else if (id == holder.booster) {
             event.deferReply()
                     .setContent(LangID.getStringByID("serverConfig.general.custom.already.booster", lang))
                     .setAllowedMentions(new ArrayList<>())

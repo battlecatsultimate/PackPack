@@ -103,7 +103,7 @@ public class FormDPS extends TimedConstraintCommand {
             if (forms.size() == 1) {
                 Form f = forms.getFirst();
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getIdLong(), TreasureHolder.global);
 
                 EntityHandler.showFormDPS(loader.fromMessage ? ch : loader.getInteractionEvent(), loader.getNullableMessage(), f, treasure, lv, config, talent, isTreasure, false, lang);
             } else if (forms.isEmpty()) {
@@ -117,17 +117,17 @@ public class FormDPS extends TimedConstraintCommand {
                     replyToMessageSafely(ch, loader.getMessage(), msg -> {
                         User u = loader.getUser();
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, name, config, lv, talent, isTreasure, treasure, lang));
+                        StaticStore.putHolder(u.getIdLong(), new FormDPSHolder(forms, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, name, config, lv, talent, isTreasure, treasure, lang));
                     }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(name, forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), msg -> {
                         User u = loader.getUser();
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                        StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, name, config, lv, talent, isTreasure, treasure, lang));
+                        StaticStore.putHolder(u.getIdLong(), new FormDPSHolder(forms, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, name, config, lv, talent, isTreasure, treasure, lang));
                     }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(name, forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
                 }
             }

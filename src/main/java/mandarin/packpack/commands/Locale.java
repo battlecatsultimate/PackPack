@@ -29,7 +29,7 @@ public class Locale extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        ConfigHolder config = StaticStore.config.computeIfAbsent(loader.getUser().getId(), k -> new ConfigHolder());
+        ConfigHolder config = StaticStore.config.computeIfAbsent(loader.getUser().getIdLong(), k -> new ConfigHolder());
 
         CommonStatic.Lang.Locale locale = config.lang;
 
@@ -47,7 +47,7 @@ public class Locale extends ConstraintCommand {
         }
 
         replyToMessageSafely(ch, LangID.getStringByID("locale.select", lang).formatted(emoji, localeName), loader.getMessage(), a -> a.setComponents(getComponents(config)), msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new LocaleSettingHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, config, holder, false, lang))
+            StaticStore.putHolder(loader.getUser().getIdLong(), new LocaleSettingHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, config, holder, false, lang))
         );
     }
 

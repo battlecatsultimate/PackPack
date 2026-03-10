@@ -22,12 +22,12 @@ public class RecordableThread extends Thread {
                     String content = "I/RecordableThread::handleExpiration - Expired thread found : " + t.getName() + "\n" +
                             "\n" +
                             "Command : " + t.loader.getMessage().getContentRaw() + "\n" +
-                            "Channel : " + t.loader.getChannel().getName() + " [" + t.loader.getChannel().getId() + "]\n" +
-                            "User : " + t.loader.getUser().getEffectiveName() + " [" + t.loader.getUser().getId() + "]";
+                            "Channel : " + t.loader.getChannel().getName() + " [" + t.loader.getChannel().getIdLong() + "]\n" +
+                            "User : " + t.loader.getUser().getEffectiveName() + " [" + t.loader.getUser().getIdLong() + "]";
 
                     if (t.loader.hasGuild()) {
                         content += "\n" +
-                                "Guild : " + t.loader.getGuild().getName() + " [" + t.loader.getGuild().getId() + "]";
+                                "Guild : " + t.loader.getGuild().getName() + " [" + t.loader.getGuild().getIdLong() + "]";
                     }
 
                     StaticStore.logger.uploadLog(content);

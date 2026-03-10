@@ -12,7 +12,7 @@ class PauseInvite : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isMod(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isMod(m))
             return
 
         val g = loader.guild
@@ -24,7 +24,7 @@ class PauseInvite : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, message, loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(loader.member.id, ConfirmButtonHolder(loader.message, loader.member.id, loader.channel.id, msg, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(loader.member.idLong, ConfirmButtonHolder(loader.message, loader.member.idLong, loader.channel.idLong, msg, CommonStatic.Lang.Locale.EN) {
                 replyToMessageSafely(loader.channel, if (CardBot.inviteLocked) "Enabling..." else "Disabling...", loader.message, { a -> a }) { m ->
                     g.manager.setInvitesDisabled(!CardBot.inviteLocked).queue( {
                         val alreadyLocked = CardBot.inviteLocked

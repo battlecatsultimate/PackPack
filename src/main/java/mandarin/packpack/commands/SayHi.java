@@ -25,17 +25,17 @@ public class SayHi extends Command {
         double chance = StaticStore.random.nextDouble();
 
         if(chance <= 0.01) {
-            if (StaticStore.cultist.contains(u.getId())) {
+            if (StaticStore.cultist.contains(u.getIdLong())) {
                 replyToMessageSafely(ch, LangID.getStringByID("hi.special.recognize", lang), loader.getMessage(), a -> a);
             } else {
                 replyToMessageSafely(ch, LangID.getStringByID("hi.special.invitation", lang), loader.getMessage(), a -> a.setComponents(ActionRow.of(
                         Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("ui.button.yes", lang)),
                         Button.of(ButtonStyle.DANGER, "no", LangID.getStringByID("ui.button.no", lang))
-                )), msg -> StaticStore.putHolder(u.getId(), new CultButtonHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang)));
+                )), msg -> StaticStore.putHolder(u.getIdLong(), new CultButtonHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, lang)));
             }
         } else if(chance <= 0.05) {
             replyToMessageSafely(ch, LangID.getStringByID("hi.dog", lang), loader.getMessage(), a -> a);
-        } else if(StaticStore.cultist.contains(u.getId()) && chance <= 0.1) {
+        } else if(StaticStore.cultist.contains(u.getIdLong()) && chance <= 0.1) {
             replyToMessageSafely(ch, LangID.getStringByID("hi.special.recognize", lang), loader.getMessage(), a -> a);
         } else {
             int index = StaticStore.random.nextInt(13);

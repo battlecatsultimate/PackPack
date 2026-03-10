@@ -74,7 +74,7 @@ public class Help extends Command {
 
             replyToMessageSafely(ch, "", loader.getMessage(),
                     a -> a.setEmbeds(builder.build()).setComponents(getComponents()),
-                    msg -> StaticStore.putHolder(loader.getUser().getId(), new HelpCategoryHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, lang, color))
+                    msg -> StaticStore.putHolder(loader.getUser().getIdLong(), new HelpCategoryHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, lang, color))
             );
         }
     }

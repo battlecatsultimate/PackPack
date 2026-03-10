@@ -22,7 +22,7 @@ class Buy : Command(CommonStatic.Lang.Locale.EN, true) {
         val m = loader.member
         val author = loader.message
 
-        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 
@@ -32,7 +32,7 @@ class Buy : Command(CommonStatic.Lang.Locale.EN, true) {
         replyToMessageSafely(ch, "Please select a list that you want to get", author, {
             a -> a.setComponents(registerComponents(possibleRoles, inventory))
         }, { msg ->
-            StaticStore.putHolder(m.id, BuyHolder(author, m.id, ch.id, msg))
+            StaticStore.putHolder(m.idLong, BuyHolder(author, m.idLong, ch.idLong, msg))
         })
     }
 

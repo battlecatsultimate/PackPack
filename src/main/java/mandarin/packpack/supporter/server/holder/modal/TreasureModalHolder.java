@@ -26,7 +26,7 @@ public class TreasureModalHolder extends ModalHolder {
 
     private final Runnable editor;
 
-    public TreasureModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull TreasureHolder treasure, CommonStatic.Lang.Locale lang, TREASURE type, Runnable editor) {
+    public TreasureModalHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull TreasureHolder treasure, CommonStatic.Lang.Locale lang, TREASURE type, Runnable editor) {
         super(author, userID, channelID, message, lang);
 
         this.treasure = treasure;

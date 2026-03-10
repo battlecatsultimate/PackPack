@@ -101,7 +101,7 @@ public class FormImage extends TimedConstraintCommand {
 
                     User u = loader.getUser();
 
-                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, loader.getMessage(), u.getId(), ch.getId(), msg, new StringBuilder(), formName, config.searchLayout, mode, frame, transparent, debug, lang, false, false, false));
+                    StaticStore.putHolder(u.getIdLong(), new FormAnimMessageHolder(forms, loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, new StringBuilder(), formName, config.searchLayout, mode, frame, transparent, debug, lang, false, false, false));
                 }, getSearchComponents(forms.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(formName, forms.size()), forms, this::accumulateTextData, config.searchLayout, lang));
 
                 disableTimer();

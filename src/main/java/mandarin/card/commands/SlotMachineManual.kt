@@ -23,7 +23,7 @@ import kotlin.math.min
 
 class SlotMachineManual : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
-        if (loader.user.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member)) {
+        if (loader.user.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member)) {
             return
         }
 
@@ -53,7 +53,7 @@ class SlotMachineManual : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(possibleSlotMachines)) }) { msg ->
-            StaticStore.putHolder(loader.user.id, ManualSlotSelectHolder(loader.message, loader.user.id, loader.channel.id, msg, loader.member, users))
+            StaticStore.putHolder(loader.user.idLong, ManualSlotSelectHolder(loader.message, loader.user.idLong, loader.channel.idLong, msg, loader.member, users));
         }
     }
 

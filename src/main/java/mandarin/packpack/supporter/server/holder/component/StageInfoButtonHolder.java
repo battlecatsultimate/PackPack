@@ -34,7 +34,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
 
     private final boolean switchable;
 
-    public StageInfoButtonHolder(Stage st, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, TreasureHolder treasure, StageInfo.StageInfoConfig configData, boolean switchable, CommonStatic.Lang.Locale lang) {
+    public StageInfoButtonHolder(Stage st, @Nullable Message author, long userID, long channelID, @Nonnull Message message, TreasureHolder treasure, StageInfo.StageInfoConfig configData, boolean switchable, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.st = st;

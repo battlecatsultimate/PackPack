@@ -27,7 +27,7 @@ public class SolutionHolder extends SearchHolder {
     private final List<BigDecimal[]> targetRanges;
     private final List<NumericalResult> solutions;
 
-    public SolutionHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, ConfigHolder.SearchLayout layout, String summary, List<BigDecimal[]> targetRanges, List<NumericalResult> solutions, CommonStatic.Lang.Locale lang) {
+    public SolutionHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message msg, ConfigHolder.SearchLayout layout, String summary, List<BigDecimal[]> targetRanges, List<NumericalResult> solutions, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, msg, "", layout, lang);
 
         this.summary = summary;

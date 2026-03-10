@@ -231,7 +231,7 @@ public class Solve extends TimedConstraintCommand {
 
         replyToMessageSafely(ch, loader.getMessage(), msg -> {
             if (solutions.size() > 5) {
-                StaticStore.putHolder(u.getId(), new SolutionHolder(loader.getMessage(), u.getId(), ch.getId(), msg, config.searchLayout, summary, targetRanges, solutions, lang));
+                StaticStore.putHolder(u.getIdLong(), new SolutionHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, config.searchLayout, summary, targetRanges, solutions, lang));
             }
         }, getComponents(accumulateListData(solutions, targetRanges), summary));
     }

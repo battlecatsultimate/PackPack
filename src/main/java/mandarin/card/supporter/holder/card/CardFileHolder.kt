@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import java.io.File
 import java.nio.file.Files
 
-class CardFileHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card?) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageDetector {
+class CardFileHolder(author: Message, userID: Long, channelID: Long, message: Message, private val card: Card?) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN), MessageDetector {
     private var downloading = false
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {

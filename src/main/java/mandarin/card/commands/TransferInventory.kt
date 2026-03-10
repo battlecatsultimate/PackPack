@@ -17,11 +17,11 @@ class TransferInventory : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid"))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid"))
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.id, TransferInventorySourceHolder(loader.message, m.id, loader.channel.id, msg))
+            StaticStore.putHolder(m.idLong, TransferInventorySourceHolder(loader.message, m.idLong, loader.channel.idLong, msg));
         }
     }
 

@@ -22,11 +22,11 @@ class ManageSlot : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.addComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(loader.user.id, SlotMachineListHolder(loader.message, m.id, loader.channel.id, msg))
+            StaticStore.putHolder(loader.user.idLong, SlotMachineListHolder(loader.message, m.idLong, loader.channel.idLong, msg))
         }
     }
 

@@ -34,16 +34,16 @@ public class BoosterEmojiRemove extends ConstraintCommand {
         Member m = g.getMemberById(id);
 
         if(m != null) {
-            if(StaticStore.boosterData.containsKey(g.getId())) {
-                BoosterHolder holder = StaticStore.boosterData.get(g.getId());
+            if(StaticStore.boosterData.containsKey(g.getIdLong())) {
+                BoosterHolder holder = StaticStore.boosterData.get(g.getIdLong());
 
-                if(holder.serverBooster.containsKey(m.getId())) {
-                    BoosterData data = holder.serverBooster.get(m.getId());
+                if(holder.serverBooster.containsKey(m.getIdLong())) {
+                    BoosterData data = holder.serverBooster.get(m.getIdLong());
 
-                    if(data.getEmoji() == null) {
+                    if(data.getEmoji() == -1L) {
                         createMessageWithNoPings(ch, LangID.getStringByID("boosterEmojiRemove.failed.noAssignedEmoji", lang));
                     } else {
-                        String emoji = data.getEmoji();
+                        long emoji = data.getEmoji();
 
                         boolean leave = leaveEmoji(loader.getContent());
 
@@ -56,8 +56,8 @@ public class BoosterEmojiRemove extends ConstraintCommand {
 
                         data.removeEmoji();
 
-                        if(data.getRole() == null) {
-                            holder.serverBooster.remove(m.getId());
+                        if(data.getRole() == -1L) {
+                            holder.serverBooster.remove(m.getIdLong());
                         }
 
                         createMessageWithNoPings(ch, LangID.getStringByID("boosterEmojiRemove.success", lang).replace("_", m.getId()));

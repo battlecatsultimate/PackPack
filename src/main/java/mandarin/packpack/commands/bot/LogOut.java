@@ -32,7 +32,7 @@ public class LogOut extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && !StaticStore.maintainers.contains(loader.getUser().getId())) {
+        if (loader.getUser().getIdLong() != StaticStore.MANDARIN_SMELL && !StaticStore.maintainers.contains(loader.getUser().getIdLong())) {
             replyToMessageSafely(ch, loader.getMessage(), LangID.getStringByID("bot.denied.reason.noPermission.developer", lang));
 
             return;
@@ -60,7 +60,7 @@ public class LogOut extends ConstraintCommand {
         replyToMessageSafely(ch, loader.getMessage(), msg -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(loader.getMessage(), u.getId(), ch.getId(), msg, lang, () -> {
+            StaticStore.putHolder(u.getIdLong(), new ConfirmButtonHolder(loader.getMessage(), u.getIdLong(), ch.getIdLong(), msg, lang, () -> {
                 String self = ch.getJDA().getSelfUser().getAsMention();
 
                 String code = switch (contents[1]) {
@@ -71,7 +71,7 @@ public class LogOut extends ConstraintCommand {
                     default -> "bot.status.offline.reason.update";
                 };
 
-                for (String key : StaticStore.idHolder.keySet()) {
+                for (long key : StaticStore.idHolder.keySet()) {
                     try {
                         IDHolder id = StaticStore.idHolder.get(key);
 
@@ -96,7 +96,7 @@ public class LogOut extends ConstraintCommand {
                             ((MessageChannel) c).sendMessageComponents(TextDisplay.of(fullMessage))
                                     .useComponentsV2()
                                     .setAllowedMentions(new ArrayList<>())
-                                    .queue(res -> countDown.countDown(), e -> countDown.countDown());
+                                    .queue(_ -> countDown.countDown(), _ -> countDown.countDown());
 
                             countDown.await();
                         }
@@ -107,7 +107,7 @@ public class LogOut extends ConstraintCommand {
                 try {
                     CountDownLatch countDown = new CountDownLatch(1);
 
-                    replyToMessageSafely(ch, loader.getMessage(), "Good bye!", unused -> countDown.countDown(), e -> countDown.countDown());
+                    replyToMessageSafely(ch, loader.getMessage(), "Good bye!", _ -> countDown.countDown(), _ -> countDown.countDown());
 
                     countDown.await();
                 } catch (Exception ignored) {

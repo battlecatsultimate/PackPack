@@ -49,11 +49,9 @@ public abstract class Holder {
     @Nullable
     private final Message author;
     @Nonnull
-    public final String channelID;
-    @Nonnull
     public Message message;
-    @Nonnull
-    public final String userID;
+    public final long channelID;
+    public final long userID;
 
     @Nonnull
     public final CommonStatic.Lang.Locale lang;
@@ -70,7 +68,7 @@ public abstract class Holder {
     @Nullable
     private ScheduledFuture<?> schedule = null;
 
-    public Holder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+    public Holder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         this.author = author;
 
         this.channelID = channelID;
@@ -83,16 +81,10 @@ public abstract class Holder {
     public Holder(@Nonnull GenericCommandInteractionEvent event, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         this.author = null;
 
-        String channelID = event.getChannelId();
-
-        if (channelID == null) {
-            throw new NullPointerException("E/Holder::init - Failed to get channel data from slash command");
-        }
-
-        this.channelID = channelID;
+        this.channelID = event.getChannelIdLong();
         this.message = message;
 
-        userID = event.getUser().getId();
+        userID = event.getUser().getIdLong();
 
         this.lang = lang;
     }

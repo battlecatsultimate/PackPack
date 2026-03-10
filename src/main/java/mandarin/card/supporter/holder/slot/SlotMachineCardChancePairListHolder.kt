@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit
 
 class SlotMachineCardChancePairListHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val slotMachine: SlotMachine,
     private val content: SlotCardContent,

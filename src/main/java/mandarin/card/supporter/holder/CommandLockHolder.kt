@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import kotlin.math.min
 
-class CommandLockHolder(author: Message, userID: String, channelID: String, message: Message, private val classes: List<Class<*>>) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CommandLockHolder(author: Message, userID: Long, channelID: Long, message: Message, private val classes: List<Class<*>>) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
         set(value) {
             field = value

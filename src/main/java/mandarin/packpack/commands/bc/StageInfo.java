@@ -157,7 +157,7 @@ public class StageInfo extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getIdLong(), TreasureHolder.global);
 
                 ArrayList<Stage> finalStages = stages;
 
@@ -170,22 +170,22 @@ public class StageInfo extends TimedConstraintCommand {
                 }
 
                 EntityHandler.generateStageEmbed(stages.getFirst(), sender, loader.getNullableMessage(), additionalContent, treasure, configData, false, true, lang, result ->
-                    StaticStore.putHolder(loader.getUser().getId(), new StageInfoButtonHolder(finalStages.getFirst(), loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), result, treasure, configData, true, lang))
+                    StaticStore.putHolder(loader.getUser().getIdLong(), new StageInfoButtonHolder(finalStages.getFirst(), loader.getNullableMessage(), loader.getUser().getIdLong(), ch.getIdLong(), result, treasure, configData, true, lang))
                 );
             } else {
                 ArrayList<Stage> finalStages = stages;
 
                 if (loader.fromMessage) {
                     replyToMessageSafely(ch, loader.getMessage(), msg -> {
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getIdLong(), TreasureHolder.global);
 
-                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), msg, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
+                        StaticStore.putHolder(loader.getUser().getIdLong(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
                     }, getSearchComponents(stages.size(), LangID.getStringByID("stageInfo.several", lang).formatted(generateSearchName(names), stages.size()), stages, this::accumulateTextData, config.searchLayout, lang));
                 } else {
                     replyToMessageSafely(loader.getInteractionEvent(), msg -> {
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getId(), TreasureHolder.global);
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getIdLong(), TreasureHolder.global);
 
-                        StaticStore.putHolder(loader.getUser().getId(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getId(), ch.getId(), msg, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
+                        StaticStore.putHolder(loader.getUser().getIdLong(), new StageInfoMessageHolder(finalStages, loader.getNullableMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, generateSearchName(names), config.searchLayout, additionalContent, treasure, configData, lang));
                     }, getSearchComponents(stages.size(), LangID.getStringByID("stageInfo.several", lang).formatted(generateSearchName(names), stages.size()), stages, this::accumulateTextData, config.searchLayout, lang));
                 }
 

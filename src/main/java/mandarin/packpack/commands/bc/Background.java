@@ -40,8 +40,8 @@ Background extends TimedConstraintCommand {
 
         User u = interaction.getUser();
 
-        if(StaticStore.config.containsKey(u.getId())) {
-            lang =  StaticStore.config.get(u.getId()).lang;
+        if(StaticStore.config.containsKey(u.getIdLong())) {
+            lang =  StaticStore.config.get(u.getIdLong()).lang;
         }
 
         File img = ImageDrawing.drawBGImage(bg, 960, 540, false);
@@ -164,7 +164,7 @@ Background extends TimedConstraintCommand {
 
             User u = loader.getUser();
 
-            boolean isTrusted = StaticStore.contributors.contains(u.getId());
+            boolean isTrusted = StaticStore.contributors.contains(u.getIdLong());
 
             String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 

@@ -22,11 +22,11 @@ class Activate : Command(CommonStatic.Lang.Locale.EN, true) {
         val ch = loader.channel
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
         replyToMessageSafely(ch, getText(), loader.message, { a -> a.setComponents(getComponents()) }, { msg ->
-            StaticStore.putHolder(m.id, ActivatorHolder(loader.message, m.id, ch.id, msg))
+            StaticStore.putHolder(m.idLong, ActivatorHolder(loader.message, m.idLong, ch.idLong, msg))
         })
     }
 

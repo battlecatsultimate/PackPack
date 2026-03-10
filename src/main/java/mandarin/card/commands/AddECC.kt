@@ -19,7 +19,7 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
         val g = loader.guild
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
@@ -81,7 +81,7 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
             }
 
             replyToMessageSafely(loader.channel, "Are you sure you want to give <@$id> [$id] ECC?", loader.message, { a -> registerConfirmButtons(a, lang) }) { msg ->
-                StaticStore.putHolder(m.id, ConfirmPopUpHolder(loader.message, m.id, loader.channel.id, msg, { e ->
+                StaticStore.putHolder(m.idLong, ConfirmPopUpHolder(loader.message, m.idLong, loader.channel.idLong, msg, { e ->
                     inventory.eccValidationWay = Inventory.ECCValidationWay.CUSTOM_ROLE
                     inventory.eccValidationTime = CardData.getUnixEpochTime()
                     inventory.eccValidationRoleID = roleID
@@ -127,7 +127,7 @@ class AddECC : Command(CommonStatic.Lang.Locale.EN, true) {
         val reason = getReason(contents)
 
         replyToMessageSafely(loader.channel, "Are you sure you want to give <@$id> [$id] ECC? Check below\n\nECC Validation Way : MANUAL\nReason : $reason", loader.message, { a -> registerConfirmButtons(a, lang) }) { msg ->
-            StaticStore.putHolder(m.id, ConfirmPopUpHolder(loader.message, m.id, loader.channel.id, msg, { e ->
+            StaticStore.putHolder(m.idLong, ConfirmPopUpHolder(loader.message, m.idLong, loader.channel.idLong, msg, { e ->
                 inventory.eccValidationWay = Inventory.ECCValidationWay.MANUAL
                 inventory.eccValidationReason = reason
                 inventory.eccValidationTime = CardData.getUnixEpochTime()

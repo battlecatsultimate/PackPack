@@ -30,7 +30,7 @@ object Notification {
         val removeQueue = ArrayList<Long>()
 
         CardData.notifierGroup.filter { (_, notifier) -> notifier.any { b -> b } }.forEach { (id, notifier) ->
-            if (!CardBot.test || id.toString() == StaticStore.MANDARIN_SMELL) {
+            if (!CardBot.test || id == StaticStore.MANDARIN_SMELL) {
                 val messageContent = StringBuilder()
 
                 if (notifier[0]) {

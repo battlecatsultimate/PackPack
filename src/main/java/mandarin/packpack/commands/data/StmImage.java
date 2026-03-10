@@ -73,7 +73,7 @@ public class StmImage extends ConstraintCommand {
 
                 String message = messages[startIndex];
 
-                if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && message.length() > StaticStore.MAX_STAGE_IMAGE_LENGTH) {
+                if (loader.getUser().getIdLong() != StaticStore.MANDARIN_SMELL && message.length() > StaticStore.MAX_STAGE_IMAGE_LENGTH) {
                     replyToMessageSafely(ch, LangID.getStringByID("stageImage.fail.maxLimit", lang), loader.getMessage(), a -> a);
 
                     return;

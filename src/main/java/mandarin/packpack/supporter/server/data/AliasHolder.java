@@ -14,7 +14,7 @@ import common.util.unit.Form;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
@@ -32,9 +32,9 @@ public class AliasHolder {
         GET
     }
 
-    public static final MultiLangCont<Form, ArrayList<String>> FALIAS = new MultiLangCont<>();
-    public static final MultiLangCont<Enemy, ArrayList<String>> EALIAS = new MultiLangCont<>();
-    public static final MultiLangCont<Stage, ArrayList<String>> SALIAS = new MultiLangCont<>();
+    public static final MultiLangCont<Form, List<String>> FALIAS = new MultiLangCont<>();
+    public static final MultiLangCont<Enemy, List<String>> EALIAS = new MultiLangCont<>();
+    public static final MultiLangCont<Stage, List<String>> SALIAS = new MultiLangCont<>();
 
     public static JsonObject jsonfy() {
         JsonObject result = new JsonObject();
@@ -44,13 +44,13 @@ public class AliasHolder {
         JsonObject stageAlias = new JsonObject();
 
         for(CommonStatic.Lang.Locale locale : CommonStatic.Lang.supportedLanguage) {
-            Map<Form, ArrayList<String>> formMap = FALIAS.getMap(locale);
+            Map<Form, List<String>> formMap = FALIAS.getMap(locale);
 
             if(formMap != null && !formMap.isEmpty()) {
                 JsonArray segment = new JsonArray();
 
                 for(Form key : formMap.keySet()) {
-                    ArrayList<String> alias = formMap.get(key);
+                    List<String> alias = formMap.get(key);
 
                     if(alias == null || alias.isEmpty())
                         continue;
@@ -70,13 +70,13 @@ public class AliasHolder {
                 formAlias.add(locale.name(), segment);
             }
 
-            Map<Enemy, ArrayList<String>> enemyMap = EALIAS.getMap(locale);
+            Map<Enemy, List<String>> enemyMap = EALIAS.getMap(locale);
 
             if(enemyMap != null && !enemyMap.isEmpty()) {
                 JsonArray segment = new JsonArray();
 
                 for(Enemy key : enemyMap.keySet()) {
-                    ArrayList<String> alias = EALIAS.getCont(key);
+                    List<String> alias = EALIAS.getCont(key);
 
                     if(alias == null || alias.isEmpty())
                         continue;
@@ -95,13 +95,13 @@ public class AliasHolder {
                 enemyAlias.add(locale.name(), segment);
             }
 
-            Map<Stage, ArrayList<String>> stageMap = SALIAS.getMap(locale);
+            Map<Stage, List<String>> stageMap = SALIAS.getMap(locale);
 
             if(stageMap != null && !stageMap.isEmpty()) {
                 JsonArray segment = new JsonArray();
 
                 for(Stage key : stageMap.keySet()) {
-                    ArrayList<String> alias = SALIAS.getCont(key);
+                    List<String> alias = SALIAS.getCont(key);
 
                     if(alias == null || alias.isEmpty())
                         continue;
@@ -164,7 +164,7 @@ public class AliasHolder {
 
                         Form f = u.forms[fid];
 
-                        ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+                        List<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
 
                         FALIAS.put(locale, f, arr);
                     }
@@ -200,7 +200,7 @@ public class AliasHolder {
                         if(!(ae instanceof Enemy))
                             continue;
 
-                        ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+                        List<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
 
                         EALIAS.put(locale, (Enemy) ae, arr);
                     }
@@ -233,7 +233,7 @@ public class AliasHolder {
 
                         Stage s = Identifier.get((Identifier<Stage>) id);
 
-                        ArrayList<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
+                        List<String> arr = StaticStore.jsonToListString(container.getAsJsonArray("val"));
 
                         SALIAS.put(locale, s, arr);
                     }
@@ -242,8 +242,8 @@ public class AliasHolder {
         }
     }
 
-    public static ArrayList<String> getAlias(TYPE type, CommonStatic.Lang.Locale lang, Object data) {
-        ArrayList<String> aliases;
+    public static List<String> getAlias(TYPE type, CommonStatic.Lang.Locale lang, Object data) {
+        List<String> aliases;
 
         switch (type) {
             case FORM:
@@ -251,7 +251,7 @@ public class AliasHolder {
                     return null;
                 }
 
-                Map<Form, ArrayList<String>> fMap = FALIAS.getMap(lang);
+                Map<Form, List<String>> fMap = FALIAS.getMap(lang);
 
                 aliases = fMap.get((Form) data);
                 break;
@@ -260,7 +260,7 @@ public class AliasHolder {
                     return null;
                 }
 
-                Map<Enemy, ArrayList<String>> eMap = EALIAS.getMap(lang);
+                Map<Enemy, List<String>> eMap = EALIAS.getMap(lang);
 
                 aliases = eMap.get((Enemy) data);
 
@@ -270,7 +270,7 @@ public class AliasHolder {
                     return null;
                 }
 
-                Map<Stage, ArrayList<String>> sMap = SALIAS.getMap(lang);
+                Map<Stage, List<String>> sMap = SALIAS.getMap(lang);
 
                 aliases = sMap.get((Stage) data);
 

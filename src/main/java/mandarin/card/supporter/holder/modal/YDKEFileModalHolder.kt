@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.io.File
 
-class YDKEFileModalHolder(author: Message, userID: String, channelID: String, message: Message, private val fileName: String) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class YDKEFileModalHolder(author: Message, userID: Long, channelID: Long, message: Message, private val fileName: String) : ModalHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: ModalInteractionEvent) {
         if (event.modalId != "upload")
             return

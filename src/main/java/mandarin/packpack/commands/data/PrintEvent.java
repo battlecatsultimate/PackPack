@@ -39,7 +39,7 @@ public class PrintEvent extends ConstraintCommand {
 
         Member m = loader.getMember();
 
-        if(full && !StaticStore.contributors.contains(m.getId())) {
+        if(full && !StaticStore.contributors.contains(m.getIdLong())) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event.ignoreFull", lang));

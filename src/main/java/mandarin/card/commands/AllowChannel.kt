@@ -22,12 +22,12 @@ class AllowChannel : Command(CommonStatic.Lang.Locale.EN, true) {
         val m = loader.member
         val ch = loader.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
         replyToMessageSafely(ch, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { message ->
-            StaticStore.putHolder(m.id, ChannelAllowHolder(loader.message, m.id, ch.id, message))
+            StaticStore.putHolder(m.idLong, ChannelAllowHolder(loader.message, m.idLong, ch.idLong, message))
         }
     }
 

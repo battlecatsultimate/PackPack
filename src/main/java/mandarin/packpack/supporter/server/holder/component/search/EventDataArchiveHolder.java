@@ -18,7 +18,7 @@ public class EventDataArchiveHolder extends SearchHolder {
     private final List<File> files;
     private final String fileName;
 
-    public EventDataArchiveHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, ConfigHolder.SearchLayout layout, List<File> files, String fileName, CommonStatic.Lang.Locale lang) {
+    public EventDataArchiveHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, ConfigHolder.SearchLayout layout, List<File> files, String fileName, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, "", layout, lang);
 
         this.files = files;

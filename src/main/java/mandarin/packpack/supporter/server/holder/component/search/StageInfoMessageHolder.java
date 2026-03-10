@@ -31,7 +31,7 @@ public class StageInfoMessageHolder extends SearchHolder {
     private final TreasureHolder treasure;
     private final StageInfo.StageInfoConfig configData;
 
-    public StageInfoMessageHolder(List<Stage> stages, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, String additionalContent, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
+    public StageInfoMessageHolder(List<Stage> stages, @Nullable Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, String additionalContent, TreasureHolder treasure, StageInfo.StageInfoConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.stages = stages;

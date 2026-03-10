@@ -22,7 +22,7 @@ class MassCatFood : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (!CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL)
+        if (!CardData.isManager(m) && m.idLong != StaticStore.MANDARIN_SMELL)
             return
 
         val contents = loader.content.split(Regex(" "), 3)
@@ -82,7 +82,7 @@ class MassCatFood : Command(CommonStatic.Lang.Locale.EN, true) {
 
                 a.setComponents(ActionRow.of(components))
             }) { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, m.id, loader.channel.id, msg, lang) {
+                StaticStore.putHolder(m.idLong, ConfirmButtonHolder(loader.message, m.idLong, loader.channel.idLong, msg, lang) {
                     members.forEach { member ->
                         val inventory = Inventory.getInventory(member.idLong)
 

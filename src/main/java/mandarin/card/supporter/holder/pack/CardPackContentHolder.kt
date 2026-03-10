@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit
 
 class CardPackContentHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val pack: CardPack
 ) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {

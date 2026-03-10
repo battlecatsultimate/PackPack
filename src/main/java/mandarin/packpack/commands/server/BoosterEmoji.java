@@ -43,7 +43,7 @@ public class BoosterEmoji extends ConstraintCommand {
         MessageChannel ch = loader.getChannel();
         Message me = loader.getMessage();
 
-        if(holder.booster == null) {
+        if(holder.booster == -1L) {
             createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRegisteredRole", lang));
             return;
         }
@@ -71,18 +71,18 @@ public class BoosterEmoji extends ConstraintCommand {
 
         if(m != null) {
             try {
-                if(!StaticStore.rolesToString(m.getRoles()).contains(holder.booster)) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).replace("_RRR_", holder.booster));
+                if(!StaticStore.rolesToID(m.getRoles()).contains(holder.booster)) {
+                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).formatted(holder.booster));
                     return;
                 }
 
-                if(StaticStore.boosterData.containsKey(g.getId())) {
-                    BoosterHolder bHolder = StaticStore.boosterData.get(g.getId());
+                if(StaticStore.boosterData.containsKey(g.getIdLong())) {
+                    BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
 
-                    if(bHolder.serverBooster.containsKey(m.getId())) {
-                        BoosterData data = bHolder.serverBooster.get(m.getId());
+                    if(bHolder.serverBooster.containsKey(m.getIdLong())) {
+                        BoosterData data = bHolder.serverBooster.get(m.getIdLong());
 
-                        if(data.getRole() != null) {
+                        if(data.getRole() != -1L) {
                             createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.alreadyAssigned", lang));
                             return;
                         }
@@ -165,13 +165,13 @@ public class BoosterEmoji extends ConstraintCommand {
                                 }
 
                                 g.createEmoji(name, Icon.from(target)).queue(e -> {
-                                    if(StaticStore.boosterData.containsKey(g.getId())) {
-                                        BoosterHolder bHolder = StaticStore.boosterData.get(g.getId());
+                                    if(StaticStore.boosterData.containsKey(g.getIdLong())) {
+                                        BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
 
-                                        if(bHolder.serverBooster.containsKey(m.getId())) {
-                                            BoosterData data = bHolder.serverBooster.get(m.getId());
+                                        if(bHolder.serverBooster.containsKey(m.getIdLong())) {
+                                            BoosterData data = bHolder.serverBooster.get(m.getIdLong());
 
-                                            int result = data.setEmoji(e.getId());
+                                            int result = data.setEmoji(e.getIdLong());
 
                                             if(result == BoosterData.ERR_ALREADY_EMOJI_SET) {
                                                 createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.alreadyAssigned", lang));
@@ -179,20 +179,20 @@ public class BoosterEmoji extends ConstraintCommand {
                                                 createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
                                             }
                                         } else {
-                                            BoosterData data = new BoosterData(e.getId(), BoosterData.INITIAL.EMOJI);
+                                            BoosterData data = new BoosterData(e.getIdLong(), BoosterData.INITIAL.EMOJI);
 
-                                            bHolder.serverBooster.put(m.getId(), data);
+                                            bHolder.serverBooster.put(m.getIdLong(), data);
 
                                             createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
                                         }
                                     } else {
                                         BoosterHolder bHolder = new BoosterHolder();
 
-                                        BoosterData data = new BoosterData(e.getId(), BoosterData.INITIAL.EMOJI);
+                                        BoosterData data = new BoosterData(e.getIdLong(), BoosterData.INITIAL.EMOJI);
 
-                                        bHolder.serverBooster.put(m.getId(), data);
+                                        bHolder.serverBooster.put(m.getIdLong(), data);
 
-                                        StaticStore.boosterData.put(g.getId(), bHolder);
+                                        StaticStore.boosterData.put(g.getIdLong(), bHolder);
 
                                         createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
                                     }

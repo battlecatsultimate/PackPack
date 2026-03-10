@@ -35,7 +35,7 @@ class Rank : Command(CommonStatic.Lang.Locale.EN, false) {
         }
 
         replyToMessageSafely(loader.channel, getRankList(users, catFoods, u.idLong), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
-            StaticStore.putHolder(u.id, RankListHolder(loader.message, u.id, loader.channel.id, msg, users, catFoods, true))
+            StaticStore.putHolder(u.idLong, RankListHolder(loader.message, u.idLong, loader.channel.idLong, msg, users, catFoods, true))
         }
     }
 

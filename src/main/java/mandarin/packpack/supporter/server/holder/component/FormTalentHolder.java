@@ -18,7 +18,7 @@ public class FormTalentHolder extends ComponentHolder {
     private final Form f;
     private final FormStat.FormStatConfig configData;
 
-    public FormTalentHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Form f, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public FormTalentHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, Form f, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.f = f;

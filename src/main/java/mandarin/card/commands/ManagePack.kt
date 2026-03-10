@@ -22,11 +22,11 @@ class ManagePack : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (!CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL)
+        if (!CardData.isManager(m) && m.idLong != StaticStore.MANDARIN_SMELL)
             return
 
         replyToMessageSafely(loader.channel, getContent(), loader.message, { a -> a.addComponents(getComponents())}) { msg ->
-            StaticStore.putHolder(m.id, CardPackManageHolder(loader.message, m.id, loader.channel.id, msg))
+            StaticStore.putHolder(m.idLong, CardPackManageHolder(loader.message, m.idLong, loader.channel.idLong, msg))
         }
     }
 

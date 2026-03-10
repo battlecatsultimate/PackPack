@@ -6,16 +6,16 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class PrefixBanHolder extends ModalHolder {
     private final IDHolder holder;
 
-    public PrefixBanHolder(@Nullable Message author, @NotNull String userID, @NotNull String channelID, @NotNull Message message, @NotNull CommonStatic.Lang.Locale lang, IDHolder holder) {
+    public PrefixBanHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang, IDHolder holder) {
         super(author, userID, channelID, message, lang);
 
         this.holder = holder;
@@ -27,7 +27,7 @@ public class PrefixBanHolder extends ModalHolder {
     }
 
     @Override
-    public void onEvent(@NotNull ModalInteractionEvent event) {
+    public void onEvent(@Nonnull ModalInteractionEvent event) {
         if (!event.getModalId().equals("prefixBan")) {
             return;
         }

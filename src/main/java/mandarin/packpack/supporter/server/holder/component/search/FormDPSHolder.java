@@ -26,7 +26,7 @@ public class FormDPSHolder extends SearchHolder {
 
     private final TreasureHolder t;
 
-    public FormDPSHolder(ArrayList<Form> form, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder config, Level lv, boolean talent, boolean isTreasure, TreasureHolder t, CommonStatic.Lang.Locale lang) {
+    public FormDPSHolder(ArrayList<Form> form, Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder config, Level lv, boolean talent, boolean isTreasure, TreasureHolder t, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, config.searchLayout, lang);
 
         this.form = form;

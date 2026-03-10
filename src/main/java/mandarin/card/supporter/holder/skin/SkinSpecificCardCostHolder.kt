@@ -33,8 +33,8 @@ import kotlin.math.min
 
 class SkinSpecificCardCostHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val skin: Skin,
     private val cost: SpecificCardCost,

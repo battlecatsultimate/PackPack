@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 import java.io.File
 import kotlin.math.abs
 
-class CardModifyHolder(author: Message, userID: String, channelID: String, message: Message, private val card: Card, private val createMode: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardModifyHolder(author: Message, userID: Long, channelID: Long, message: Message, private val card: Card, private val createMode: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "id" -> {

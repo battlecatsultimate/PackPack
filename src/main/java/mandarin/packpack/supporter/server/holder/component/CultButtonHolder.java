@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CultButtonHolder extends ComponentHolder {
-    public CultButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
+    public CultButtonHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         registerAutoExpiration(10000);

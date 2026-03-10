@@ -16,12 +16,12 @@ class SalvageCost : Command(CommonStatic.Lang.Locale.EN, true) {
         val m = loader.member
         val ch = loader.channel
 
-        if (!CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (!CardData.isManager(m) && m.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 
         replyToMessageSafely(ch, getContent(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.id, SalvageCostHolder(loader.message, m.id, ch.id, msg))
+            StaticStore.putHolder(m.idLong, SalvageCostHolder(loader.message, m.idLong, ch.idLong, msg))
         }
     }
 

@@ -19,7 +19,7 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
     protected final IDHolder holder;
     protected final IDHolder backup;
 
-    public ServerConfigHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
+    public ServerConfigHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.message = message;
@@ -30,7 +30,7 @@ public abstract class ServerConfigHolder extends ComponentHolder implements Conf
         registerAutoExpiration(FIVE_MIN);
     }
 
-    public ServerConfigHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ServerConfigHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.message = message;

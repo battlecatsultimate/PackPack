@@ -27,7 +27,7 @@ public class AliasStageMessageHolder extends SearchHolder {
 
     private final String summary;
 
-    public AliasStageMessageHolder(ArrayList<Stage> stages, @Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName, @Nonnull String summary) {
+    public AliasStageMessageHolder(ArrayList<Stage> stages, @Nullable Message author, long userID, long channelID, @Nonnull Message msg, AliasHolder.MODE mode, CommonStatic.Lang.Locale lang, @Nonnull String keyword, @Nullable String aliasName, @Nonnull String summary) {
         super(author, userID, channelID, msg, keyword, ConfigHolder.SearchLayout.FANCY_LIST, lang);
 
         this.stages = stages;
@@ -125,7 +125,7 @@ public class AliasStageMessageHolder extends SearchHolder {
         if(stName == null || stName.isBlank())
             stName = stages.get(index).getCont().getSID() + "-" + Data.trio(stages.get(index).getCont().id.id) + "-" + Data.trio(stages.get(index).id.id);
 
-        ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.STAGE, lang, stages.get(index));
+        List<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.STAGE, lang, stages.get(index));
 
         switch (mode) {
             case GET -> {

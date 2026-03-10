@@ -33,7 +33,7 @@ import java.util.List;
 public class ConfigEventManagerHolder extends ServerConfigHolder {
     private final CommonStatic.Lang.Locale locale;
 
-    public ConfigEventManagerHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang, CommonStatic.Lang.Locale locale) {
+    public ConfigEventManagerHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang, CommonStatic.Lang.Locale locale) {
         super(author, userID, channelID, message, holder, backup, lang);
 
         this.locale = locale;
@@ -51,7 +51,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                     applyResult(event);
                 } else {
-                    String id = e.getValues().getFirst().getId();
+                    long id = e.getValues().getFirst().getIdLong();
 
                     Guild g = event.getGuild();
 
@@ -87,7 +87,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                     applyResult(event);
                 } else {
-                    String id = e.getValues().getFirst().getId();
+                    long id = e.getValues().getFirst().getIdLong();
 
                     Guild g = event.getGuild();
 

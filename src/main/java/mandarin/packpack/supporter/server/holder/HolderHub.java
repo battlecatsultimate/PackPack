@@ -80,44 +80,44 @@ public class HolderHub {
         }
     }
 
-    public void handleMessageDelete(String messageID) {
-        if (messageHolder != null && messageHolder.message.getId().equals(messageID)) {
+    public void handleMessageDelete(long messageID) {
+        if (messageHolder != null && messageHolder.message.getIdLong() == messageID) {
             messageHolder.end(true);
         }
 
-        if (componentHolder != null && componentHolder.message.getId().equals(messageID)) {
+        if (componentHolder != null && componentHolder.message.getIdLong() == messageID) {
             componentHolder.end(true);
         }
 
-        if (modalHolder != null && modalHolder.message.getId().equals(messageID)) {
+        if (modalHolder != null && modalHolder.message.getIdLong() == messageID) {
             modalHolder.end(true);
         }
     }
 
-    public void handleChannelDelete(String channelID) {
-        if (messageHolder != null && messageHolder.channelID.equals(channelID)) {
+    public void handleChannelDelete(long channelID) {
+        if (messageHolder != null && messageHolder.channelID == channelID) {
             messageHolder.end(true);
         }
 
-        if (componentHolder != null && componentHolder.channelID.equals(channelID)) {
+        if (componentHolder != null && componentHolder.channelID == channelID) {
             componentHolder.end(true);
         }
 
-        if (modalHolder != null && modalHolder.channelID.equals(channelID)) {
+        if (modalHolder != null && modalHolder.channelID == channelID) {
             modalHolder.end(true);
         }
     }
 
-    public void handleGuildDelete(String guildID) {
-        if (messageHolder != null && messageHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getId().equals(guildID)) {
+    public void handleGuildDelete(long guildID) {
+        if (messageHolder != null && messageHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getIdLong() == guildID) {
             messageHolder.end(true);
         }
 
-        if (componentHolder != null && componentHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getId().equals(guildID)) {
+        if (componentHolder != null && componentHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getIdLong() == guildID) {
             componentHolder.end(true);
         }
 
-        if (modalHolder != null && modalHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getId().equals(guildID)) {
+        if (modalHolder != null && modalHolder.message.getChannel() instanceof GuildChannel gc && gc.getGuild().getIdLong() == guildID) {
             modalHolder.end(true);
         }
     }

@@ -49,7 +49,7 @@ class Roll : Command(CommonStatic.Lang.Locale.EN, false) {
             retriever.get() ?: return
         }
 
-        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 
@@ -68,7 +68,7 @@ class Roll : Command(CommonStatic.Lang.Locale.EN, false) {
 
             val noImage = arrayOf("-s", "-simple", "-n", "-noimage").any { p -> p in content }
 
-            StaticStore.putHolder(m.id, PackSelectHolder(loader.message, m.id, ch.id, m, msg, noImage))
+            StaticStore.putHolder(m.idLong, PackSelectHolder(loader.message, m.idLong, ch.idLong, m, msg, noImage))
         })
     }
 

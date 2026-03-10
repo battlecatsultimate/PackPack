@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
-class CardFavoriteHolder(author: Message, userID: String, channelID: String, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardFavoriteHolder(author: Message, userID: Long, channelID: Long, message: Message, private val inventory: Inventory, private val card: Card) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val skins = inventory.skins.filter { s -> s.card == card }
 
     private var page = 0

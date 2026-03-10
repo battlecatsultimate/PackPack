@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.modals.Modal
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
-class SlotMachineManageHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineManageHolder(author: Message, userID: Long, channelID: Long, message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {

@@ -12,7 +12,7 @@ public class EventAdditionalMessageHolder extends ModalHolder {
     private final EventDataConfigHolder holder;
     private final boolean forEventData;
 
-    public EventAdditionalMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, EventDataConfigHolder holder, CommonStatic.Lang.Locale lang, boolean forEventData) {
+    public EventAdditionalMessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, EventDataConfigHolder holder, CommonStatic.Lang.Locale lang, boolean forEventData) {
         super(author, userID, channelID, message, lang);
 
         this.holder = holder;

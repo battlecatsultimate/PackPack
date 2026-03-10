@@ -51,7 +51,7 @@ public class Soul extends GlobalTimedConstraintCommand {
             return;
         }
 
-        boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
+        boolean isTrusted = StaticStore.contributors.contains(u.getIdLong()) || u.getIdLong() == StaticStore.MANDARIN_SMELL;
 
         int param = checkParameters(loader.getContent());
         boolean debug = (param & PARAM_DEBUG) > 0;

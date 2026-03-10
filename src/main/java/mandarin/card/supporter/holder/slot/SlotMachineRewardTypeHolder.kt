@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.buttons.Button
 import java.util.concurrent.TimeUnit
 
-class SlotMachineRewardTypeHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineRewardTypeHolder(author: Message, userID: Long, channelID: Long, message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }

@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import kotlin.math.min
 
-class CardCheckHolder(author: Message, userID: String, channelID: String, message: Message, private val members: List<Member>, private val tier: CardData.Tier) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardCheckHolder(author: Message, userID: Long, channelID: Long, message: Message, private val members: List<Member>, private val tier: CardData.Tier) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     init {

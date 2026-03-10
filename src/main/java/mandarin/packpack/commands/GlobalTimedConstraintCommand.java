@@ -27,7 +27,7 @@ import java.util.List;
 public abstract class GlobalTimedConstraintCommand extends Command {
     static final String ABORT = "ABORT";
 
-    final String constRole;
+    final long constRole;
     final String mainID;
     protected String optionalID = "";
     protected final ArrayList<String> aborts = new ArrayList<>();
@@ -54,18 +54,18 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                 if (id != null) {
                     constRole = id.moderator;
                 } else {
-                    constRole = null;
+                    constRole = -1L;
                 }
             }
             case MEMBER -> {
                 if (id != null) {
                     constRole = id.member;
                 } else {
-                    constRole = null;
+                    constRole = -1L;
                 }
             }
-            case MANDARIN -> constRole = "MANDARIN";
-            case TRUSTED -> constRole = "TRUSTED";
+            case MANDARIN -> constRole = StaticStore.MANDARIN_SMELL;
+            case TRUSTED -> constRole = -1L;
             default -> throw new IllegalStateException("Invalid ROLE enum : " + role);
         }
 
@@ -144,15 +144,15 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
         SpamPrevent spam;
 
-        if(StaticStore.spamData.containsKey(u.getId()) && loader.fromMessage) {
-            spam = StaticStore.spamData.get(u.getId());
+        if(StaticStore.spamData.containsKey(u.getIdLong()) && loader.fromMessage) {
+            spam = StaticStore.spamData.get(u.getIdLong());
 
-            if(spam.isPrevented(ch, lang, u.getId()))
+            if(spam.isPrevented(ch, lang, u.getIdLong()))
                 return;
-        } else if(!StaticStore.spamData.containsKey(u.getId())) {
+        } else if(!StaticStore.spamData.containsKey(u.getIdLong())) {
             spam = new SpamPrevent();
 
-            StaticStore.spamData.put(u.getId(), spam);
+            StaticStore.spamData.put(u.getIdLong(), spam);
         }
 
         if(ch instanceof GuildMessageChannel tc) {
@@ -185,15 +185,15 @@ public abstract class GlobalTimedConstraintCommand extends Command {
         }
 
         String denialMessage = null;
-        boolean isMandarin = u.getId().equals(StaticStore.MANDARIN_SMELL);
+        boolean isMandarin = u.getIdLong() == StaticStore.MANDARIN_SMELL;
         boolean hasRole;
 
         switch (role) {
             case MOD -> {
                 Member m = loader.getMember();
 
-                if (constRole != null) {
-                    hasRole = m.getRoles().stream().anyMatch(r -> r.getId().equals(constRole)) || m.isOwner();
+                if (constRole != -1L) {
+                    hasRole = m.getRoles().stream().anyMatch(r -> r.getIdLong() == constRole) || m.isOwner();
 
                     if (!hasRole) {
                         denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.mod.withRole", lang).formatted(constRole);
@@ -213,17 +213,17 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                 }
             }
             case MEMBER -> {
-                if (constRole != null) {
+                if (constRole != -1L) {
                     Member m = loader.getMember();
                     List<Role> roles = m.getRoles();
 
                     boolean isModerator = false;
 
                     if (holder != null) {
-                        String moderatorID = holder.moderator;
+                        long moderatorID = holder.moderator;
 
-                        if (moderatorID != null) {
-                            isModerator = roles.stream().anyMatch(r -> r.getId().equals(moderatorID)) || m.isOwner();
+                        if (moderatorID != -1L) {
+                            isModerator = roles.stream().anyMatch(r -> r.getIdLong() == moderatorID) || m.isOwner();
                         } else {
                             isModerator = m.getRoles().stream().anyMatch(r -> r.hasPermission(Permission.MANAGE_SERVER) || r.hasPermission(Permission.ADMINISTRATOR));
 
@@ -234,7 +234,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                         }
                     }
 
-                    hasRole = isModerator || roles.stream().anyMatch(r -> r.getId().equals(constRole));
+                    hasRole = isModerator || roles.stream().anyMatch(r -> r.getIdLong() == constRole);
 
                     if (!hasRole) {
                         denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.member", lang).formatted(constRole);
@@ -244,10 +244,10 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                 }
             }
             case TRUSTED -> {
-                hasRole = StaticStore.contributors.contains(u.getId());
+                hasRole = StaticStore.contributors.contains(u.getIdLong());
 
                 if (!hasRole) {
-                    denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.trusted", lang).formatted(loader.getClient().getSelfUser().getId(), StaticStore.MANDARIN_SMELL);
+                    denialMessage = LangID.getStringByID("bot.denied.reason.noPermission.trusted", lang).formatted(loader.getClient().getSelfUser().getIdLong(), StaticStore.MANDARIN_SMELL);
                 }
             }
             case MANDARIN -> {
@@ -306,18 +306,18 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
                         if (loader.fromMessage) {
                             data = "Command : " + loader.getContent() + "\n\n" +
-                                    "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                                    "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                                    "Member  : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                                    "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
                         } else {
                             data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
-                                    "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                                    "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                                    "Member : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                                    "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
                         }
 
                         if (ch instanceof GuildChannel) {
                             Guild g = loader.getGuild();
 
-                            data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                            data += "\n\nGuild : " + g.getName() + " (" + g.getIdLong() + ")";
                         }
 
                         StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
@@ -342,18 +342,18 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
             if (loader.fromMessage) {
                 data = "Command : " + loader.getContent() + "\n\n" +
-                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                        "Member  : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
             } else {
                 data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
-                        "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                        "Member : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
             }
 
             if (ch instanceof GuildChannel) {
                 Guild g = loader.getGuild();
 
-                data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                data += "\n\nGuild : " + g.getName() + " (" + g.getIdLong() + ")";
             }
 
             StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
@@ -373,18 +373,18 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
             if (loader.fromMessage) {
                 data = "Command : " + loader.getContent() + "\n\n" +
-                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                        "Member  : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
             } else {
                 data = "Command : " + loader.getInteractionEvent().getFullCommandName() + "\n\n" +
-                        "Member : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                        "Channel : " + ch.getName() + " (" + ch.getId() + "|" + ch.getType().name() + ")";
+                        "Member : " + u.getName() + " (" + u.getIdLong() + ")\n\n" +
+                        "Channel : " + ch.getName() + " (" + ch.getIdLong() + "|" + ch.getType().name() + ")";
             }
 
             if (ch instanceof GuildChannel) {
                 Guild g = loader.getGuild();
 
-                data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                data += "\n\nGuild : " + g.getName() + " (" + g.getIdLong() + ")";
             }
 
             StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);

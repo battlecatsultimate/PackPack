@@ -64,7 +64,7 @@ public class CatCombo extends TimedConstraintCommand {
                 replyToMessageSafely(ch, loader.getMessage(), msg -> {
                     User u = loader.getUser();
 
-                    StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), msg, null, comboName, config.searchLayout, lang));
+                    StaticStore.putHolder(u.getIdLong(), new ComboMessageHolder(combos, msg, u.getIdLong(), ch.getIdLong(), msg, null, comboName, config.searchLayout, lang));
                 }, getSearchComponents(combos.size(), LangID.getStringByID("combo.search.comboOnly", lang).formatted(comboName, combos.size()), combos, this::accumulateCombo, config.searchLayout, lang));
             }
         } else {
@@ -92,7 +92,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                             Message msg = loader.getMessage();
 
-                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, u.getId(), ch.getId(), res, unitName, comboName, config.searchLayout, lang));
+                            StaticStore.putHolder(u.getIdLong(), new ComboMessageHolder(combos, msg, u.getIdLong(), ch.getIdLong(), res, unitName, comboName, config.searchLayout, lang));
                         }
                     }, getSearchComponents(combos.size(), LangID.getStringByID("combo.search.withUnit", lang).formatted(comboName, unitName, combos.size()), combos, this::accumulateCombo, config.searchLayout, lang));
                 }
@@ -103,7 +103,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                         Message msg = loader.getMessage();
 
-                        StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, u.getId(), ch.getId(), res, lang, comboName, unitName, config.searchLayout));
+                        StaticStore.putHolder(u.getIdLong(), new ComboFormMessageHolder(forms, msg, u.getIdLong(), ch.getIdLong(), res, lang, comboName, unitName, config.searchLayout));
                     }
                 }, getSearchComponents(forms.size(), LangID.getStringByID("combo.search.withUnit", lang).formatted(comboName, unitName, forms.size()), forms, this::accumulateUnit, config.searchLayout, lang));
             }

@@ -22,7 +22,7 @@ public class FormDPSButtonHolder extends ComponentHolder {
     private final ConfigHolder config;
     private final FormStat.FormStatConfig configData;
 
-    public FormDPSButtonHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, Form f, TreasureHolder t, ConfigHolder config, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public FormDPSButtonHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, Form f, TreasureHolder t, ConfigHolder config, FormStat.FormStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.f = f;

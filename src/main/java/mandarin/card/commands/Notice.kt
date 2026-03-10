@@ -18,7 +18,7 @@ class Notice : Command(CommonStatic.Lang.Locale.EN, false) {
         val ch = loader.channel
 
         replyToMessageSafely(ch, getContents(u.idLong), loader.message, { a -> a.setComponents(getComponents(u.idLong))}) { msg ->
-            StaticStore.putHolder(u.id, NotificationConfigHolder(loader.message, u.id, ch.id, msg))
+            StaticStore.putHolder(u.idLong, NotificationConfigHolder(loader.message, u.idLong, ch.idLong, msg))
         }
     }
 

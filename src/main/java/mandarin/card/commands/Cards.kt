@@ -74,7 +74,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
         val finalMember = member ?: m
 
-        if (m.id != finalMember.id && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (m.id != finalMember.id && !CardData.hasAllPermission(m) && m.idLong != StaticStore.MANDARIN_SMELL) {
             replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", loader.message) { a -> a }
 
             return
@@ -182,7 +182,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             return@replyToMessageSafely a.setComponents(rows)
         }, { msg ->
-            StaticStore.putHolder(m.id, CardInventoryHolder(author, m.id, ch.id, msg, inventory, finalMember))
+            StaticStore.putHolder(m.idLong, CardInventoryHolder(author, m.idLong, ch.idLong, msg, inventory, finalMember))
         })
     }
 

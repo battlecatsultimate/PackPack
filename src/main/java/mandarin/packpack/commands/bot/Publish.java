@@ -51,13 +51,13 @@ public class Publish extends ConstraintCommand {
             return;
         }
 
-        for(String id : StaticStore.idHolder.keySet()) {
-            if(id == null || id.isBlank())
+        for(long id : StaticStore.idHolder.keySet()) {
+            if(id == -1L)
                 continue;
 
             IDHolder holder = StaticStore.idHolder.get(id);
 
-            if(holder.announceChannel == null)
+            if(holder.announceChannel == -1L)
                 continue;
 
             Guild g = client.getGuildById(id);

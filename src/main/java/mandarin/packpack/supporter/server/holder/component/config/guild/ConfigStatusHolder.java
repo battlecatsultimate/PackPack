@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigStatusHolder extends ServerConfigHolder {
-    public ConfigStatusHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigStatusHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 
@@ -46,7 +46,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
                 if (g == null)
                     return;
 
-                String id = e.getValues().getFirst().getId();
+                long id = e.getValues().getFirst().getIdLong();
 
                 TextChannel channel = g.getTextChannelById(id);
 
@@ -209,7 +209,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
                     name += channelName;
                 }
 
-                options.add(SelectOption.of(name, String.valueOf(i)).withDescription(holder.status.get(i)));
+                options.add(SelectOption.of(name, String.valueOf(i)).withDescription(String.valueOf(holder.status.get(i))));
             }
 
             placeHolder = LangID.getStringByID("serverConfig.status.removeChannel", lang);

@@ -18,7 +18,7 @@ class InjectInventory : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
 
-        if (u.id != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid")) {
+        if (u.idLong != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid")) {
             return
         }
 
@@ -102,7 +102,7 @@ class InjectInventory : Command(CommonStatic.Lang.Locale.EN, false) {
         }
 
         replyToMessageSafely(ch, "Are you sure you want to inject this inventory to <@$id> ($id)?", msg, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { message ->
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(msg, u.id, ch.id, message, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(u.idLong, ConfirmButtonHolder(msg, u.idLong, ch.idLong, message, CommonStatic.Lang.Locale.EN) {
                 val inventory = Inventory.readInventory(id, jsonData.asJsonObject)
 
                 CardData.inventories[id] = inventory

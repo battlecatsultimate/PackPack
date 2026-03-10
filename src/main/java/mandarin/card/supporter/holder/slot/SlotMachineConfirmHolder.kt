@@ -26,7 +26,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class SlotMachineConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean, private val yes: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineConfirmHolder(author: Message, userID: Long, channelID: Long, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean, private val yes: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var page = 0

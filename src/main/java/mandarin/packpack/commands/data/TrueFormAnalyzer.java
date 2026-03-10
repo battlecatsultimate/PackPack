@@ -223,7 +223,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 if(msg == null)
                     return;
 
-                new StatAnalyzerMessageHolder(author, loader.getUser().getId(), ch.getId(), msg, uid, -1, isSecond, cellData, procData, abilData, traitData, container, level, finalName, lang, requiredFiles);
+                new StatAnalyzerMessageHolder(author, loader.getUser().getIdLong(), ch.getIdLong(), msg, uid, -1, isSecond, cellData, procData, abilData, traitData, container, level, finalName, lang, requiredFiles);
             });
         }
     }

@@ -35,8 +35,8 @@ import kotlin.math.min
 
 class SuggestInventoryHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     message: Message,
     private val targetMember: Member,
     private val suggestionMessage: Message,
@@ -257,18 +257,13 @@ class SuggestInventoryHolder(
                 }
             }
             "cf" -> {
-                val input = TextInput.create("cf", TextInputStyle.SHORT)
-                    .setPlaceholder("Decide amount of cat foods that will be traded")
-                    .setRequired(true)
-                    .build()
+                val input = TextInput.create("cf", TextInputStyle.SHORT).setPlaceholder("Decide amount of cat foods that will be traded").setRequired(true).build()
 
-                val modal = Modal.create("cf", "Cat Food Suggestion")
-                    .addComponents(Label.of("Cat Food", input))
-                    .build()
+                val modal = Modal.create("cf", "Cat Food Suggestion").addComponents(Label.of("Cat Food", input)).build()
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CatFoodHolder(authorMessage, userID, channelID, message, suggestionMessage, backup))
+                StaticStore.putHolder(authorMessage.author.idLong, CatFoodHolder(authorMessage, userID, channelID, message, suggestionMessage, backup));
             }
             "dupe" -> {
                 cards.filter { c -> (inventory.cards[c] ?: 0) - (backup.cards[c] ?: 0) > 1 }.forEach { c ->

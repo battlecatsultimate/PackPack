@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
-    public ConfigPermissionUserSelectHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
+    public ConfigPermissionUserSelectHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull IDHolder holder, @Nonnull IDHolder backup, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, holder, backup, lang);
     }
 
@@ -40,9 +40,9 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
                 if (g == null)
                     return;
 
-                String id = e.getValues().getFirst().getId();
+                long id = e.getValues().getFirst().getIdLong();
 
-                if (id.equals(userID)) {
+                if (id == userID) {
                     event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("serverConfig.permissionBan.user.cantBan.reason.self", lang)).queue();
 
                     return;

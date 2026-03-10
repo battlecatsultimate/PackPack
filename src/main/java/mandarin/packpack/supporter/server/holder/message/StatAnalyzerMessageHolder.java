@@ -35,7 +35,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
     private final int lv;
     private final String[] name;
 
-    public StatAnalyzerMessageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, int uID, int len, boolean isSecond, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, File container, int lv, String[] name, CommonStatic.Lang.Locale lang, List<String> requiredFiles) {
+    public StatAnalyzerMessageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message msg, int uID, int len, boolean isSecond, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, File container, int lv, String[] name, CommonStatic.Lang.Locale lang, List<String> requiredFiles) {
         super(author, userID, channelID, msg, container, requiredFiles, lang);
 
         this.cellData = cellData;

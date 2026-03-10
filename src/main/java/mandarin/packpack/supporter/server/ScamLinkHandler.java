@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public record ScamLinkHandler(String author, String server, String channel, @Nullable String mute, ACTION action, boolean noticeAll) {
+public record ScamLinkHandler(long author, long server, long channel, @Nullable String mute, ACTION action, boolean noticeAll) {
     public static boolean validScammingUser(String content) {
         for (String link : StaticStore.scamLink.links) {
             if (content.contains(link) && !content.matches("(.+)?(unregisterscamlink|usl|registerscamlink|rsl) +" + link + "$"))
@@ -47,7 +47,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
             return;
 
         GuildChannel ch = g.getGuildChannelById(channel);
-        IDHolder holder = StaticStore.idHolder.get(g.getId());
+        IDHolder holder = StaticStore.idHolder.get(g.getIdLong());
 
         if (holder == null || ch == null)
             return;
@@ -82,7 +82,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
                 if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
                     for (Role r : roleID) {
                         if (pos > r.getPosition()) {
-                            g.removeRoleFromMember(UserSnowflake.fromId(m.getId()), r).queue();
+                            g.removeRoleFromMember(UserSnowflake.fromId(m.getIdLong()), r).queue();
                         }
                     }
                 }
@@ -90,12 +90,12 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
                 Role muteRole = g.getRoleById(mute);
 
                 if (muteRole != null && g.getSelfMember().hasPermission(Permission.MANAGE_ROLES) && StaticStore.getHighestRolePosition(g.getSelfMember()) > muteRole.getPosition()) {
-                    g.addRoleToMember(UserSnowflake.fromId(m.getId()), muteRole).queue();
+                    g.addRoleToMember(UserSnowflake.fromId(m.getIdLong()), muteRole).queue();
                 }
 
                 MessageEmbed embed = new EmbedBuilder()
                         .setTitle(LangID.getStringByID("scamDetector.title", holder.config.lang))
-                        .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
+                        .setAuthor(m.getEffectiveName() + " (" + m.getIdLong() + ")", null, m.getAvatarUrl())
                         .setDescription(LangID.getStringByID("scamDetector.actionDone.mute", holder.config.lang))
                         .build();
 
@@ -111,7 +111,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
 
             MessageEmbed embed = new EmbedBuilder()
                     .setTitle(LangID.getStringByID("scamDetector.title", holder.config.lang))
-                    .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
+                    .setAuthor(m.getEffectiveName() + " (" + m.getIdLong() + ")", null, m.getAvatarUrl())
                     .setDescription(LangID.getStringByID("scamDetector.actionDone.kick", holder.config.lang))
                     .build();
 
@@ -126,7 +126,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
 
             MessageEmbed embed = new EmbedBuilder()
                     .setTitle(LangID.getStringByID("scamDetector.title", holder.config.lang))
-                    .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
+                    .setAuthor(m.getEffectiveName() + " (" + m.getIdLong() + ")", null, m.getAvatarUrl())
                     .setDescription(LangID.getStringByID("scamDetector.actionDone.ban", holder.config.lang))
                     .build();
 
@@ -137,11 +137,11 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
         }
 
         m.getUser().openPrivateChannel()
-                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("scamDetector.directMessage", holder.config.lang).replace("_NNN_", g.getName()).replace("_III_", g.getId())))
+                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("scamDetector.directMessage", holder.config.lang).formatted(g.getName(), g.getIdLong())))
                 .queue();
 
-        for (String guildID : StaticStore.idHolder.keySet()) {
-            if (g.getId().equals(guildID))
+        for (long guildID : StaticStore.idHolder.keySet()) {
+            if (g.getIdLong() == guildID)
                 continue;
 
             try {
@@ -153,7 +153,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
                     for (int i = 0; i < list.size(); i++) {
                         Guild.Ban b = list.get(i);
 
-                        if (b.getUser().getId().equals(m.getId())) {
+                        if (b.getUser().getIdLong() == m.getIdLong()) {
                             banned.set(true);
                         }
                     }
@@ -185,7 +185,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
             if (gu == null)
                 continue;
 
-            Member me = gu.getMemberById(m.getId());
+            Member me = gu.getMemberById(m.getIdLong());
 
             if (handler.noticeAll) {
                 GuildChannel cha = gu.getGuildChannelById(handler.channel);
@@ -196,13 +196,13 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
                     if (me != null) {
                         embed = new EmbedBuilder()
                                 .setTitle(LangID.getStringByID("scamDetector.compromisedReport", h.config.lang))
-                                .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
+                                .setAuthor(m.getEffectiveName() + " (" + m.getIdLong() + ")", null, m.getAvatarUrl())
                                 .setDescription(LangID.getStringByID("scamDetector.report.onlyMember", h.config.lang).replace("_", link))
                                 .build();
                     } else {
                         embed = new EmbedBuilder()
                                 .setTitle(LangID.getStringByID("scamDetector.compromisedReport", h.config.lang))
-                                .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
+                                .setAuthor(m.getEffectiveName() + " (" + m.getIdLong() + ")", null, m.getAvatarUrl())
                                 .setDescription(LangID.getStringByID("scamDetector.report.allUsers", h.config.lang).replace("_", link))
                                 .build();
                     }
@@ -216,7 +216,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
                     if (cha instanceof MessageChannel) {
                         MessageEmbed embed = new EmbedBuilder()
                                 .setTitle(LangID.getStringByID("scamDetector.compromisedReport", h.config.lang))
-                                .setAuthor(m.getEffectiveName() + " (" + m.getId() + ")", null, m.getAvatarUrl())
+                                .setAuthor(m.getEffectiveName() + " (" + m.getIdLong() + ")", null, m.getAvatarUrl())
                                 .setDescription(LangID.getStringByID("scamDetector.report.onlyMember", h.config.lang).replace("_", link))
                                 .build();
 
@@ -248,7 +248,7 @@ public record ScamLinkHandler(String author, String server, String channel, @Nul
         return obj;
     }
 
-    public String getChannel() {
+    public long getChannel() {
         return channel;
     }
 }

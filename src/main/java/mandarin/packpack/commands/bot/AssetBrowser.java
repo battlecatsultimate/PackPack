@@ -53,7 +53,7 @@ public class AssetBrowser extends ConstraintCommand {
         System.out.println(String.join(", ", files.stream().map(VFile::getPath).toArray(String[]::new)));
 
         replyToMessageSafely(ch, loader.getMessage(), msg ->
-            StaticStore.putHolder(loader.getUser().getId(), new AssetBrowserHolder(loader.getMessage(), loader.getUser().getId(), ch.getId(), msg, config.searchLayout, vf, lang))
+            StaticStore.putHolder(loader.getUser().getIdLong(), new AssetBrowserHolder(loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, config.searchLayout, vf, lang))
         , getSearchComponents(files.size(), LangID.getStringByID("assetBrowser.currentPath", lang).formatted("./org"), files, this::accumulateFileName, config.searchLayout, lang));
     }
 

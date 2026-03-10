@@ -23,8 +23,8 @@ import kotlin.math.min
 
 class PackSelectHolder(
     author: Message,
-    userID: String,
-    channelID: String,
+    userID: Long,
+    channelID: Long,
     private val member: Member,
     message: Message,
     private val noImage: Boolean

@@ -26,11 +26,11 @@ class ActivateCard : Command(CommonStatic.Lang.Locale.EN, true) {
     private var banner = Banner.NONE
 
     override fun doSomething(loader: CommandLoader) {
-        if (loader.member.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member))
+        if (loader.member.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(loader.member))
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(loader.member.id, CardActivateHolder(loader.message, loader.member.id, loader.channel.id, msg))
+            StaticStore.putHolder(loader.member.idLong, CardActivateHolder(loader.message, loader.member.idLong, loader.channel.idLong, msg))
         }
     }
 

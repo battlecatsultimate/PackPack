@@ -213,14 +213,14 @@ public class FindStage extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getIdLong(), TreasureHolder.global);
 
                 EntityHandler.generateStageEmbed(stages.getFirst(), ch, loader.getMessage(), "", treasure, configData, false, false, lang, result -> {
                     User u = loader.getUser();
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, u.getId(), ch.getId(), result, treasure, configData, false, lang));
+                    StaticStore.putHolder(u.getIdLong(), new StageInfoButtonHolder(stages.getFirst(), msg, u.getIdLong(), ch.getIdLong(), result, treasure, configData, false, lang));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("findStage.several", lang)).append("```md\n");
@@ -245,9 +245,9 @@ public class FindStage extends TimedConstraintCommand {
                 createMonthlyMessage(ch, loader.getMessage(), sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly, res -> {
                     User u = loader.getUser();
 
-                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                    StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, loader.getMessage(), u.getId(), ch.getId(), res, enemyName, config.searchLayout, treasure, configData, lang));
+                    StaticStore.putHolder(u.getIdLong(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, loader.getMessage(), u.getIdLong(), ch.getIdLong(), res, enemyName, config.searchLayout, treasure, configData, lang));
                 });
 
                 disableTimer();
@@ -285,9 +285,9 @@ public class FindStage extends TimedConstraintCommand {
 
                 Message msg = loader.getMessage();
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getIdLong(), TreasureHolder.global);
 
-                StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, enemyName, config.searchLayout, u.getId(), ch.getId(), res, orOperate, hasBoss, monthly, treasure, configData, background, castle, music, lang));
+                StaticStore.putHolder(u.getIdLong(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, enemyName, config.searchLayout, u.getIdLong(), ch.getIdLong(), res, orOperate, hasBoss, monthly, treasure, configData, background, castle, music, lang));
             });
         }
     }

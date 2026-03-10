@@ -30,7 +30,7 @@ public class EnemyStatAnalyzerHolder extends FileAnalyzerHolder {
     private final int m;
     private final String name;
 
-    public EnemyStatAnalyzerHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message msg, File container, List<String> requiredFiles, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, int eID, boolean isSecond, int m, String name, CommonStatic.Lang.Locale lang) {
+    public EnemyStatAnalyzerHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message msg, File container, List<String> requiredFiles, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, int eID, boolean isSecond, int m, String name, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, msg, container, requiredFiles, lang);
 
         this.cellData = cellData;

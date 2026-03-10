@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class EventGrabberHolder extends ComponentHolder {
-    public EventGrabberHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+    public EventGrabberHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         registerAutoExpiration(FIVE_MIN);

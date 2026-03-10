@@ -26,7 +26,7 @@ class Equip : Command(CommonStatic.Lang.Locale.EN, true) {
         replyToMessageSafely(ch, getText(g, m, inventory), loader.message, { a ->
             a.setComponents(getComponents(g, m, inventory))
         }, { msg ->
-            StaticStore.putHolder(m.id, EquipHolder(loader.message, m.id, ch.id, msg, inventory))
+            StaticStore.putHolder(m.idLong, EquipHolder(loader.message, m.idLong, ch.idLong, msg, inventory))
         })
     }
 

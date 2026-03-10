@@ -129,7 +129,7 @@ public class SlashBuilder {
                     data = commands.get(i);
 
                     if(data != null) {
-                        System.out.println("--------------------\n\nName : "+data.getName()+"\nDescription : "+data.getDescription()+"\nID : "+data.getId());
+                        System.out.println("--------------------\n\nName : "+data.getName()+"\nDescription : "+data.getDescription()+"\nID : "+data.getIdLong());
 
                         if(!data.getOptions().isEmpty()) {
                             System.out.println("\n- Options -\n");

@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.components.selections.SelectMenu;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -16,6 +15,8 @@ import java.util.*;
  * IDHolder is a class which contains server's preference data. Each IDHolder represents each server
  */
 public class IDHolder implements Cloneable {
+    public static final long MEMBER_INDICATOR = -2L;
+
     public static IDHolder jsonToIDHolder(JsonObject obj) {
         IDHolder id = new IDHolder();
 
@@ -25,16 +26,22 @@ public class IDHolder implements Cloneable {
 
         if(obj.has("mod")) {
             JsonElement element = obj.get("mod");
-            String moderator;
 
-            if (element instanceof JsonNull) {
-                moderator = null;
-            } else {
-                moderator = element.getAsString();
+            long moderator;
 
-                if (moderator.equals("null")) {
-                    moderator = null;
+            if (element instanceof JsonPrimitive primitive) {
+                if (primitive.isNumber())
+                    moderator = primitive.getAsLong();
+                else {
+                    String channelID = primitive.getAsString();
+
+                    if (channelID.equals("null"))
+                        moderator = -1L;
+                    else
+                        moderator = StaticStore.safeParseLong(primitive.getAsString());
                 }
+            } else {
+                moderator = -1L;
             }
 
             id.moderator = moderator;
@@ -42,16 +49,22 @@ public class IDHolder implements Cloneable {
 
         if(obj.has("mem")) {
             JsonElement element = obj.get("mem");
-            String member;
 
-            if (element instanceof JsonNull) {
-                member = null;
-            } else {
-                member = element.getAsString();
+            long member;
 
-                if (member.equals("null")) {
-                    member = null;
+            if (element instanceof JsonPrimitive primitive) {
+                if (primitive.isNumber())
+                    member = primitive.getAsLong();
+                else {
+                    String channelID = primitive.getAsString();
+
+                    if (channelID.equals("null"))
+                        member = -1L;
+                    else
+                        member = StaticStore.safeParseLong(primitive.getAsString());
                 }
+            } else {
+                member = -1L;
             }
 
             id.member = member;
@@ -59,16 +72,22 @@ public class IDHolder implements Cloneable {
 
         if(obj.has("ann")) {
             JsonElement element = obj.get("ann");
-            String announceChannel;
 
-            if (element instanceof JsonNull) {
-                announceChannel = null;
-            } else {
-                announceChannel = element.getAsString();
+            long announceChannel;
 
-                if (announceChannel.equals("null")) {
-                    announceChannel = null;
+            if (element instanceof JsonPrimitive primitive) {
+                if (primitive.isNumber())
+                    announceChannel = primitive.getAsLong();
+                else {
+                    String channelID = primitive.getAsString();
+
+                    if (channelID.equals("null"))
+                        announceChannel = -1L;
+                    else
+                        announceChannel = StaticStore.safeParseLong(primitive.getAsString());
                 }
+            } else {
+                announceChannel = -1L;
             }
 
             id.announceChannel = announceChannel;
@@ -78,22 +97,22 @@ public class IDHolder implements Cloneable {
             JsonElement elem = obj.get("status");
 
             if(!elem.isJsonPrimitive()) {
-                id.status = StaticStore.jsonToListString(elem.getAsJsonArray());
+                id.status = StaticStore.jsonToListLong(elem.getAsJsonArray());
             }
         }
 
         if(obj.has("bo")) {
             JsonElement element = obj.get("bo");
-            String booster;
 
-            if (element instanceof JsonNull) {
-                booster = null;
+            long booster;
+
+            if (element instanceof JsonPrimitive primitive) {
+                if (primitive.isNumber())
+                    booster = primitive.getAsLong();
+                else
+                    booster = StaticStore.safeParseLong(primitive.getAsString());
             } else {
-                booster = element.getAsString();
-
-                if (booster.equals("null")) {
-                    booster = null;
-                }
+                booster = -1L;
             }
 
             id.booster = booster;
@@ -115,16 +134,15 @@ public class IDHolder implements Cloneable {
 
         if(obj.has("logDM")) {
             JsonElement element = obj.get("logDM");
-            String logDM;
+            long logDM;
 
-            if (element instanceof JsonNull) {
-                logDM = null;
+            if (element instanceof JsonPrimitive primitive) {
+                if (primitive.isNumber())
+                    logDM = primitive.getAsLong();
+                else
+                    logDM = StaticStore.safeParseLong(primitive.getAsString());
             } else {
-                logDM = element.getAsString();
-
-                if (logDM.equals("null")) {
-                    logDM = null;
-                }
+                logDM = -1L;
             }
 
             id.logDM = logDM;
@@ -135,7 +153,7 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("banned")) {
-            id.banned = id.jsonObjectToListString(obj.getAsJsonArray("banned"));
+            id.banned = id.jsonObjectToListLong(obj.getAsJsonArray("banned"));
         }
 
         if(obj.has("channelException")) {
@@ -162,7 +180,7 @@ public class IDHolder implements Cloneable {
 
         // Handling old save structure
         if(obj.has("eventMap")) {
-            Map<CommonStatic.Lang.Locale, String> eventMap = id.jsonObjectToMapLocaleString(obj.get("eventMap"));
+            Map<CommonStatic.Lang.Locale, Long> eventMap = id.jsonObjectToMapLocaleLong(obj.get("eventMap"));
             Map<CommonStatic.Lang.Locale, String> eventMessage;
 
             if (obj.has("eventMessage")) {
@@ -171,16 +189,16 @@ public class IDHolder implements Cloneable {
                 eventMessage = new HashMap<>();
             }
 
-            for (Map.Entry<CommonStatic.Lang.Locale, String> entry : eventMap.entrySet()) {
-                String value = entry.getValue();
+            for (Map.Entry<CommonStatic.Lang.Locale, Long> entry : eventMap.entrySet()) {
+                Long value = entry.getValue();
 
-                if (value == null || !StaticStore.isNumeric(value)) {
+                if (value == null) {
                     continue;
                 }
 
                 EventDataConfigHolder data = new EventDataConfigHolder();
 
-                data.channelID = StaticStore.safeParseLong(value);
+                data.channelID = value;
                 data.eventMessage = eventMessage.getOrDefault(entry.getKey(), "");
 
                 id.eventData.put(entry.getKey(), data);
@@ -211,7 +229,7 @@ public class IDHolder implements Cloneable {
         }
 
         if(obj.has("boosterPinChannel")) {
-            id.boosterPinChannel = id.jsonObjectToListString(obj.getAsJsonArray("boosterPinChannel"));
+            id.boosterPinChannel = id.jsonObjectToListLong(obj.getAsJsonArray("boosterPinChannel"));
         }
 
         if (obj.has("bannedPrefix")) {
@@ -231,28 +249,27 @@ public class IDHolder implements Cloneable {
     }
 
     /**
-     * Moderator role ID, this must not be null value
+     * Moderator role ID
      */
-    @Nullable
-    public String moderator;
+    public long moderator;
     /**
      * Member role ID, nullable value. If this value is null, it means member will be
      * everyone
      */
-    public String member;
+    public long member;
     /**
      * Booster role ID, nullable value
      */
-    public String booster;
+    public long booster;
     /**
      * Channel where bot will post announcements, nullable value
      */
-    public String announceChannel;
+    public long announceChannel;
     /**
      * Channel where bot will post random link posts in bot's DM from other user. This is
      *  for monitoring compromised accounts sending scam link to everyone
      */
-    public String logDM = null;
+    public long logDM = -1L;
 
     /**
      * Flag value whether bot will publish the announcement or not. This flag will be ignored
@@ -292,20 +309,20 @@ public class IDHolder implements Cloneable {
     /**
      * List of channel ID where bot will post its status whenever it goes online or offline
      */
-    public List<String> status = new ArrayList<>();
+    public List<Long> status = new ArrayList<>();
     /**
      * List of user ID who were banned from using any bot's commands in this server
      */
-    public List<String> banned = new ArrayList<>();
+    public List<Long> banned = new ArrayList<>();
     /**
      * List of channels that moderators allowed server boosters to pin/unpin messages
      */
-    public List<String> boosterPinChannel = new ArrayList<>();
+    public List<Long> boosterPinChannel = new ArrayList<>();
 
     /**
      * Custom assigned role data. Key is name of assigned role, and value is role ID
      */
-    public Map<String, String> ID = new TreeMap<>();
+    public Map<String, Long> ID = new TreeMap<>();
     /**
      * Event data posting config. Key stands for locale, and value stands for Event data config for
      * each BC version
@@ -315,12 +332,12 @@ public class IDHolder implements Cloneable {
      * Channel permission data. Key is assigned role ID, and value is list of allowed channels.
      * If channel list is null, it means this role allows users to use commands in all channels
      */
-    public Map<String, List<String>> channel = new TreeMap<>();
+    public Map<Long, List<Long>> channel = new TreeMap<>();
     /**
      * Deactivated channel permission for each user. Key is user ID, and value is list of
      * deactivated channel permission for each role
      */
-    public Map<String, List<String>> channelException = new HashMap<>();
+    public Map<Long, List<Long>> channelException = new HashMap<>();
 
     /**
      * Prefix that will be ignored in this server
@@ -342,9 +359,9 @@ public class IDHolder implements Cloneable {
      *
      * @param m Moderator role ID
      * @param me Member role ID
-     * @param bo Booster roel ID
+     * @param bo Booster role ID
      */
-    public IDHolder(@Nonnull String m, String me, String bo) {
+    public IDHolder(long m, long me, long bo) {
         this.moderator = m;
         this.member = me;
         this.booster = bo;
@@ -417,21 +434,21 @@ public class IDHolder implements Cloneable {
         obj.addProperty("mod", moderator);
         obj.addProperty("mem", member);
         obj.addProperty("ann", announceChannel);
-        obj.add("status", StaticStore.listToJsonString(status));
+        obj.add("status", StaticStore.listToJsonLong(status));
         obj.addProperty("bo", booster);
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", logDM);
         obj.add("eventData", mapLocaleEventData(eventData));
         obj.add("config", config.toJson());
-        obj.add("banned", listStringToJsonObject(banned));
+        obj.add("banned", listLongToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
         obj.addProperty("forceCompact", forceCompact);
         obj.addProperty("forceFullTreasure", forceFullTreasure);
         obj.addProperty("announceMessage", announceMessage);
         obj.addProperty("boosterPin", boosterPin);
         obj.addProperty("boosterAll", boosterAll);
-        obj.add("boosterPinChannel", listStringToJsonObject(boosterPinChannel));
+        obj.add("boosterPinChannel", listLongToJsonObject(boosterPinChannel));
         obj.add("bannedPrefix", StaticStore.listToJsonString(bannedPrefix));
         obj.addProperty("disableCustomPrefix", disableCustomPrefix);
 
@@ -445,14 +462,14 @@ public class IDHolder implements Cloneable {
      *
      * @return List of channel ID where {@code member} can use the commands
      */
-    public ArrayList<String> getAllAllowedChannels(Member member) {
+    public ArrayList<Long> getAllAllowedChannels(Member member) {
         List<Role> ids = member.getRoles();
-        List<String> exceptions = channelException.get(member.getId());
+        List<Long> exceptions = channelException.get(member.getIdLong());
 
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<Long> result = new ArrayList<>();
 
-        if(this.member == null) {
-            List<String> channels = channel.get("Member");
+        if(this.member == -1L) {
+            List<Long> channels = channel.get(MEMBER_INDICATOR);
 
             if(channels == null)
                 return null;
@@ -461,8 +478,8 @@ public class IDHolder implements Cloneable {
         }
 
         for(Role role : ids) {
-            if(isSetAsRole(role.getId()) && (exceptions == null || !exceptions.contains(role.getId()))) {
-                List<String> channels = channel.get(role.getId());
+            if(isSetAsRole(role.getIdLong()) && (exceptions == null || !exceptions.contains(role.getIdLong()))) {
+                List<Long> channels = channel.get(role.getIdLong());
 
                 if(channels == null)
                     return null;
@@ -474,27 +491,27 @@ public class IDHolder implements Cloneable {
         return result;
     }
 
-    private boolean hasIDasRole(String id) {
-        for(String i : ID.values()) {
-            if(id.equals(i))
+    private boolean hasIDasRole(long id) {
+        for(long i : ID.values()) {
+            if(id == i)
                 return true;
         }
 
         return false;
     }
 
-    private boolean isSetAsRole(String id) {
-        return id.equals(moderator) || id.equals(member) || id.equals(booster) || hasIDasRole(id);
+    private boolean isSetAsRole(long id) {
+        return id == moderator || id == member || id == booster || hasIDasRole(id);
     }
 
-    private JsonElement listStringToJsonObject(List<String> arr) {
+    private JsonElement listLongToJsonObject(List<Long> arr) {
         if(arr == null) {
             return JsonNull.INSTANCE;
         }
 
         JsonArray array = new JsonArray();
 
-        for (String s : arr) {
+        for (long s : arr) {
             array.add(s);
         }
 
@@ -519,6 +536,31 @@ public class IDHolder implements Cloneable {
         return array;
     }
 
+    private List<Long> jsonObjectToListLong(JsonElement obj) {
+        if(obj.isJsonArray()) {
+            JsonArray ele = obj.getAsJsonArray();
+
+            ArrayList<Long> arr = new ArrayList<>();
+
+            for(int i = 0; i < ele.size(); i++) {
+                JsonElement e = ele.get(i);
+
+                if (!(e instanceof JsonPrimitive p))
+                    continue;
+
+                if (p.isString()) {
+                    arr.add(StaticStore.safeParseLong(p.getAsString()));
+                } else {
+                    arr.add(p.getAsLong());
+                }
+            }
+
+            return arr;
+        }
+
+        return new ArrayList<>();
+    }
+
     private List<String> jsonObjectToListString(JsonElement obj) {
         if(obj.isJsonArray()) {
             JsonArray ele = obj.getAsJsonArray();
@@ -526,13 +568,67 @@ public class IDHolder implements Cloneable {
             ArrayList<String> arr = new ArrayList<>();
 
             for(int i = 0; i < ele.size(); i++) {
-                arr.add(ele.get(i).getAsString());
+                JsonElement e = ele.get(i);
+
+                if (!(e instanceof JsonPrimitive p) || !p.isString())
+                    continue;
+
+                arr.add(p.getAsString());
             }
 
             return arr;
         }
 
         return new ArrayList<>();
+    }
+
+    private Map<CommonStatic.Lang.Locale, Long> jsonObjectToMapLocaleLong(JsonElement obj) {
+        if(obj.isJsonArray()) {
+            JsonArray arr = obj.getAsJsonArray();
+
+            Map<CommonStatic.Lang.Locale, Long> result = new TreeMap<>();
+
+            for(int i = 0; i < arr.size(); i++) {
+                JsonObject o = arr.get(i).getAsJsonObject();
+
+                if(o.has("key") && o.has("val")) {
+                    JsonElement key = o.get("key");
+                    JsonElement val = o.get("val");
+
+                    if (!(key instanceof JsonPrimitive primitiveKey))
+                        continue;
+
+                    if (!(val instanceof JsonPrimitive primitiveValue))
+                        continue;
+
+                    CommonStatic.Lang.Locale locale;
+
+                    if (primitiveKey.isNumber())
+                        locale = getLocale(primitiveKey.getAsInt());
+                    else {
+                        String code = key.getAsString();
+
+                        if (code.equals("tw"))
+                            code = "zh";
+
+                        locale = CommonStatic.Lang.Locale.valueOf(code.toUpperCase(Locale.ENGLISH));
+                    }
+
+                    long id;
+
+                    if (primitiveValue.isNumber())
+                        id = primitiveValue.getAsLong();
+                    else
+                        id = StaticStore.safeParseLong(primitiveValue.getAsString());
+
+                    result.put(locale, id);
+                }
+            }
+
+            return result;
+        }
+
+        return new TreeMap<>();
     }
 
     private Map<CommonStatic.Lang.Locale, String> jsonObjectToMapLocaleString(JsonElement obj) {
@@ -546,17 +642,28 @@ public class IDHolder implements Cloneable {
 
                 if(o.has("key") && o.has("val")) {
                     JsonElement key = o.get("key");
+                    JsonElement val = o.get("val");
 
-                    if (key instanceof JsonPrimitive primitive && primitive.isNumber()) {
-                        result.put(getLocale(primitive.getAsInt()), o.get("val").getAsString());
-                    } else {
+                    if (!(key instanceof JsonPrimitive primitiveKey))
+                        continue;
+
+                    if (!(val instanceof JsonPrimitive primitiveValue))
+                        continue;
+
+                    CommonStatic.Lang.Locale locale;
+
+                    if (primitiveKey.isNumber())
+                        locale = getLocale(primitiveKey.getAsInt());
+                    else {
                         String code = key.getAsString();
 
                         if (code.equals("tw"))
                             code = "zh";
 
-                        result.put(CommonStatic.Lang.Locale.valueOf(code.toUpperCase(Locale.US)), o.get("val").getAsString());
+                        locale = CommonStatic.Lang.Locale.valueOf(code.toUpperCase(Locale.ENGLISH));
                     }
+
+                    result.put(locale, primitiveValue.getAsString());
                 }
             }
 
@@ -566,15 +673,15 @@ public class IDHolder implements Cloneable {
         return new TreeMap<>();
     }
 
-    private JsonObject jsonfyMap(Map<String, List<String>> map) {
+    private JsonObject jsonfyMap(Map<Long, List<Long>> map) {
         JsonObject obj = new JsonObject();
 
-        Set<String> keys = map.keySet();
+        Set<Long> keys = map.keySet();
 
         int i = 0;
 
-        for(String key : keys) {
-            List<String> arr = map.get(key);
+        for(long key : keys) {
+            List<Long> arr = map.get(key);
 
             if(arr == null)
                 continue;
@@ -582,7 +689,7 @@ public class IDHolder implements Cloneable {
             JsonObject container = new JsonObject();
 
             container.addProperty("key", key);
-            container.add("val" , listStringToJsonObject(arr));
+            container.add("val" , listLongToJsonObject(arr));
 
             obj.add(Integer.toString(i), container);
 
@@ -600,7 +707,7 @@ public class IDHolder implements Cloneable {
         int i = 0;
 
         for(String key : keys) {
-            String id = ID.get(key);
+            Long id = ID.get(key);
 
             if(id == null)
                 continue;
@@ -618,8 +725,8 @@ public class IDHolder implements Cloneable {
         return obj;
     }
 
-    private TreeMap<String, List<String>> toMap(JsonObject obj) {
-        TreeMap<String, List<String>> map = new TreeMap<>();
+    private TreeMap<Long, List<Long>> toMap(JsonObject obj) {
+        TreeMap<Long, List<Long>> map = new TreeMap<>();
 
         int i = 0;
 
@@ -627,8 +734,19 @@ public class IDHolder implements Cloneable {
             if(obj.has(Integer.toString(i))) {
                 JsonObject container = obj.getAsJsonObject(Integer.toString(i));
 
-                String key = container.get("key").getAsString();
-                List<String> arr = jsonObjectToListString(container.get("val"));
+                JsonElement keyElement = container.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive primitiveKey))
+                    continue;
+
+                long key;
+
+                if (primitiveKey.isNumber())
+                    key = primitiveKey.getAsLong();
+                else
+                    key = StaticStore.safeParseLong(primitiveKey.getAsString());
+
+                List<Long> arr = jsonObjectToListLong(container.get("val"));
 
                 map.put(key, arr);
 
@@ -641,8 +759,8 @@ public class IDHolder implements Cloneable {
         return map;
     }
 
-    private TreeMap<String, String> toIDMap(JsonObject obj) {
-        TreeMap<String, String> map = new TreeMap<>();
+    private TreeMap<String, Long> toIDMap(JsonObject obj) {
+        TreeMap<String, Long> map = new TreeMap<>();
 
         int i = 0;
 
@@ -650,8 +768,19 @@ public class IDHolder implements Cloneable {
             if (obj.has(Integer.toString(i))) {
                 JsonObject container = obj.getAsJsonObject(Integer.toString(i));
 
+                JsonElement elementValue = container.get("val");
+
+                if (!(elementValue instanceof  JsonPrimitive primitiveValue))
+                    continue;
+
                 String key = container.get("key").getAsString();
-                String val = container.get("val").getAsString();
+
+                long val;
+
+                if (primitiveValue.isNumber())
+                    val = primitiveValue.getAsLong();
+                else
+                    val = StaticStore.safeParseLong(primitiveValue.getAsString());
 
                 map.put(key, val);
 
@@ -693,11 +822,11 @@ public class IDHolder implements Cloneable {
             id.bannedPrefix = new ArrayList<>(bannedPrefix);
             id.disableCustomPrefix = disableCustomPrefix;
 
-            for(String key : channel.keySet()) {
+            for(long key : channel.keySet()) {
                 id.channel.put(key, new ArrayList<>(channel.get(key)));
             }
 
-            for(String key : channelException.keySet()) {
+            for(long key : channelException.keySet()) {
                 id.channelException.put(key, new ArrayList<>(channelException.get(key)));
             }
 

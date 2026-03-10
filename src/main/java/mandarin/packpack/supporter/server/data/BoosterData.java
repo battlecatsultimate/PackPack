@@ -1,7 +1,9 @@
 package mandarin.packpack.supporter.server.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import javax.annotation.Nonnull;
+import com.google.gson.JsonPrimitive;
+import mandarin.packpack.supporter.StaticStore;
 
 public class BoosterData {
     public enum INITIAL {
@@ -9,30 +11,42 @@ public class BoosterData {
     }
 
     public static BoosterData parseJson(JsonObject obj) {
-        String role;
+        long role;
 
         if(obj.has("role")) {
-            if(obj.get("role").isJsonNull())
-                role = null;
-            else
-                role = obj.get("role").getAsString();
+            JsonElement element = obj.get("role");
+
+            if (element instanceof JsonPrimitive primitive) {
+                if (primitive.isString())
+                    role = StaticStore.safeParseLong(primitive.getAsString());
+                else
+                    role = primitive.getAsLong();
+            } else {
+                role = -1L;
+            }
         } else {
-            role = null;
+            role = -1L;
         }
 
-        String emoji;
+        long emoji;
 
         if(obj.has("emoji")) {
-            if(obj.get("emoji").isJsonNull())
-                emoji = null;
-            else
-                emoji = obj.get("emoji").getAsString();
+            JsonElement element = obj.get("emoji");
+
+            if (element instanceof JsonPrimitive primitive) {
+                if (primitive.isString())
+                    emoji = StaticStore.safeParseLong(primitive.getAsString());
+                else
+                    emoji = primitive.getAsLong();
+            } else {
+                emoji = -1L;
+            }
         } else {
-            emoji = null;
+            emoji = -1L;
         }
 
-        if(role == null && emoji == null) {
-            System.out.println("W/ Invalid booster holder data found");
+        if(role == -1L && emoji == -1L) {
+            StaticStore.logger.uploadLog("W/BoosterData::parseJson - Invalid booster holder data found");
             return null;
         }
 
@@ -42,10 +56,10 @@ public class BoosterData {
     public static final int ERR_ALREADY_ROLE_SET = -1;
     public static final int ERR_ALREADY_EMOJI_SET = -2;
 
-    private String role;
-    private String emoji;
+    private long role = -1L;
+    private long emoji = -1L;
 
-    public BoosterData(@Nonnull String id, INITIAL type) throws IllegalStateException {
+    public BoosterData(long id, INITIAL type) throws IllegalStateException {
         switch (type) {
             case ROLE:
                 this.role = id;
@@ -58,13 +72,13 @@ public class BoosterData {
         }
     }
 
-    private BoosterData(String role, String emoji) {
+    private BoosterData(long role, long emoji) {
         this.role = role;
         this.emoji = emoji;
     }
 
-    public int setRole(String role) {
-        if(this.role != null) {
+    public int setRole(long role) {
+        if(this.role != -1L) {
             return ERR_ALREADY_ROLE_SET;
         }
 
@@ -73,8 +87,8 @@ public class BoosterData {
         return 0;
     }
 
-    public int setEmoji(String emoji) {
-        if(this.emoji != null) {
+    public int setEmoji(long emoji) {
+        if(this.emoji != -1L) {
             return ERR_ALREADY_EMOJI_SET;
         }
 
@@ -84,18 +98,18 @@ public class BoosterData {
     }
 
     public void removeRole() {
-        role = null;
+        role = -1L;
     }
 
     public void removeEmoji() {
-        emoji = null;
+        emoji = -1L;
     }
 
-    public String getRole() {
+    public long getRole() {
         return role;
     }
 
-    public String getEmoji() {
+    public long getEmoji() {
         return emoji;
     }
 

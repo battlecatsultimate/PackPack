@@ -1,7 +1,10 @@
 package mandarin.packpack.supporter.server.data;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import mandarin.packpack.supporter.StaticStore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +17,25 @@ public class BoosterHolder {
             JsonObject set = arr.get(i).getAsJsonObject();
 
             if(set.has("key") && set.has("val")) {
-                String key = set.get("key").getAsString();
+                JsonElement keyElement = set.get("key");
+
+                if (!(keyElement instanceof JsonPrimitive keyPrimitive))
+                    continue;
+
+                long key;
+
+                if (keyPrimitive.isString()) {
+                    key = StaticStore.safeParseLong(keyPrimitive.getAsString());
+                } else {
+                    key = keyPrimitive.getAsLong();
+                }
+
                 BoosterData val = BoosterData.parseJson(set.get("val").getAsJsonObject());
 
                 if(val == null)
                     continue;
 
-                if(val.getRole() == null && val.getEmoji() == null)
+                if(val.getRole() == -1L && val.getEmoji() == -1L)
                     continue;
 
                 holder.serverBooster.put(key, val);
@@ -30,18 +45,18 @@ public class BoosterHolder {
         return holder;
     }
 
-    public final Map<String, BoosterData> serverBooster = new HashMap<>();
+    public final Map<Long, BoosterData> serverBooster = new HashMap<>();
 
     public JsonArray jsonfy() {
         JsonArray arr = new JsonArray();
 
-        for(String key : serverBooster.keySet()) {
+        for(long key : serverBooster.keySet()) {
             BoosterData data = serverBooster.get(key);
 
             if(data == null)
                 continue;
 
-            if(data.getRole() == null && data.getEmoji() == null)
+            if(data.getRole() == -1L && data.getEmoji() == -1L)
                 continue;
 
             JsonObject obj = new JsonObject();

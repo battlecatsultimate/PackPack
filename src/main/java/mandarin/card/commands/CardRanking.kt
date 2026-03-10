@@ -48,12 +48,12 @@ class CardRanking : Command(CommonStatic.Lang.Locale.EN, false) {
             retriever.get() ?: return
         }
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) {
-            StaticStore.putHolder(m.id, CardRankingSelectHolder(loader.message, m.id, loader.channel.id, it))
+            StaticStore.putHolder(m.idLong, CardRankingSelectHolder(loader.message, m.idLong, loader.channel.idLong, it))
         }
     }
 

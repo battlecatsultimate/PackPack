@@ -26,19 +26,19 @@ public class UpdateBotStatus extends ConstraintCommand {
 
         replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of top.gg...");
 
-        BotListPlatformHandler.handleTopGG(manager, loader.getClient().getSelfUser().getId(), true);
+        BotListPlatformHandler.handleTopGG(manager, loader.getClient().getSelfUser().getIdLong(), true);
 
         replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of discord bot list...");
 
-        BotListPlatformHandler.handleDiscordBotList(manager, loader.getClient().getSelfUser().getId(), true);
+        BotListPlatformHandler.handleDiscordBotList(manager, loader.getClient().getSelfUser().getIdLong(), true);
 
         replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of Korean discord list...");
 
-        BotListPlatformHandler.handleKoreanDiscordList(manager, loader.getClient().getSelfUser().getId(), true);
+        BotListPlatformHandler.handleKoreanDiscordList(manager, loader.getClient().getSelfUser().getIdLong(), true);
 
         replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating status of discord bot gg...");
 
-        BotListPlatformHandler.handleDiscordBotGG(manager, loader.getClient().getSelfUser().getId(), true);
+        BotListPlatformHandler.handleDiscordBotGG(manager, loader.getClient().getSelfUser().getIdLong(), true);
 
         replyToMessageSafely(loader.getChannel(), loader.getMessage(), "Updating bot status message");
 

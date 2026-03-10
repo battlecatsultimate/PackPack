@@ -33,13 +33,13 @@ public class AddScamLinkHelpingServer extends ConstraintCommand {
         }
 
 
-        if(StaticStore.scamLink.servers.contains(contents[1])) {
+        if(StaticStore.scamLink.servers.contains(StaticStore.safeParseLong(contents[1]))) {
             replyToMessageSafely(ch, loader.getMessage(), "This server is already registered as helping server");
 
             return;
         }
 
-        StaticStore.scamLink.servers.add(contents[1]);
+        StaticStore.scamLink.servers.add(StaticStore.safeParseLong(contents[1]));
 
         replyToMessageSafely(ch, loader.getMessage(), "Added server " + contents[1]);
     }

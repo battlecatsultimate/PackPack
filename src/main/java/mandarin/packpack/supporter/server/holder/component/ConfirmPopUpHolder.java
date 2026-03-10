@@ -15,7 +15,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     @Nullable
     private final Consumer<GenericComponentInteractionCreateEvent>  onCancel;
 
-    public ConfirmPopUpHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, Message message, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @Nonnull Consumer<GenericComponentInteractionCreateEvent> onCancel, CommonStatic.Lang.Locale lang) {
+    public ConfirmPopUpHolder(@Nullable Message author, long userID, long channelID, Message message, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @Nonnull Consumer<GenericComponentInteractionCreateEvent> onCancel, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.onConfirm = onConfirm;
@@ -24,7 +24,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         registerAutoExpiration(FIVE_MIN);
     }
 
-    public ConfirmPopUpHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, Message message, Consumer<GenericComponentInteractionCreateEvent> onConfirm, CommonStatic.Lang.Locale lang) {
+    public ConfirmPopUpHolder(@Nullable Message author, long userID, long channelID, Message message, Consumer<GenericComponentInteractionCreateEvent> onConfirm, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.onConfirm = onConfirm;

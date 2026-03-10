@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import java.util.concurrent.TimeUnit
 
-class CardCostTypeHolder(author: Message, userID: String, channelID: String, message: Message, private val pack: CardPack) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CardCostTypeHolder(author: Message, userID: Long, channelID: Long, message: Message, private val pack: CardPack) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(TimeUnit.HOURS.toMillis(1L))
     }

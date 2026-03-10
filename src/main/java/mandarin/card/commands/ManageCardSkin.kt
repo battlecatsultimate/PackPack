@@ -24,13 +24,13 @@ class ManageCardSkin : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val cards = CardData.cards.sortedWith(CardComparator())
 
         replyToMessageSafely(loader.channel, getContents(cards), loader.message, { a -> a.setComponents(getComponents(cards)) }) { msg ->
-            StaticStore.putHolder(m.id, SkinCardSelectHolder(loader.message, m.id, loader.channel.id, msg))
+            StaticStore.putHolder(m.idLong, SkinCardSelectHolder(loader.message, m.idLong, loader.channel.idLong, msg))
         }
     }
 

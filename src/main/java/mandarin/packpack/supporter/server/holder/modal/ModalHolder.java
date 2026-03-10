@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class ModalHolder extends Holder {
-    public ModalHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
+    public ModalHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
     }
 
@@ -103,11 +103,11 @@ public abstract class ModalHolder extends Holder {
     }
 
     private boolean canHandleEvent(ModalInteractionEvent event) {
-        boolean result = event.getChannel().getId().equals(channelID);
+        boolean result = event.getChannel().getIdLong() == channelID;
 
-        result &= event.getMessage() == null || event.getMessage().getId().equals(message.getId());
+        result &= event.getMessage() == null || event.getMessage().getIdLong() == message.getIdLong();
 
-        result &= event.getUser().getId().equals(userID);
+        result &= event.getUser().getIdLong() == userID;
 
         return result;
     }

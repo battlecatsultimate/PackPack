@@ -23,7 +23,7 @@ class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.
         val g = loader.guild
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
         val ids = CardData.inventories.keys
@@ -43,7 +43,7 @@ class Check(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.
             replyToMessageSafely(ch, getText(members), loader.message, { a ->
                 a.setComponents(getComponents(members))
             }, { msg ->
-                StaticStore.putHolder(m.id, CardCheckHolder(loader.message, m.id, ch.id, msg, members, tier))
+                StaticStore.putHolder(m.idLong, CardCheckHolder(loader.message, m.idLong, ch.idLong, msg, members, tier))
             })
         } else {
             replyToMessageSafely(ch, getText(members), loader.message) { a -> a }

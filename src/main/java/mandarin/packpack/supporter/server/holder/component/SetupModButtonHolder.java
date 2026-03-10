@@ -18,18 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetupModButtonHolder extends ComponentHolder {
-    private final String channelID;
-    private final String memberID;
+    private final long channelID;
+    private final long memberID;
 
     private final IDHolder holder;
 
-    private String roleID;
+    private long roleID = -1L;
 
-    public SetupModButtonHolder(Message author, String userID, String channelID, Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
+    public SetupModButtonHolder(Message author, long userID, long channelID, Message message, IDHolder holder, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
         
         this.channelID = channelID;
-        this.memberID = author.getAuthor().getId();
+        this.memberID = author.getAuthor().getIdLong();
         this.holder = holder;
 
         registerAutoExpiration(FIVE_MIN);
@@ -46,10 +46,10 @@ public class SetupModButtonHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
 
-                roleID = es.getValues().getFirst().getId();
+                roleID = es.getValues().getFirst().getIdLong();
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("setup.selected.moderator", lang).replace("_RRR_", es.getValues().getFirst().getId()))
+                        .setContent(LangID.getStringByID("setup.selected.moderator", lang).formatted(es.getValues().getFirst().getIdLong()))
                         .setComponents(getComponents())
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
@@ -63,7 +63,7 @@ public class SetupModButtonHolder extends ComponentHolder {
                 StaticStore.putHolder(memberID, new SetupMemberButtonHolder(getAuthorMessage(), memberID, channelID, m, holder, roleID, lang));
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("setup.selected.moderator", lang).replace("_RRR_", roleID))
+                        .setContent(LangID.getStringByID("setup.selected.moderator", lang).formatted(roleID))
                         .setComponents()
                         .queue();
 
@@ -100,7 +100,7 @@ public class SetupModButtonHolder extends ComponentHolder {
 
         Button confirm;
 
-        if(roleID != null) {
+        if(roleID != -1L) {
             confirm = Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asEnabled();
         } else {
             confirm = Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asDisabled();

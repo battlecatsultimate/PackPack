@@ -20,11 +20,11 @@ import java.util.List;
 
 public class SetupMemberButtonHolder extends ComponentHolder {
     private final IDHolder holder;
-    private final String modID;
+    private final long modID;
 
-    private String roleID;
+    private long roleID = -1L;
 
-    public SetupMemberButtonHolder(Message author, String userID, String channelID, Message message, IDHolder holder, String modID, CommonStatic.Lang.Locale lang) {
+    public SetupMemberButtonHolder(Message author, long userID, long channelID, Message message, IDHolder holder, long modID, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.holder = holder;
@@ -46,19 +46,19 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
                 
-                roleID = es.getValues().getFirst().getId();
+                roleID = es.getValues().getFirst().getIdLong();
                 
-                if (roleID.equals(modID)) {
-                    roleID = null;
+                if (roleID == modID) {
+                    roleID = -1L;
 
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("setup.already", lang).replace("_RRR_", es.getValues().getFirst().getId()))
+                            .setContent(LangID.getStringByID("setup.already", lang).formatted(es.getValues().getFirst().getIdLong()))
                             .setComponents(getComponents(false))
                             .setAllowedMentions(new ArrayList<>())
                             .queue();
                 } else {
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("setup.selected.member", lang).replace("_RRR_", es.getValues().getFirst().getId()))
+                            .setContent(LangID.getStringByID("setup.selected.member", lang).formatted(es.getValues().getFirst().getIdLong()))
                             .setComponents(getComponents(true))
                             .setAllowedMentions(new ArrayList<>())
                             .queue();
@@ -68,12 +68,12 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                 holder.moderator = modID;
                 holder.member = roleID;
                 
-                StaticStore.idHolder.put(g.getId(), holder);
+                StaticStore.idHolder.put(g.getIdLong(), holder);
                 
-                Command.replyToMessageSafely(ch, LangID.getStringByID("setup.done", lang).replace("_MOD_", modID).replace("_MEM_", roleID), message, a -> a);
+                Command.replyToMessageSafely(ch, LangID.getStringByID("setup.done", lang).formatted(modID, roleID), message, a -> a);
                 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("setup.selected.member", lang).replace("_RRR_", roleID))
+                        .setContent(LangID.getStringByID("setup.selected.member", lang).formatted(roleID))
                         .setComponents()
                         .queue();
 
@@ -114,7 +114,7 @@ public class SetupMemberButtonHolder extends ComponentHolder {
 
         Button confirm;
 
-        if(roleID != null) {
+        if(roleID != -1L) {
             confirm = Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asEnabled();
         } else {
             confirm = Button.success("confirm", LangID.getStringByID("ui.button.confirm", lang)).asDisabled();

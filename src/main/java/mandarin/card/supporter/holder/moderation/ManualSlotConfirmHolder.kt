@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 import kotlin.math.max
 
-class ManualSlotConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val member: Member, private val users: List<String>, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class ManualSlotConfirmHolder(author: Message, userID: Long, channelID: Long, message: Message, private val member: Member, private val users: List<String>, private val slotMachine: SlotMachine) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private var page = 0
 
     private var input = -1L

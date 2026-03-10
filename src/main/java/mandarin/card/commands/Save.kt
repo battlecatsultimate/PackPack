@@ -13,7 +13,7 @@ class Save : Command(CommonStatic.Lang.Locale.EN, false) {
         val m = loader.member
         val ch = loader.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 

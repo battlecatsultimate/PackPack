@@ -18,7 +18,7 @@ class ValidationCheck : Command(CommonStatic.Lang.Locale.EN, true) {
 
         val contents = loader.content.split(" ")
 
-        val value = if (contents.size >= 2 && (m.id == StaticStore.MANDARIN_SMELL || CardData.isManager(m))) {
+        val value = if (contents.size >= 2 && (m.idLong == StaticStore.MANDARIN_SMELL || CardData.isManager(m))) {
             contents[1].replace(Regex("(<@|>)"), "")
         } else {
             m.id

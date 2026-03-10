@@ -11,7 +11,7 @@ class Pool(private val tier: CardData.Tier) : Command(CommonStatic.Lang.Locale.E
         val ch = loader.channel
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
         val pool = when(tier) {

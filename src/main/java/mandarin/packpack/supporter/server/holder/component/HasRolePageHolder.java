@@ -26,7 +26,7 @@ public class HasRolePageHolder extends ComponentHolder {
 
     private int page = 0;
 
-    public HasRolePageHolder(@Nullable Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, @Nonnull List<Member> members, @Nonnull Role role, CommonStatic.Lang.Locale lang) {
+    public HasRolePageHolder(@Nullable Message author, long userID, long channelID, @Nonnull Message message, @Nonnull List<Member> members, @Nonnull Role role, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
         this.members = members;
@@ -109,7 +109,7 @@ public class HasRolePageHolder extends ComponentHolder {
         for (int i = page * ConfigHolder.SearchLayout.COMPACTED.chunkSize; i < size; i++) {
             Member m = members.get(i);
 
-            builder.append(i + 1).append(". ").append(m.getUser().getName()).append(" ").append(m.getAsMention()).append(" [").append(m.getId()).append("]");
+            builder.append(i + 1).append(". ").append(m.getUser().getName()).append(" ").append(m.getAsMention()).append(" [").append(m.getIdLong()).append("]");
 
             if (i < size - 1) {
                 builder.append("\n");

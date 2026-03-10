@@ -16,7 +16,7 @@ public class UnregisterLogging extends ConstraintCommand {
 
     @Override
     public void doSomething(@Nonnull CommandLoader loader) {
-        StaticStore.loggingChannel = "";
+        StaticStore.loggingChannel = -1L;
 
         MessageChannel ch = loader.getChannel();
 

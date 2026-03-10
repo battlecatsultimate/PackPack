@@ -19,7 +19,7 @@ class ExtractJson : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
 
-        if (u.id != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid"))
+        if (u.idLong != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid"))
             return
 
         val userID = getUserID(loader.content.split(" "))

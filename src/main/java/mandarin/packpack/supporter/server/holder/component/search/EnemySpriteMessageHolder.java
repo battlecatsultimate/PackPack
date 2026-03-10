@@ -17,7 +17,7 @@ public class EnemySpriteMessageHolder extends SearchHolder {
 
     private final int mode;
 
-    public EnemySpriteMessageHolder(ArrayList<Enemy> enemies, Message author, String userID, String channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, CommonStatic.Lang.Locale lang) {
+    public EnemySpriteMessageHolder(ArrayList<Enemy> enemies, Message author, long userID, long channelID, Message message, String keyword, ConfigHolder.SearchLayout layout, int mode, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.enemies = enemies;

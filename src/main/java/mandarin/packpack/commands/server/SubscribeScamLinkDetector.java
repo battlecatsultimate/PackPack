@@ -41,13 +41,15 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
             return;
         }
 
-        String channel = parseChannel(contents[1]);
+        String c = parseChannel(contents[1]);
 
-        if (!StaticStore.isNumeric(channel)) {
+        if (!StaticStore.isNumeric(c)) {
             ch.sendMessage(LangID.getStringByID("subscribeScamDetector.failed.invalidID", lang)).queue();
 
             return;
         }
+
+        long channel = StaticStore.safeParseLong(c);
 
         if (!isValidChannel(g, channel)) {
             ch.sendMessage(LangID.getStringByID("subscribeScamDetector.failed.invalidChannel", lang)).queue();
@@ -81,7 +83,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
                 ).queue(msg -> {
                     Member m = loader.getMember();
 
-                    StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(loader.getMessage(), m.getId(), ch.getId(), msg, lang, channel, getMute(g, loader.getContent())));
+                    StaticStore.putHolder(m.getIdLong(), new ScamLinkSubscriptionHolder(loader.getMessage(), m.getIdLong(), ch.getIdLong(), msg, lang, channel, getMute(g, loader.getContent())));
                 });
     }
 
@@ -93,11 +95,11 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         }
     }
 
-    private boolean isValidChannel(Guild g, String id) {
+    private boolean isValidChannel(Guild g, long id) {
         List<GuildChannel> channels = g.getChannels();
 
         for(GuildChannel gc : channels) {
-            if((gc.getType() == ChannelType.TEXT || gc.getType() == ChannelType.NEWS) && id.equals(gc.getId())) {
+            if((gc.getType() == ChannelType.TEXT || gc.getType() == ChannelType.NEWS) && id == gc.getIdLong()) {
 
                 return true;
             }
@@ -110,7 +112,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         String[] contents = content.split(" ");
 
         for(int i = 0; i < contents.length; i++) {
-            if((contents[i].equals("-m") || contents[i].equals("-mute")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1]) && isValidID(g, contents[i + 1])) {
+            if((contents[i].equals("-m") || contents[i].equals("-mute")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1]) && isValidID(g, StaticStore.safeParseLong(contents[i + 1]))) {
                 return contents[i + 1];
             }
         }
@@ -118,11 +120,11 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         return null;
     }
 
-    private boolean isValidID(Guild g, String id) {
+    private boolean isValidID(Guild g, long id) {
         List<Role> roles = g.getRoles();
 
         for(Role role : roles) {
-            if(role.getId().equals(id))
+            if(role.getIdLong() == id)
                 return true;
         }
 

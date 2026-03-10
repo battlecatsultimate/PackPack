@@ -18,7 +18,7 @@ class RemoveCC : Command(CommonStatic.Lang.Locale.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
+        if (m.idLong != StaticStore.MANDARIN_SMELL && !CardData.isManager(m)) {
             return
         }
 
@@ -62,7 +62,7 @@ class RemoveCC : Command(CommonStatic.Lang.Locale.EN, true) {
         }
 
         replyToMessageSafely(loader.channel, "Are you sure you want to remove CC status from this user? This cannot be undone!", loader.message, { a -> registerConfirmButtons(a, lang)}) { msg ->
-            StaticStore.putHolder(loader.user.id, ConfirmPopUpHolder(loader.message, loader.user.id, loader.channel.id, msg, { e ->
+            StaticStore.putHolder(loader.user.idLong, ConfirmPopUpHolder(loader.message, loader.user.idLong, loader.channel.idLong, msg, { e ->
                 val inventory = Inventory.getInventory(id)
 
                 TransactionLogger.logCCCancel(id, loader.user.idLong, inventory)

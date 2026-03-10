@@ -15,7 +15,7 @@ class EjectInventory : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
 
-        if (u.id != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid")) {
+        if (u.idLong != StaticStore.MANDARIN_SMELL && u.id != ServerData.get("gid")) {
             return
         }
 
@@ -36,7 +36,7 @@ class EjectInventory : Command(CommonStatic.Lang.Locale.EN, false) {
         }
 
         replyToMessageSafely(loader.channel, "Are you sure you want to eject inventory of <@$id> ($id)? This cannot be undone", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, u.id, loader.channel.id, msg, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(u.idLong, ConfirmButtonHolder(loader.message, u.idLong, loader.channel.idLong, msg, CommonStatic.Lang.Locale.EN) {
                 val file = inventory.extractAsFile()
 
                 loader.client.retrieveUserById(StaticStore.MANDARIN_SMELL)

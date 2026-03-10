@@ -4,16 +4,17 @@ import com.google.gson.JsonObject;
 import mandarin.packpack.supporter.StaticStore;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ScamLinkHolder {
-    public ArrayList<String> links = new ArrayList<>();
-    public ArrayList<String> servers = new ArrayList<>();
+    public List<String> links = new ArrayList<>();
+    public List<Long> servers = new ArrayList<>();
 
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
         obj.add("links", StaticStore.listToJsonString(links));
-        obj.add("servers", StaticStore.listToJsonString(servers));
+        obj.add("servers", StaticStore.listToJsonLong(servers));
 
         return obj;
     }
@@ -24,7 +25,7 @@ public class ScamLinkHolder {
         }
 
         if(obj.has("servers")) {
-            servers = StaticStore.jsonToListString(obj.getAsJsonArray("servers"));
+            servers = StaticStore.jsonToListLong(obj.getAsJsonArray("servers"));
         }
     }
 }

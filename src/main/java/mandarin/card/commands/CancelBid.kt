@@ -15,7 +15,7 @@ class CancelBid : Command(CommonStatic.Lang.Locale.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
 
-        if (u.id != ServerData.get("gid") && u.id != StaticStore.MANDARIN_SMELL) {
+        if (u.id != ServerData.get("gid") && u.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 
@@ -86,7 +86,7 @@ class CancelBid : Command(CommonStatic.Lang.Locale.EN, false) {
         }
 
         replyToMessageSafely(ch, "Are you sure you want to cancel the bid?", loader.message, { a -> registerConfirmButtons(a, CommonStatic.Lang.Locale.EN) }) { msg ->
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, u.id, ch.id, msg, CommonStatic.Lang.Locale.EN) {
+            StaticStore.putHolder(u.idLong, ConfirmButtonHolder(loader.message, u.idLong, ch.idLong, msg, CommonStatic.Lang.Locale.EN) {
                 auctionSession.cancelBid(u.idLong)
 
                 replyToMessageSafely(ch, "Successfully canceled the bid!", loader.message) { a -> a }

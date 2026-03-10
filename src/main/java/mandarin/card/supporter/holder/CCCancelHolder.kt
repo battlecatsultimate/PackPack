@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.components.buttons.Button
 import kotlin.collections.component1
 import kotlin.collections.component2
 
-class CCCancelHolder(author: Message, userID: String, channelID: String, message: Message, private val cancelMode: CancelMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CCCancelHolder(author: Message, userID: Long, channelID: Long, message: Message, private val cancelMode: CancelMode) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     enum class CancelMode {
         CC,
         ECC

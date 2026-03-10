@@ -85,7 +85,7 @@ public class Logger {
         if (client == null)
             return null;
 
-        if(StaticStore.loggingChannel.isBlank())
+        if(StaticStore.loggingChannel == -1L)
             return null;
 
         GuildChannel ch = client.getGuildChannelById(StaticStore.loggingChannel);

@@ -114,7 +114,7 @@
             "noMember" : "Member's ID isn't specified!",
             "noRegisteredRole" : "No booster role is set in this server! Please specify booster role via `p!idset` command",
             "noRoleName" : "I can't find any role name. You have to specify role name by wrapping it with \" quotation marks, and name must not be white spaces!",
-            "notBooster" : "This member doesn't have server booster role (<@&_RRR_>)!",
+            "notBooster" : "This member doesn't have server booster role (<@&%d>)!",
             "notRGB" : "Please specify full rgb color to make things clarified!"
         }
     },
@@ -128,7 +128,7 @@
     },
     "bot" : {
         "announcement" : "<@%d> Announcement",
-        "spamBanned" : "<@_UUU_>因短時間內使用大量指令並且在_TTT_內無法使用任何指令。如果未來情況繼續時長會增加。",
+        "spamBanned" : "<@%d>因短時間內使用大量指令並且在%s內無法使用任何指令。如果未來情況繼續時長會增加。",
         "command" : {
             "timeLimit" : "你可以在_秒後使用這個指令！"
         },
@@ -2537,7 +2537,7 @@
     },
     "scamDetector" : {
         "compromisedReport" : "Compromised Account Report",
-        "directMessage" : "Bot took action because it detected that you sent scam link in message. If this is false, contact moderator manually\n\nServer : _NNN_ (_III_)",
+        "directMessage" : "Bot took action because it detected that you sent scam link in message. If this is false, contact moderator manually\n\nServer : %s (%d)",
         "title" : "Scam Link Auto-Detector",
         "action" : {
             "ban" : "Ban",
@@ -2972,10 +2972,10 @@
         "role" : "這個伺服器裡_MMM_位成員擁有_NNN_身分組。大約是全體伺服器成員的=%\n"
     },
     "setup" : {
-        "already" : "This role <@&_RRR_> is already decided to be set as moderator role! Please select other role",
+        "already" : "This role <@&%d> is already decided to be set as moderator role! Please select other role",
         "canceled" : "Canceled setup",
         "confirmation" : "It seems this server already has set up ID data, are you sure that you want to override these data?",
-        "done" : "Done!\n\nUsers who have <@&_MOD_> will be able to use moderator-only commands\nUsers who have <@&_MEM_> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it",
+        "done" : "Done!\n\nUsers who have <@&%d> will be able to use moderator-only commands\nUsers who have <@&%d> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it",
         "expired" : "Setup expired",
         "selectRole" : "Select role",
         "select" : {
@@ -2983,8 +2983,8 @@
             "moderator" : "Select moderator role"
         },
         "selected" : {
-            "member" : "Member role is selected as <@&_RRR_>",
-            "moderator" : "Moderator role is selected as <@&_RRR_>"
+            "member" : "Member role is selected as <@&%d>",
+            "moderator" : "Moderator role is selected as <@&%d>"
         }
     },
     "solve" : {
@@ -3072,7 +3072,7 @@
     },
     "subscribeScamDetector" : {
         "canceled" : "Canceled scam link auto-detector subscription",
-        "done" : "Now bot will upload compromised account information new in <#_>",
+        "done" : "Now bot will upload compromised account information new in <#%d>",
         "expired" : "Subscription time expired",
         "decision" : {
             "ban" : "Action when bot could catch compromised account = **Ban**\n\n**__:warning: Warning! :warning:__**\n\nBanning user directly may lead to bad situation when bot caught non-scam link. It's not recommended, so consider using other options",

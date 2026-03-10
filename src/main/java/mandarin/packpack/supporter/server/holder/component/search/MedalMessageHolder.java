@@ -15,7 +15,7 @@ import java.util.List;
 public class MedalMessageHolder extends SearchHolder {
     private final ArrayList<Integer> id;
     
-    public MedalMessageHolder(ArrayList<Integer> id, Message author, @Nonnull String userID, @Nonnull String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
+    public MedalMessageHolder(ArrayList<Integer> id, Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.id = id;

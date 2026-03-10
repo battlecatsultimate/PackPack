@@ -23,7 +23,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
     private final TreasureHolder treasure;
     private final EnemyStat.EnemyStatConfig configData;
 
-    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nullable Message author, String userID, String channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder treasure, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nullable Message author, long userID, long channelID, @Nonnull Message message, String keyword, ConfigHolder.SearchLayout layout, TreasureHolder treasure, EnemyStat.EnemyStatConfig configData, CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, keyword, layout, lang);
 
         this.enemy = enemy;

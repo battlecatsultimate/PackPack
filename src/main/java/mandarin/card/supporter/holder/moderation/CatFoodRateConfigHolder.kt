@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.modals.Modal
 
-class CatFoodRateConfigHolder(author: Message, userID: String, channelID: String, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class CatFoodRateConfigHolder(author: Message, userID: Long, channelID: Long, message: Message) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     init {
         registerAutoExpiration(FIVE_MIN)
     }
@@ -39,41 +39,24 @@ class CatFoodRateConfigHolder(author: Message, userID: String, channelID: String
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "cf" -> {
-                val min = TextInput.create("date.minute.uppercase.singular", TextInputStyle.SHORT)
-                    .setPlaceholder("Define minimum amount of cat foods that will be given to user while chatting")
-                    .setValue(CardData.minimumCatFoods.toString())
-                    .setRequired(true)
-                    .build()
+                val min = TextInput.create("date.minute.uppercase.singular", TextInputStyle.SHORT).setPlaceholder("Define minimum amount of cat foods that will be given to user while chatting").setValue(CardData.minimumCatFoods.toString()).setRequired(true).build()
 
-                val max = TextInput.create("max", TextInputStyle.SHORT)
-                    .setPlaceholder("Define maximum amount of cat foods that will be given to user while chatting")
-                    .setValue(CardData.maximumCatFoods.toString())
-                    .setRequired(true)
-                    .build()
+                val max = TextInput.create("max", TextInputStyle.SHORT).setPlaceholder("Define maximum amount of cat foods that will be given to user while chatting").setValue(CardData.maximumCatFoods.toString()).setRequired(true).build()
 
-                val modal = Modal.create("cf", "Cat Food Rate")
-                    .addComponents(Label.of("Minimum Cat Food", min))
-                    .addComponents(Label.of("Maximum Cat Food", max))
-                    .build()
+                val modal = Modal.create("cf", "Cat Food Rate").addComponents(Label.of("Minimum Cat Food", min)).addComponents(Label.of("Maximum Cat Food", max)).build()
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CatFoodRateHolder(authorMessage, userID, channelID, message, this::applyResult))
+                StaticStore.putHolder(authorMessage.author.idLong, CatFoodRateHolder(authorMessage, userID, channelID, message, this::applyResult));
             }
             "cooldown" -> {
-                val cooldown = TextInput.create("cooldown", TextInputStyle.SHORT)
-                    .setPlaceholder("Cooldown until new cat food will be given to user")
-                    .setValue((CardData.catFoodCooldown / 1000).toString())
-                    .setRequired(true)
-                    .build()
+                val cooldown = TextInput.create("cooldown", TextInputStyle.SHORT).setPlaceholder("Cooldown until new cat food will be given to user").setValue((CardData.catFoodCooldown / 1000).toString()).setRequired(true).build()
 
-                val modal = Modal.create("cooldown", "Cooldown")
-                    .addComponents(Label.of("Cooldown (In Seconds)", cooldown))
-                    .build()
+                val modal = Modal.create("cooldown", "Cooldown").addComponents(Label.of("Cooldown (In Seconds)", cooldown)).build()
 
                 event.replyModal(modal).queue()
 
-                StaticStore.putHolder(authorMessage.author.id, CooldownRateHolder(authorMessage, userID, channelID, message, this::applyResult))
+                StaticStore.putHolder(authorMessage.author.idLong, CooldownRateHolder(authorMessage, userID, channelID, message, this::applyResult));
             }
             "confirm" -> {
                 CardBot.saveCardData()

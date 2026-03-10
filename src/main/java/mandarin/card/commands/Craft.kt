@@ -44,7 +44,7 @@ class Craft : Command(CommonStatic.Lang.Locale.EN, false) {
 
         val m = retriever.get() ?: return
 
-        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.idLong != StaticStore.MANDARIN_SMELL) {
             return
         }
 
@@ -54,7 +54,7 @@ class Craft : Command(CommonStatic.Lang.Locale.EN, false) {
                 "You currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}", loader.message, { a ->
             a.setComponents(assignComponents())
         }) { message ->
-            StaticStore.putHolder(m.id, CardCraftModeHolder(loader.message, m.id, ch.id, message))
+            StaticStore.putHolder(m.idLong, CardCraftModeHolder(loader.message, m.idLong, ch.idLong, message))
         }
     }
 
