@@ -21,7 +21,7 @@ class TransferInventory : Command(CommonStatic.Lang.Locale.EN, true) {
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.idLong, TransferInventorySourceHolder(loader.message, m.idLong, loader.channel.idLong, msg));
+            StaticStore.putHolder(m.idLong, TransferInventorySourceHolder(loader.message, m.idLong, loader.channel.idLong, msg))
         }
     }
 

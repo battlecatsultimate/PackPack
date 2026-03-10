@@ -29,7 +29,7 @@ public class Locale extends ConstraintCommand {
     public void doSomething(@Nonnull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        ConfigHolder config = StaticStore.config.computeIfAbsent(loader.getUser().getIdLong(), k -> new ConfigHolder());
+        ConfigHolder config = StaticStore.config.computeIfAbsent(loader.getUser().getIdLong(), _ -> new ConfigHolder());
 
         CommonStatic.Lang.Locale locale = config.lang;
 

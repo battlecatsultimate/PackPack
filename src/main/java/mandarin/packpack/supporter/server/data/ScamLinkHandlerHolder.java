@@ -112,7 +112,7 @@ public class ScamLinkHandlerHolder {
                 default -> ScamLinkHandler.ACTION.MUTE;
             };
 
-            ScamLinkHandler handler = new ScamLinkHandler(server, server, channel, mute, action, noticeAll);
+            ScamLinkHandler handler = new ScamLinkHandler(author, server, channel, mute, action, noticeAll);
 
             servers.put(key, handler);
         }

@@ -38,7 +38,7 @@ public class Prefix extends ConstraintCommand {
 
             User u = loader.getUser();
 
-            ConfigHolder config = StaticStore.config.computeIfAbsent(u.getIdLong(), k -> new ConfigHolder());
+            ConfigHolder config = StaticStore.config.computeIfAbsent(u.getIdLong(), _ -> new ConfigHolder());
 
             config.prefix = list[1];
 

@@ -20,7 +20,7 @@ class WipeInventory : Command(CommonStatic.Lang.Locale.EN, true) {
             return
 
         replyToMessageSafely(loader.channel, getContents(), loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
-            StaticStore.putHolder(m.idLong, InventoryWipeHolder(loader.message, m.idLong, loader.channel.idLong, msg));
+            StaticStore.putHolder(m.idLong, InventoryWipeHolder(loader.message, m.idLong, loader.channel.idLong, msg))
         }
     }
 
