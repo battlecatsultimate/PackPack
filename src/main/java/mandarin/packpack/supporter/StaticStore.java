@@ -886,7 +886,7 @@ public class StaticStore {
                     if (prefix == null)
                         continue;
 
-                    ConfigHolder holder = config.computeIfAbsent(id, k -> new ConfigHolder());
+                    ConfigHolder holder = config.computeIfAbsent(id, _ -> new ConfigHolder());
 
                     holder.prefix = prefix;
                 }
@@ -1412,7 +1412,7 @@ public class StaticStore {
                                 .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +
                                 "- In Group : " + Thread.activeCount() + "\n" +
                                 "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
-                                "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, e -> {
+                                "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, _ -> {
                         });
                     }
                 });
