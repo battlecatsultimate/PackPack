@@ -110,6 +110,8 @@ public class StaticStore {
 
     public static Map<String, SpamPrevent> spamData = new HashMap<>();
 
+    public static List<String> bannedServer = new ArrayList<>();
+
     public static Map<String, BoosterHolder> boosterData = new HashMap<>();
 
     public static ArrayList<String> needFixing = new ArrayList<>();
@@ -752,6 +754,7 @@ public class StaticStore {
         obj.add("contributor", listToJsonString(contributors));
         obj.add("maintainers", listToJsonString(maintainers));
         obj.add("spam", SpamPrevent.jsonfyMap());
+        obj.add("bannedServer", listToJsonString(bannedServer));
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
         obj.add("needFixing", listToJsonString(needFixing));
@@ -915,6 +918,10 @@ public class StaticStore {
 
             if(obj.has("spam")) {
                 spamData = SpamPrevent.parseJsonMap(obj.getAsJsonArray("spam"));
+            }
+
+            if (obj.has("bannedServer")) {
+                bannedServer = jsonToListString(obj.getAsJsonArray("bannedServer"));
             }
 
             if(obj.has("booster")) {

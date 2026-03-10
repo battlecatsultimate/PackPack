@@ -84,7 +84,11 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             Guild g = event.getGuild();
 
-            StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getId()+")");
+            if (StaticStore.bannedServer.contains(g.getId())) {
+                StaticStore.logger.uploadLog("Left server due to ban : "+g.getName()+ " ("+g.getId()+")");
+            } else {
+                StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getId()+")");
+            }
 
             StaticStore.idHolder.remove(g.getId());
 
@@ -104,6 +108,12 @@ public class AllEventAdapter extends ListenerAdapter {
 
         try {
             Guild g = event.getGuild();
+
+            if (StaticStore.bannedServer.contains(g.getId())) {
+                g.leave().queue(null, e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Failed to perform instant guild leave"));
+
+                return;
+            }
 
             StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getId()+")"+"\nSize : "+g.getMemberCount());
 
@@ -642,6 +652,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "createiconcache", "cic" -> new CreateIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "manualformiconcache", "mfic" -> new ManualFormIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "manualenemyiconcache", "meic" -> new ManualEnemyIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "leaveserver", "ls" -> new LeaveServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 
@@ -821,6 +832,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "createiconcache", "cic" -> new CreateIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "manualformiconcache", "mfic" -> new ManualFormIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "manualenemyiconcache", "meic" -> new ManualEnemyIconCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "leaveserver", "ls" -> new LeaveServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 
