@@ -85,7 +85,7 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             Guild g = event.getGuild();
 
-            if (StaticStore.bannedServer.contains(g.getId())) {
+            if (StaticStore.bannedServer.contains(g.getIdLong())) {
                 StaticStore.logger.uploadLog("Left server due to ban : "+g.getName()+ " ("+g.getId()+")");
             } else {
                 StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getIdLong()+")");
@@ -110,7 +110,7 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             Guild g = event.getGuild();
 
-            if (StaticStore.bannedServer.contains(g.getId())) {
+            if (StaticStore.bannedServer.contains(g.getIdLong())) {
                 g.leave().queue(null, e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Failed to perform instant guild leave"));
 
                 return;
