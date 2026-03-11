@@ -112,11 +112,11 @@ public class StageInfoMessageHolder extends SearchHolder {
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event, int index) {
         if(StaticStore.timeLimit.containsKey(userID)) {
-            StaticStore.timeLimit.get(userID).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+            StaticStore.timeLimit.get(userID).put(StaticStore.COMMAND_STAGE_INFO_ID, System.currentTimeMillis());
         } else {
             Map<String, Long> memberLimit = new HashMap<>();
 
-            memberLimit.put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+            memberLimit.put(StaticStore.COMMAND_STAGE_INFO_ID, System.currentTimeMillis());
 
             StaticStore.timeLimit.put(userID, memberLimit);
         }

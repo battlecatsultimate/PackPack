@@ -33,7 +33,7 @@ public class FormDPS extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public FormDPS(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, ConfigHolder config, long time) {
-        super(role, lang, idHolder, time, StaticStore.COMMAND_FORMDPS_ID, false);
+        super(role, lang, idHolder, time, StaticStore.COMMAND_FORM_DPS_ID, false);
 
         if(config == null)
             this.config = holder == null ? StaticStore.defaultConfig : holder.config;

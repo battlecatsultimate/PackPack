@@ -72,7 +72,7 @@ public class FindStage extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public FindStage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, ConfigHolder config, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_FINDSTAGE_ID, false);
+        super(role, lang, id, time, StaticStore.COMMAND_FIND_STAGE_ID, false);
 
         if(config == null)
             this.config = id == null ? StaticStore.defaultConfig : id.config;

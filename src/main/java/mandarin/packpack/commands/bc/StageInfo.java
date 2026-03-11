@@ -51,7 +51,7 @@ public class StageInfo extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public StageInfo(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder id, ConfigHolder config, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID, false);
+        super(role, lang, id, time, StaticStore.COMMAND_STAGE_INFO_ID, false);
 
         if(config == null)
             this.config = id == null ? StaticStore.defaultConfig : id.config;

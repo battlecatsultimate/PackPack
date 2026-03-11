@@ -69,21 +69,21 @@ public class StaticStore {
 
     public static final String COMMAND_BG_ID = "bg";
     public static final String COMMAND_COMBO_ID = "combo";
-    public static final String COMMAND_ENEMYIMAGE_ID = "eimage";
-    public static final String COMMAND_ENEMYSPRITE_ID = "esprite";
-    public static final String COMMAND_FINDSTAGE_ID = "fstage";
-    public static final String COMMAND_FORMIMAGE_ID = "fimage";
-    public static final String COMMAND_FORMSPRITE_ID = "fsprite";
-    public static final String COMMAND_STAGEINFO_ID = "stageinfo";
+    public static final String COMMAND_ENEMY_IMAGE_ID = "eimage";
+    public static final String COMMAND_ENEMY_SPRITE_ID = "esprite";
+    public static final String COMMAND_FIND_STAGE_ID = "fstage";
+    public static final String COMMAND_FORM_IMAGE_ID = "fimage";
+    public static final String COMMAND_FORM_SPRITE_ID = "fsprite";
+    public static final String COMMAND_STAGE_INFO_ID = "stageinfo";
     public static final String COMMAND_SUGGEST_ID = "suggest";
-    public static final String COMMAND_FINDREWARD_ID = "freward";
-    public static final String COMMNAD_PLOT_ID = "plot";
-    public static final String COMMAND_TPLOT_ID = "tplot";
+    public static final String COMMAND_FIND_REWARD_ID = "freward";
+    public static final String COMMAND_PLOT_ID = "plot";
+    public static final String COMMAND_T_PLOT_ID = "tplot";
     public static final String COMMAND_SOLVE_ID = "solve";
     public static final String COMMAND_INTEGRATE_ID = "integrate";
-    public static final String COMMAND_RTHETA_ID = "rtheta";
-    public static final String COMMAND_FORMDPS_ID = "fdps";
-    public static final String COMMAND_ENEMYDPS_ID = "edps";
+    public static final String COMMAND_R_THETA_ID = "rtheta";
+    public static final String COMMAND_FORM_DPS_ID = "fdps";
+    public static final String COMMAND_ENEMY_DPS_ID = "edps";
 
     public static final int MAX_STAGE_IMAGE_LENGTH = 128;
 
@@ -157,18 +157,6 @@ public class StaticStore {
             "🇮🇹",
             "🇹🇭"
     };
-    public static final CommonStatic.Lang.Locale[] supportedLanguages = {
-            CommonStatic.Lang.Locale.EN,
-            CommonStatic.Lang.Locale.ZH,
-            CommonStatic.Lang.Locale.JP,
-            CommonStatic.Lang.Locale.KR,
-            CommonStatic.Lang.Locale.RU,
-            CommonStatic.Lang.Locale.DE,
-            CommonStatic.Lang.Locale.FR,
-            CommonStatic.Lang.Locale.ES,
-            CommonStatic.Lang.Locale.IT,
-            CommonStatic.Lang.Locale.TH
-    };
 
     public static final int[] rainbow = {
             rgb(217, 65, 68),   // Red
@@ -202,10 +190,6 @@ public class StaticStore {
 
     public static AssetManager assetManager = new AssetManager();
 
-    /** UNIT-ICON-001-002 **/
-    public static final String UNIT_ICON = "UNIT-ICON-%s-%s";
-    /** ENEMY-ICON-000 **/
-    public static final String ENEMY_ICON = "ENEMY-ICON-%s";
     /** UNIT-EVOLVE-TRUE-050-EN **/
     public static final String UNIT_EVOLVE_TRUE = "UNIT-EVOLVE-TRUE-%s-%s";
     /** UNIT-EVOLVE-ULTRA-050-EN **/

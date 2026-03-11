@@ -30,7 +30,7 @@ public class FormSprite extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public FormSprite(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_FORMSPRITE_ID, false);
+        super(role, lang, id, time, StaticStore.COMMAND_FORM_SPRITE_ID, false);
 
         if (config == null)
             this.config = holder == null ? StaticStore.defaultConfig : holder.config;

@@ -167,13 +167,13 @@ public class FormAnimMessageHolder extends SearchHolder {
                 User u = event.getUser();
 
                 try {
-                    if(StaticStore.timeLimit.containsKey(u.getIdLong()) && StaticStore.timeLimit.get(u.getIdLong()).containsKey(StaticStore.COMMAND_FORMIMAGE_ID)) {
-                        long time = StaticStore.timeLimit.get(u.getIdLong()).get(StaticStore.COMMAND_FORMIMAGE_ID);
+                    if(StaticStore.timeLimit.containsKey(u.getIdLong()) && StaticStore.timeLimit.get(u.getIdLong()).containsKey(StaticStore.COMMAND_FORM_IMAGE_ID)) {
+                        long time = StaticStore.timeLimit.get(u.getIdLong()).get(StaticStore.COMMAND_FORM_IMAGE_ID);
 
                         if(System.currentTimeMillis() - time > 10000) {
                             EntityHandler.generateFormImage(f, event, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
-                            StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                            StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_FORM_IMAGE_ID, System.currentTimeMillis());
                         } else {
                             event.deferEdit()
                                     .setComponents(TextDisplay.of(LangID.getStringByID("bot.command.timeLimit", lang).formatted(DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))))
@@ -185,13 +185,13 @@ public class FormAnimMessageHolder extends SearchHolder {
                     } else if(StaticStore.timeLimit.containsKey(u.getIdLong())) {
                         EntityHandler.generateFormImage(f, event, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
-                        StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                        StaticStore.timeLimit.get(u.getIdLong()).put(StaticStore.COMMAND_FORM_IMAGE_ID, System.currentTimeMillis());
                     } else {
                         EntityHandler.generateFormImage(f, event, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                         Map<String, Long> memberLimit = new HashMap<>();
 
-                        memberLimit.put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                        memberLimit.put(StaticStore.COMMAND_FORM_IMAGE_ID, System.currentTimeMillis());
 
                         StaticStore.timeLimit.put(u.getIdLong(), memberLimit);
                     }

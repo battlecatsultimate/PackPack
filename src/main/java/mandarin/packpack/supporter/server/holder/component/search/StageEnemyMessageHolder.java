@@ -139,11 +139,11 @@ public class StageEnemyMessageHolder extends SearchHolder {
             } else if(stages.size() == 1) {
                 EntityHandler.generateStageEmbed(stages.getFirst(), event, getAuthorMessage(), "", treasure, configData, true, false, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getIdLong())) {
-                        StaticStore.timeLimit.get(author.getAuthor().getIdLong()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
+                        StaticStore.timeLimit.get(author.getAuthor().getIdLong()).put(StaticStore.COMMAND_FIND_STAGE_ID, System.currentTimeMillis());
                     } else {
                         Map<String, Long> memberLimit = new HashMap<>();
 
-                        memberLimit.put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
+                        memberLimit.put(StaticStore.COMMAND_FIND_STAGE_ID, System.currentTimeMillis());
 
                         StaticStore.timeLimit.put(author.getAuthor().getIdLong(), memberLimit);
                     }

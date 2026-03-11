@@ -36,7 +36,7 @@ public class FindReward extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public FindReward(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, IDHolder idHolder, long time, ConfigHolder config) {
-        super(role, lang, idHolder, time, StaticStore.COMMAND_FINDREWARD_ID, false);
+        super(role, lang, idHolder, time, StaticStore.COMMAND_FIND_REWARD_ID, false);
 
         if(config == null)
             this.config = idHolder == null ? StaticStore.defaultConfig : idHolder.config;

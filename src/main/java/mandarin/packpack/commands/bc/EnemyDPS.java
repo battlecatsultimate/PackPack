@@ -29,7 +29,7 @@ public class EnemyDPS extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public EnemyDPS(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, @Nullable IDHolder idHolder, long time) {
-        super(role, lang, idHolder, time, StaticStore.COMMAND_ENEMYDPS_ID, false);
+        super(role, lang, idHolder, time, StaticStore.COMMAND_ENEMY_DPS_ID, false);
 
         if (config == null)
             this.config = holder == null ? StaticStore.defaultConfig : holder.config;

@@ -31,7 +31,7 @@ public class FormImage extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public FormImage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_FORMIMAGE_ID, false);
+        super(role, lang, id, time, StaticStore.COMMAND_FORM_IMAGE_ID, false);
 
         if (config == null)
             this.config = holder == null ? StaticStore.defaultConfig : holder.config;

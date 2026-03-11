@@ -31,7 +31,7 @@ public class EnemyImage extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public EnemyImage(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, ConfigHolder config, IDHolder id, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_ENEMYIMAGE_ID, false);
+        super(role, lang, id, time, StaticStore.COMMAND_ENEMY_IMAGE_ID, false);
 
         if (config == null)
             this.config = holder == null ? StaticStore.defaultConfig : holder.config;

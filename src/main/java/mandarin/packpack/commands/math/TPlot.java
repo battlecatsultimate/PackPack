@@ -33,7 +33,7 @@ public class TPlot extends TimedConstraintCommand {
     private static final int numberOfElements = 5000;
 
     public TPlot(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, long time) {
-        super(role, lang, idHolder, time, StaticStore.COMMAND_TPLOT_ID, false);
+        super(role, lang, idHolder, time, StaticStore.COMMAND_T_PLOT_ID, false);
     }
 
     @Override

@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 public class RTheta extends TimedConstraintCommand {
     public RTheta(ConstraintCommand.ROLE role, CommonStatic.Lang.Locale lang, @Nullable IDHolder idHolder, long time) {
-        super(role, lang, idHolder, time, StaticStore.COMMAND_RTHETA_ID, false);
+        super(role, lang, idHolder, time, StaticStore.COMMAND_R_THETA_ID, false);
     }
 
     @Override
