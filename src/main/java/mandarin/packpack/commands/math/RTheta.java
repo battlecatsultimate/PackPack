@@ -120,7 +120,7 @@ public class RTheta extends TimedConstraintCommand {
             components.add(Separator.create(true, Separator.Spacing.LARGE));
             components.add(TextDisplay.of(plots[1] + "\n" + plots[2] + "\n\n" + plots[3] + "\n" + plots[4]));
 
-            replyToMessageSafely(ch, loader.getMessage(), msg -> StaticStore.deleteFile((File) plots[0], true), e -> {
+            replyToMessageSafely(ch, loader.getMessage(), _ -> StaticStore.deleteFile((File) plots[0], true), e -> {
                 StaticStore.logger.uploadErrorLog(e, "E/RThetaPlot::doSomething - Failed to send plot image file");
 
                 StaticStore.deleteFile((File) plots[0], true);

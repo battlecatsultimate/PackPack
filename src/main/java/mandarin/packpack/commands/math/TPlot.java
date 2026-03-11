@@ -151,7 +151,7 @@ public class TPlot extends TimedConstraintCommand {
             components.add(Separator.create(true, Separator.Spacing.LARGE));
             components.add(TextDisplay.of(plots[1] + "\n\n" + plots[2] + "\n" + plots[3]));
 
-            replyToMessageSafely(ch, loader.getMessage(), msg -> StaticStore.deleteFile((File) plots[0], true), e -> {
+            replyToMessageSafely(ch, loader.getMessage(), _ -> StaticStore.deleteFile((File) plots[0], true), e -> {
                 StaticStore.logger.uploadErrorLog(e, "E/TPlot::doSomething - Failed to send plot image file");
 
                 StaticStore.deleteFile((File) plots[0], true);
