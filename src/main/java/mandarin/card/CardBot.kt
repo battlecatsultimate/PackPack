@@ -1,7 +1,5 @@
 package mandarin.card
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -51,6 +49,8 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.requests.RestActionImpl
+import tools.jackson.databind.SerializationFeature
+import tools.jackson.databind.json.JsonMapper
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -1699,9 +1699,9 @@ object CardBot : ListenerAdapter() {
                 }
             }
 
-            val mapper = ObjectMapper()
-
-            mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+            val mapper = JsonMapper.builder()
+                .configure(SerializationFeature.INDENT_OUTPUT, true)
+                .build()
 
             val json = obj.toString()
 

@@ -1,7 +1,5 @@
 package mandarin.card.commands
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
@@ -12,6 +10,8 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.utils.FileUpload
+import tools.jackson.databind.SerializationFeature
+import tools.jackson.databind.json.JsonMapper
 import java.io.File
 import java.io.FileWriter
 
@@ -42,8 +42,9 @@ class ExtractJson : Command(CommonStatic.Lang.Locale.EN, false) {
 
         extractJsonObject(json, result, userID, true)
 
-        val mapper = ObjectMapper()
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+        val mapper = JsonMapper.builder()
+            .configure(SerializationFeature.INDENT_OUTPUT, true)
+            .build()
 
         val nodes = mapper.readTree(result.toString())
 

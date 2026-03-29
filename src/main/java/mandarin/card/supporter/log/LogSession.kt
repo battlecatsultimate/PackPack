@@ -1,29 +1,22 @@
 package mandarin.card.supporter.log
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import mandarin.card.CardBot
-import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.packpack.supporter.StaticStore
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileWriter
-import java.io.IOException
-import java.io.InputStreamReader
+import tools.jackson.databind.SerializationFeature
+import tools.jackson.databind.json.JsonMapper
+import java.io.*
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -579,9 +572,9 @@ class LogSession {
 
         val obj = asJsonObject()
 
-        val mapper = ObjectMapper()
-
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+        val mapper = JsonMapper.builder()
+            .configure(SerializationFeature.INDENT_OUTPUT, true)
+            .build()
 
         val json = obj.toString()
 

@@ -51,7 +51,7 @@ dependencies {
     implementation "org.apache.httpcomponents.client5:httpclient5:5.4.3"
     implementation "org.apache.commons:commons-lang3:3.18.0"
     implementation "org.apache.commons:commons-text:1.11.0"
-    implementation "com.fasterxml.jackson.core:jackson-databind:3.1.0"
+    implementation "tools.jackson.core:jackson-databind:3.1.1"
     testImplementation "junit:junit:4.13.2"
     implementation "io.github.kotlin-graphics:glm:0.9.9.1-12"
 

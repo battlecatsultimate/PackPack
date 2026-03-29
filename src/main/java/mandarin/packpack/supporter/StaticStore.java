@@ -1,8 +1,5 @@
 package mandarin.packpack.supporter;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.*;
 import common.CommonStatic;
 import common.io.WebFileIO;
@@ -32,6 +29,9 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.awt.*;
 import java.io.*;
@@ -844,8 +844,10 @@ public class StaticStore {
             }
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        JsonMapper mapper = JsonMapper.builder()
+                .configure(SerializationFeature.INDENT_OUTPUT, true)
+                .build();
+
 
         String json = obj.toString();
         JsonNode tree = mapper.readTree(json);
@@ -931,8 +933,9 @@ public class StaticStore {
                 }
             }
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            JsonMapper mapper = JsonMapper.builder()
+                    .configure(SerializationFeature.INDENT_OUTPUT, true)
+                    .build();
 
             String json = obj.toString();
             JsonNode tree = mapper.readTree(json);

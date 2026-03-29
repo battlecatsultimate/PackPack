@@ -1,7 +1,5 @@
 package mandarin.card.supporter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
@@ -12,6 +10,8 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
+import tools.jackson.databind.SerializationFeature
+import tools.jackson.databind.json.JsonMapper
 import java.io.File
 import java.io.FileWriter
 import kotlin.math.min
@@ -459,8 +459,9 @@ class Inventory(private val id: Long) {
     fun extractAsFile() : File {
         val json = toJson()
 
-        val mapper = ObjectMapper()
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+        val mapper = JsonMapper.builder()
+            .configure(SerializationFeature.INDENT_OUTPUT, true)
+            .build()
 
         val nodes = mapper.readTree(json.asJsonObject.toString())
 

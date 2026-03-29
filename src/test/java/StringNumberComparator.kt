@@ -1,9 +1,9 @@
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import mandarin.packpack.supporter.StaticStore
+import tools.jackson.databind.SerializationFeature
+import tools.jackson.databind.json.JsonMapper
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -73,8 +73,9 @@ fun main() {
             }
         }
 
-        val mapper = ObjectMapper()
-        mapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+        val mapper = JsonMapper.builder()
+            .configure(SerializationFeature.INDENT_OUTPUT, true)
+            .build()
 
         val json = sortNode(newObj).toString()
         val tree = mapper.readTree(json)
