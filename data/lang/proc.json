@@ -1356,5 +1356,28 @@
                 "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block slow. Set negative to increase the effect."
             }
         }
+    },
+    "DELAY": {
+        "abbr_name": "delay cd",
+        "full_name": "Delay/Advance CD",
+        "tooltip": null,
+        "format": [
+            "(prob)% chance to [(strength>=0){delay}(strength<0){advance}] unit cooldowns by (_abs(strength))[(type==0){%}(type==1){f}]",
+            "[(type==2){ of its max cooldown}(type==0){ of its current cooldown}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "chance",
+                "tooltip": null
+            },
+            "strength": {
+                "name": "strength",
+                "tooltip": "How much the cooldown gets delayed. Set negative to speed up instead."
+            },
+            "type": {
+                "name": "type",
+                "tooltip": "0 = Apply x% current cooldown. 1 = Apply a direct amount. 2 = Apply x% max cooldown."
+            }
+        }
     }
 }

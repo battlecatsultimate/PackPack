@@ -471,6 +471,7 @@
             "blastAttack" : "Blast Attack",
             "colossusSlayer" : "Colossus Slayer",
             "conjure" : "Conjure",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "Counter Surge",
             "critical" : "Critical",
             "curse" : "Curse",
@@ -729,6 +730,10 @@
             "study" : {
                 "description" : "Increases earned XP by %d%%",
                 "title" : "Study Combo"
+            },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
             },
             "villain" : {
                 "description" : "Gives 2.5x atk/def multiplier against villain enemies",

@@ -109,7 +109,6 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
                 Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
                 Inventory.ECCValidationWay.T4_2 -> "2 Unique T4 Cards"
                 Inventory.ECCValidationWay.SAME_T4_3 -> "3 Same T4 Cards"
-                else -> throw IllegalStateException("E/ECCSelectHolder::getComponents - Unhandled validation way : $v")
             }
 
             options.add(SelectOption.of(label, v.name).withDescription(doable))

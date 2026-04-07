@@ -471,6 +471,7 @@
             "blastAttack" : "폭발 공격",
             "colossusSlayer" : "초생명체 특효",
             "conjure" : "소환",
+            "cooldownDelay" : "쿨다운 지연",
             "counterSurge" : "열파 반격",
             "critical" : "크리티컬",
             "curse" : "저주",
@@ -730,6 +731,10 @@
                 "description" : "스테이지 클리어 시 얻는 XP %d%% 증가",
                 "title" : "공부력 증가"
             },
+            "surgeImmune" : {
+                "description" : "열파 무효 능력 부여",
+                "title" : "열파 무효"
+            },
             "villain" : {
                 "description" : "괴인 적들에게 가하는 데미지 2.5x증가, 받는 데미지 2.5x 감소 효과 부여",
                 "title" : "괴인 특효"
@@ -739,8 +744,8 @@
                 "title" : "지갑 콤보"
             },
             "waveImmune" : {
-                "description" : "Gives wave immunity",
-                "title" : "Wave Immunity Combo"
+                "description" : "파동 무효 능력 부여",
+                "title" : "파동 무효"
             },
             "weaken" : {
                 "description" : "공격력 약화 정도 %d%% 증가",

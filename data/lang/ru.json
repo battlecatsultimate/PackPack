@@ -471,6 +471,7 @@
             "blastAttack" : "Blast Attack",
             "colossusSlayer" : "Убийца Колоссов",
             "conjure" : "Фокусник",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "Встречный Сурдж",
             "critical" : "Криты",
             "curse" : "Проклятие",
@@ -729,6 +730,10 @@
             "study" : {
                 "description" : "Увеличивает получаемый Опыт на %d%%",
                 "title" : "Комбо Опыта"
+            },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
             },
             "villain" : {
                 "description" : "Gives 2.5x atk/def multiplier against villain enemies",

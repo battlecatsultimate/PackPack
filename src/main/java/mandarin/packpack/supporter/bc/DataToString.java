@@ -2333,6 +2333,7 @@ public class DataToString extends Data {
             case 1 -> LangID.getStringByID("data.combo.size.m", lang);
             case 2 -> LangID.getStringByID("data.combo.size.l", lang);
             case 3 -> LangID.getStringByID("data.combo.size.xl", lang);
+            case 5 -> LangID.getStringByID("data.combo.size.given", lang);
             default -> "Lv. " + lv;
         };
     }
@@ -2449,6 +2450,7 @@ public class DataToString extends Data {
             case 25 -> "villain";
             case 26 -> "waveImmune";
             case 27 -> "discount";
+            case 28 -> "surgeImmune";
             default -> throw new IllegalStateException("Invalid Combo Type : " + type);
         };
     }
