@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -68,7 +69,11 @@ public class PackBot {
                 StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Uncaught exception found : " + t.getName())
         );
 
-        RestActionImpl.setDefaultFailure(e -> StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task"));
+        RestActionImpl.setDefaultFailure(e -> {
+            if (e instanceof ErrorResponseException err && err.getErrorCode() != 10062) {
+                StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task");
+            }
+        });
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--test") && i < args.length - 1) {
