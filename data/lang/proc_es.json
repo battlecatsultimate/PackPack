@@ -1360,4 +1360,5 @@
                 "tooltip": "0 = Apply x% current cooldown. 1 = Apply a direct amount. 2 = Apply x% max cooldown."
             }
         }
+    }
 }
