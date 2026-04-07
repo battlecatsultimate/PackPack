@@ -193,6 +193,11 @@ public class StageInfoButtonHolder extends ComponentHolder {
     }
 
     @Override
+    public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) throws Exception {
+        EntityHandler.showStageEmb(st, event, hasAuthorMessage() ? getAuthorMessage() : null, "", treasure, configData, true, switchable, lang, msg -> {});
+    }
+
+    @Override
     public void clean() {
 
     }
