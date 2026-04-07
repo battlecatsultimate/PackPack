@@ -32,7 +32,7 @@ public class BackupHolder {
     private static final String PACKPACK_BACKUP_FOLDER = "PackPack Backup";
     private static final int MAX_BACKUP = 50;
 
-    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static {
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
