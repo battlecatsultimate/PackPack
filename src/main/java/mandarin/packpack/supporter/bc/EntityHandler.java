@@ -1045,10 +1045,10 @@ public class EntityHandler {
                 } else if(st.id.id == 50) {
                     sta = 2;
                 } else {
-                    sta = Math.min(Math.max(configData.star - 1, 0), st.getCont().stars.length-1);
+                    sta = Math.clamp(configData.star - 1, 0, st.getCont().stars.length - 1);
                 }
             } else {
-                sta = Math.min(Math.max(configData.star - 1, 0), st.getCont().stars.length-1);
+                sta = Math.clamp(configData.star - 1, 0, st.getCont().stars.length - 1);
             }
 
             stmMagnification = stm.stars[sta];
@@ -1482,7 +1482,30 @@ public class EntityHandler {
     }
 
     private static String generateScheme(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang, int lv, int star, TreasureHolder holder) throws Exception {
-        String hash = Long.toHexString(StaticStore.getHashOfVariables(st.data, new ArrayList<>())).toUpperCase(Locale.ENGLISH);
+        StageMap stm = st.getCont();
+
+        if (stm == null)
+            return null;
+
+        long nameHash = 0L;
+
+        for (int i = 0; i <= st.data.datas.length; i++) {
+            SCDef.Line line = st.data.datas[i];
+
+            AbEnemy ab = line.enemy.get();
+
+            if (!(ab instanceof Enemy e))
+                continue;
+
+            String name = StaticStore.safeMultiLangGet(e, lang);
+
+            if (name == null)
+                continue;
+
+            nameHash += name.hashCode();
+        }
+
+        String hash = Long.toHexString(StaticStore.getHashOfVariables(st.data, new ArrayList<>()) + nameHash).toUpperCase(Locale.ENGLISH);
 
         if (hash.length() < 5)
             hash = "0".repeat(5 - hash.length()) + hash;
@@ -1493,7 +1516,7 @@ public class EntityHandler {
                 DataToString.getMapCode(st.getCont().getCont()),
                 Data.trio(st.getCont().id.id),
                 Data.trio(st.id.id),
-                lv,
+                Math.clamp(lv, 0, stm.stars.length - 1),
                 isFrame ? "FRAME" : "SECOND",
                 lang.name(),
                 hash
