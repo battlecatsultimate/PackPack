@@ -165,7 +165,7 @@ public class ConfigButtonHolder extends ComponentHolder {
             StaticStore.config.put(userID, backup);
         }
 
-        message.editMessage(LangID.getStringByID("config.expired", config.lang == null ? holder.config.lang : config.lang))
+        message.editMessage(LangID.getStringByID("config.expired", config.lang == null ? holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang : config.lang))
                 .setComponents()
                 .mentionRepliedUser(false)
                 .queue();
