@@ -1489,7 +1489,7 @@ public class EntityHandler {
 
         long nameHash = 0L;
 
-        for (int i = 0; i <= st.data.datas.length; i++) {
+        for (int i = 0; i < st.data.datas.length; i++) {
             SCDef.Line line = st.data.datas[i];
 
             AbEnemy ab = line.enemy.get();
