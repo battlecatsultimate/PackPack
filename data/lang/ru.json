@@ -1648,7 +1648,8 @@
                 "18" : "Identical Unit/Enemy Speed",
                 "19" : "Cannon Damage Buff",
                 "20" : "UR Cost/Cooldown Buff/Deploy Limit",
-                "21" : "High Speed"
+                "21" : "High Speed",
+                "22" : "SR Half Cost"
             }
         },
         "section" : {
