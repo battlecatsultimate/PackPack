@@ -63,9 +63,9 @@ public class FormTalentHolder extends ComponentHolder {
         }
 
         if(rows.isEmpty()) {
-            message.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents().mentionRepliedUser(false).queue(null, _ -> {});
         } else {
-            message.editMessageComponents(rows).mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents(rows).mentionRepliedUser(false).queue(null, _ -> {});
         }
     }
 
