@@ -432,7 +432,7 @@ public class EntityHandler {
         }
     }
 
-    public static void showTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, CommonStatic.Lang.Locale lang) throws Exception {
+    public static void showTalentEmbed(Object sender, Message reference, Form form, boolean isFrame, boolean editMode, boolean hasParentHolder, CommonStatic.Lang.Locale lang) throws Exception {
         if(form.du == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
@@ -508,7 +508,7 @@ public class EntityHandler {
 
         spec.setFooter(DataToString.accumulateNpCost(talent, lang));
 
-        if (editMode) {
+        if (editMode && hasParentHolder) {
             List<MessageTopLevelComponent> components = new ArrayList<>();
 
             components.add(ActionRow.of(Button.secondary("back", LangID.getStringByID("ui.button.back", lang)).withEmoji(EmojiStore.BACK)));
