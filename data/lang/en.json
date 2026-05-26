@@ -1545,6 +1545,8 @@
             "35043" : "Lunar New Year Event Stamp",
             "35044" : "Demon Slayer Collab Stamp",
             "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "Ranking Dojo _"
         },
         "permanentSchedule" : {
@@ -1649,7 +1651,8 @@
                 "19" : "Cannon Damage Buff",
                 "20" : "UR Cost/Cooldown Buff/Deploy Limit",
                 "21" : "High Speed",
-                "22" : "SR Half Cost"
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
