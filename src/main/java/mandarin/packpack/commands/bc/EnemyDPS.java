@@ -127,11 +127,14 @@ public class EnemyDPS extends TimedConstraintCommand {
                         }
                     });
                 } else {
+                    Message msg = loader.getNullableMessage();
+
+                    if (msg == null)
+                        return;
+
                     replyToMessageSafely(loader.getInteractionEvent(), sb.toString(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
                         if(res != null) {
                             User u = loader.getUser();
-
-                            Message msg = loader.getNullableMessage();
 
                             TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
