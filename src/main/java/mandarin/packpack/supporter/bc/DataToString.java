@@ -85,7 +85,7 @@ public class DataToString extends Data {
         addTalentData(32, "data.hp", "HPUP");
         addTalentData(33, "data.traits.red", "T_RED");
         addTalentData(34, "data.traits.floating", "T_FLOAT");
-        addTalentData(35, "data.traits.black", "T_BLACK");
+        addTalentData(35, "data.traits.dark", "T_DARK");
         addTalentData(36, "data.traits.metal", "T_METAL");
         addTalentData(37, "data.traits.angel", "T_ANGEL");
         addTalentData(38, "data.traits.alien", "T_ALIEN");
@@ -2256,6 +2256,7 @@ public class DataToString extends Data {
             case 1 -> LangID.getStringByID("data.combo.size.m", lang);
             case 2 -> LangID.getStringByID("data.combo.size.l", lang);
             case 3 -> LangID.getStringByID("data.combo.size.xl", lang);
+            case 5 -> LangID.getStringByID("data.combo.size.given", lang);
             default -> "Lv. " + lv;
         };
     }
@@ -2373,6 +2374,7 @@ public class DataToString extends Data {
             case 25 -> "villain";
             case 26 -> "waveImmune";
             case 27 -> "discount";
+            case 28 -> "surgeImmune";
             default -> throw new IllegalStateException("Invalid Combo Type : " + type);
         };
     }

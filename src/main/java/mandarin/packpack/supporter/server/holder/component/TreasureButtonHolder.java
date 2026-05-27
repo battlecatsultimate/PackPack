@@ -72,14 +72,14 @@ public class TreasureButtonHolder extends ComponentHolder {
             }
             case "itf" -> {
                 Label crystal = buildTextInput("crystal", "data.treasure.itf.crystal", "treasure.set.treasure.itfCrystal", true, 0, TreasureHolder.itfMax[TreasureHolder.T_ITF_CRYSTAL], String.valueOf(treasure.itf[TreasureHolder.T_ITF_CRYSTAL]));
-                Label black = buildTextInput("black", "data.treasure.itf.black.ui", "treasure.set.treasure.black", true, 0, TreasureHolder.itfMax[TreasureHolder.T_BLACK], String.valueOf(treasure.itf[TreasureHolder.T_BLACK]));
+                Label dark = buildTextInput("dark", "data.treasure.itf.black.ui", "treasure.set.treasure.black", true, 0, TreasureHolder.itfMax[TreasureHolder.T_BLACK], String.valueOf(treasure.itf[TreasureHolder.T_BLACK]));
                 Label red = buildTextInput("red", "data.treasure.itf.red.ui", "treasure.set.treasure.red", true, 0, TreasureHolder.itfMax[TreasureHolder.T_RED], String.valueOf(treasure.itf[TreasureHolder.T_RED]));
                 Label floating = buildTextInput("float", "data.treasure.itf.floating.ui", "treasure.set.treasure.floating", true, 0, TreasureHolder.itfMax[TreasureHolder.T_FLOAT], String.valueOf(treasure.itf[TreasureHolder.T_FLOAT]));
                 Label angel = buildTextInput("angel", "data.treasure.itf.angel.ui", "treasure.set.treasure.angel", true, 0, TreasureHolder.itfMax[TreasureHolder.T_ANGEL], String.valueOf(treasure.itf[TreasureHolder.T_ANGEL]));
 
                 Modal modal = Modal.create("itf", LangID.getStringByID("data.treasure.itf.title", lang))
                         .addComponents(crystal)
-                        .addComponents(black)
+                        .addComponents(dark)
                         .addComponents(red)
                         .addComponents(floating)
                         .addComponents(angel)

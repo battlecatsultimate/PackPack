@@ -492,6 +492,7 @@
             "blastAttack" : "Blast Attack",
             "colossusSlayer" : "超生命體特效",
             "conjure" : "召喚",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "烈波反擊",
             "critical" : "會心一擊",
             "curse" : "詛咒",
@@ -762,6 +763,10 @@
             "study" : {
                 "description" : "Increases earned XP by %d%%",
                 "title" : "Study Combo"
+            },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
             },
             "villain" : {
                 "description" : "Gives 2.5x atk/def multiplier against villain enemies",
@@ -1099,7 +1104,7 @@
             "angel" : "天使",
             "base" : "城堡 (無限體力)",
             "behemoth" : "超獸",
-            "black" : "黑色",
+            "dark" : "黑色",
             "colossus" : "超生命體",
             "evaAngel" : "使徒",
             "floating" : "漂浮",
@@ -1164,7 +1169,7 @@
                     "text" : "Heaven's Fruit (Angel Enemy Treasure)",
                     "ui" : "Heaven's Fruit"
                 },
-                "black" : {
+                "dark" : {
                     "text" : "Void Fruit (Black Enemy Treasure)",
                     "ui" : "Void Fruit"
                 },
@@ -1592,6 +1597,9 @@
             "35042" : "New Year Event Stamp",
             "35043" : "Lunar New Year Event Stamp",
             "35044" : "Demon Slayer Collab Stamp",
+            "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "排行賽會場：_"
         },
         "permanentSchedule" : {
@@ -1695,7 +1703,9 @@
                 "18" : "Identical Unit/Enemy Speed",
                 "19" : "Cannon Damage Buff",
                 "20" : "UR Cost/Cooldown Buff/Deploy Limit",
-                "21" : "High Speed"
+                "21" : "High Speed",
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
@@ -3186,7 +3196,7 @@
                 "alien" : "請輸入異星敵人寶物數據",
                 "angel" : "請輸入天使敵人寶物數據",
                 "attack" : "請輸入攻擊力寶物設定",
-                "black" : "請輸入黑色敵人寶物數據",
+                "dark" : "請輸入黑色敵人寶物數據",
                 "cotcCrystal" : "請輸入宇宙篇水晶數據",
                 "floating" : "請輸入漂浮敵人寶物數據",
                 "health" : "請輸入體力寶物設定",

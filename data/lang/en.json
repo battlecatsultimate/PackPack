@@ -487,6 +487,7 @@
             "blastAttack" : "Blast Attack",
             "colossusSlayer" : "Colossus Slayer",
             "conjure" : "Conjure",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "Counter Surge",
             "critical" : "Critical",
             "curse" : "Curse",
@@ -757,6 +758,10 @@
             "study" : {
                 "description" : "Increases earned XP by %d%%",
                 "title" : "Study Combo"
+            },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
             },
             "villain" : {
                 "description" : "Gives 2.5x atk/def multiplier against villain enemies",
@@ -1094,7 +1099,7 @@
             "angel" : "Angel",
             "base" : "Base (Infinite health)",
             "behemoth" : "Behemoth",
-            "black" : "Black",
+            "dark" : "Dark",
             "colossus" : "Colossus",
             "evaAngel" : "EVA Angel",
             "floating" : "Floating",
@@ -1159,8 +1164,8 @@
                     "text" : "Heaven's Fruit (Angel Enemy Treasure)",
                     "ui" : "Heaven's Fruit"
                 },
-                "black" : {
-                    "text" : "Void Fruit (Black Enemy Treasure)",
+                "dark" : {
+                    "text" : "Void Fruit (Dark Enemy Treasure)",
                     "ui" : "Void Fruit"
                 },
                 "floating" : {
@@ -1585,6 +1590,9 @@
             "35042" : "New Year Event Stamp",
             "35043" : "Lunar New Year Event Stamp",
             "35044" : "Demon Slayer Collab Stamp",
+            "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "Ranking Dojo _"
         },
         "permanentSchedule" : {
@@ -1688,7 +1696,9 @@
                 "18" : "Identical Unit/Enemy Speed",
                 "19" : "Cannon Damage Buff",
                 "20" : "UR Cost/Cooldown Buff/Deploy Limit",
-                "21" : "High Speed"
+                "21" : "High Speed",
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
@@ -3184,7 +3194,7 @@
                 "alien" : "Set alien enemy treasure here",
                 "angel" : "Set angel enemy treasure here",
                 "attack" : "Set attack treasure here",
-                "black" : "Set black enemy treasure here",
+                "dark" : "Set dark enemy treasure here",
                 "cotcCrystal" : "Set CotC crystal treasure here",
                 "floating" : "Set floating enemy treasure here",
                 "health" : "Set health treasure here",

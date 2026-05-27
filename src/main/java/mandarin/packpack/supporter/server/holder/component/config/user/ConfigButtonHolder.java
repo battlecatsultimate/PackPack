@@ -39,7 +39,7 @@ import java.util.List;
 public class ConfigButtonHolder extends ComponentHolder {
     private static final int TOTAL_CONFIG = 7;
     private static final int CONFIG_CHUNK = 3;
-    
+
     private final ConfigHolder config;
     private final ConfigHolder backup;
     private final IDHolder holder;
@@ -172,7 +172,7 @@ public class ConfigButtonHolder extends ComponentHolder {
             StaticStore.config.put(userID, backup);
         }
 
-        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("config.expired", config.lang == null ? holder.config.lang : config.lang)))
+        message.editMessageComponents(TextDisplay.of(LangID.getStringByID("config.expired", config.lang == null ? holder == null ? CommonStatic.Lang.Locale.EN : holder.config.lang : config.lang)))
                 .useComponentsV2()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)

@@ -62,10 +62,12 @@ public class FormButtonHolder extends ComponentHolder {
                 if(f.unit == null)
                     return;
 
-                f = f.unit.forms[f.fid + diff];
+                int index = Math.clamp(f.fid + diff, 0, f.unit.forms.length - 1);
+
+                f = f.unit.forms[index];
 
                 try {
-                    EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, msg -> { });
+                    EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, _ -> { });
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
                 }
@@ -89,6 +91,6 @@ public class FormButtonHolder extends ComponentHolder {
 
     @Override
     public void onBack(@NotNull IMessageEditCallback event, @NotNull Holder child) throws Exception {
-        EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, msg -> { });
+        EntityHandler.generateUnitEmbed(f, event, hasAuthorMessage() ? getAuthorMessage() : null, config, f.unit.forms.length >= 3, t, configData, lang, true, _ -> { });
     }
 }

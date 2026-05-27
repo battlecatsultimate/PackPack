@@ -21,13 +21,13 @@ import java.util.function.Function;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Interpret extends Data {
     public static final String[] TRAIT = {
-            "data.traits.red", "data.traits.floating", "data.traits.black", "data.traits.metal", "data.traits.angel", "data.traits.alien", "data.traits.zombie",
+            "data.traits.red", "data.traits.floating", "data.traits.dark", "data.traits.metal", "data.traits.angel", "data.traits.alien", "data.traits.zombie",
             "data.traits.aku", "data.traits.relic", "data.traits.white", "data.traits.evaAngel", "data.traits.witch", "data.traits.colossus", "data.traits.behemoth", "data.traits.sage",
             "data.traits.villain", "data.traits.base"
     };
 
     public static final String[] TRAITICON = {
-            "T_RED", "T_FLOAT", "T_BLACK", "T_METAL", "T_ANGEL", "T_ALIEN", "T_ZOMBIE", "T_AKU", "T_RELIC", "T_WHITE",
+            "T_RED", "T_FLOAT", "T_DARK", "T_METAL", "T_ANGEL", "T_ALIEN", "T_ZOMBIE", "T_AKU", "T_RELIC", "T_WHITE",
             "EVA", "WITCH", "COLOSSUS", "BEHEMOTH", "SAGE", "VILLAIN", "BASE"
     };
 
@@ -41,7 +41,7 @@ public class Interpret extends Data {
     public static final String[] PROCIND = {
             "WEAK", "STOP", "SLOW", "KB", "WARP", "CURSE", "IMUATK", "STRONG", "LETHAL", "ATKBASE",
             "CRIT", "METALKILL", "BREAK", "SHIELDBREAK", "SATK", "BOUNTY", "MINIWAVE", "WAVE",
-            "MINIVOLC", "VOLC", "BLAST", "SPIRIT", "BSTHUNT", "IMUWEAK", "IMUSTOP", "IMUSLOW",
+            "MINIVOLC", "VOLC", "BLAST", "SPIRIT", "BSTHUNT", "DELAY", "IMUWEAK", "IMUSTOP", "IMUSLOW",
             "IMUKB", "IMUWAVE", "IMUVOLC", "IMUBLAST", "IMUWARP", "IMUCURSE", "IMUPOIATK", "POIATK",
             "DEMONSHIELD", "DEATHSURGE", "BURROW", "REVIVE", "SNIPER", "SEAL", "TIME", "SUMMON",
             "MOVEWAVE", "THEME", "POISON", "BOSS", "ARMOR", "SPEED", "COUNTER", "DMGCUT", "DMGCAP",
@@ -51,7 +51,7 @@ public class Interpret extends Data {
     public static final int[] P_INDEX = {
             P_WEAK, P_STOP, P_SLOW, P_KB, P_WARP, P_CURSE, P_IMUATK, P_STRONG, P_LETHAL, P_ATKBASE,
             P_CRIT, P_METALKILL, P_BREAK, P_SHIELDBREAK, P_SATK, P_BOUNTY, P_MINIWAVE, P_WAVE,
-            P_MINIVOLC, P_VOLC, P_BLAST, P_SPIRIT, P_BSTHUNT, P_IMUWEAK, P_IMUSTOP, P_IMUSLOW,
+            P_MINIVOLC, P_VOLC, P_BLAST, P_SPIRIT, P_BSTHUNT, P_DELAY, P_IMUWEAK, P_IMUSTOP, P_IMUSLOW,
             P_IMUKB, P_IMUWAVE, P_IMUVOLC, P_IMUBLAST, P_IMUWARP, P_IMUCURSE, P_IMUPOIATK, P_POIATK,
             P_DEMONSHIELD, P_DEATHSURGE, P_BURROW, P_REVIVE, P_SNIPER, P_SEAL, P_TIME, P_SUMMON,
             P_MOVEWAVE, P_THEME, P_POISON, P_BOSS, P_ARMOR, P_COUNTER, P_DMGCUT, P_DMGCUT, P_SPEED,

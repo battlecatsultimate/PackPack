@@ -1,15 +1,12 @@
 package mandarin.packpack.commands;
 
 import common.CommonStatic;
-import kotlin.Unit;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.BannerHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
-import java.io.File;
-import java.util.Objects;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 public class Test extends GlobalTimedConstraintCommand {
@@ -19,27 +16,15 @@ public class Test extends GlobalTimedConstraintCommand {
 
     @Override
     protected void doThing(CommandLoader loader) {
-        MessageChannel ch = loader.getChannel();
+        BannerHolder.BannerData data = StaticStore.bannerHolder.pickBanner();
 
-        ch.sendMessage("Test Message")
-                .setMessageReference((Message) null)
-                .queue();
+        if (data == null) {
+            return;
+        }
 
-        StaticStore.renderManager.createRenderer(128, 128, new File("./temp"), c -> {
-            for (int i = 0; i < 255; i++) {
-                int finalI = i;
+        Calendar c = Calendar.getInstance();
 
-                c.queue(g -> {
-                    g.setColor(255, 255, 255, finalI);
-
-                    g.fillRect(0f, 0f, 128f, 128f);
-
-                    return Unit.INSTANCE;
-                });
-            }
-
-            return Unit.INSTANCE;
-        }, frame -> Objects.requireNonNull(StaticStore.generateTempFile(new File("./temp"), "frame" + frame, "png", false)), () -> Unit.INSTANCE);
+        replyToMessageSafely(loader.getChannel(), "Banner Data : " + data + "\n\nCurrent Month : " + c.get(Calendar.MONTH), loader.getMessage(), a -> a);
     }
 
     @Override

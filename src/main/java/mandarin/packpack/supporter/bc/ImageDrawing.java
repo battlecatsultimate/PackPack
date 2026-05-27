@@ -290,7 +290,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             bg.unload();
 
             if (effect != null)
@@ -631,7 +631,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> file, () -> {
+        }, _ -> file, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -1385,7 +1385,7 @@ public class ImageDrawing {
 
             if(anim != null) {
                 switch (i) {
-                    case 0, 1 -> totalFrame += Math.max(60, Math.min(150, anim.len()));
+                    case 0, 1 -> totalFrame += Math.clamp(anim.len(), 60, 150);
                     case 2 -> totalFrame += Math.max(60, anim.len());
                     case 3, 5 -> totalFrame += 60;
                     case 4, 6 -> totalFrame += anim.len();
@@ -1412,7 +1412,7 @@ public class ImageDrawing {
 
                 if(anim != null) {
                     int frame = switch (i) {
-                        case 0, 1 -> Math.max(60, Math.min(150, anim.len()));
+                        case 0, 1 -> Math.clamp(anim.len(), 60, 150);
                         case 2 -> Math.max(60, anim.len());
                         case 3, 5 -> 60;
                         case 4, 6 -> anim.len();
@@ -1847,7 +1847,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -2018,7 +2018,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -2322,7 +2322,7 @@ public class ImageDrawing {
             });
             
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
             
             return Unit.INSTANCE;
@@ -2621,7 +2621,7 @@ public class ImageDrawing {
             });
             
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
             
             return Unit.INSTANCE;
@@ -2735,7 +2735,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -2821,7 +2821,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, i -> image, () -> {
+        }, _ -> image, () -> {
             countDown.countDown();
 
             return Unit.INSTANCE;
@@ -3044,7 +3044,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -3269,7 +3269,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -3594,7 +3594,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -4063,7 +4063,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;
@@ -4281,7 +4281,7 @@ public class ImageDrawing {
             });
 
             return Unit.INSTANCE;
-        }, progress -> image, () -> {
+        }, _ -> image, () -> {
             waiter.countDown();
 
             return Unit.INSTANCE;

@@ -492,6 +492,7 @@
             "blastAttack" : "爆波攻撃",
             "colossusSlayer" : "超生命体特効",
             "conjure" : "召喚",
+            "cooldownDelay" : "遅延",
             "counterSurge" : "烈波カウンター",
             "critical" : "クリティカル",
             "curse" : "呪い",
@@ -762,6 +763,10 @@
             "study" : {
                 "description" : "得られるXPが%d%%増加",
                 "title" : "勉強力アップ"
+            },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
             },
             "villain" : {
                 "description" : "Gives 2.5x atk/def multiplier against villain enemies",
@@ -1099,7 +1104,7 @@
             "angel" : "天使",
             "base" : "お城(体力無限)",
             "behemoth" : "超獣",
-            "black" : "黒い",
+            "dark" : "黒い",
             "colossus" : "超命",
             "evaAngel" : "使徒",
             "floating" : "浮いてる",
@@ -1164,7 +1169,7 @@
                     "text" : "天界の果実 (天使)",
                     "ui" : "天界の果実"
                 },
-                "black" : {
+                "dark" : {
                     "text" : "暗黒の果実 (黒い敵)",
                     "ui" : "暗黒の果実"
                 },
@@ -1590,6 +1595,9 @@
             "35042" : "New Year Event Stamp",
             "35043" : "Lunar New Year Event Stamp",
             "35044" : "Demon Slayer Collab Stamp",
+            "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "ランキングの間 _"
         },
         "permanentSchedule" : {
@@ -1693,7 +1701,9 @@
                 "18" : "等速直線運動",
                 "19" : "にゃんこ砲超強化",
                 "20" : "UR Cost/Cooldown Buff/Deploy Limit",
-                "21" : "High Speed"
+                "21" : "High Speed",
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
@@ -3186,7 +3196,7 @@
                 "alien" : "エイリアンに対する特殊能力効果アップ",
                 "angel" : "天使に対する特殊能力効果アップ",
                 "attack" : "キャラクターの攻撃力超大幅アップ",
-                "black" : "黒い敵に対する特殊能力効果アップ",
+                "dark" : "黒い敵に対する特殊能力効果アップ",
                 "cotcCrystal" : "エイリアン(スターあり)に対して大幅に強くなる",
                 "floating" : "浮いてる敵に対する特殊能力効果アップ",
                 "health" : "キャラクターの体力超大幅アップ",

@@ -487,6 +487,7 @@
             "blastAttack" : "Взрыв",
             "colossusSlayer" : "Убийца Колоссов",
             "conjure" : "Призыв",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "Ответный Гейзер",
             "critical" : "Критический Удар",
             "curse" : "Проклятие",
@@ -757,6 +758,10 @@
             "study" : {
                 "description" : "Увеличивает получаемый Опыт на %d%%",
                 "title" : "Комбо Опыта"
+            },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
             },
             "villain" : {
                 "description" : "Получает 0.4x урона от злодеев / Наносит 2.5x урона злодеям",
@@ -1094,7 +1099,7 @@
             "angel" : "Ангел",
             "base" : "База (Бесконечное здоровье)",
             "behemoth" : "Чудище",
-            "black" : "Чёрный",
+            "dark" : "Чёрный",
             "colossus" : "Колосс",
             "evaAngel" : "ЕВА Ангел",
             "floating" : "Летающий",
@@ -1159,7 +1164,7 @@
                     "text" : "Heaven's Fruit (Сокровище против Ангелов)",
                     "ui" : "Heaven's Fruit"
                 },
-                "black" : {
+                "dark" : {
                     "text" : "Void Fruit (Сокровище против Чёрных противников)",
                     "ui" : "Void Fruit"
                 },
@@ -1584,6 +1589,9 @@
             "35041" : "Входной Штамп 13-й Годовщины",
             "35042" : "Входной Штамп Нового Года",
             "35043" : "Входной Штамп Лунного Нового Года",
+            "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "Рейтинг Додзё _"
         },
         "permanentSchedule" : {
@@ -1687,7 +1695,9 @@
                 "18" : "Identical Unit/Enemy Speed",
                 "19" : "Cannon Damage Buff",
                 "20" : "UR Cost/Cooldown Buff/Deploy Limit",
-                "21" : "High Speed"
+                "21" : "High Speed",
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
@@ -3183,7 +3193,7 @@
                 "alien" : "Установите сокровища против Пришельцев здесь",
                 "angel" : "Установите сокровища против Ангелов здесь",
                 "attack" : "Установите сокровища Урона здесь",
-                "black" : "Установите сокровища против Чёрных противников здесь",
+                "dark" : "Установите сокровища против Чёрных противников здесь",
                 "cotcCrystal" : "Установите сокровища-кристаллы CotC здесь",
                 "floating" : "Установите сокровища против Летающих противников здесь",
                 "health" : "Установите сокровища Здоровья здесь",

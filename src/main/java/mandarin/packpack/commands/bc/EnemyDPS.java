@@ -107,10 +107,15 @@ public class EnemyDPS extends TimedConstraintCommand {
                         StaticStore.putHolder(loader.getUser().getIdLong(), new EnemyDPSHolder(enemies, loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, enemyName, config.searchLayout, treasure, magnification, lang));
                     }, getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateTextData, config.searchLayout, lang));
                 } else {
+                    Message nullableMessage = loader.getNullableMessage();
+
+                    if (nullableMessage == null)
+                        return;
+
                     replyToMessageSafely(loader.getInteractionEvent(), msg -> {
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getUser().getIdLong(), TreasureHolder.global);
 
-                        StaticStore.putHolder(loader.getUser().getIdLong(), new EnemyDPSHolder(enemies, loader.getMessage(), loader.getUser().getIdLong(), ch.getIdLong(), msg, enemyName, config.searchLayout, treasure, magnification, lang));
+                        StaticStore.putHolder(loader.getUser().getIdLong(), new EnemyDPSHolder(enemies, nullableMessage, loader.getUser().getIdLong(), ch.getIdLong(), msg, enemyName, config.searchLayout, treasure, magnification, lang));
                     }, getSearchComponents(enemies.size(), LangID.getStringByID("ui.search.severalResult", lang).formatted(enemyName, enemies.size()), enemies, this::accumulateTextData, config.searchLayout, lang));
                 }
             }
