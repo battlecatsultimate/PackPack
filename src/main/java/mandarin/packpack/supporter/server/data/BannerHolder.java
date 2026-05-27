@@ -183,7 +183,7 @@ public class BannerHolder {
 
         ArrayList<Usage> usages = new ArrayList<>();
 
-        switch (c.get(Calendar.MONTH)) {
+        switch (c.get(Calendar.MONTH) + 1) {
             case 1 -> {
                 usages.add(Usage.JANUARY);
                 usages.add(Usage.WINTER);
