@@ -633,10 +633,10 @@ public class EntityHandler {
                 } else if(st.id.id == 50) {
                     sta = 2;
                 } else {
-                    sta = Math.min(Math.max(configData.star - 1, 0), st.getCont().stars.length-1);
+                    sta = Math.clamp(configData.star - 1, 0, st.getCont().stars.length - 1);
                 }
             } else {
-                sta = Math.min(Math.max(configData.star - 1, 0), st.getCont().stars.length-1);
+                sta = Math.clamp(configData.star - 1, 0, st.getCont().stars.length - 1);
             }
 
             stmMagnification = stm.stars[sta];
@@ -2626,7 +2626,7 @@ public class EntityHandler {
     public static void generateEnemyImage(Enemy enemy, Object sender, Message reference, boolean debug, boolean transparent, int frame, int mode, CommonStatic.Lang.Locale lang) throws Exception {
         enemy.anim.load();
 
-        mode = Math.max(0, Math.min(mode, enemy.anim.anims.length - 1));
+        mode = Math.clamp(mode, 0, enemy.anim.anims.length - 1);
 
         EAnimD<?> anim = enemy.getEAnim(ImageDrawing.getAnimType(mode, enemy.anim.anims.length));
 
@@ -2720,7 +2720,7 @@ public class EntityHandler {
 
         f.anim.load();
 
-        int filteredMode = Math.max(0, Math.min(f.anim.anims.length - 1, mode));
+        int filteredMode = Math.clamp(mode, 0, f.anim.anims.length - 1);
 
         if(!debug && limit <= 0) {
             String id = generateID(f, mode, transparent);
@@ -3073,7 +3073,7 @@ public class EntityHandler {
 
         enemy.anim.load();
 
-        int filteredMode = Math.max(0, Math.min(enemy.anim.anims.length - 1, mode));
+        int filteredMode = Math.clamp(mode, 0, enemy.anim.anims.length - 1);
 
         if (!debug && limit <= 0) {
             String id = generateID(enemy, filteredMode, transparent);
