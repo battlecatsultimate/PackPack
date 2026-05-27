@@ -1071,7 +1071,7 @@
             "angel" : "天使",
             "base" : "城堡 (無限體力)",
             "behemoth" : "超獸",
-            "black" : "黑色",
+            "dark" : "黑色",
             "colossus" : "超生命體",
             "evaAngel" : "使徒",
             "floating" : "漂浮",
@@ -1136,7 +1136,7 @@
                     "text" : "Heaven's Fruit (Angel Enemy Treasure)",
                     "ui" : "Heaven's Fruit"
                 },
-                "black" : {
+                "dark" : {
                     "text" : "Void Fruit (Black Enemy Treasure)",
                     "ui" : "Void Fruit"
                 },
@@ -3109,7 +3109,7 @@
                 "alien" : "請輸入異星敵人寶物數據",
                 "angel" : "請輸入天使敵人寶物數據",
                 "attack" : "請輸入攻擊力寶物設定",
-                "black" : "請輸入黑色敵人寶物數據",
+                "dark" : "請輸入黑色敵人寶物數據",
                 "cotcCrystal" : "請輸入宇宙篇水晶數據",
                 "floating" : "請輸入漂浮敵人寶物數據",
                 "health" : "請輸入體力寶物設定",
