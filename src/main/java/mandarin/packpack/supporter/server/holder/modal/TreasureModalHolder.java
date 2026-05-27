@@ -111,11 +111,11 @@ public class TreasureModalHolder extends ModalHolder {
                 key = "treasure.done.EoC";
             }
             case ITF -> {
-                String[] values = prepareValues(event, "crystal", "black", "red", "float", "angel");
+                String[] values = prepareValues(event, "crystal", "dark", "red", "float", "angel");
 
                 String[] texts = prepareTexts(
                         TreasureHolder.eocText[TreasureHolder.T_ITF_CRYSTAL],
-                        TreasureHolder.eocText[TreasureHolder.T_BLACK],
+                        TreasureHolder.eocText[TreasureHolder.T_DARK],
                         TreasureHolder.eocText[TreasureHolder.T_RED],
                         TreasureHolder.eocText[TreasureHolder.T_FLOAT],
                         TreasureHolder.eocText[TreasureHolder.T_ANGEL]

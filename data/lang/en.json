@@ -1071,7 +1071,7 @@
             "angel" : "Angel",
             "base" : "Base (Infinite health)",
             "behemoth" : "Behemoth",
-            "black" : "Black",
+            "dark" : "Dark",
             "colossus" : "Colossus",
             "evaAngel" : "EVA Angel",
             "floating" : "Floating",
@@ -1136,8 +1136,8 @@
                     "text" : "Heaven's Fruit (Angel Enemy Treasure)",
                     "ui" : "Heaven's Fruit"
                 },
-                "black" : {
-                    "text" : "Void Fruit (Black Enemy Treasure)",
+                "dark" : {
+                    "text" : "Void Fruit (Dark Enemy Treasure)",
                     "ui" : "Void Fruit"
                 },
                 "floating" : {
@@ -3112,7 +3112,7 @@
                 "alien" : "Set alien enemy treasure here",
                 "angel" : "Set angel enemy treasure here",
                 "attack" : "Set attack treasure here",
-                "black" : "Set black enemy treasure here",
+                "dark" : "Set dark enemy treasure here",
                 "cotcCrystal" : "Set CotC crystal treasure here",
                 "floating" : "Set floating enemy treasure here",
                 "health" : "Set health treasure here",

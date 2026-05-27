@@ -21,13 +21,13 @@ import java.util.function.Function;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Interpret extends Data {
     public static final String[] TRAIT = {
-            "data.traits.red", "data.traits.floating", "data.traits.black", "data.traits.metal", "data.traits.angel", "data.traits.alien", "data.traits.zombie",
+            "data.traits.red", "data.traits.floating", "data.traits.dark", "data.traits.metal", "data.traits.angel", "data.traits.alien", "data.traits.zombie",
             "data.traits.aku", "data.traits.relic", "data.traits.white", "data.traits.evaAngel", "data.traits.witch", "data.traits.colossus", "data.traits.behemoth", "data.traits.sage",
             "data.traits.villain", "data.traits.base"
     };
 
     public static final String[] TRAITICON = {
-            "T_RED", "T_FLOAT", "T_BLACK", "T_METAL", "T_ANGEL", "T_ALIEN", "T_ZOMBIE", "T_AKU", "T_RELIC", "T_WHITE",
+            "T_RED", "T_FLOAT", "T_DARK", "T_METAL", "T_ANGEL", "T_ALIEN", "T_ZOMBIE", "T_AKU", "T_RELIC", "T_WHITE",
             "EVA", "WITCH", "COLOSSUS", "BEHEMOTH", "SAGE", "VILLAIN", "BASE"
     };
 

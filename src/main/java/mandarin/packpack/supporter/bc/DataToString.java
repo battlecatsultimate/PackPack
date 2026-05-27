@@ -85,7 +85,7 @@ public class DataToString extends Data {
         addTalentData(32, "data.hp", "HPUP");
         addTalentData(33, "data.traits.red", "T_RED");
         addTalentData(34, "data.traits.floating", "T_FLOAT");
-        addTalentData(35, "data.traits.black", "T_BLACK");
+        addTalentData(35, "data.traits.dark", "T_DARK");
         addTalentData(36, "data.traits.metal", "T_METAL");
         addTalentData(37, "data.traits.angel", "T_ANGEL");
         addTalentData(38, "data.traits.alien", "T_ALIEN");
