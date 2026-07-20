@@ -1884,8 +1884,6 @@ public class DataToString extends Data {
 
         ArrayList<Integer> clearTimes = new ArrayList<>(info.challengeRewards.keySet());
 
-        System.out.println(info.challengeRewards.keySet());
-
         clearTimes.sort(Integer::compareTo);
 
         StringBuilder builder = new StringBuilder();
@@ -2371,23 +2369,23 @@ public class DataToString extends Data {
 
     private static int getComboFactor(int type, int lv) {
         switch (type) {
-            case 0, 2 -> {
+            case C_ATK, C_SPE -> {
                 return 10 + lv * 5;
             }
-            case 1, 20, 19, 18, 17, 16, 15, 14, 13, 12, 8, 9 -> {
+            case C_DEF, C_WEAK, C_STOP, C_SLOW, C_KB, C_RESIST, C_MASSIVE, C_GOOD, C_XP, C_MEAR, C_M_INC, C_M_MAX -> {
                 if (lv < 3) {
                     return 10 + 10 * lv;
                 } else {
                     return 50;
                 }
             }
-            case 3 -> {
+            case C_C_INI -> {
                 return 20 + 20 * lv;
             }
-            case 4 -> {
+            case C_M_LV -> {
                 return 2 + lv;
             }
-            case 5 -> {
+            case C_M_INI -> {
                 if (lv == 0) {
                     return 300;
                 } else if (lv == 1) {
@@ -2396,23 +2394,26 @@ public class DataToString extends Data {
                     return 1000;
                 }
             }
-            case 6, 10 -> {
+            case C_C_ATK, C_BASE -> {
                 return 20 + 30 * lv;
             }
-            case 7 -> {
+            case C_C_SPE -> {
                 return 150 + 150 * lv;
             }
-            case 11 -> {
+            case C_RESP -> {
                 return (int) (264.0 * (1 + lv) / 10.0);
             }
-            case 21 -> {
+            case C_STRONG -> {
                 return 20 + 10 * lv;
             }
-            case 22, 23 -> {
+            case C_WKILL, C_EKILL -> {
                 return 100 + 100 * lv;
             }
-            case 24 -> {
+            case C_CRIT -> {
                 return 1 + lv;
+            }
+            case C_DISCOUNT -> {
+                return 5 + 5 * lv;
             }
             default -> {
                 return 0;
@@ -2422,35 +2423,35 @@ public class DataToString extends Data {
 
     private static String getComboKeyword(int type) {
         return switch (type) {
-            case 0 -> "attack";
-            case 1 -> "health";
-            case 2 -> "speed";
-            case 3 -> "initialCharge";
-            case 4 -> "worker";
-            case 5 -> "initialMoney";
-            case 6 -> "cannonDamage";
-            case 7 -> "cannonCharge";
-            case 8 -> "efficiency";
-            case 9 -> "wallet";
-            case 10 -> "baseHealth";
-            case 11 -> "cooldown";
-            case 12 -> "accountant";
-            case 13 -> "study";
-            case 14 -> "strong";
-            case 15 -> "massiveDamage";
-            case 16 -> "resistant";
-            case 17 -> "kb";
-            case 18 -> "slow";
-            case 19 -> "freeze";
-            case 20 -> "weaken";
-            case 21 -> "strengthen";
-            case 23 -> "evaAngelKiller";
-            case 22 -> "witchKiller";
-            case 24 -> "critical";
-            case 25 -> "villain";
-            case 26 -> "waveImmune";
-            case 27 -> "discount";
-            case 28 -> "surgeImmune";
+            case C_ATK -> "attack";
+            case C_DEF -> "health";
+            case C_SPE -> "speed";
+            case C_C_INI -> "initialCharge";
+            case C_M_LV -> "worker";
+            case C_M_INI -> "initialMoney";
+            case C_C_ATK -> "cannonDamage";
+            case C_C_SPE -> "cannonCharge";
+            case C_M_INC -> "efficiency";
+            case C_M_MAX -> "wallet";
+            case C_BASE -> "baseHealth";
+            case C_RESP -> "cooldown";
+            case C_MEAR -> "accountant";
+            case C_XP -> "study";
+            case C_GOOD -> "strong";
+            case C_MASSIVE -> "massiveDamage";
+            case C_RESIST -> "resistant";
+            case C_KB -> "kb";
+            case C_SLOW -> "slow";
+            case C_STOP -> "freeze";
+            case C_WEAK -> "weaken";
+            case C_STRONG -> "strengthen";
+            case C_EKILL -> "evaAngelKiller";
+            case C_WKILL -> "witchKiller";
+            case C_CRIT -> "critical";
+            case C_VKILL -> "villain";
+            case C_IMUWAVE -> "waveImmune";
+            case C_DISCOUNT -> "discount";
+            case C_IMUVOLC -> "surgeImmune";
             default -> throw new IllegalStateException("Invalid Combo Type : " + type);
         };
     }
