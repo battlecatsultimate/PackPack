@@ -99,7 +99,7 @@ public abstract class SearchHolder extends ComponentHolder {
             }
         }
 
-        page = Math.max(0, Math.min(getTotalPage(getDataSize(), chunk) - 1, page));
+        page = Math.clamp(page, 0, getTotalPage(getDataSize(), chunk) - 1);
 
         apply(event);
     }

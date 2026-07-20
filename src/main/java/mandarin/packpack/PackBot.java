@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.event.GachaSet;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.LwjglContext;
+import mandarin.packpack.supporter.lwjgl.opengl.RenderSessionManager;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BannerHolder;
 import mandarin.packpack.supporter.server.data.EventDataConfigHolder;
@@ -67,7 +68,13 @@ public class PackBot {
     public static RestAction<Message> statusMessage = null;
 
     static void main(String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> Logger.writeLog(Logger.BotInstance.PACK_PACK)));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Logger.writeLog(Logger.BotInstance.PACK_PACK);
+
+            StaticStore.renderManager.setReleaseFlag(true);
+            RenderSessionManager.Companion.terminate();
+        }));
+
         Thread.setDefaultUncaughtExceptionHandler((t, e) ->
                 StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Uncaught exception found : " + t.getName())
         );

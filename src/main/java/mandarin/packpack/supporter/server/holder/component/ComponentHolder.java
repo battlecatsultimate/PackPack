@@ -116,7 +116,7 @@ public abstract class ComponentHolder extends Holder {
     }
 
     @Override
-    public final STATUS handleEvent(Event event) {
+    public final STATUS handleEvent(Event event) throws Exception {
         if(event instanceof GenericComponentInteractionCreateEvent componentEvent && canHandleEvent(componentEvent)) {
             onEvent(componentEvent);
         }
@@ -129,7 +129,7 @@ public abstract class ComponentHolder extends Holder {
         return Type.COMPONENT;
     }
 
-    public abstract void onEvent(@Nonnull GenericComponentInteractionCreateEvent event);
+    public abstract void onEvent(@Nonnull GenericComponentInteractionCreateEvent event) throws Exception;
 
     private boolean canHandleEvent(GenericComponentInteractionCreateEvent event) {
         return event.getChannel().getIdLong() == channelID

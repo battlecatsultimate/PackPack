@@ -319,12 +319,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue();
             } else {
-                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().queue();
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue();
             }
         } else {
-            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue();
         }
     }
 
@@ -333,12 +333,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess);
             } else {
-                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().queue(onSuccess);
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue(onSuccess);
             }
         } else {
-            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess);
         }
     }
 
@@ -347,12 +347,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
             } else {
-                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().queue(onSuccess, onError);
+                ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
             }
         } else {
-            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+            ch.sendMessageComponents(TextDisplay.of(content)).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
         }
     }
 
@@ -361,12 +361,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue();
             } else {
-                ch.sendMessageComponents(component, components).useComponentsV2().queue();
+                ch.sendMessageComponents(component, components).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue();
             }
         } else {
-            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue();
         }
     }
 
@@ -375,12 +375,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue();
             } else {
-                ch.sendMessageComponents(components).useComponentsV2().queue();
+                ch.sendMessageComponents(components).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue();
             }
         } else {
-            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue();
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue();
         }
     }
 
@@ -389,12 +389,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess);
             } else {
-                ch.sendMessageComponents(component, components).useComponentsV2().queue(onSuccess);
+                ch.sendMessageComponents(component, components).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue(onSuccess);
             }
         } else {
-            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess);
         }
     }
 
@@ -403,12 +403,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess);
             } else {
-                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess);
+                ch.sendMessageComponents(components).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue(onSuccess);
             }
         } else {
-            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess);
         }
     }
 
@@ -417,12 +417,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+                ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
             } else {
-                ch.sendMessageComponents(component, components).useComponentsV2().queue(onSuccess, onError);
+                ch.sendMessageComponents(component, components).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
             }
         } else {
-            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+            ch.sendMessageComponents(component, components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
         }
     }
 
@@ -431,12 +431,12 @@ public abstract class Command {
             Guild g = gc.getGuild();
 
             if (g.getSelfMember().hasPermission(gc, Permission.MESSAGE_HISTORY) && reference != null) {
-                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+                ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
             } else {
-                ch.sendMessageComponents(components).useComponentsV2().queue(onSuccess, onError);
+                ch.sendMessageComponents(components).useComponentsV2().setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
             }
         } else {
-            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess, onError);
+            ch.sendMessageComponents(components).useComponentsV2().setMessageReference(reference).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()).queue(onSuccess, onError);
         }
     }
 

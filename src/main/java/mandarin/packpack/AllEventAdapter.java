@@ -564,8 +564,6 @@ public class AllEventAdapter extends ListenerAdapter {
                     new BoosterRoleRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "boosteremoji", "boostere", "bemoji", "be" ->
                     new BoosterEmoji(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "boosteremojiremove", "beremove", "boosteremojirem", "berem", "ber" ->
-                    new BoosterEmojiRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "registerlogging", "rlogging", "registerl", "rl" ->
                     new RegisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "unregisterlogging", "urlogging", "unregisterl", "url" ->
@@ -741,8 +739,6 @@ public class AllEventAdapter extends ListenerAdapter {
                     new BoosterRoleRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "boosteremoji", "boostere", "bemoji", "be" ->
                     new BoosterEmoji(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "boosteremojiremove", "beremove", "boosteremojirem", "berem", "ber" ->
-                    new BoosterEmojiRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "registerlogging", "rlogging", "registerl", "rl" ->
                     new RegisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "unregisterlogging", "urlogging", "unregisterl", "url" ->

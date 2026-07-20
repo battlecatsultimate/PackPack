@@ -89,7 +89,7 @@ public abstract class Holder {
         this.lang = lang;
     }
 
-    public abstract STATUS handleEvent(Event event);
+    public abstract STATUS handleEvent(Event event) throws Exception;
 
     public abstract void clean();
 
@@ -163,7 +163,7 @@ public abstract class Holder {
                     parentHolder.schedule.cancel(true);
                 }
 
-                StaticStore.removeHolder(userID, childHolder);
+                StaticStore.removeHolder(userID, parentHolder);
                 parentHolder = parentHolder.parent;
             }
         }
@@ -202,7 +202,15 @@ public abstract class Holder {
         throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
     }
 
+    public void onConnected(@Nonnull IMessageEditCallback edit, @Nonnull Holder parent, Object... additional) throws Exception {
+        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
+    }
+
     public void onConnected(Holder parent) throws Exception {
+        throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
+    }
+
+    public void onConnected(Holder parent, Object... additional) throws Exception {
         throw new UnsupportedOperationException("E/Holder::onConnected - Unhandled connection\n" + parent.getClass() + " -> " + this.getClass());
     }
 
@@ -210,7 +218,15 @@ public abstract class Holder {
         throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
     }
 
+    public void onBack(@Nonnull Holder child, Object... additional) throws Exception {
+        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
+    }
+
     public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child) throws Exception {
+        throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
+    }
+
+    public void onBack(@Nonnull IMessageEditCallback event, @Nonnull Holder child, Object... additional) throws Exception {
         throw new UnsupportedOperationException("E/Holder::onBack - Unhandled back handler\n" + child.getClass() + " -> " + this.getClass());
     }
 
@@ -272,6 +288,29 @@ public abstract class Holder {
         }
     }
 
+    public void connectTo(Holder holder, Object... additional) {
+        if (holder.expired) {
+            throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
+        }
+
+        holder.parent = this;
+        child = holder;
+
+        if (holder.getType() == this.getType()) {
+            StaticStore.removeHolder(userID, this);
+        }
+
+        StaticStore.putHolder(userID, holder);
+
+        holder.isRoot = false;
+
+        try {
+            holder.onConnected(this, additional);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/Holder::connectTo - Failed to perform holder connection");
+        }
+    }
+
     public void connectTo(@Nonnull IMessageEditCallback event, Holder holder) {
         if (holder.expired) {
             throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
@@ -290,6 +329,29 @@ public abstract class Holder {
 
         try {
             holder.onConnected(event, this);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/Holder::connectTo - Failed to perform holder connection");
+        }
+    }
+
+    public void connectTo(@Nonnull IMessageEditCallback event, Holder holder, Object... additional) {
+        if (holder.expired) {
+            throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
+        }
+
+        holder.parent = this;
+        child = holder;
+
+        if (holder.getType() == this.getType()) {
+            StaticStore.removeHolder(userID, this);
+        }
+
+        StaticStore.putHolder(userID, holder);
+
+        holder.isRoot = false;
+
+        try {
+            holder.onConnected(event, this, additional);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/Holder::connectTo - Failed to perform holder connection");
         }
@@ -328,6 +390,39 @@ public abstract class Holder {
         }
     }
 
+    public void goBack(Object... additional) {
+        if (parent == null) {
+            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
+        } else if (parent.expired) {
+            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
+        } else {
+            Holder childHolder = child;
+
+            while (childHolder != null) {
+                childHolder.expired = true;
+
+                if (childHolder.schedule != null) {
+                    childHolder.schedule.cancel(true);
+                }
+
+                childHolder = childHolder.child;
+            }
+
+            if (schedule != null) {
+                schedule.cancel(true);
+            }
+
+            StaticStore.removeHolder(userID, this);
+            StaticStore.putHolder(userID, parent);
+
+            try {
+                Objects.requireNonNull(parent).onBack(this, additional);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/Holder::goBack - Failed to perform going back to parent holder");
+            }
+        }
+    }
+
     public void goBack(IMessageEditCallback event) {
         if (parent == null) {
             throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
@@ -355,6 +450,39 @@ public abstract class Holder {
 
             try {
                 Objects.requireNonNull(parent).onBack(event, this);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/Holder::goBack - Failed to perform going back to parent holder");
+            }
+        }
+    }
+
+    public void goBack(IMessageEditCallback event, Object... additional) {
+        if (parent == null) {
+            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
+        } else if (parent.expired) {
+            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
+        } else {
+            Holder childHolder = child;
+
+            while (childHolder != null) {
+                childHolder.expired = true;
+
+                if (childHolder.schedule != null) {
+                    childHolder.schedule.cancel(true);
+                }
+
+                childHolder = childHolder.child;
+            }
+
+            if (schedule != null) {
+                schedule.cancel(true);
+            }
+
+            StaticStore.removeHolder(userID, this);
+            StaticStore.putHolder(userID, parent);
+
+            try {
+                Objects.requireNonNull(parent).onBack(event, this, additional);
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/Holder::goBack - Failed to perform going back to parent holder");
             }
@@ -425,10 +553,10 @@ public abstract class Holder {
                     .append("\nHierarchy : \n```");
 
             for (int i = 0; i < skimmedHolder.size(); i++) {
-                errorMessage.append("    ".repeat(i)).append("- ").append(skimmedHolder.get(i).getClass()).append("\n");
+                errorMessage.repeat("    ", i).append("- ").append(skimmedHolder.get(i).getClass()).append("\n");
 
                 if (i < skimmedHolder.size() - 1) {
-                    errorMessage.append("    ".repeat(i)).append("   |\n");
+                    errorMessage.repeat("    ", i).append("   |\n");
                 }
             }
 
@@ -500,10 +628,10 @@ public abstract class Holder {
                     .append("\nHierarchy : \n```");
 
             for (int i = 0; i < skimmedHolder.size(); i++) {
-                errorMessage.append("    ".repeat(i)).append("- ").append(skimmedHolder.get(i).getClass()).append("\n");
+                errorMessage.repeat("    ", i).append("- ").append(skimmedHolder.get(i).getClass()).append("\n");
 
                 if (i < skimmedHolder.size() - 1) {
-                    errorMessage.append("    ".repeat(i)).append("   |\n");
+                    errorMessage.repeat("    ", i).append("   |\n");
                 }
             }
 

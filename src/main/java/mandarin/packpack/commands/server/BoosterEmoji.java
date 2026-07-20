@@ -1,26 +1,37 @@
 package mandarin.packpack.commands.server;
 
 import common.CommonStatic;
-import common.io.assets.UpdateCheck;
 import mandarin.packpack.commands.ConstraintCommand;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.bc.AnimMixer;
-import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.component.booster.BoosterEmojiListHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+
 import javax.annotation.Nonnull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
+import java.util.Map;
 
 public class BoosterEmoji extends ConstraintCommand {
     public BoosterEmoji(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
@@ -39,201 +50,114 @@ public class BoosterEmoji extends ConstraintCommand {
             return;
         }
 
-        Guild g = loader.getGuild();
-        MessageChannel ch = loader.getChannel();
-        Message me = loader.getMessage();
-
         if(holder.booster == -1L) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRegisteredRole", lang));
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), LangID.getStringByID("boosterEmoji.failed.noRole", lang));
+
             return;
         }
 
-        String id = getID(loader.getContent());
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), msg -> StaticStore.putHolder(loader.getUser().getIdLong(), new BoosterEmojiListHolder(loader.getMessage(), loader.getUser().getIdLong(), loader.getChannel().getIdLong(), loader.getGuild(), msg, holder, lang)), getComponents(loader.getGuild()));
+    }
 
-        if(id == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noMember", lang));
-            return;
-        }
+    private Container getComponents(Guild g) {
+        BoosterHolder boosterHolder = StaticStore.boosterData.computeIfAbsent(g.getIdLong(), _ -> new BoosterHolder());
 
-        String name = getEmojiName(loader.getContent());
+        List<ContainerChildComponent> children = new ArrayList<>();
 
-        if(name == null || name.isBlank()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.noName", lang));
-            return;
-        }
+        children.add(TextDisplay.of(
+                "## " + LangID.getStringByID("boosterEmoji.title", lang) + "\n" +
+                LangID.getStringByID("boosterEmoji.explanation", lang) + "\n\n" +
+                        LangID.getStringByID("boosterEmoji.select", lang)
+        ));
 
-        if(me.getAttachments().isEmpty()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.noFile", lang));
-            return;
-        }
+        List<Map.Entry<Long, BoosterData>> boosterData = boosterHolder.serverBooster.entrySet().stream().filter(e -> e.getValue().getEmoji() != -1L).toList();
 
-        Member m = g.getMemberById(id);
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-        if(m != null) {
-            try {
-                if(!StaticStore.rolesToID(m.getRoles()).contains(holder.booster)) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).formatted(holder.booster));
-                    return;
+        int size = Math.min(boosterData.size(), ConfigHolder.SearchLayout.FANCY_LIST.chunkSize);
+
+        if (boosterData.isEmpty()) {
+            children.add(TextDisplay.of("### " + LangID.getStringByID("boosterEmoji.noMember", lang)));
+        } else {
+            for (int i = 0; i < size; i++) {
+                Map.Entry<Long, BoosterData> entry = boosterData.get(i);
+                Emoji emoji = g.getEmojiById(entry.getValue().getEmoji());
+
+                if (emoji == null)
+                    continue;
+
+                children.add(TextDisplay.of(
+                        LangID.getStringByID("boosterEmoji.list.member.text", lang).formatted(i, entry.getKey(), entry.getKey()) + "\n" +
+                                "  " + LangID.getStringByID("boosterEmoji.list.emoji", lang).formatted(emoji.getFormatted(), emoji.getName(), entry.getValue().getEmoji())
+                ));
+
+                if (i < size - 1) {
+                    children.add(Separator.create(false, Separator.Spacing.SMALL));
                 }
-
-                if(StaticStore.boosterData.containsKey(g.getIdLong())) {
-                    BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
-
-                    if(bHolder.serverBooster.containsKey(m.getIdLong())) {
-                        BoosterData data = bHolder.serverBooster.get(m.getIdLong());
-
-                        if(data.getRole() != -1L) {
-                            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.alreadyAssigned", lang));
-                            return;
-                        }
-                    }
-                }
-
-                boolean gif = false;
-
-                Message.Attachment selectedAttachment = null;
-
-                for(Message.Attachment att : me.getAttachments()) {
-                    if(att.getFileName().endsWith(".png") || att.getFileName().endsWith(".gif")) {
-                        selectedAttachment = att;
-
-                        if(att.getFileName().endsWith(".gif"))
-                            gif = true;
-
-                        if(att.getSize() >= 256 * 1024) {
-                            createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.tooBig", lang));
-                            return;
-                        }
-
-                        break;
-                    }
-                }
-
-                if(selectedAttachment == null) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.noFile", lang));
-
-                    return;
-                }
-
-                final boolean finalGif = gif;
-                final Message.Attachment att = selectedAttachment;
-
-                ch.sendMessage(LangID.getStringByID("boosterEmoji.downloading", lang))
-                        .setAllowedMentions(new ArrayList<>())
-                        .queue(mes -> {
-                            try {
-                                if(mes == null)
-                                    return;
-
-                                File tempo = StaticStore.generateTempFile(temp, StaticStore.extractFileName(att.getFileName()), ".png.tmp", false);
-
-                                if(tempo == null)
-                                    return;
-
-                                String url = att.getUrl();
-
-                                File target = new File(temp, tempo.getName().replace(".tmp", ""));
-
-                                UpdateCheck.Downloader down = new UpdateCheck.Downloader(target, tempo, "", false, url);
-
-                                AtomicReference<Long> currentTime = new AtomicReference<>(System.currentTimeMillis());
-
-                                down.run(p -> {
-                                    long current = System.currentTimeMillis();
-
-                                    if(current - currentTime.get() > 1500) {
-                                        currentTime.set(current);
-
-                                        mes.editMessage(LangID.getStringByID("boosterEmoji.downloading", lang).replace("-", DataToString.df.format(p * 100))).queue();
-                                    }
-                                });
-
-                                mes.delete().queue();
-
-                                if(target.exists() && att.getFileName().endsWith(".png") && !AnimMixer.validPng(target)) {
-                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.invalidImage", lang));
-
-                                    if(target.exists() && !target.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+target.getAbsolutePath());
-                                    }
-
-                                    return;
-                                } else if(!target.exists()) {
-                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.downloadFail", lang));
-
-                                    return;
-                                }
-
-                                g.createEmoji(name, Icon.from(target)).queue(e -> {
-                                    if(StaticStore.boosterData.containsKey(g.getIdLong())) {
-                                        BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
-
-                                        if(bHolder.serverBooster.containsKey(m.getIdLong())) {
-                                            BoosterData data = bHolder.serverBooster.get(m.getIdLong());
-
-                                            int result = data.setEmoji(e.getIdLong());
-
-                                            if(result == BoosterData.ERR_ALREADY_EMOJI_SET) {
-                                                createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.alreadyAssigned", lang));
-                                            } else {
-                                                createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
-                                            }
-                                        } else {
-                                            BoosterData data = new BoosterData(e.getIdLong(), BoosterData.INITIAL.EMOJI);
-
-                                            bHolder.serverBooster.put(m.getIdLong(), data);
-
-                                            createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
-                                        }
-                                    } else {
-                                        BoosterHolder bHolder = new BoosterHolder();
-
-                                        BoosterData data = new BoosterData(e.getIdLong(), BoosterData.INITIAL.EMOJI);
-
-                                        bHolder.serverBooster.put(m.getIdLong(), data);
-
-                                        StaticStore.boosterData.put(g.getIdLong(), bHolder);
-
-                                        createMessageWithNoPings(ch, LangID.getStringByID(finalGif ? "boosterEmoji.success.animated" : "boosterEmoji.success.default", lang).replace("_III_", e.getId()).replace("_MMM_", m.getId()).replace("_EEE_", name));
-                                    }
-                                }, err -> {
-                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterEmoji.failed.unknown", lang));
-
-                                    StaticStore.logger.uploadErrorLog(err, "E/BoosterEmoji::doSomething - Failed to create emote");
-                                });
-                            } catch (Exception e) {
-                                StaticStore.logger.uploadErrorLog(e, "E/BoosterEmoji::doSomething - Failed to create emote");
-                            }
-                        });
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/BoosterEmoji::doSomething - Failed to handle booster emoji command");
             }
         }
-    }
 
-    private String getID(String message) {
-        String[] content = message.split(" ");
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-        if(content.length < 2)
-            return null;
+        List<SelectOption> options = new ArrayList<>();
 
-        String id = content[1].replaceAll("<@!?", "").replace(">", "");
+        if (size == 0) {
+            options.add(SelectOption.of("A", "A"));
+        } else {
+            for (int i = 0; i < size; i++) {
+                Map.Entry<Long, BoosterData> entry = boosterData.get(i);
+                Emoji emoji = g.getEmojiById(entry.getValue().getEmoji());
 
-        if(StaticStore.isNumeric(id))
-            return id;
-        else
-            return null;
-    }
+                if (emoji == null)
+                    continue;
 
-    private String getEmojiName(String message) {
-        String[] content = message.split(" ", 3);
+                User u = g.getJDA().getUserById(entry.getKey());
 
-        if(content.length < 3)
-            return null;
+                if (u == null)
+                    continue;
 
-        if(content[2].isBlank())
-            return null;
+                options.add(SelectOption.of(LangID.getStringByID("boosterEmoji.list.member.selectMenu", lang).formatted(i + 1, u.getGlobalName(), entry.getKey()), String.valueOf(i)).withEmoji(emoji));
+            }
+        }
 
-        return content[2].strip().replace(" ", "");
+        children.add(ActionRow.of(StringSelectMenu.create("emoji").addOptions(options).setPlaceholder(LangID.getStringByID("boosterEmoji.list.edit", lang)).setRequiredRange(1, 1).setDisabled(boosterData.isEmpty()).build()));
+
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        if (boosterData.size() > ConfigHolder.SearchLayout.FANCY_LIST.chunkSize) {
+            int totalPage = SearchHolder.getTotalPage(boosterData.size(), ConfigHolder.SearchLayout.FANCY_LIST.chunkSize);
+
+            children.add(TextDisplay.of(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)));
+
+            List<Button> buttons = new ArrayList<>();
+
+            if(totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+            }
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
+
+            if(totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
+            }
+
+            children.add(ActionRow.of(buttons));
+
+            children.add(Separator.create(false, Separator.Spacing.SMALL));
+        }
+
+        EntitySelectMenu memberMenu = EntitySelectMenu.create("create", EntitySelectMenu.SelectTarget.USER)
+                .setRequiredRange(1, 1)
+                .setPlaceholder(LangID.getStringByID("boosterEmoji.list.add", lang))
+                .build();
+
+        children.add(ActionRow.of(memberMenu));
+
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        children.add(ActionRow.of(Button.danger("close", LangID.getStringByID("ui.button.close", lang)).withEmoji(EmojiStore.CROSS)));
+
+        return Container.of(children);
     }
 }

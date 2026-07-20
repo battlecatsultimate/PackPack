@@ -69,21 +69,72 @@
         }
     },
     "boosterEmoji" : {
+        "alreadyAssigned" : "This user already has assigned booster emoji! Please use select menu above if you want to change name or swap the image",
+        "closed" : "Booster emoji manage list closed",
+        "expired" : "Booster emoji manage list expired",
+        "explanation" : "Sometimes you may want to offer unique perk to boosters that they can have their own emoji as long as they are boosting your server. But if they stopped boosting the server, said perk has to be removed from them as well. Such manual management is very tedious and hard to track. For this case, bot can check if assigned users have booster role or not, and automatically manage emojis for boosters. If users stop boosting the server, since booster role will be taken away, bot will be able to detect this and remove assigned emojis accordingly",
+        "noMember" : "There's no member who has booster emoji",
+        "notBooster" : "This member isn't booster!",
         "select" : "Please select the member you want to manage",
-        "description" :{
-            "explanation" : "Sometimes you may want to offer unique perk to boosters that they can have their own emoji as long as they are boosting your server. But if they stopped boosting the server, said perk has to be removed from them as well. Such manual management is very tedious and hard to track. For this case, bot can check if assigned users have booster role or not, and automatically manage emojis for boosters. If users stop boosting the server, since booster role will be taken away, bot will be able to detect this and remove assigned emojis accordingly",
-            "title" : "## Adding Booster Emoji",
-            "member" : "**Member** : <@%d> (%d)"
+        "title" : "Booster Emoji Manage List",
+        "create" : {
+            "cancel" : "Are you sure you want to cancel assigning booster emoji to this user? This cannot be undone",
+            "changeFile" : "Change Emoji Image",
+            "changeName" : "Change Emoji Name",
+            "create" : "Create",
+            "member" : "Target Member : <@%d> [%d]",
+            "name" : "Emoji Name : %s",
+            "success" : "Successfully added booster emoji to <@%d>! : %s [%d]",
+            "title" : "Adding Booster Emoji"
         },
         "failed" : {
+            "failedAdd" : "Failed to add booster emoji to this user...",
+            "failedEmojiFile" : "Failed to change emoji file",
+            "failedModifyName" : "Failed to edit name of the booster emoji...",
+            "failedReplace" : "Failed to replace booster emoji...",
+            "invalidName" : "Please follow proper emoji name format. Name must be either alphanumeric or _",
+            "noAttachment" : "Failed to bring uploaded emoji file data",
+            "noDownloader" : "Failed to prepare downloading emoji file",
+            "noFile" : "Failed to download uploaded emoji file",
             "noBooster" : "This user doesn't have assigned booster role (<@&%d>!)",
-            "noRole" : "It seems that you haven't assigned booster role to the bot yet. Please assign it using `p!idset` or `p!sc` command!"
-        }
-    },
-    "boosterEmojiRemove" : {
-        "success" : "Successfully removed booster emoji from <@_>!",
-        "failed" : {
-            "noAssignedEmoji" : "This member doesn't have any assigned booster emoji"
+            "noRobot" : "You can't assign booster emoji to the bot!",
+            "noRole" : "It seems that you haven't assigned booster role to the bot yet. Please assign it using `p!idset` or `p!sc` command!",
+            "noSlot" : "There's no slot to add this type of emoji",
+            "notSupported" : "This file type is not supported. You can only upload png, jpg, or gif",
+            "sameName" : "This emoji name is same with current emoji's name",
+            "tooLarge" : "Uploaded image size is too large. It must be lower than 256KB"
+        },
+        "list" : {
+            "add" : "Select user here for assigning booster emoji",
+            "edit" : "Select assigned emoji to modify it",
+            "emoji" : "Assigned Emoji : %s [:%s:, %d]",
+            "member" : {
+                "selectMenu" : "%d. %s [%d]",
+                "text" : "%d. <@%d> [%d]"
+            }
+        },
+        "modify" : {
+            "change" : "Confirm Change",
+            "changed" : "Successfully modified booster emoji of <@%d>! : %s [:%s:, %d]",
+            "changeFile" : "Change Emoji Image",
+            "changeName" : "Change Emoji Name",
+            "emoji" : "Target Emoji : %s [:%s:, %d]",
+            "member" : "Target Member : <@%d> [%d]",
+            "name" : "Emoji Name : %s",
+            "delete" : "Are you sure you want to delete booster emoji from this user? This cannot be undone",
+            "deleteSuccess" : "Successfully deleted booster emoji from this user",
+            "title" : "Modifying Booster Emoji"
+        },
+        "name" : {
+            "description" : "Please enter emoji name. Name must be either alphanumeric or _",
+            "field" : "Enter Emoji Name Here",
+            "label" : "Name",
+            "title" : "Change Emoji Name"
+        },
+        "upload" : {
+            "description" : "Please post image file for booster emoji (PNG/JPG/GIF, under 256KB)",
+            "file" : "Emoji File",
+            "title" : "Assigning Booster Emoji"
         }
     },
     "boosterPin" : {
@@ -3221,6 +3272,7 @@
             "cancel" : "Cancel",
             "close" : "Close",
             "confirm" : "Confirm",
+            "delete" : "Delete",
             "dps" : "DPS Graph",
             "no" : "No",
             "select" : "Select",
