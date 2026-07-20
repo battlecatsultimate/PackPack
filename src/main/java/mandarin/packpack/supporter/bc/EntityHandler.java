@@ -3860,7 +3860,8 @@ public class EntityHandler {
             boolean res = temp.mkdirs();
 
             if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                StaticStore.logger.uploadLog("W/EntityHandler::generateUnitSprite - Failed to create folder : " + temp.getAbsolutePath());
+
                 return;
             }
         }
@@ -3969,7 +3970,8 @@ public class EntityHandler {
             boolean res = temp.mkdirs();
 
             if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                StaticStore.logger.uploadLog("W/EntityHandler::generateEnemySprite - Failed to create folder : " + temp.getAbsolutePath());
+
                 return;
             }
         }
@@ -4774,7 +4776,8 @@ public class EntityHandler {
             boolean res = temp.mkdirs();
 
             if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                StaticStore.logger.uploadLog("W/EntityHandler::generateScheme - Failed to create folder " + temp.getAbsolutePath());
+
                 return null;
             }
         }
@@ -5262,7 +5265,8 @@ public class EntityHandler {
             boolean res = temp.mkdirs();
 
             if(!res) {
-                System.out.println("Can't create folder : " + temp.getAbsolutePath());
+                StaticStore.logger.uploadLog("W/EntityHandler::generateComboImage - Failed to create folder : " + temp.getAbsolutePath());
+
                 return null;
             }
         }
