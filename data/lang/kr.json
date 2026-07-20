@@ -923,12 +923,19 @@
                     }
                 },
                 "cost" : {
+                    "multiplier" : "%s : %d%%",
+                    "title" : "- **코스트 배율**",
                     "description" : {
                         "plural" : "아래의 유닛 타입들은 코스트 배율을 가집니다",
                         "singular" : "아래의 유닛 타입들은 코스트 배율을 가집니다"
-                    },
-                    "multiplier" : "%s : %d%%",
-                    "title" : "- **코스트 배율**"
+                    }
+                },
+                "costIncrease" : {
+                    "title" : "- **코스트 증가**",
+                    "format" : {
+                        "add" : "유닛의 코스트가 스폰마다 %d씩 최대 %d까지 증가",
+                        "multiply" : "유닛의 코스트가 스폰마다 현재 코스트의 %d%%의 코스트로 최대 %d까지 증가"
+                    }
                 },
                 "duplication" : {
                     "title" : "**유닛 복제**",

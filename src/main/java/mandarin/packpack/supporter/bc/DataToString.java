@@ -1559,6 +1559,20 @@ public class DataToString extends Data {
 
                 res.add(description);
             }
+
+            if (l.stageLimit.costIncreaseValue != 0 && l.stageLimit.costMaxIncreaseValue != 0) {
+                if (l.stageLimit.costIncreaseMode == StageLimit.CostIncreaseMode.ADD) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.costIncrease.description.add", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.costIncrease.description.multiply", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
+                    );
+                }
+            }
         }
 
         return res;
@@ -1729,6 +1743,20 @@ public class DataToString extends Data {
                             LangID.getStringByID("data.stage.limit.cost.title", lang) + "\n" +
                                     LangID.getStringByID("data.stage.limit.cost.description.singular", lang) + "\n\n" +
                                     multiplier.toString().replaceAll("\\s+$", "")
+                    );
+                }
+            }
+
+            if (l.stageLimit.costIncreaseValue != 0 && l.stageLimit.costMaxIncreaseValue != 0) {
+                if (l.stageLimit.costIncreaseMode == StageLimit.CostIncreaseMode.ADD) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.description.add", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.description.multiply", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
                     );
                 }
             }
