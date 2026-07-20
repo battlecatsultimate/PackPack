@@ -2298,10 +2298,10 @@ public class EntityHandler {
 
         String formatted;
 
-        if (preset.cannonType == Data.BASE_H) {
+        if (preset.nyc[0] == Data.BASE_H) {
             formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.normal", lang).formatted(preset.bslv[0]);
         } else {
-            String cannonName = switch (preset.cannonType) {
+            String cannonName = switch (preset.nyc[0]) {
                 case Data.BASE_SLOW -> "slowBeam";
                 case Data.BASE_WALL ->  "ironWall";
                 case Data.BASE_STOP -> "thunderbolt";
@@ -2309,12 +2309,12 @@ public class EntityHandler {
                 case Data.BASE_GROUND -> "holyBlast";
                 case Data.BASE_BARRIER -> "breakerblast";
                 case Data.BASE_CURSE -> "curseblast";
-                default -> throw new IllegalStateException("E/EntityHandler::showFixedLineupData - Invalid cannon ID : %d found".formatted(preset.cannonType));
+                default -> throw new IllegalStateException("E/EntityHandler::showFixedLineupData - Invalid cannon ID : %d found".formatted(preset.nyc[0]));
             };
 
             formatted = LangID.getStringByID("data.stage.battlePreset.cannonType.format.special", lang).formatted(
                     LangID.getStringByID("data.stage.battlePreset.cannonType.cannon." + cannonName, lang),
-                    preset.bslv[preset.cannonType],
+                    preset.bslv[preset.nyc[0]],
                     preset.bslv[0]
             );
         }
@@ -2327,7 +2327,7 @@ public class EntityHandler {
 
         StringBuilder treasureBuilder = new StringBuilder();
 
-        if (preset.baseHealthBoost) {
+        if (preset.baseHealthBoost != 0) {
             treasureBuilder.append(LangID.getStringByID("data.stage.battlePreset.treasure.base", lang)).append("\n");
         }
 

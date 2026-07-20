@@ -1009,6 +1009,13 @@
                     "multiplier" : "%s : %d%%",
                     "title" : "- **Cost Multiplier**"
                 },
+                "costIncrease" : {
+                    "title" : "- **Cost Increase**",
+                    "description" : {
+                        "add" : "Unit cost increases by %d up to %d maximum per deploy",
+                        "multiply" : "Unit cost multiplied by %d%% up to %d maximum per deploy"
+                    }
+                },
                 "duplication" : {
                     "title" : "**Duplicated Deploy**",
                     "format" : {
