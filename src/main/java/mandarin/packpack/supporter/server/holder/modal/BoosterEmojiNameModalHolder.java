@@ -2,10 +2,7 @@ package mandarin.packpack.supporter.server.holder.modal;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.data.BoosterHolder;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
