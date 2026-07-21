@@ -73,7 +73,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
         val finalMember = member ?: m
 
-        if (m.id != finalMember.id && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL && !CardData.isOrganizer(m)) {
+        if (m.id != finalMember.id && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", loader.message) { a -> a }
 
             return
@@ -122,7 +122,10 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
                 rows.add(ActionRow.of(bannerCategory.build()))
             }
 
-            val cards = inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
+            val cards = inventory.cards.keys
+                .union(inventory.favorites.keys)
+                .union(inventory.validationCards.keys)
+                .sortedWith(CardComparator())
             val dataSize = cards.size
 
             val cardCategoryElements = ArrayList<SelectOption>()
@@ -148,15 +151,12 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             rows.add(ActionRow.of(cardCategory))
 
-            var totPage = dataSize / SearchHolder.PAGE_CHUNK
-
-            if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-                totPage++
+            val totalPage = SearchHolder.getTotalPage(dataSize)
 
             if (dataSize > SearchHolder.PAGE_CHUNK) {
                 val buttons = ArrayList<Button>()
 
-                if (totPage > 10) {
+                if (totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
                 }
 
@@ -164,7 +164,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-                if (totPage > 10) {
+                if (totalPage > 10) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
                 }
 
@@ -175,6 +175,7 @@ class Cards : Command(CommonStatic.Lang.Locale.EN, false) {
 
             confirmButtons.add(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CROSS))
             confirmButtons.add(Button.secondary("filter", "Filter Mode : None"))
+            confirmButtons.add(Button.secondary("skin", "Sort by Skin").withEmoji(EmojiStore.SWITCHOFF))
 
             rows.add(ActionRow.of(confirmButtons))
 

@@ -98,7 +98,7 @@ class CCSelectHolder(author: Message, userID: String, channelID: String, message
         val options = ArrayList<SelectOption>()
 
         Inventory.CCValidationWay.entries.forEach { v ->
-            if (v == Inventory.CCValidationWay.NONE)
+            if (v == Inventory.CCValidationWay.NONE || v == Inventory.CCValidationWay.MANUAL)
                 return@forEach
 
             val doable = if (Inventory.checkCCDoable(v, inventory).isBlank()) {
@@ -113,7 +113,6 @@ class CCSelectHolder(author: Message, userID: String, channelID: String, message
                 Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
                 Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + 200k Cat Foods"
                 Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
-                else -> throw IllegalStateException("E/CCSelectHolder::getComponents - Unhandled validation way : $v")
             }
 
             options.add(SelectOption.of(label, v.name).withDescription(doable))

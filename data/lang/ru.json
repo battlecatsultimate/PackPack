@@ -11,8 +11,8 @@
         },
         "failed" : {
             "noName" : "Вам необходимо указать название этапа",
-            "noPermission" : "У вас недостаточно прав для управления псевдонимами",
-            "noType" : "Укажите, каким типом данных вы хотите манипулировать",
+            "noPermission" : "You don't have permission to edit aliases",
+            "noType" : "Please specify which type of data you want to search for",
             "removeFail" : "нет такого псевдонима : _",
             "noAlias" : {
                 "enemy" : "Вам необходимо указать название врага",
@@ -303,6 +303,10 @@
         "slot" : {
             "plural" : "<Слоты %d>",
             "singular" : "<Слот 1>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -467,6 +471,7 @@
             "blastAttack" : "Blast Attack",
             "colossusSlayer" : "Убийца Колоссов",
             "conjure" : "Фокусник",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "Встречный Сурдж",
             "critical" : "Криты",
             "curse" : "Проклятие",
@@ -659,6 +664,10 @@
                 "description" : "Увеличивает шанс крита на %d%%",
                 "title" : "Комбо Способности : Крит"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "Увеличивает прибавление денег за каждый кадр на %d%%",
                 "title" : "Комбо Эффективности Кота Рабочего"
@@ -696,6 +705,7 @@
                 "title" : "Комбо Способности : Resistant"
             },
             "size" : {
+                "given" : "Given",
                 "l" : "L",
                 "m" : "M",
                 "sm" : "Sm",
@@ -721,9 +731,21 @@
                 "description" : "Увеличивает получаемый Опыт на %d%%",
                 "title" : "Комбо Опыта"
             },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
+            },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier against villain enemies",
+                "title" : "Villain Slayer"
+            },
             "wallet" : {
                 "description" : "Увеличивает размер кошелька на %d%%",
                 "title" : "Комбо Размера Кошелька"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "Увеличивает длительность ослабления на %d%%",
@@ -908,6 +930,13 @@
                     "multiplier" : "%s : %d%%",
                     "title" : "- **Множитель Стоимости**"
                 },
+                "costIncrease" : {
+                    "title" : "- **Cost Increase**",
+                    "description" : {
+                        "add" : "Unit cost increases by %d up to %d maximum per deploy",
+                        "multiply" : "Unit cost multiplied by %d%% up to %d maximum per deploy"
+                    }
+                },
                 "duplication" : {
                     "title" : "**Двойники**",
                     "format" : {
@@ -957,9 +986,14 @@
                 "speed" : {
                     "title" : "- **Ограничение Скорости**",
                     "description" : {
-                        "both" : "Скорость юнитов - %d, скорость врагов - %d",
-                        "enemy" : "Скорость врагов - %d",
-                        "unit" : "Скорость юнитов - %d"
+                        "enemy" : {
+                            "multiply" : "Enemies' speed has %d%% multiplier",
+                            "set" : "Enemies' speed set to %d"
+                        },
+                        "unit" : {
+                            "multiply" : "Units' speed has %d%% multiplier",
+                            "set" : "Units' speed set to %d"
+                        }
                     }
                 }
             },
@@ -995,6 +1029,7 @@
                     "score" : "Награды за Очки"
                 },
                 "type" : {
+                    "challenge" : "Challenge Drops (Clear | Reward | Amount)",
                     "number" : "Награда (Ном. | Награда | Количество)",
                     "score" : "Награда за Очки (Очки | Награда | Количество)",
                     "chance" : {
@@ -1043,7 +1078,7 @@
             "angel" : "Ангел",
             "base" : "База (Бесконечное здоровье)",
             "behemoth" : "Дикий",
-            "black" : "Черный",
+            "dark" : "Черный",
             "colossus" : "Колосс",
             "evaAngel" : "ЕВА Ангел",
             "floating" : "Летающий",
@@ -1052,6 +1087,7 @@
             "relic" : "Реликтовый",
             "sage" : "Мудрец",
             "starred" : "Космический",
+            "villain" : "Villain",
             "white" : "Белый",
             "witch" : "Ведьма",
             "zombie" : "Зомби"
@@ -1107,7 +1143,7 @@
                     "text" : "Heaven's Fruit (Сокровище Ангельских Врагов)",
                     "ui" : "Heaven's Fruit"
                 },
-                "black" : {
+                "dark" : {
                     "text" : "Void Fruit (Сокровище Чёрным Врагов)",
                     "ui" : "Void Fruit"
                 },
@@ -1388,6 +1424,7 @@
             "849" : "Распродажа: Chocosurp Cat C",
             "850" : "Распродажа: Двойные Платиновые Билеты [1st]",
             "851" : "Распродажа: Двойные Платиновые Билеты [2nd]",
+            "852" : "Collaboration Celebration Pack",
             "900" : "Подарки: Грибовый Сад",
             "901" : "Подарки: Бонус Возвращения",
             "902" : "Подарки: Бонус Возвращения Золотого Билета",
@@ -1504,6 +1541,19 @@
             "35032" : "Come-Back Stamp",
             "35033" : "Summer Break Survival Stamp",
             "35034" : "Evangelion Collab Stamp",
+            "35035" : "Trash Cat Stamp",
+            "35036" : "Summer Break Paradise Stamp",
+            "35037" : "Event Stamp",
+            "35038" : "11.5th Anniversary Stamp",
+            "35039" : "Подарки: Хеллоуин",
+            "35040" : "Подарки: Street Fighter Коллаб",
+            "35041" : "13th Anniversary Stamp",
+            "35042" : "Подарки: Новый Год",
+            "35043" : "Lunar New Year Event Stamp",
+            "35044" : "Demon Slayer Collab Stamp",
+            "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "Ранговый Додзё _"
         },
         "permanentSchedule" : {
@@ -1598,7 +1648,18 @@
                 "9" : "Ограниченное Размещение Редкостей",
                 "10" : "Умноженные Силы Пушки",
                 "11" : "Фикс. Скорость Юнитов/Врагов",
-                "12" : "Специальные Спавнятся с Двойниками"
+                "12" : "Специальные Спавнятся с Двойниками",
+                "13" : "Low UR Cost",
+                "14" : "Ограниченная Перезарядка",
+                "15" : "Money Limit/Uber Rare Cooldown Buff",
+                "16" : "Low Cost",
+                "17" : "UR Cost Up/Triple UR Deploy",
+                "18" : "Identical Unit/Enemy Speed",
+                "19" : "Cannon Damage Buff",
+                "20" : "UR Cost/Cooldown Buff/Deploy Limit",
+                "21" : "High Speed",
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
@@ -1775,7 +1836,7 @@
         "assetBrowser" : {
             "alias" : "`abrowser`, `assetb`, `ab`",
             "description" : "Возьмите ассеты и загрузите данные из выбранного файла. **Его могут использовать только доверенные пользователи, поскольку он предоставляет необработанные файлы BC**",
-            "usage" : "`%saasetbrowser`"
+            "usage" : "`%sassetbrowser`"
         },
         "background" : {
             "alias" : "`bg`",
@@ -3058,7 +3119,7 @@
                 "alien" : "Установите сокровища пришельческих врагов здесь",
                 "angel" : "Установите сокровища ангельских врагов здесь",
                 "attack" : "Установите сокровища атаки здесь",
-                "black" : "Установите сокровища черных врагов здесь",
+                "dark" : "Установите сокровища черных врагов здесь",
                 "cotcCrystal" : "Установите сокровище кристаллов CotC здесь",
                 "floating" : "Установите сокровища летающих врагов здесь",
                 "health" : "Установите сокровища здоровья здесь",

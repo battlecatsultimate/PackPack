@@ -130,16 +130,18 @@ object Notification {
                     ccRemoved = true
 
                     if (inventory.eccValidationWay != Inventory.ECCValidationWay.NONE && inventory.eccValidationWay != Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
-                        inventory.cancelECC(g, userID)
-
                         eccRemoved = true
                     }
+
+                    inventory.cancelCC(g, userID)
                 }
 
                 if (inventory.eccValidationWay == Inventory.ECCValidationWay.LEGENDARY_COLLECTOR && eccRole != null) {
                     g.removeRoleFromMember(UserSnowflake.fromId(userID), eccRole).queue()
 
                     eccRemoved = true
+
+                    inventory.cancelECC(g, userID)
                 }
 
                 if (this::notificationChannel.isInitialized) {
@@ -178,6 +180,14 @@ object Notification {
     fun handleNotificationTest(userID: Long) {
         if (this::notificationChannel.isInitialized) {
             notificationChannel.sendMessage("<@$userID> This is test notification. You will receive all the notifications in here").queue()
+        }
+    }
+
+    fun handleECCRoleDisconnectedNotification(inventory: Inventory, owner: Long) {
+        val message = "<@$owner>, your ECC has been removed due to removal of your custom role ${inventory.eccValidationRoleID}. If this turned out to be false-positive, please contact card managers"
+
+        if (this::notificationChannel.isInitialized) {
+            notificationChannel.sendMessage(message).queue()
         }
     }
 }

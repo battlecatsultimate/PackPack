@@ -188,9 +188,7 @@ public class ConfigAnnouncementHolder extends ServerConfigHolder {
                 .setPlaceholder(LangID.getStringByID("serverConfig.announcement.selectChannel", lang));
 
         if (holder.announceChannel != null) {
-            EntitySelectMenu.DefaultValue value = EntitySelectMenu.DefaultValue.channel(holder.announceChannel);
-
-            channelBuilder = channelBuilder.setDefaultValues(value);
+            channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(holder.announceChannel)).setRequiredRange(0, 1);
         }
 
         result.add(ActionRow.of(

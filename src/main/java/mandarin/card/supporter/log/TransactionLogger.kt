@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlin.math.min
 
 object TransactionLogger {
@@ -50,13 +52,28 @@ object TransactionLogger {
 
         builder.addField(MessageEmbed.Field("Pack", pack.packName, false))
 
-        val cardBuilder = StringBuilder()
-
         if (cards.isNotEmpty()) {
-            cards.forEach { c -> cardBuilder.append("- ").append(c.cardInfo()).append("\n") }
-        }
+            val cardBuilder = StringBuilder()
+            var index = 0
 
-        builder.addField(MessageEmbed.Field("Result", cardBuilder.toString(), false))
+            cards.forEach { card ->
+                val text = "- ${card.cardInfo()}\n"
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
+        }
 
         builder.setAuthor(member.user.effectiveName, null, member.user.effectiveAvatarUrl)
 
@@ -1513,6 +1530,7 @@ object TransactionLogger {
             Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
             Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
             Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.MANUAL -> "Manual"
             Inventory.CCValidationWay.NONE -> "None"
         }
 
@@ -1524,6 +1542,7 @@ object TransactionLogger {
 
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
+        builder.addField("Obtain Time", "<t:${inventory.ccValidationTime / 1000}:F>", false)
 
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.CC || pair.first == Inventory.ShareStatus.BOTH }
 
@@ -1548,6 +1567,10 @@ object TransactionLogger {
 
                 cardBuilder.append(text).append("\n")
             }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
@@ -1562,6 +1585,8 @@ object TransactionLogger {
             Inventory.ECCValidationWay.T4_2 -> "- 2 Unique T4 Cards"
             Inventory.ECCValidationWay.SAME_T4_3 -> "- 3 Same T4 Cards"
             Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.CUSTOM_ROLE -> "Custom Role"
+            Inventory.ECCValidationWay.MANUAL -> "Manual"
             Inventory.ECCValidationWay.NONE -> "None"
         }
 
@@ -1573,6 +1598,7 @@ object TransactionLogger {
 
         builder.addField("Obtainer", "<@$obtainer> [$obtainer]", false)
         builder.addField("Way", "**$way**", false)
+        builder.addField("Obtain Time", "<t:${inventory.eccValidationTime / 1000}:F>", false)
 
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC || pair.first == Inventory.ShareStatus.BOTH }
 
@@ -1597,6 +1623,10 @@ object TransactionLogger {
 
                 cardBuilder.append(text).append("\n")
             }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
@@ -1614,6 +1644,7 @@ object TransactionLogger {
             Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards"
             Inventory.CCValidationWay.T3_3 -> "3 Unique T3 Cards + $cf 200k"
             Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.CCValidationWay.MANUAL -> "Manual"
             Inventory.CCValidationWay.NONE -> "None"
         }
 
@@ -1633,17 +1664,40 @@ object TransactionLogger {
             builder.addField("Remover", "<@$manager> [$manager]", false)
         }
 
+        builder.addField("Obtain Time", "<t:${inventory.ccValidationTime / 1000}:F>", false)
+
+        if (inventory.ccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.ccValidationReason, false)
+        }
+
         builder.addField("Canceler", "<@$canceler> [$canceler]", false)
         builder.addField("Way", "**$way**", false)
 
         if (inventory.validationCards.isNotEmpty()) {
-            builder.addField("Retrieved Cards", inventory.validationCards.entries.joinToString("\n") { (card, pair) ->
-                if (pair.second >= 2) {
+            val cardBuilder = StringBuilder()
+            var index = 0
+
+            inventory.validationCards.entries.forEach { (card, pair) ->
+                val text = if (pair.second >= 2) {
                     "${card.simpleCardInfo()} x${pair.second}"
                 } else {
                     card.simpleCardInfo()
                 }
-            }, false)
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
         }
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
@@ -1658,6 +1712,8 @@ object TransactionLogger {
             Inventory.ECCValidationWay.T4_2 -> "2 Unique T4 Cards"
             Inventory.ECCValidationWay.SAME_T4_3 -> "3 Same T4 Cards"
             Inventory.ECCValidationWay.LEGENDARY_COLLECTOR -> "Legendary Collector"
+            Inventory.ECCValidationWay.CUSTOM_ROLE -> "Custom Role"
+            Inventory.ECCValidationWay.MANUAL -> "Manual"
             Inventory.ECCValidationWay.NONE -> "None"
         }
 
@@ -1677,20 +1733,109 @@ object TransactionLogger {
             builder.addField("Remover", "<@$manager> [$manager]", false)
         }
 
+        builder.addField("Obtain Time", "<t:${inventory.eccValidationTime / 1000}:F>", false)
+
+        if (inventory.eccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.eccValidationReason, false)
+        }
+
         builder.addField("Canceler", "<@$canceler> [$canceler]", false)
         builder.addField("Way", "**$way**", false)
 
         val cards = inventory.validationCards.filterValues { pair -> pair.first == Inventory.ShareStatus.ECC }
 
         if (cards.isNotEmpty()) {
-            builder.addField("Retrieved Cards", cards.entries.joinToString("\n") { (card, pair) ->
-                if (pair.second >= 2) {
+            val cardBuilder = StringBuilder()
+            var index = 0
+
+            cards.entries.forEach { (card, pair) ->
+                val text = if (pair.second >= 2) {
                     "${card.simpleCardInfo()} x${pair.second}"
                 } else {
                     card.simpleCardInfo()
                 }
-            }, false)
+
+                if (cardBuilder.length + text.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+                    builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+
+                    index++
+
+                    cardBuilder.clear()
+                }
+
+                cardBuilder.append(text).append("\n")
+            }
+
+            if (cardBuilder.isNotEmpty()) {
+                builder.addField("Retrieved Cards${if (index == 0) "" else " $index"}", cardBuilder.toString(), false)
+            }
         }
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCCAdd(user: Long, manager: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = if (inventory.ccValidationWay == Inventory.CCValidationWay.MANUAL) {
+            "Manual"
+        } else {
+            throw IllegalStateException("E/TransactionLogger::logCCAdd - Invalid CC add reason : ${inventory.ccValidationWay}")
+        }
+
+        val builder = EmbedBuilder()
+
+        val description = "Manager <@$manager> added CC to user <@$user> with the way of `$way`"
+
+        builder.setTitle("CC Manually Added")
+            .setDescription(description)
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+        builder.addField("Obtain Time", "<t:${inventory.ccValidationTime / 1000}:F>", false)
+
+        if (inventory.ccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.ccValidationReason, false)
+        }
+
+        builder.addField("User", "<@$user> [$user]", false)
+        builder.addField("Way", "**$way**", false)
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logECCAdd(user: Long, manager: Long, inventory: Inventory) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val way = when(inventory.eccValidationWay) {
+            Inventory.ECCValidationWay.CUSTOM_ROLE -> "Custom Role"
+            Inventory.ECCValidationWay.MANUAL -> "Manual"
+            else -> throw IllegalStateException("E/TransactionLogger::logECCAdd - Invalid ECC add reason : ${inventory.eccValidationWay}")
+        }
+
+        val builder = EmbedBuilder()
+
+        val description = "Manager <@$manager> added ECC to user <@$user> with the way of `$way`"
+
+        builder.setTitle("ECC Manually Added")
+            .setDescription(description)
+            .setColor(StaticStore.rainbow.random())
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+        builder.addField("Obtain Time", "<t:${inventory.eccValidationTime / 1000}:F>", false)
+
+        if (inventory.eccValidationReason.isNotBlank()) {
+            builder.addField("Validation Reason", inventory.eccValidationReason, false)
+        }
+
+        if (inventory.eccValidationRoleID != 0L) {
+            builder.addField("Validation Role", "<@&${inventory.eccValidationRoleID}> [${inventory.eccValidationRoleID}]", false)
+        }
+
+        builder.addField("User", "<@$user> [$user]", false)
+        builder.addField("Way", "**$way**", false)
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
     }

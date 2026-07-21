@@ -63,3 +63,5 @@ hs_err_pid*
 /data/cardBanner/*
 /data/cardBannerData.json
 /data/dropboxToken.json
+/gradlew.bat
+/gradlew

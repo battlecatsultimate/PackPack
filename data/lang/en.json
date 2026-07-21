@@ -11,8 +11,8 @@
         },
         "failed" : {
             "noName" : "You have to specify alias name",
-            "noPermission" : "You don't have permission to manipulate aliases",
-            "noType" : "Please specify which type of data you want to manipulate",
+            "noPermission" : "You don't have permission to edit aliases",
+            "noType" : "Please specify which type of data you want to search for",
             "removeFail" : "_ doesn't have such alias",
             "noAlias" : {
                 "enemy" : "You have to specify enemy's name",
@@ -303,6 +303,10 @@
         "slot" : {
             "plural" : "<%d Slots>",
             "singular" : "<1 Slot>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -467,6 +471,7 @@
             "blastAttack" : "Blast Attack",
             "colossusSlayer" : "Colossus Slayer",
             "conjure" : "Conjure",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "Counter Surge",
             "critical" : "Critical",
             "curse" : "Curse",
@@ -659,6 +664,10 @@
                 "description" : "Increases critical hit chance by %d%%",
                 "title" : "Ability Combo : Critical"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "Increase money increase per frame by %d%%",
                 "title" : "Worker Cat Efficiency Combo"
@@ -696,6 +705,7 @@
                 "title" : "Ability Combo : Resistant"
             },
             "size" : {
+                "given" : "Given",
                 "l" : "L",
                 "m" : "M",
                 "sm" : "Sm",
@@ -721,9 +731,21 @@
                 "description" : "Increases earned XP by %d%%",
                 "title" : "Study Combo"
             },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
+            },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier against villain enemies",
+                "title" : "Villain Slayer Combo"
+            },
             "wallet" : {
                 "description" : "Increase wallet size by %d%%",
                 "title" : "Wallet Size Combo"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "Increases weaken duration by %d%%",
@@ -908,6 +930,13 @@
                         "singular" : "Unit rarity below gets cost multiplier"
                     }
                 },
+                "costIncrease" : {
+                    "title" : "- **Cost Increase**",
+                    "description" : {
+                        "add" : "Unit cost increases by %d up to %d maximum per deploy",
+                        "multiply" : "Unit cost multiplied by %d%% up to %d maximum per deploy"
+                    }
+                },
                 "duplication" : {
                     "title" : "**Duplicated Deploy**",
                     "format" : {
@@ -957,9 +986,14 @@
                 "speed" : {
                     "title" : "- **Speed Adjustment Limit**",
                     "description" : {
-                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
-                        "enemy" : "Enemies' speed set to %d",
-                        "unit" : "Units' speed set to %d"
+                        "enemy" : {
+                            "multiply" : "Enemies' speed has %d%% multiplier",
+                            "set" : "Enemies' speed set to %d"
+                        },
+                        "unit" : {
+                            "multiply" : "Units' speed has %d%% multiplier",
+                            "set" : "Units' speed set to %d"
+                        }
                     }
                 }
             },
@@ -995,6 +1029,7 @@
                     "score" : "Score Drops"
                 },
                 "type" : {
+                    "challenge" : "Challenge Drops (Clear | Reward | Amount)",
                     "number" : "Drops (No. | Reward | Amount)",
                     "score" : "Score Drops (Score | Reward | Amount)",
                     "chance" : {
@@ -1043,7 +1078,7 @@
             "angel" : "Angel",
             "base" : "Base (Infinite health)",
             "behemoth" : "Behemoth",
-            "black" : "Black",
+            "dark" : "Dark",
             "colossus" : "Colossus",
             "evaAngel" : "EVA Angel",
             "floating" : "Floating",
@@ -1052,6 +1087,7 @@
             "relic" : "Relic",
             "sage" : "Sage",
             "starred" : "Starred",
+            "villain" : "Villain",
             "white" : "White",
             "witch" : "Witch",
             "zombie" : "Zombie"
@@ -1107,8 +1143,8 @@
                     "text" : "Heaven's Fruit (Angel Enemy Treasure)",
                     "ui" : "Heaven's Fruit"
                 },
-                "black" : {
-                    "text" : "Void Fruit (Black Enemy Treasure)",
+                "dark" : {
+                    "text" : "Void Fruit (Dark Enemy Treasure)",
                     "ui" : "Void Fruit"
                 },
                 "floating" : {
@@ -1388,6 +1424,7 @@
             "849" : "Chocosurp Cat C Sale",
             "850" : "Double Platinum Ticket Sale [1st]",
             "851" : "Double Platinum Ticket Sale [2nd]",
+            "852" : "Collaboration Celebration Pack",
             "900" : "Mushroom Garden Stamp",
             "901" : "Comeback Bonus Stamp",
             "902" : "Comeback Bonus Gold Ticket Stamp",
@@ -1504,6 +1541,19 @@
             "35032" : "Come-Back Stamp",
             "35033" : "Summer Break Survival Stamp",
             "35034" : "Evangelion Collab Stamp",
+            "35035" : "Trash Cat Stamp",
+            "35036" : "Summer Break Paradise Stamp",
+            "35037" : "Event Stamp",
+            "35038" : "11.5th Anniversary Stamp",
+            "35039" : "Halloween Event Stamp",
+            "35040" : "Street Fighter Collab Stamp",
+            "35041" : "13th Anniversary Stamp",
+            "35042" : "New Year Event Stamp",
+            "35043" : "Lunar New Year Event Stamp",
+            "35044" : "Demon Slayer Collab Stamp",
+            "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "Ranking Dojo _"
         },
         "permanentSchedule" : {
@@ -1596,9 +1646,20 @@
                 "7" : "EX Cost/Cooldown Buff",
                 "8" : "UR Deploy Duplication",
                 "9" : "Rarity Deploy Limit",
-                "10" : "Cannon Multiplier Buff",
+                "10" : "Cannon Damage Buff",
                 "11" : "Identical Unit/Enemy Speed",
-                "12" : "EX Deploy Duplication"
+                "12" : "EX Deploy Duplication",
+                "13" : "Low UR Cost",
+                "14" : "Cooldown Limit",
+                "15" : "Money Limit/UR Cooldown Buff",
+                "16" : "Low Cost",
+                "17" : "UR Cost Up/Triple UR Deploy",
+                "18" : "Identical Unit/Enemy Speed",
+                "19" : "Cannon Damage Buff",
+                "20" : "UR Cost/Cooldown Buff/Deploy Limit",
+                "21" : "High Speed",
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
@@ -1775,7 +1836,7 @@
         "assetBrowser" : {
             "alias" : "`abrowser`, `assetb`, `ab`",
             "description" : "Bring asset browser, and upload picked file data. **This can be used by only trusted users because it gives raw files of BC**",
-            "usage" : "`%saasetbrowser`"
+            "usage" : "`%sassetbrowser`"
         },
         "background" : {
             "alias" : "`bg`",
@@ -3058,7 +3119,7 @@
                 "alien" : "Set alien enemy treasure here",
                 "angel" : "Set angel enemy treasure here",
                 "attack" : "Set attack treasure here",
-                "black" : "Set black enemy treasure here",
+                "dark" : "Set dark enemy treasure here",
                 "cotcCrystal" : "Set CotC crystal treasure here",
                 "floating" : "Set floating enemy treasure here",
                 "health" : "Set health treasure here",

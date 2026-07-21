@@ -11,8 +11,8 @@
         },
         "failed" : {
             "noName" : "You have to specify alias name",
-            "noPermission" : "You don't have permission to manipulate aliases",
-            "noType" : "Please specify which type of data you want to manipulate",
+            "noPermission" : "You don't have permission to edit aliases",
+            "noType" : "Please specify which type of data you want to search for",
             "removeFail" : "_ doesn't have such alias",
             "noAlias" : {
                 "enemy" : "You have to specify enemy's name",
@@ -303,6 +303,10 @@
         "slot" : {
             "plural" : "<%d Slots>",
             "singular" : "<1 Slot>"
+        },
+        "unit" : {
+            "plural" : "This combo applies only to these units : **%s**",
+            "singular" : "This combo applies only to this unit : **%s**"
         }
     },
     "comboAnalyzer" : {
@@ -467,6 +471,7 @@
             "blastAttack" : "爆波攻擊",
             "colossusSlayer" : "超生命體特效",
             "conjure" : "召喚",
+            "cooldownDelay" : "Cooldown Delay",
             "counterSurge" : "烈波反擊",
             "critical" : "會心一擊",
             "curse" : "詛咒",
@@ -659,6 +664,10 @@
                 "description" : "會心一擊機率提升%d%%加成",
                 "title" : "會心一擊"
             },
+            "discount" : {
+                "description" : "Decreases unit deploy cost by %d%%",
+                "title" : "Cost Discount Combo"
+            },
             "efficiency" : {
                 "description" : "金錢增加的速度提升%d%%",
                 "title" : "工作狂貓工作效率"
@@ -696,6 +705,7 @@
                 "title" : "很耐打"
             },
             "size" : {
+                "given" : "賦予",
                 "l" : "大",
                 "m" : "中",
                 "sm" : "小",
@@ -721,9 +731,21 @@
                 "description" : "關卡掉落XP提升%d%%",
                 "title" : "學習力"
             },
+            "surgeImmune" : {
+                "description" : "Gives surge immunity",
+                "title" : "Surge Immunity Combo"
+            },
+            "villain" : {
+                "description" : "Gives 2.5x atk/def multiplier against villain enemies",
+                "title" : "Villain Slayer"
+            },
             "wallet" : {
                 "description" : "錢包容量提升%d%%",
                 "title" : "工作狂貓錢包"
+            },
+            "waveImmune" : {
+                "description" : "Gives wave immunity",
+                "title" : "Wave Immunity Combo"
             },
             "weaken" : {
                 "description" : "攻擊力下降時長提升%d%%",
@@ -908,6 +930,13 @@
                     "multiplier" : "%s : %d%%",
                     "title" : "- **Cost Multiplier**"
                 },
+                "costIncrease" : {
+                    "title" : "- **Cost Increase**",
+                    "description" : {
+                        "add" : "Unit cost increases by %d up to %d maximum per deploy",
+                        "multiply" : "Unit cost multiplied by %d%% up to %d maximum per deploy"
+                    }
+                },
                 "duplication" : {
                     "title" : "**Duplicated Deploy**",
                     "format" : {
@@ -957,9 +986,14 @@
                 "speed" : {
                     "title" : "- **Speed Adjustment Limit**",
                     "description" : {
-                        "both" : "Units' speed set to %d, Enemies' speed set to %d",
-                        "enemy" : "Enemies' speed set to %d",
-                        "unit" : "Units' speed set to %d"
+                        "enemy" : {
+                            "multiply" : "Enemies' speed has %d%% multiplier",
+                            "set" : "Enemies' speed set to %d"
+                        },
+                        "unit" : {
+                            "multiply" : "Units' speed has %d%% multiplier",
+                            "set" : "Units' speed set to %d"
+                        }
                     }
                 }
             },
@@ -995,6 +1029,7 @@
                     "score" : "積分掉落獎勵"
                 },
                 "type" : {
+                    "challenge" : "Challenge Drops (Clear | Reward | Amount)",
                     "number" : "掉落獎勵 (No. | 獎勵 | 數量)",
                     "score" : "積分掉落獎勵 (積分 | 獎勵 | 數量)",
                     "chance" : {
@@ -1043,7 +1078,7 @@
             "angel" : "天使",
             "base" : "城堡 (無限體力)",
             "behemoth" : "超獸",
-            "black" : "黑色",
+            "dark" : "黑色",
             "colossus" : "超生命體",
             "evaAngel" : "使徒",
             "floating" : "漂浮",
@@ -1052,6 +1087,7 @@
             "relic" : "古代種",
             "sage" : "超賢者",
             "starred" : "宙星",
+            "villain" : "Villain",
             "white" : "無屬性",
             "witch" : "魔女",
             "zombie" : "不死生物"
@@ -1107,7 +1143,7 @@
                     "text" : "天界果實（對天使敵人特殊能力）",
                     "ui" : "天界果實"
                 },
-                "black" : {
+                "dark" : {
                     "text" : "暗黑果實（對黑色敵人特殊能力）",
                     "ui" : "暗黑果實"
                 },
@@ -1390,6 +1426,7 @@
             "849" : "Chocosurp Cat C Sale",
             "850" : "Double Platinum Ticket Sale [1st]",
             "851" : "Double Platinum Ticket Sale [2nd]",
+            "852" : "Collaboration Celebration Pack",
             "900" : "Mushroom Garden Stamp",
             "901" : "回鍋登入獎勵章",
             "902" : "回鍋首天登入稀有券獎勵章",
@@ -1506,6 +1543,19 @@
             "35032" : "Come-Back Stamp",
             "35033" : "14.5 「貓咪的暑假 野外生存」活動紀念登入章",
             "35034" : "14.5 「福音戰士」合作活動紀念登入章（17天）",
+            "35035" : "Trash Cat Stamp",
+            "35036" : "Summer Break Paradise Stamp",
+            "35037" : "Event Stamp",
+            "35038" : "11.5th Anniversary Stamp",
+            "35039" : "Halloween Event Stamp",
+            "35040" : "Street Fighter Collab Stamp",
+            "35041" : "13th Anniversary Stamp",
+            "35042" : "New Year Event Stamp",
+            "35043" : "Lunar New Year Event Stamp",
+            "35044" : "Demon Slayer Collab Stamp",
+            "35045" : "111.11M Download Celebration Stamp",
+            "35046" : "Fate Collab Stamp",
+            "35047" : "Newbie Stamp",
             "rankingDojo" : "排行賽會場：_"
         },
         "permanentSchedule" : {
@@ -1598,9 +1648,20 @@
                 "7" : "EX Cost/Cooldown Buff",
                 "8" : "UR Deploy Duplication",
                 "9" : "Rarity Deploy Limit",
-                "10" : "Cannon Multiplier Buff",
+                "10" : "Cannon Damage Buff",
                 "11" : "Identical Unit/Enemy Speed",
-                "12" : "EX Deploy Duplication"
+                "12" : "EX Deploy Duplication",
+                "13" : "Low UR Cost",
+                "14" : "Cooldown Limit",
+                "15" : "Money Limit/Uber Rare Cooldown Buff",
+                "16" : "Low Cost",
+                "17" : "UR Cost Up/Triple UR Deploy",
+                "18" : "Identical Unit/Enemy Speed",
+                "19" : "Cannon Damage Buff",
+                "20" : "UR Cost/Cooldown Buff/Deploy Limit",
+                "21" : "High Speed",
+                "22" : "SR Half Cost",
+                "23" : "Money Limit/Double UR Cost"
             }
         },
         "section" : {
@@ -1777,7 +1838,7 @@
         "assetBrowser" : {
             "alias" : "`abrowser`, `assetb`, `ab`",
             "description" : "Bring asset browser, and upload picked file data. **This can be used by only trusted users because it gives raw files of BC**",
-            "usage" : "`%saasetbrowser`"
+            "usage" : "`%sassetbrowser`"
         },
         "background" : {
             "alias" : "`bg`",
@@ -3055,7 +3116,7 @@
                 "alien" : "請輸入異星敵人寶物數據",
                 "angel" : "請輸入天使敵人寶物數據",
                 "attack" : "請輸入攻擊力寶物數據",
-                "black" : "請輸入黑色敵人寶物數據",
+                "dark" : "請輸入黑色敵人寶物數據",
                 "cotcCrystal" : "請輸入宇宙篇水晶數據",
                 "floating" : "請輸入漂浮敵人寶物數據",
                 "health" : "請輸入體力寶物數據",

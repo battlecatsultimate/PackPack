@@ -132,6 +132,10 @@ class ValidationPayHolder(author: Message, userID: String, channelID: String, me
         applyResult(event)
     }
 
+    override fun onBack(event: IMessageEditCallback, child: Holder) {
+        applyResult(event)
+    }
+
     private fun applyResult(event: IMessageEditCallback) {
         event.deferEdit()
             .setContent(getContents())

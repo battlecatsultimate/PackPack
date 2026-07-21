@@ -32,7 +32,12 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
         NON_FAVORITE_ONLY
     }
 
-    private val cards = ArrayList<Card>(inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator()))
+    private val cards = ArrayList<Card>(
+        inventory.cards.keys
+            .union(inventory.favorites.keys)
+            .union(inventory.validationCards.keys)
+            .sortedWith(CardComparator())
+    )
 
     private var page = 0
         set(value) {
@@ -46,6 +51,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     private var banner = Banner.NONE
 
     private var filterMode = FilterMode.NONE
+    private var skinMode = false
 
     init {
         registerAutoExpiration(FIVE_MIN)
@@ -144,6 +150,13 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
 
                 applyResult(event)
             }
+            "skin" -> {
+                skinMode = !skinMode
+
+                filterCards()
+
+                applyResult(event)
+            }
             "card" -> {
                 if (event !is StringSelectInteractionEvent)
                     return
@@ -173,7 +186,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     private fun filterCards() {
         cards.clear()
 
-        cards.addAll(inventory.cards.keys.union(inventory.favorites.keys))
+        cards.addAll(inventory.cards.keys.union(inventory.favorites.keys).union(inventory.validationCards.keys))
 
         val collectedCards = banner.collectCards()
 
@@ -191,11 +204,34 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
             }
         } else if (filterMode == FilterMode.NON_FAVORITE_ONLY) {
             cards.removeIf { card ->
-                return@removeIf !inventory.cards.containsKey(card)
+                return@removeIf !inventory.cards.containsKey(card) && !inventory.validationCards.containsKey(card)
             }
         }
 
-        cards.sortWith(CardComparator())
+        if (skinMode) {
+            val comparator = CardComparator()
+
+            cards.sortWith { c0, c1 ->
+                if (c0 == null && c1 == null)
+                    return@sortWith 0
+
+                if (c0 == null)
+                    return@sortWith 1
+
+                if (c1 == null)
+                    return@sortWith -1
+
+                if (inventory.skins.any { s -> s.card == c0 })
+                    return@sortWith -1
+
+                if (inventory.skins.any { s -> s.card == c1 })
+                    return@sortWith 1
+
+                return@sortWith comparator.compare(c0, c1)
+            }
+        } else {
+            cards.sortWith(CardComparator())
+        }
 
         page = max(0, min(page, getTotalPage(cards.size) - 1))
     }
@@ -336,6 +372,7 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
 
         confirmButtons.add(Button.primary("confirm", "Confirm").withEmoji(EmojiStore.CROSS))
         confirmButtons.add(Button.secondary("filter", text))
+        confirmButtons.add(Button.secondary("skin", "Sort by Skin").withEmoji(if (skinMode) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF))
 
         rows.add(ActionRow.of(confirmButtons))
 
@@ -345,9 +382,9 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
     private fun getContents() : String {
         val cardAmount = cards.sumOf { c ->
             return@sumOf when(filterMode) {
-                FilterMode.NONE -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0)
+                FilterMode.NONE -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0) + (inventory.validationCards[c]?.second ?: 0)
                 FilterMode.FAVORITE_ONLY -> inventory.favorites[c] ?: 0
-                FilterMode.NON_FAVORITE_ONLY -> inventory.cards[c] ?: 0
+                FilterMode.NON_FAVORITE_ONLY -> (inventory.cards[c] ?: 0) + (inventory.validationCards[c]?.second ?: 0)
             }
         }
 
@@ -372,9 +409,9 @@ class CardInventoryHolder(author: Message, userID: String, channelID: String, me
                 builder.append(cards[i].cardInfo())
 
                 val amount = when(filterMode) {
-                    FilterMode.NONE -> (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
+                    FilterMode.NONE -> (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0) + (inventory.validationCards[cards[i]]?.second ?: 0)
                     FilterMode.FAVORITE_ONLY -> inventory.favorites[cards[i]] ?: 0
-                    FilterMode.NON_FAVORITE_ONLY -> inventory.cards[cards[i]] ?: 0
+                    FilterMode.NON_FAVORITE_ONLY -> (inventory.cards[cards[i]] ?: 0) + (inventory.validationCards[cards[i]]?.second ?: 0)
                 }
 
                 if (amount >= 2) {

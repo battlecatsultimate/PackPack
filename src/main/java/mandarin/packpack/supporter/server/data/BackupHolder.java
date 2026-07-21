@@ -8,6 +8,7 @@ import com.dropbox.core.oauth.DbxCredential;
 import com.dropbox.core.oauth.DbxRefreshResult;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.UploadErrorException;
 import com.dropbox.core.v2.files.UploadUploader;
 import com.dropbox.core.v2.sharing.RequestedLinkAccessLevel;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
@@ -31,7 +32,7 @@ public class BackupHolder {
     private static final String PACKPACK_BACKUP_FOLDER = "PackPack Backup";
     private static final int MAX_BACKUP = 50;
 
-    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static {
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -185,7 +186,11 @@ public class BackupHolder {
 
             backupList.put(unixTime, result.getName());
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to upload backup file for instance : " + instance);
+            if (e instanceof UploadErrorException de) {
+                StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to upload backup file for instance : " + instance + "\n" + de.errorValue.toStringMultiline());
+            } else {
+                StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to upload backup file for instance : " + instance);
+            }
 
             return "";
         }
@@ -205,7 +210,12 @@ public class BackupHolder {
                     continue;
                 }
 
-                client.files().deleteV2("/" + parentFolder + "/" + backupFileName);
+                try {
+                    client.files().deleteV2("/" + parentFolder + "/" + backupFileName);
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/BackupHolder::uploadBackup - Failed to delete file from dropbox");
+                }
+
                 backupList.remove(timestamps.get(i));
             }
         }

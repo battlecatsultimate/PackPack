@@ -116,6 +116,11 @@ class CardPackCostHolder(author: Message, userID: String, channelID: String, mes
 
                 applyResult(event)
             }
+            "removeRole" -> {
+                pack.cost.roles.clear()
+
+                applyResult(event)
+            }
             "back" -> {
                 if (pack in CardData.cardPacks) {
                     CardBot.saveCardData()
@@ -228,6 +233,10 @@ class CardPackCostHolder(author: Message, userID: String, channelID: String, mes
         result.add(ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE)
             .setPlaceholder("Select role to require users to have to see the pack")
             .build()))
+
+        result.add(ActionRow.of(
+            Button.secondary("removeRole", "Remove All Role").withDisabled(pack.cost.roles.isEmpty())
+        ))
 
         result.add(ActionRow.of(Button.secondary("back", "Go Back")))
 

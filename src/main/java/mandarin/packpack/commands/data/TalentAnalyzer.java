@@ -229,7 +229,7 @@ public class TalentAnalyzer extends ConstraintCommand {
             int traitID = StaticStore.safeParseInt(talentLine[1]);
 
             if(traitID != 0 && traitID < Data.TB_EVA) {
-                List<Trait> traits = Trait.convertType(traitID);
+                List<Trait> traits = Trait.bitmaskToTrait(traitID);
 
                 if(traits.size() == 1) {
                     talent.traitIcon = CommonStatic.getBCAssets().icon[3][traits.getFirst().id.id].getImg().cloneImage();

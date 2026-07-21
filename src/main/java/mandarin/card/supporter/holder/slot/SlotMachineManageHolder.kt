@@ -76,6 +76,13 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
 
                 applyResult()
             }
+            "removeRole" -> {
+                slotMachine.roles.clear()
+
+                event.deferReply().setContent("Successfully removed all roles! Check the result above").setEphemeral(true).queue()
+
+                applyResult()
+            }
             "name" -> {
                 val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Decide Slot Machine Name Here").setRequired(true).setRequiredRange(1, 50).build()
 
@@ -227,13 +234,15 @@ class SlotMachineManageHolder(author: Message, userID: String, channelID: String
         if (new) {
             result.add(ActionRow.of(
                 Button.success("create", "Create").withEmoji(EmojiStore.CHECK).withDisabled(!slotMachine.valid),
-                Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS)
+                Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS),
+                Button.secondary("removeRole", "Remove All Roles").withDisabled(slotMachine.roles.isEmpty())
             ))
         } else {
             result.add(ActionRow.of(
                 Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(!slotMachine.valid),
                 Button.secondary("activate", "Activate").withEmoji(if (slotMachine.activate) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF).withDisabled(!slotMachine.valid),
-                Button.danger("delete", "Delete").withEmoji(EmojiStore.CROSS)
+                Button.danger("delete", "Delete").withEmoji(EmojiStore.CROSS),
+                Button.secondary("removeRole", "Remove All Roles").withDisabled(slotMachine.roles.isEmpty())
             ))
         }
 

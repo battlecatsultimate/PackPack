@@ -14,10 +14,7 @@ import common.util.anim.ImgCut;
 import common.util.lang.Formatter;
 import common.util.lang.MultiLangCont;
 import common.util.lang.ProcLang;
-import common.util.stage.Limit;
-import common.util.stage.MapColc;
-import common.util.stage.Stage;
-import common.util.stage.StageMap;
+import common.util.stage.*;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
 import mandarin.packpack.supporter.EmojiStore;
@@ -88,7 +85,7 @@ public class DataToString extends Data {
         addTalentData(32, "data.hp", "HPUP");
         addTalentData(33, "data.traits.red", "T_RED");
         addTalentData(34, "data.traits.floating", "T_FLOAT");
-        addTalentData(35, "data.traits.black", "T_BLACK");
+        addTalentData(35, "data.traits.dark", "T_DARK");
         addTalentData(36, "data.traits.metal", "T_METAL");
         addTalentData(37, "data.traits.angel", "T_ANGEL");
         addTalentData(38, "data.traits.alien", "T_ALIEN");
@@ -121,6 +118,7 @@ public class DataToString extends Data {
         addTalentData(65, "data.abilities.miniSurge", "MINIVOLC");
         addTalentData(66, "data.abilities.sageSlayer", "data.abilities.sageSlayer");
         addTalentData(67, "data.abilities.blastAttack", "data.abilities.blastAttack");
+        addTalentData(68, "data.abilities.counterSurge", "data.abilities.counterSurge");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -1020,7 +1018,9 @@ public class DataToString extends Data {
 
         StringBuilder sb = new StringBuilder(LangID.getStringByID("data.unit.talent.list", lang));
 
-        if(!f.getPCoin().trait.isEmpty()) {
+        int[] talents = lv.getTalents();
+
+        if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator.isEmpty()) {
             sb.append("[");
 
             String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
@@ -1031,12 +1031,21 @@ public class DataToString extends Data {
             sb.append(trait).append("] ");
         }
 
-        int[] talents = lv.getTalents();
-
         for(int i = 0; i < info.size(); i++) {
             int[] data = info.get(i);
 
             if(talentText.containsKey(data[0])) {
+                if(!f.getPCoin().trait.isEmpty() && f.getPCoin().traitActivator.contains(i)) {
+                    sb.append("[");
+
+                    String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
+
+                    if(trait.endsWith(", "))
+                        trait = trait.substring(0, trait.length() - 2);
+
+                    sb.append(trait).append("] ");
+                }
+
                 sb.append(LangID.getStringByID(talentText.get(data[0]), lang));
 
                 if(info.get(i)[13] == 1) {
@@ -1529,21 +1538,40 @@ public class DataToString extends Data {
                 );
             }
 
-            if (l.stageLimit.unitSpeedLimit != -1 && l.stageLimit.enemySpeedLimit != -1) {
-                res.add(
-                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.both", lang).formatted(l.stageLimit.unitSpeedLimit, l.stageLimit.enemySpeedLimit)
-                );
-            } else if (l.stageLimit.unitSpeedLimit != -1) {
-                res.add(
-                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.unit", lang).formatted(l.stageLimit.unitSpeedLimit)
-                );
-            } else if (l.stageLimit.enemySpeedLimit != -1) {
-                res.add(
-                        LangID.getStringByID("data.stage.limit.speed.title", lang) + "\n" +
-                                LangID.getStringByID("data.stage.limit.speed.description.enemy", lang).formatted(l.stageLimit.enemySpeedLimit)
-                );
+            if (l.stageLimit.unitSpeedOverride != -1 || l.stageLimit.enemySpeedOverride != -1) {
+                String description = LangID.getStringByID("data.stage.limit.speed.title", lang);
+
+                if (l.stageLimit.unitSpeedOverride != -1) {
+                    if (l.stageLimit.unitSpeedOverrideMode == StageLimit.SpeedOverrideMode.SET) {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.unit.set", lang).formatted(l.stageLimit.unitSpeedOverride);
+                    } else {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.unit.multiply", lang).formatted(l.stageLimit.unitSpeedOverride);
+                    }
+                }
+
+                if (l.stageLimit.enemySpeedOverride != -1) {
+                    if (l.stageLimit.enemySpeedOverrideMode == StageLimit.SpeedOverrideMode.SET) {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.enemy.set", lang).formatted(l.stageLimit.enemySpeedOverride);
+                    } else {
+                        description += "\n  - " + LangID.getStringByID("data.stage.limit.speed.description.enemy.multiply", lang).formatted(l.stageLimit.enemySpeedOverride);
+                    }
+                }
+
+                res.add(description);
+            }
+
+            if (l.stageLimit.costIncreaseValue != 0 && l.stageLimit.costMaxIncreaseValue != 0) {
+                if (l.stageLimit.costIncreaseMode == StageLimit.CostIncreaseMode.ADD) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.costIncrease.description.add", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.costIncrease.description.multiply", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
+                    );
+                }
             }
         }
 
@@ -1718,6 +1746,20 @@ public class DataToString extends Data {
                     );
                 }
             }
+
+            if (l.stageLimit.costIncreaseValue != 0 && l.stageLimit.costMaxIncreaseValue != 0) {
+                if (l.stageLimit.costIncreaseMode == StageLimit.CostIncreaseMode.ADD) {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.description.add", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
+                    );
+                } else {
+                    res.add(
+                            LangID.getStringByID("data.stage.limit.costIncrease.title", lang) + "\n" +
+                                    LangID.getStringByID("data.stage.limit.description.multiply", lang).formatted(l.stageLimit.costIncreaseValue, l.stageLimit.costMaxIncreaseValue)
+                    );
+                }
+            }
         }
 
         res.replaceAll(s -> s.replace("**", ""));
@@ -1862,6 +1904,31 @@ public class DataToString extends Data {
             return null;
 
         return result.toString();
+    }
+
+    public static String getChallengeRewards(Stage s, CommonStatic.Lang.Locale lang) {
+        if (s == null || !s.getCont().info.hasAbyssChallenge || !(s.info instanceof DefStageInfo info) || info.challengeRewards.isEmpty())
+            return null;
+
+        ArrayList<Integer> clearTimes = new ArrayList<>(info.challengeRewards.keySet());
+
+        clearTimes.sort(Integer::compareTo);
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < clearTimes.size(); i++) {
+            Map.Entry<Integer, Integer> set = info.challengeRewards.get(clearTimes.get(i));
+
+            if (set == null)
+                continue;
+
+            builder.append(clearTimes.get(i)).append(" | " ).append(MultiLangCont.getStageDrop(set.getKey(), lang)).append(" | ").append(set.getValue());
+
+            if (i < clearTimes.size() - 1)
+                builder.append("\n");
+        }
+
+        return builder.toString();
     }
 
     public static String getRewards(Stage s, CommonStatic.Lang.Locale lang) {
@@ -2292,29 +2359,61 @@ public class DataToString extends Data {
             case 1 -> LangID.getStringByID("data.combo.size.m", lang);
             case 2 -> LangID.getStringByID("data.combo.size.l", lang);
             case 3 -> LangID.getStringByID("data.combo.size.xl", lang);
+            case 5 -> LangID.getStringByID("data.combo.size.given", lang);
             default -> "Lv. " + lv;
         };
+    }
+    public static String getComboCharacterGroup(Combo c, CommonStatic.Lang.Locale lang) {
+        CharaGroup group = c.group;
+
+        if (group == null)
+            return null;
+
+        if (group.set.isEmpty())
+            return null;
+
+        StringBuilder builder = new StringBuilder();
+
+        for (Unit u : group.set) {
+            if (u == null)
+                continue;
+
+            String unitName = StaticStore.safeMultiLangGet(u.forms[u.forms.length - 1], lang);
+
+            if (unitName == null)
+                unitName = trio(u.id.id) + "-" + trio(u.forms[u.forms.length - 1].fid);
+
+            builder.append(unitName).append(", ");
+        }
+
+        String unitNames = builder.toString().replaceAll(", $", "");
+
+        if (group.set.size() == 1) {
+            return LangID.getStringByID("combo.unit.singular", lang).formatted(unitNames);
+        } else {
+            return LangID.getStringByID("combo.unit.plural", lang).formatted(unitNames);
+        }
     }
 
     private static int getComboFactor(int type, int lv) {
         switch (type) {
-            case 0, 2 -> {
+            case C_ATK, C_SPE -> {
                 return 10 + lv * 5;
             }
-            case 1, 20, 19, 18, 17, 16, 15, 14, 13, 12, 8, 9 -> {
+            case C_DEF, C_WEAK, C_STOP, C_SLOW, C_KB, C_RESIST, C_MASSIVE, C_GOOD, C_XP, C_MEAR, C_M_INC, C_M_MAX -> {
                 if (lv < 3) {
                     return 10 + 10 * lv;
                 } else {
                     return 50;
                 }
             }
-            case 3 -> {
+            case C_C_INI -> {
                 return 20 + 20 * lv;
             }
-            case 4 -> {
+            case C_M_LV -> {
                 return 2 + lv;
             }
-            case 5 -> {
+            case C_M_INI -> {
                 if (lv == 0) {
                     return 300;
                 } else if (lv == 1) {
@@ -2323,23 +2422,26 @@ public class DataToString extends Data {
                     return 1000;
                 }
             }
-            case 6, 10 -> {
+            case C_C_ATK, C_BASE -> {
                 return 20 + 30 * lv;
             }
-            case 7 -> {
+            case C_C_SPE -> {
                 return 150 + 150 * lv;
             }
-            case 11 -> {
+            case C_RESP -> {
                 return (int) (264.0 * (1 + lv) / 10.0);
             }
-            case 21 -> {
+            case C_STRONG -> {
                 return 20 + 10 * lv;
             }
-            case 22, 23 -> {
+            case C_WKILL, C_EKILL -> {
                 return 100 + 100 * lv;
             }
-            case 24 -> {
+            case C_CRIT -> {
                 return 1 + lv;
+            }
+            case C_DISCOUNT -> {
+                return 5 + 5 * lv;
             }
             default -> {
                 return 0;
@@ -2349,31 +2451,35 @@ public class DataToString extends Data {
 
     private static String getComboKeyword(int type) {
         return switch (type) {
-            case 0 -> "attack";
-            case 1 -> "health";
-            case 2 -> "speed";
-            case 3 -> "initialCharge";
-            case 4 -> "worker";
-            case 5 -> "initialMoney";
-            case 6 -> "cannonDamage";
-            case 7 -> "cannonCharge";
-            case 8 -> "efficiency";
-            case 9 -> "wallet";
-            case 10 -> "baseHealth";
-            case 11 -> "cooldown";
-            case 12 -> "accountant";
-            case 13 -> "study";
-            case 14 -> "strong";
-            case 15 -> "massiveDamage";
-            case 16 -> "resistant";
-            case 17 -> "kb";
-            case 18 -> "slow";
-            case 19 -> "freeze";
-            case 20 -> "weaken";
-            case 21 -> "strengthen";
-            case 23 -> "evaAngelKiller";
-            case 22 -> "witchKiller";
-            case 24 -> "critical";
+            case C_ATK -> "attack";
+            case C_DEF -> "health";
+            case C_SPE -> "speed";
+            case C_C_INI -> "initialCharge";
+            case C_M_LV -> "worker";
+            case C_M_INI -> "initialMoney";
+            case C_C_ATK -> "cannonDamage";
+            case C_C_SPE -> "cannonCharge";
+            case C_M_INC -> "efficiency";
+            case C_M_MAX -> "wallet";
+            case C_BASE -> "baseHealth";
+            case C_RESP -> "cooldown";
+            case C_MEAR -> "accountant";
+            case C_XP -> "study";
+            case C_GOOD -> "strong";
+            case C_MASSIVE -> "massiveDamage";
+            case C_RESIST -> "resistant";
+            case C_KB -> "kb";
+            case C_SLOW -> "slow";
+            case C_STOP -> "freeze";
+            case C_WEAK -> "weaken";
+            case C_STRONG -> "strengthen";
+            case C_EKILL -> "evaAngelKiller";
+            case C_WKILL -> "witchKiller";
+            case C_CRIT -> "critical";
+            case C_VKILL -> "villain";
+            case C_IMUWAVE -> "waveImmune";
+            case C_DISCOUNT -> "discount";
+            case C_IMUVOLC -> "surgeImmune";
             default -> throw new IllegalStateException("Invalid Combo Type : " + type);
         };
     }
@@ -2863,7 +2969,7 @@ public class DataToString extends Data {
             }
         }
 
-        if(du.getPCoin().trait.size() == 1 && index == 0) {
+        if(du.getPCoin().trait.size() == 1 && du.getPCoin().traitActivator.contains(index)) {
             String code = Interpret.TRAITICON[du.getPCoin().trait.getFirst().id.id];
 
             Emoji emoji = EmojiStore.TRAIT.getCont(code, lang);
@@ -2921,7 +3027,7 @@ public class DataToString extends Data {
 
         String desc = "";
 
-        if(du.getPCoin().trait.size() == 1 && index == 0) {
+        if(du.getPCoin().trait.size() == 1 && du.getPCoin().traitActivator.contains(index)) {
             desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
         }
 
@@ -3031,7 +3137,9 @@ public class DataToString extends Data {
         int maxLevel = StaticStore.safeParseInt(data[2 + index * 14 + 1]);
         int traitID = StaticStore.safeParseInt(data[1]);
 
-        List<Trait> traits = Trait.convertType(traitID);
+        boolean traitActivator = StaticStore.safeParseInt(data[2 + index * 14 + 12]) != -1;
+
+        List<Trait> traits = Trait.bitmaskToTrait(traitID);
 
         if(talentText.containsKey(abilityID)) {
             talentName = LangID.getStringByID(talentText.get(abilityID), lang);
@@ -3043,7 +3151,7 @@ public class DataToString extends Data {
 
         String desc = "";
 
-        if(traits.size() == 1 && index == 0) {
+        if(traits.size() == 1 && traitActivator) {
             desc += LangID.getStringByID("data.talent.description.trait.together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.getFirst().id.id], lang)) + "\n\n";
         }
 

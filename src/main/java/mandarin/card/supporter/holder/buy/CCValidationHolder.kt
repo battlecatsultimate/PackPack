@@ -261,6 +261,7 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
 
     private fun obtainCC(guild: Guild, event: IMessageEditCallback) {
         inventory.ccValidationWay = validationWay
+        inventory.ccValidationTime = CardData.getUnixEpochTime()
 
         seasonalCards.union(collaborationCards).union(t3Cards).forEach { c ->
             val pair = inventory.validationCards[c]
@@ -280,6 +281,7 @@ class CCValidationHolder(author: Message, userID: String, channelID: String, mes
             Inventory.CCValidationWay.SEASONAL_15_COLLABORATION_12 -> {}
             Inventory.CCValidationWay.T3_3 -> inventory.catFoods -= 200000
             Inventory.CCValidationWay.LEGENDARY_COLLECTOR -> {}
+            Inventory.CCValidationWay.MANUAL -> {}
             Inventory.CCValidationWay.NONE -> {}
         }
 

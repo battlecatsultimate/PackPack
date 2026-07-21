@@ -86,7 +86,7 @@ void main()
 
         if (color1 == color2)
         {
-            FragColor = color1 * alpha;
+            FragColor = vec4(color1.rgb, color1.a * alpha);
         }
         else
         {
@@ -101,7 +101,9 @@ void main()
 
             float portion = min(1.0, max(0.0, targetLength/ (len * len)));
 
-            FragColor = mix(color1, color2, smoothstep(0.0, 1.0, portion)) * alpha;
+            vec4 mixedColor = mix(color1, color2, smoothstep(0.0, 1.0, portion));
+
+            FragColor = vec4(mixedColor.rgb, mixedColor.a * alpha);
         }
     }
 

@@ -25,7 +25,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class SlotMachineConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
+class SlotMachineConfirmHolder(author: Message, userID: String, channelID: String, message: Message, private val slotMachine: SlotMachine, private val skip: Boolean, private val yes: Boolean) : ComponentHolder(author, userID, channelID, message, CommonStatic.Lang.Locale.EN) {
     private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var page = 0
@@ -50,14 +50,16 @@ class SlotMachineConfirmHolder(author: Message, userID: String, channelID: Strin
         when(event.componentId) {
             "roll" -> {
                 if (slotMachine.entryFee.minimumFee == slotMachine.entryFee.maximumFee) {
-                    if (slotMachine.entryFee.minimumFee == 0L) {
+                    val fee = slotMachine.entryFee.maximumFee
+
+                    if (slotMachine.entryFee.minimumFee == 0L || yes) {
                         event.deferEdit()
                             .setContent("Rolling...! 🎲")
                             .setComponents()
                             .setAllowedMentions(ArrayList())
                             .mentionRepliedUser(false)
                             .queue {
-                                slotMachine.roll(message, authorMessage.author.idLong, inventory, 0, skip)
+                                slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
                             }
 
                         end(true)
@@ -69,8 +71,6 @@ class SlotMachineConfirmHolder(author: Message, userID: String, channelID: Strin
                         SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
                         SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
                     }
-
-                    val fee = slotMachine.entryFee.maximumFee
 
                     registerPopUp(event, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?")
 

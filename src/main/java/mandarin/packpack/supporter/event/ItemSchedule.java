@@ -32,66 +32,68 @@ public class ItemSchedule extends EventFactor implements Schedule {
         minVersion = convertVersion(parse(data[4]));
         maxVersion = convertVersion(parse(data[5]));
 
-        if(parse(data[6]) == 0) {
-            int sectionNumber = parse(data[7]);
-            int index = 8;
+        if (parse(data[6]) != 0) {
+            StaticStore.logger.uploadLog("W/ItemSchedule::init - Index 6 value turned out to be non-zero\nLine Data : " + line);
+        }
 
-            for (int j = 0; j < sectionNumber; j++) {
-                EventSection section = new EventSection();
+        int sectionNumber = parse(data[7]);
+        int index = 8;
 
-                int daySetNumber = parse(data[index]);
+        for (int j = 0; j < sectionNumber; j++) {
+            EventSection section = new EventSection();
 
-                index++;
+            int daySetNumber = parse(data[index]);
 
-                for (int i = 0; i < daySetNumber; i++) {
-                    EventDateSet set = new EventDateSet(parse(data[index]), parse(data[index + 2]), parse(data[index + 1]), parse(data[index + 3]));
+            index++;
 
-                    section.daySets.add(set);
+            for (int i = 0; i < daySetNumber; i++) {
+                EventDateSet set = new EventDateSet(parse(data[index]), parse(data[index + 2]), parse(data[index + 1]), parse(data[index + 3]));
 
-                    index += 4;
-                }
+                section.daySets.add(set);
 
-                int dayNumber = parse(data[index]);
-
-                index++;
-
-                for (int i = 0; i < dayNumber; i++) {
-                    int day = parse(data[index]);
-
-                    section.days.add(day);
-
-                    index++;
-                }
-
-                section.parseWeekDay(parse(data[index]));
-
-                index++;
-
-                int timeNumber = parse(data[index]);
-
-                index++;
-
-                for (int i = 0; i < timeNumber; i++) {
-                    EventTimeSection timeSection = new EventTimeSection(parse(data[index]), parse(data[index + 1]));
-
-                    section.times.add(timeSection);
-
-                    index += 2;
-                }
-
-                sections.add(section);
+                index += 4;
             }
 
-            categoryID = parse(data[index]);
-            itemID = parse(data[index + 1]);
-            itemAmount = parse(data[index + 2]);
+            int dayNumber = parse(data[index]);
 
-            title = data[index + 3];
-            messsage = data[index + 4];
+            index++;
 
-            eocClear = parse(data[index + 5]);
-            everyday = parse(data[index + 7]) == 1;
+            for (int i = 0; i < dayNumber; i++) {
+                int day = parse(data[index]);
+
+                section.days.add(day);
+
+                index++;
+            }
+
+            section.parseWeekDay(parse(data[index]));
+
+            index++;
+
+            int timeNumber = parse(data[index]);
+
+            index++;
+
+            for (int i = 0; i < timeNumber; i++) {
+                EventTimeSection timeSection = new EventTimeSection(parse(data[index]), parse(data[index + 1]));
+
+                section.times.add(timeSection);
+
+                index += 2;
+            }
+
+            sections.add(section);
         }
+
+        categoryID = parse(data[index]);
+        itemID = parse(data[index + 1]);
+        itemAmount = parse(data[index + 2]);
+
+        title = data[index + 3];
+        messsage = data[index + 4];
+
+        eocClear = parse(data[index + 5]);
+        everyday = parse(data[index + 7]) == 1;
     }
 
     @Override

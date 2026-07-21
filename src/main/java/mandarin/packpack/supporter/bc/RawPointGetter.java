@@ -185,6 +185,8 @@ public class RawPointGetter {
             translate(tPos.x, tPos.y);
             size(p.getValRaw(13), p.getValRaw(14));
         } else {
+            size(p.getValRaw(13), 1.0f);
+
             if(p.getModel().confs.length > 0) {
                 int[] data = p.getModel().confs[0];
                 P p0 = getBaseSize(p, p.getModel(), false);

@@ -88,13 +88,13 @@ public class TreasureHolder {
     public static final String[] eocText = {"data.treasure.eoc.research.text", "data.treasure.eoc.study.text", "data.treasure.eoc.accountant.text", "data.treasure.eoc.health.text", "data.treasure.eoc.damage.text"};
 
     public static final int T_ITF_CRYSTAL = 0;
-    public static final int T_BLACK = 1;
+    public static final int T_DARK = 1;
     public static final int T_RED = 2;
     public static final int T_FLOAT = 3;
     public static final int T_ANGEL = 4;
     public static final int[] itfTraitIndex = {-1, Data.TRAIT_BLACK, Data.TRAIT_RED, Data.TRAIT_FLOAT, Data.TRAIT_ANGEL};
     public static final int[] itfMax = new int[5];
-    public static final String[] itfText = {"data.treasure.itf.crystal", "data.treasure.itf.black.text", "data.treasure.itf.red.text", "data.treasure.itf.floating.text", "data.treasure.itf.angel.text"};
+    public static final String[] itfText = {"data.treasure.itf.crystal", "data.treasure.itf.dark.text", "data.treasure.itf.red.text", "data.treasure.itf.floating.text", "data.treasure.itf.angel.text"};
 
     public static final int T_COTC_CRYSTAL = 0;
     public static final int T_METAL = 1;

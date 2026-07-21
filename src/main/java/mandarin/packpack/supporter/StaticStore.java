@@ -110,6 +110,8 @@ public class StaticStore {
 
     public static Map<String, SpamPrevent> spamData = new HashMap<>();
 
+    public static List<String> bannedServer = new ArrayList<>();
+
     public static Map<String, BoosterHolder> boosterData = new HashMap<>();
 
     public static ArrayList<String> needFixing = new ArrayList<>();
@@ -752,6 +754,7 @@ public class StaticStore {
         obj.add("contributor", listToJsonString(contributors));
         obj.add("maintainers", listToJsonString(maintainers));
         obj.add("spam", SpamPrevent.jsonfyMap());
+        obj.add("bannedServer", listToJsonString(bannedServer));
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
         obj.add("needFixing", listToJsonString(needFixing));
@@ -883,7 +886,7 @@ public class StaticStore {
                     if (prefix == null)
                         continue;
 
-                    ConfigHolder holder = config.computeIfAbsent(id, k -> new ConfigHolder());
+                    ConfigHolder holder = config.computeIfAbsent(id, _ -> new ConfigHolder());
 
                     holder.prefix = prefix;
                 }
@@ -915,6 +918,10 @@ public class StaticStore {
 
             if(obj.has("spam")) {
                 spamData = SpamPrevent.parseJsonMap(obj.getAsJsonArray("spam"));
+            }
+
+            if (obj.has("bannedServer")) {
+                bannedServer = jsonToListString(obj.getAsJsonArray("bannedServer"));
             }
 
             if(obj.has("booster")) {
@@ -1405,7 +1412,7 @@ public class StaticStore {
                                 .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +
                                 "- In Group : " + Thread.activeCount() + "\n" +
                                 "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
-                                "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, e -> {
+                                "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, _ -> {
                         });
                     }
                 });

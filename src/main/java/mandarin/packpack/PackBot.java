@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -62,13 +63,17 @@ public class PackBot {
 
     public static RestAction<Message> statusMessage = null;
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> Logger.writeLog(Logger.BotInstance.PACK_PACK)));
         Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
                 StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Uncaught exception found : " + t.getName())
         );
 
-        RestActionImpl.setDefaultFailure(e -> StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task"));
+        RestActionImpl.setDefaultFailure(e -> {
+            if (e instanceof ErrorResponseException err && err.getErrorCode() != 10062) {
+                StaticStore.logger.uploadErrorLog(e, "E/Unknown - Failed to perform the task");
+            }
+        });
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--test") && i < args.length - 1) {
@@ -396,7 +401,7 @@ public class PackBot {
         for(Guild g : guilds) {
             String gID = g.getId();
 
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(gID, k -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(gID, _ -> new IDHolder(g));
 
             boolean[] done = new boolean[EventFactor.supportedVersions.length];
             boolean[] gachaChange = new boolean[EventFactor.supportedVersions.length];
@@ -613,6 +618,9 @@ public class PackBot {
                         continue;
                     }
 
+                    if (!ch.canTalk())
+                        continue;
+
                     if (!sentChannels.contains(config.channelID)) {
                         sent = true;
 
@@ -641,7 +649,7 @@ public class PackBot {
         List<Guild> guilds = client.getGuilds();
 
         for (Guild g : guilds) {
-            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), k -> new IDHolder(g));
+            IDHolder holder = StaticStore.idHolder.computeIfAbsent(g.getId(), _ -> new IDHolder(g));
 
             for (CommonStatic.Lang.Locale locale : EventFactor.supportedVersions) {
                 int index = ArrayUtils.indexOf(EventFactor.supportedVersions, locale);
@@ -660,6 +668,9 @@ public class PackBot {
                 GuildChannel gc = g.getGuildChannelById(config.newVersionChannelID);
 
                 if (!(gc instanceof GuildMessageChannel ch))
+                    continue;
+
+                if (!ch.canTalk())
                     continue;
 
                 String gameName = switch (locale) {

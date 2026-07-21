@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.data;
 
 import com.google.gson.*;
 import mandarin.packpack.supporter.StaticStore;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -16,12 +17,33 @@ public class BannerHolder {
         SUMMER,
         AUTUMN,
         WINTER,
+        JANUARY,
+        FEBRUARY,
+        MARCH,
+        APRIL,
+        MAY,
+        JUNE,
+        JULY,
+        AUGUST,
+        SEPTEMBER,
+        OCTOBER,
+        NOVEMBER,
+        DECEMBER,
+        NEW_YEAR,
+        LUNAR_NEW_YEAR,
+        VALENTINE,
+        WHITE_DAY,
+        EASTER,
+        JUNE_BRIDE,
+        SUMMER_VACATION,
+        HALLOWEEN,
+        CHRISTMAS,
         ANYTIME
     }
 
     public record BannerData(String author, long userID, File bannerFile, Usage usage) {
         @Override
-        public String toString() {
+        public @NotNull String toString() {
             return "BannerData{" +
                     "author='" + author + '\'' +
                     ", userID=" + userID +
@@ -159,15 +181,70 @@ public class BannerHolder {
         //Define Season
         Calendar c = Calendar.getInstance();
 
-        Usage currentUsage = switch (c.get(Calendar.MONTH)) {
-            case 12, 1, 2 -> Usage.WINTER;
-            case 3, 4, 5 -> Usage.SPRING;
-            case 6, 7, 8 -> Usage.SUMMER;
-            case 9, 10, 11 -> Usage.AUTUMN;
-            default -> Usage.ANYTIME;
-        };
+        ArrayList<Usage> usages = new ArrayList<>();
 
-        List<BannerData> matchingBanners = allBanners.stream().filter(b -> (b.usage == currentUsage || b.usage == Usage.ANYTIME) && b != pickedBanner).toList();
+        switch (c.get(Calendar.MONTH) + 1) {
+            case 1 -> {
+                usages.add(Usage.JANUARY);
+                usages.add(Usage.WINTER);
+                usages.add(Usage.NEW_YEAR);
+            }
+            case 2 -> {
+                usages.add(Usage.FEBRUARY);
+                usages.add(Usage.WINTER);
+                usages.add(Usage.LUNAR_NEW_YEAR);
+                usages.add(Usage.VALENTINE);
+            }
+            case 3 -> {
+                usages.add(Usage.MARCH);
+                usages.add(Usage.SPRING);
+                usages.add(Usage.WHITE_DAY);
+            }
+            case 4 -> {
+                usages.add(Usage.APRIL);
+                usages.add(Usage.SPRING);
+                usages.add(Usage.EASTER);
+            }
+            case 5 -> {
+                usages.add(Usage.MAY);
+                usages.add(Usage.SPRING);
+            }
+            case 6 -> {
+                usages.add(Usage.JUNE);
+                usages.add(Usage.SUMMER);
+                usages.add(Usage.JUNE_BRIDE);
+            }
+            case 7 -> {
+                usages.add(Usage.JULY);
+                usages.add(Usage.SUMMER);
+                usages.add(Usage.SUMMER_VACATION);
+            }
+            case 8 -> {
+                usages.add(Usage.AUGUST);
+                usages.add(Usage.SUMMER);
+                usages.add(Usage.SUMMER_VACATION);
+            }
+            case 9 -> {
+                usages.add(Usage.SEPTEMBER);
+                usages.add(Usage.AUTUMN);
+            }
+            case 10 -> {
+                usages.add(Usage.OCTOBER);
+                usages.add(Usage.AUTUMN);
+                usages.add(Usage.HALLOWEEN);
+            }
+            case 11 -> {
+                usages.add(Usage.NOVEMBER);
+                usages.add(Usage.AUTUMN);
+            }
+            case 12 -> {
+                usages.add(Usage.DECEMBER);
+                usages.add(Usage.WINTER);
+                usages.add(Usage.CHRISTMAS);
+            }
+        }
+
+        List<BannerData> matchingBanners = allBanners.stream().filter(b -> (usages.contains(b.usage) || b.usage == Usage.ANYTIME) && b != pickedBanner).toList();
 
         if (matchingBanners.isEmpty()) {
             return null;

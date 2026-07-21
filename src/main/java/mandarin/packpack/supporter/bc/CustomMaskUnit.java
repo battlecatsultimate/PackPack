@@ -13,7 +13,7 @@ public class CustomMaskUnit extends DataUnit {
     public final int[][] evo;
 
     public CustomMaskUnit(String[] data, String[] curve, MaAnim anim, String[] rare) {
-        super(null, null, data);
+        super(null, data);
 
         this.data = data;
         this.curve = new UnitLevel(toCurve(curve));

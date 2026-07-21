@@ -212,22 +212,20 @@ class PackPayHolder(
             cooldownMap[pack.uuid] ?: 0L
         }
 
-        if (cooldown - CardData.getUnixEpochTime() > 0) {
-            builder.append("You can't roll this pack because you have cooldown left : ${CardData.convertMillisecondsToText(cooldown - CardData.getUnixEpochTime())}")
-        } else {
-            builder.append(pack.displayInfo())
+        builder.append(pack.displayInfo())
 
-            if (!pack.cost.affordable(inventory)) {
-                builder.append("\n\nYou can't afford this pack. Check reason below :\n\n").append(pack.cost.getReason(
-                    inventory
-                ))
-            } else if (containers.any { container -> !container.paid() }) {
-                builder.append("\n\nTo roll this pack, you have to pay all card costs. You can check if you paid for each card cost or not by checking each list's descriptions\n" +
-                        "\n" +
-                        "Additionally, cat foods and platinum shards will be paid automatically")
-            } else {
-                builder.append("\n\nAll ready to go! Click `roll` button to pay cost and roll the pack!")
-            }
+        if (!pack.cost.affordable(inventory)) {
+            builder.append("\n\nYou can't afford this pack. Check reason below :\n\n").append(pack.cost.getReason(
+                inventory
+            ))
+        } else if (containers.any { container -> !container.paid() }) {
+            builder.append("\n\nTo roll this pack, you have to pay all card costs. You can check if you paid for each card cost or not by checking each list's descriptions\n" +
+                    "\n" +
+                    "Additionally, cat foods and platinum shards will be paid automatically")
+        } else if (cooldown - CardData.getUnixEpochTime() > 0) {
+            builder.append("\n\nYou can't roll this pack because you have cooldown left : ${CardData.convertMillisecondsToText(cooldown - CardData.getUnixEpochTime())}")
+        } else {
+            builder.append("\n\nAll ready to go! Click `roll` button to pay cost and roll the pack!")
         }
 
         return builder.toString()

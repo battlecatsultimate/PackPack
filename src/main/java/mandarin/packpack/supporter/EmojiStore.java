@@ -21,7 +21,7 @@ public class EmojiStore {
     public static void initialize(ShardLoader loader) {
         UNKNOWN = Emoji.fromUnicode("❔");
 
-        AIR = getEmoteWitNameAndID(loader, "Air", 1246011639325528144L);
+        AIR = getEmoteWitNameAndID(loader, "Air", 1408269407834345564L);
 
         THREE_PREVIOUS = getEmoteWitNameAndID(loader, "ThreePrevious", 993716493458083900L);
         TWO_PREVIOUS = getEmoteWitNameAndID(loader, "TwoPrevious", 1174180530871337000L);

@@ -63,14 +63,14 @@ public class FormTalentHolder extends ComponentHolder {
         }
 
         if(rows.isEmpty()) {
-            message.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents().mentionRepliedUser(false).queue(null, _ -> {});
         } else {
-            message.editMessageComponents(rows).mentionRepliedUser(false).queue(null, e -> {});
+            message.editMessageComponents(rows).mentionRepliedUser(false).queue(null, _ -> {});
         }
     }
 
     @Override
     public void onConnected(@NotNull IMessageEditCallback event, @NotNull Holder parent) throws Exception {
-        EntityHandler.showTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, f, configData.isFrame, true, lang);
+        EntityHandler.showTalentEmbed(event, hasAuthorMessage() ? getAuthorMessage() : null, f, configData.isFrame, true, parent instanceof FormButtonHolder, lang);
     }
 }

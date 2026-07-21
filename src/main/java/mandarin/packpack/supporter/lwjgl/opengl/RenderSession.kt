@@ -33,6 +33,8 @@ class RenderSession {
         private fun initialize() {
             GLFWErrorCallback.createPrint(System.err).set()
 
+            GLFW.glfwInitHint(GLFW.GLFW_WAYLAND_LIBDECOR, GLFW.GLFW_WAYLAND_DISABLE_LIBDECOR)
+
             if (!GLFW.glfwInit()) {
                 throw IllegalStateException("Unable to initialize GLFW")
             }
@@ -202,8 +204,6 @@ class RenderSession {
         GL33.glDrawArrays(GL33.GL_TRIANGLES, 0, SpriteSheet.INDEX_SIZE)
 
         graphics.blend = blend
-
-        GLFW.glfwSwapBuffers(windowID)
 
         export()
 

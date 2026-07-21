@@ -156,12 +156,23 @@ class TransferInventoryTargetHolder(
             "After transfer is done, picked user's inventory will be wiped out"
         }
 
+        val mode = when(transferMode) {
+            CardData.TransferMode.INJECT -> "Inject"
+            CardData.TransferMode.OVERRIDE -> "Override"
+        }
+
+        val resetText = if (reset) {
+            "Yes"
+        } else {
+            "No"
+        }
+
         return "## Inventory Transfer\n" +
                 "Now you have to pick target user who will get transferred to\n" +
                 "### Source User : <@$sourceUser>\n" +
-                "### Transfer Mode : Inject\n" +
+                "### Transfer Mode : $mode\n" +
                 "$modeExplanation\n" +
-                "### Reset User's Inventory? : No\n" +
+                "### Reset User's Inventory? : $resetText\n" +
                 resetExplanation
     }
 

@@ -26,7 +26,7 @@ class TransferInventory : Command(CommonStatic.Lang.Locale.EN, true) {
     }
 
     private fun getContents() : String {
-        val cf = EmojiStore.ABILITY["CF"]
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
 
         return "## Inventory Transfer\n" +
                 "This command will allow you to transfer specific user's inventory to other user. First, you have to pick which user's inventory you want to transfer\n" +

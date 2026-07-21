@@ -482,7 +482,13 @@ public abstract class Command {
 
                 u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(content))
-                        .queue();
+                        .queue(null, e -> {
+                            if (e instanceof ErrorResponseException ere && ere.getErrorCode() == 50278) {
+                                return;
+                            }
+
+                            StaticStore.logger.uploadErrorLog(e, "E/ConstarintCommand::onLoaded - Failed to send DM to the user");
+                        });
 
                 return;
             }
@@ -492,7 +498,13 @@ public abstract class Command {
             if(!missingPermission.isEmpty()) {
                 u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(LangID.getStringByID("bot.sendFailure.reason.missingPermission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
-                        .queue();
+                        .queue(null, e -> {
+                            if (e instanceof ErrorResponseException ere && ere.getErrorCode() == 50278) {
+                                return;
+                            }
+
+                            StaticStore.logger.uploadErrorLog(e, "E/ConstarintCommand::onLoaded - Failed to send DM to the user");
+                        });
 
                 return;
             }

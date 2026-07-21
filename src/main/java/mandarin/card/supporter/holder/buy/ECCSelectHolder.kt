@@ -81,7 +81,7 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
     }
 
     private fun getContents() : String {
-        return "Please select how you will validate CC\n\n" +
+        return "Please select how you will validate ECC\n\n" +
                 "- 15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card\n" +
                 "- 2 Unique T4 Cards\n" +
                 "- 3 Same T4 Cards\n" +
@@ -95,7 +95,7 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
         val options = ArrayList<SelectOption>()
 
         Inventory.ECCValidationWay.entries.forEach { v ->
-            if (v == Inventory.ECCValidationWay.NONE)
+            if (v == Inventory.ECCValidationWay.NONE || v == Inventory.ECCValidationWay.CUSTOM_ROLE || v == Inventory.ECCValidationWay.MANUAL)
                 return@forEach
 
             val doable = if (Inventory.checkECCDoable(v, inventory).isBlank()) {
@@ -109,7 +109,6 @@ class ECCSelectHolder(author: Message, userID: String, channelID: String, messag
                 Inventory.ECCValidationWay.SEASONAL_15_COLLAB_12_T4 -> "15 Unique Seasonal Cards + 12 Unique Collaboration Cards + 1 T4 Card"
                 Inventory.ECCValidationWay.T4_2 -> "2 Unique T4 Cards"
                 Inventory.ECCValidationWay.SAME_T4_3 -> "3 Same T4 Cards"
-                else -> throw IllegalStateException("E/ECCSelectHolder::getComponents - Unhandled validation way : $v")
             }
 
             options.add(SelectOption.of(label, v.name).withDescription(doable))

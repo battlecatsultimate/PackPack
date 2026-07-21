@@ -7,6 +7,7 @@ import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Member
@@ -116,7 +117,9 @@ class ManualRollConfirmHolder(author: Message, userID: String, channelID: String
 
                         TransactionLogger.logMassRoll(member, users.size, pack)
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    StaticStore.logger.uploadErrorLog(e, "E/ManualRollConfirmHolder::onEvent - Failed to perform manual roll")
+
                     Command.replyToMessageSafely(
                         ch,
                         "Bot failed to find provided user in this server",
