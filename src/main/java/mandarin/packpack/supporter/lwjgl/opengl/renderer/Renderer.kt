@@ -5,6 +5,7 @@ import mandarin.packpack.supporter.lwjgl.opengl.RenderSessionManager
 import org.lwjgl.glfw.GLFW
 import java.io.File
 import java.util.*
+import java.util.concurrent.CountDownLatch
 
 class Renderer {
     var releaseFlag = false
@@ -12,8 +13,10 @@ class Renderer {
     lateinit var renderThread: Thread
     lateinit var renderSessionManager: RenderSessionManager
 
-    private val attachQueue = ArrayList<AttachQueue>()
+    private val attachQueue = Collections.synchronizedList(ArrayList<AttachQueue>())
     private val customQueue = Collections.synchronizedList(ArrayList<Runnable>())
+
+    private val terminationWaiter = CountDownLatch(1)
 
     init {
         val timer = Timer()
@@ -68,8 +71,11 @@ class Renderer {
 
                 if (releaseFlag) {
                     renderSessionManager.closeAll()
+                    RenderSessionManager.terminate()
 
                     timer.cancel()
+
+                    terminationWaiter.countDown()
                 }
             }
         }, 0L, 1L)
@@ -81,5 +87,10 @@ class Renderer {
 
     fun queueGL(runnable: Runnable) {
         customQueue.add(runnable)
+    }
+
+    fun terminateRenderer() {
+        releaseFlag = true
+        terminationWaiter.await()
     }
 }

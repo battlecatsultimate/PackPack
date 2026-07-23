@@ -11,7 +11,6 @@ import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.event.GachaSet;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.LwjglContext;
-import mandarin.packpack.supporter.lwjgl.opengl.RenderSessionManager;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BannerHolder;
 import mandarin.packpack.supporter.server.data.EventDataConfigHolder;
@@ -71,8 +70,7 @@ public class PackBot {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             Logger.writeLog(Logger.BotInstance.PACK_PACK);
 
-            StaticStore.renderManager.setReleaseFlag(true);
-            RenderSessionManager.Companion.terminate();
+            StaticStore.renderManager.terminateRenderer();
         }));
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) ->

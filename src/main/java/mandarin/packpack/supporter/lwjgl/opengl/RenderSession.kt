@@ -262,13 +262,15 @@ class RenderSession {
 
         removeEvents()
 
-        Callbacks.glfwFreeCallbacks(windowID)
-        GLFW.glfwDestroyWindow(windowID)
+        GLFW.glfwMakeContextCurrent(windowID)
 
         multiSampler.release()
         postProcessor.release()
 
         VAO.releaseVAO(this)
+
+        Callbacks.glfwFreeCallbacks(windowID)
+        GLFW.glfwDestroyWindow(windowID)
 
         onFinish?.invoke()
 
