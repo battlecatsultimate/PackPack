@@ -125,8 +125,7 @@ public class LogOut extends ConstraintCommand {
 
                 client.shutdown();
 
-                StaticStore.renderManager.setReleaseFlag(true);
-                RenderSessionManager.Companion.terminate();
+                StaticStore.renderManager.terminateRenderer();
 
                 LogManager.shutdown();
             }));
