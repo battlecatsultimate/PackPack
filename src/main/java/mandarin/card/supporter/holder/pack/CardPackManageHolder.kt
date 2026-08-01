@@ -141,7 +141,7 @@ class CardPackManageHolder(author: Message, userID: String, channelID: String, m
             if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
                 val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
 
-                builder.append("\nPage : 1/").append(totalPage)
+                builder.append("\nPage : ").append(page + 1).append("/").append(totalPage.toInt())
             }
         }
 
