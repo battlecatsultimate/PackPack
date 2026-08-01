@@ -149,19 +149,72 @@
         }
     },
     "boosterRole" : {
-        "success" : "Added <@&_RRR_> role to <@_MMM_> as booster role! If name color didn't get changed, please move one of PackPack's role priority higher than before",
+        "alreadyAssigned" : "This user already has assigned booster role! Please use select menu above if you want to change name or color",
+        "closed" : "Booster role manage list closed",
+        "expired" : "Booster role manage list expired",
+        "explanation" : "Sometimes you may want to offer unique perk to boosters that they can have their own emoji as long as they are boosting your server. But if they stopped boosting the server, said perk has to be removed from them as well. Such manual management is very tedious and hard to track. For this case, bot can check if assigned users have booster role or not, and automatically manage emojis for boosters. If users stop boosting the server, since booster role will be taken away, bot will be able to detect this and remove assigned emojis accordingly",
+        "noMember" : "There's no member who has booster role",
+        "notBooster" : "This member isn't booster!",
+        "select" : "Please select the member you want to manage",
+        "title" : "Booster Role Manage List",
+        "create" : {
+            "cancel" : "Are you sure you want to cancel assigning booster role to this user? This cannot be undone",
+            "changeFile" : "Change Role Icon",
+            "changeColor" : "Change Role Color",
+            "changeName" : "Change Role Name",
+            "create" : "Create",
+            "member" : "Target Member : <@%d> [%d]",
+            "name" : "Role Name : %s",
+            "success" : "Successfully added booster role to <@%d>! : %s [%d]",
+            "title" : "Adding Booster Role"
+        },
         "failed" : {
-            "alreadyRegistered" : "This member already has assigned booster role. You have to remove role by calling `p!boosterroleremove` command first!",
-            "invalidHex" : "Color hex code's format is invalid! (Example : `71f0f5` / `#71f0f5`)",
-            "invalidMember" : "There isn't such member in this server",
-            "maxReached" : "This server has maximum number of roles (250), so bot couldn't add booster role!",
-            "move" : "Failed to move the role",
-            "noColor" : "Please specify color by using `-h` or `-r & -g & -b` parameter!",
-            "noMember" : "Member's ID isn't specified!",
-            "noRegisteredRole" : "No booster role is set in this server! Please specify booster role via `p!idset` command",
-            "noRoleName" : "I can't find any role name. You have to specify role name by wrapping it with \" quotation marks, and name must not be white spaces!",
-            "notBooster" : "This member doesn't have server booster role (<@&%d>)!",
-            "notRGB" : "Please specify full rgb color to make things clarified!"
+            "failedAdd" : "Failed to add booster role to this user...",
+            "failedModifyName" : "Failed to edit name of the booster emoji...",
+            "failedReplace" : "Failed to replace booster emoji...",
+            "invalidName" : "Please follow proper emoji name format. Name must be either alphanumeric or _",
+            "noAttachment" : "Failed to bring uploaded emoji file data",
+            "noDownloader" : "Failed to prepare downloading emoji file",
+            "noFile" : "Failed to download uploaded emoji file",
+            "noBooster" : "This user doesn't have assigned booster role (<@&%d>!)",
+            "noRobot" : "You can't assign booster emoji to the bot!",
+            "noRole" : "It seems that you haven't assigned booster role to the bot yet. Please assign it using `p!idset` or `p!sc` command!",
+            "noSlot" : "There's no slot to add this type of emoji",
+            "notSupported" : "This file type is not supported. You can only upload png, jpg, or gif",
+            "sameName" : "This emoji name is same with current emoji's name",
+            "tooLarge" : "Uploaded image size is too large. It must be lower than 256KB"
+        },
+        "list" : {
+            "add" : "Select user here for assigning booster emoji",
+            "edit" : "Select assigned emoji to modify it",
+            "emoji" : "Assigned Emoji : %s [:%s:, %d]",
+            "member" : {
+                "selectMenu" : "%d. %s [%d]",
+                "text" : "%d. <@%d> [%d]"
+            }
+        },
+        "modify" : {
+            "change" : "Confirm Change",
+            "changed" : "Successfully modified booster emoji of <@%d>! : %s [:%s:, %d]",
+            "changeFile" : "Change Emoji Image",
+            "changeName" : "Change Emoji Name",
+            "emoji" : "Target Emoji : %s [:%s:, %d]",
+            "member" : "Target Member : <@%d> [%d]",
+            "name" : "Emoji Name : %s",
+            "delete" : "Are you sure you want to delete booster emoji from this user? This cannot be undone",
+            "deleteSuccess" : "Successfully deleted booster emoji from this user",
+            "title" : "Modifying Booster Emoji"
+        },
+        "name" : {
+            "description" : "Please enter emoji name. Name must be either alphanumeric or _",
+            "field" : "Enter Emoji Name Here",
+            "label" : "Name",
+            "title" : "Change Emoji Name"
+        },
+        "upload" : {
+            "description" : "Please post image file for booster emoji (PNG/JPG/GIF, under 256KB)",
+            "file" : "Emoji File",
+            "title" : "Assigning Booster Emoji"
         }
     },
     "boosterRoleRemove" : {
