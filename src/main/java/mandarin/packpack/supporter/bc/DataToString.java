@@ -3037,7 +3037,7 @@ public class DataToString extends Data {
                     Proc.ProcItem p = du.getProc().getArr(type[1]);
 
                     if (!p.exists()) {
-                        Formatter.Context c = new Formatter.Context(true, !isFrame, new double[]{0, 0});
+                        Formatter.Context c = new Formatter.Context(false, !isFrame, new double[]{0, 0});
 
                         String f = ProcLang.getWithLang(lang).get(type[1]).format;
 
