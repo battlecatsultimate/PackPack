@@ -39,6 +39,8 @@ abstract class CardCost(private val type: CostType, var amount: Long) {
 
     abstract fun getCostName() : String
 
+    abstract fun convertCardCostToCards() : ArrayList<Card>
+
     fun asJson() : JsonObject {
         val obj = JsonObject()
 

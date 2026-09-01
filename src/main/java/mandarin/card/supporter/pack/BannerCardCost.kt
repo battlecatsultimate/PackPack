@@ -2,6 +2,7 @@ package mandarin.card.supporter.pack
 
 import com.google.gson.JsonObject
 import com.google.gson.stream.MalformedJsonException
+import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 
@@ -29,6 +30,10 @@ class BannerCardCost(var banner: Banner, amount: Long) : CardCost(CostType.BANNE
         } else {
             "$amount ${banner.name} card"
         }
+    }
+
+    override fun convertCardCostToCards(): ArrayList<Card> {
+        return ArrayList(CardData.cards.filter { c -> banner in c.banner })
     }
 
     override fun finishJson(obj: JsonObject) {

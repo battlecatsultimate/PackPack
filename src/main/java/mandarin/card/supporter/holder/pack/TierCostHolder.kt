@@ -49,7 +49,22 @@ class TierCostHolder(author: Message, userID: Long, channelID: Long, message: Me
                 if (event !is StringSelectInteractionEvent)
                     return
 
+                val oldTier = cardCost.tier
+
                 cardCost.tier = CardPack.CardType.valueOf(event.values[0])
+
+                val conflictName = conflict()
+
+                if (conflictName.isNotEmpty()) {
+                    event.deferReply()
+                        .setContent("You can't set this tier because it will have coflict with other cost : $conflictName")
+                        .setEphemeral(true)
+                        .queue()
+
+                    cardCost.tier = oldTier
+
+                    return
+                }
 
                 if (pack in CardData.cardPacks) {
                     CardBot.saveCardData()
@@ -193,14 +208,14 @@ class TierCostHolder(author: Message, userID: Long, channelID: Long, message: Me
         if (new) {
             result.add(
                 ActionRow.of(
-                    Button.success("create", "Create").withDisabled(cardCost.isInvalid()),
+                    Button.success("create", "Create").withDisabled(cardCost.isInvalid() || conflict().isNotEmpty()),
                     Button.danger("back", "Go Back")
                 )
             )
         } else {
             result.add(
                 ActionRow.of(
-                    Button.secondary("back", "Go Back").withDisabled(cardCost.isInvalid()),
+                    Button.secondary("back", "Go Back").withDisabled(cardCost.isInvalid() || conflict().isNotEmpty()),
                     Button.danger("delete", "Delete Cost")
                 )
             )
@@ -240,6 +255,20 @@ class TierCostHolder(author: Message, userID: Long, channelID: Long, message: Me
             builder.append("\n\n**Warning : This card cost is invalid because it requires 0 card, or it doesn't have any tier required**")
         }
 
+        val conflict = conflict()
+
+        if (conflict.isNotEmpty()) {
+            builder.append("\n**Warning : This card cost cannot be created because it has conflict with other cost : $conflict**")
+        }
+
         return builder.toString()
+    }
+
+    private fun conflict() : String {
+        val selectedPool = cardCost.convertCardCostToCards().toSet()
+
+        val conflictCost = pack.cost.cardsCosts.find { cost -> cost !== cardCost && selectedPool.intersect(cost.convertCardCostToCards().toSet()).isNotEmpty() }
+
+        return conflictCost?.getCostName() ?: ""
     }
 }

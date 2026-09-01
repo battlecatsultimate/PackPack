@@ -7,7 +7,6 @@ import mandarin.card.supporter.card.Banner
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
-import mandarin.card.supporter.holder.skin.SkinCostManageHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore
@@ -15,6 +14,7 @@ import mandarin.packpack.supporter.server.data.ConfigHolder
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.buttons.Button
@@ -122,6 +122,19 @@ class SpecificCardCostHolder(
                 if (remove) {
                     cost.cards.remove(card)
                 } else {
+                    val conflictName = conflict(card)
+
+                    if (conflictName.isNotEmpty()) {
+                        event.deferReply()
+                            .setContent("This card can't be added because it will have conflict with other cost : $conflictName")
+                            .setEphemeral(true)
+                            .queue()
+
+                        applyResult()
+
+                        return
+                    }
+
                     cost.cards.add(card)
                 }
 
@@ -164,7 +177,7 @@ class SpecificCardCostHolder(
                     .setEphemeral(true)
                     .queue()
 
-                goBackTo(SkinCostManageHolder::class.java)
+                goBackTo(CardPackCostHolder::class.java)
             }
             "back" -> {
                 if (new) {
@@ -423,5 +436,15 @@ class SpecificCardCostHolder(
         }
 
         return result
+    }
+
+    private fun conflict(card: Card) : String {
+        val selectedPool = cost.convertCardCostToCards().toMutableSet()
+
+        selectedPool.add(card)
+
+        val conflictCost = pack.cost.cardsCosts.find { c -> c !== cost && selectedPool.intersect(c.convertCardCostToCards().toSet()).isNotEmpty() }
+
+        return conflictCost?.getCostName() ?: ""
     }
 }

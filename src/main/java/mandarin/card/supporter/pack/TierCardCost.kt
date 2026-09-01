@@ -31,6 +31,10 @@ class TierCardCost(var tier: CardPack.CardType, amount: Long) : CardCost(CostTyp
         }
     }
 
+    override fun convertCardCostToCards(): ArrayList<Card> {
+        return ArrayList(CardData.cards.filter { c -> filter(c) })
+    }
+
     override fun finishJson(obj: JsonObject) {
         obj.addProperty("tier", tier.name)
     }

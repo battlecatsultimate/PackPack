@@ -46,13 +46,17 @@ class SpecificCardCost(val cards: HashSet<Card>, amount: Long) : CardCost(CostTy
         return cards.joinToString(", ", "{ ", " }") { c -> c.simpleCardInfo() } + " x" + amount
     }
 
+    override fun convertCardCostToCards(): ArrayList<Card> {
+        return ArrayList(cards)
+    }
+
     fun simpleCostName() : String {
         return if (cards.isEmpty()) {
-            return "{ } x$amount"
+            "{ } x$amount"
         } else if (cards.size == 1) {
-            return "{ ${cards.toList().first().simpleCardInfo()} } x$amount"
+            "{ ${cards.toList().first().simpleCardInfo()} } x$amount"
         } else {
-            return "{ ${cards.toList().first().simpleCardInfo()}, ... } x$amount"
+            "{ ${cards.toList().first().simpleCardInfo()}, ... } x$amount"
         }
     }
 }

@@ -68,22 +68,14 @@ class CardCostTypeHolder(author: Message, userID: Long, channelID: Long, message
     }
 
     override fun onConnected(event: IMessageEditCallback, parent: Holder) {
-        val options = ArrayList<SelectOption>()
-
-        for (type in CardCost.CostType.entries) {
-            if (pack.cost.cardsCosts.isEmpty()) {
-                when (type) {
-                    CardCost.CostType.BANNER -> options.add(SelectOption.of("Banner", type.name))
-                    CardCost.CostType.TIER -> options.add(SelectOption.of("Tier", type.name))
-                    CardCost.CostType.CARD -> options.add(SelectOption.of("Card", type.name))
-                }
-            } else {
-                when (type) {
-                    CardCost.CostType.BANNER -> options.add(SelectOption.of("Banner", type.name))
-                    CardCost.CostType.TIER -> options.add(SelectOption.of("Tier", type.name))
-                    CardCost.CostType.CARD -> {}
-                }
+        val options: List<SelectOption> = CardCost.CostType.entries.map {
+            val labelName = when(it) {
+                CardCost.CostType.BANNER -> "Banner"
+                CardCost.CostType.TIER -> "Tier"
+                CardCost.CostType.CARD -> "Card"
             }
+
+            SelectOption.of(labelName, it.name)
         }
 
         event.deferEdit()
