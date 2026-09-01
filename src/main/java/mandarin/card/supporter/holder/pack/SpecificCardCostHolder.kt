@@ -120,6 +120,19 @@ class SpecificCardCostHolder(
                 if (remove) {
                     cost.cards.remove(card)
                 } else {
+                    val conflictName = conflict(card)
+
+                    if (conflictName.isNotEmpty()) {
+                        event.deferReply()
+                            .setContent("This card can't be added because it will have conflict with other cost : $conflictName")
+                            .setEphemeral(true)
+                            .queue()
+
+                        applyResult()
+
+                        return
+                    }
+
                     cost.cards.add(card)
                 }
 
@@ -424,5 +437,15 @@ class SpecificCardCostHolder(
         }
 
         return result
+    }
+
+    private fun conflict(card: Card) : String {
+        val selectedPool = cost.convertCardCostToCards().toMutableSet()
+
+        selectedPool.add(card)
+
+        val conflictCost = pack.cost.cardsCosts.find { c -> c !== cost && selectedPool.intersect(c.convertCardCostToCards().toSet()).isNotEmpty() }
+
+        return conflictCost?.getCostName() ?: ""
     }
 }

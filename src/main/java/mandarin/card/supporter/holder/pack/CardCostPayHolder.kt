@@ -45,7 +45,7 @@ class CardCostPayHolder(
     } else {
         when(when(container.cost) {
             is TierCardCost -> container.cost.tier
-            else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
+            else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost.javaClass}")
         }) {
             CardPack.CardType.T1 -> CardData.Tier.COMMON
             CardPack.CardType.T2,
@@ -61,7 +61,7 @@ class CardCostPayHolder(
         is TierCardCost -> Banner.NONE
         is BannerCardCost -> container.cost.banner
         is SpecificCardCost -> Banner.NONE
-        else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
+        else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost.javaClass}")
     }
 
     init {
