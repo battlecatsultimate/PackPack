@@ -79,7 +79,7 @@ public class BoosterEmojiListHolder extends ComponentHolder {
 
                 if (targetMember.getUser().isBot()) {
                     event.deferReply()
-                            .setComponents(TextDisplay.of(LangID.getStringByID("boosterEmoji.noRobot", lang)))
+                            .setComponents(TextDisplay.of(LangID.getStringByID("boosterEmoji.failed.noRobot", lang)))
                             .useComponentsV2()
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
