@@ -4,12 +4,8 @@ import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.data.BoosterHolder;
-import mandarin.packpack.supporter.server.holder.component.booster.BoosterEmojiListHolder;
-import mandarin.packpack.supporter.server.holder.component.booster.BoosterRoleCreateHolder;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -20,18 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoosterRoleModalHolder extends ModalHolder {
-    private final Member targetMember;
     private final Guild g;
 
-    private final BoosterHolder boosterHolder;
-
-    public BoosterRoleModalHolder(@Nullable Message author, long userID, long channelID, @NotNull Message message, @NotNull Member targetMember, @NotNull Guild g, @NotNull BoosterHolder boosterHolder, @NotNull CommonStatic.Lang.Locale lang) {
+    public BoosterRoleModalHolder(@Nullable Message author, long userID, long channelID, @NotNull Message message, @NotNull Guild g, @NotNull CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
-        this.targetMember = targetMember;
         this.g = g;
-
-        this.boosterHolder = boosterHolder;
     }
 
     @Override

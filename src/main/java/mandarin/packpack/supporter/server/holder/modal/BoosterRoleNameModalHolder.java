@@ -21,10 +21,10 @@ public class BoosterRoleNameModalHolder extends ModalHolder {
         this.targetRole = null;
     }
 
-    public BoosterRoleNameModalHolder(@Nullable Message author, long userID, long channelID, @NotNull Message message, @NotNull Role targetEmoji, @NotNull CommonStatic.Lang.Locale lang) {
+    public BoosterRoleNameModalHolder(@Nullable Message author, long userID, long channelID, @NotNull Message message, @NotNull Role targetRole, @NotNull CommonStatic.Lang.Locale lang) {
         super(author, userID, channelID, message, lang);
 
-        this.targetRole = targetEmoji;
+        this.targetRole = targetRole;
     }
 
     @Override

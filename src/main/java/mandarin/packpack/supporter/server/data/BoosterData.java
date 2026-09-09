@@ -56,9 +56,6 @@ public class BoosterData {
         return new BoosterData(role, emoji);
     }
 
-    public static final int ERR_ALREADY_ROLE_SET = -1;
-    public static final int ERR_ALREADY_EMOJI_SET = -2;
-
     private long role = -1L;
     private long emoji = -1L;
 
@@ -80,24 +77,22 @@ public class BoosterData {
         this.emoji = emoji;
     }
 
-    public int setRole(long role) {
+    public void setRole(long role) {
         if(this.role != -1L) {
-            return ERR_ALREADY_ROLE_SET;
+            return;
         }
 
         this.role = role;
 
-        return 0;
     }
 
-    public int setEmoji(long emoji) {
+    public void setEmoji(long emoji) {
         if(this.emoji != -1L) {
-            return ERR_ALREADY_EMOJI_SET;
+            return;
         }
 
         this.emoji = emoji;
 
-        return 0;
     }
 
     public void removeRole() {

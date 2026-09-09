@@ -124,7 +124,7 @@ public class BoosterRoleCreateHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new BoosterRoleModalHolder(getAuthorMessage(), userID, channelID, message, targetMember, g, boosterHolder, lang));
+                connectTo(new BoosterRoleModalHolder(getAuthorMessage(), userID, channelID, message, g, lang));
             }
             case "color1" -> {
                 Modal modal = Modal.create("color", LangID.getStringByID("boosterRole.color.title.primary", lang))

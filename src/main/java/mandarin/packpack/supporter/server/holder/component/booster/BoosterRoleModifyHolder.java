@@ -121,7 +121,7 @@ public class BoosterRoleModifyHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new BoosterRoleNameModalHolder(getAuthorMessage(), userID, channelID, message, lang));
+                connectTo(new BoosterRoleNameModalHolder(getAuthorMessage(), userID, channelID, message, role, lang));
             }
             case "image" -> {
                 AttachmentUpload upload = AttachmentUpload.create("roleIcon")
@@ -136,7 +136,7 @@ public class BoosterRoleModifyHolder extends ComponentHolder {
 
                 event.replyModal(modal).queue();
 
-                connectTo(new BoosterRoleModalHolder(getAuthorMessage(), userID, channelID, message, targetMember, g, boosterHolder, lang));
+                connectTo(new BoosterRoleModalHolder(getAuthorMessage(), userID, channelID, message, g, lang));
             }
             case "color1" -> {
                 Modal modal = Modal.create("color", LangID.getStringByID("boosterRole.color.title.primary", lang))
