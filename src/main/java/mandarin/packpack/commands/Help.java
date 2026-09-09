@@ -68,7 +68,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help.main.category.normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help.main.category.math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
                     .addField(LangID.getStringByID("help.main.category.bc", lang), "```background, castle, catcombo, enemydps, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formdps, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
-                    .addField(LangID.getStringByID("help.main.category.server", lang), "```boosteremoji, boosterrole, boosterroleremove, channelpermission, hasrole, idset, serverconfig, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help.main.category.server", lang), "```boosteremoji, boosterrole, channelpermission, hasrole, idset, serverconfig, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help.main.category.data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help.main.category.bot", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, save, serverjson, statistic, suggest, unregisterscamlink```", false);
 
@@ -165,8 +165,6 @@ public class Help extends Command {
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverLocale", prefix)));
             case "boosterrole", "boosterr", "brole", "br" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterRole", prefix)));
-            case "boosterroleremove", "brremove", "boosterrolerem", "brrem", "brr" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterRoleRemove", prefix)));
             case "boosteremoji", "boostere", "bemoji", "be" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterEmoji", prefix)));
             case "setup" ->

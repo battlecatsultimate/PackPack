@@ -2,30 +2,40 @@ package mandarin.packpack.commands.server;
 
 import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.apache.commons.lang3.StringUtils;
+import mandarin.packpack.supporter.server.holder.component.booster.BoosterRoleListHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.*;
+
 import javax.annotation.Nonnull;
 
 import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 public class BoosterRole extends ConstraintCommand {
-    private final static String hexString = "0123456789abcdef";
-    private final static Pattern p = Pattern.compile("\".+\"");
+    public static final String SEGMENT_NAME = "ROLE_NAME";
+    public static final String SEGMENT_COLOR1 = "ROLE_COLOR_PRIMARY";
+    public static final String SEGMENT_COLOR2 = "ROLE_COLOR_GRADIENT";
 
     public BoosterRole(ROLE role, CommonStatic.Lang.Locale lang, IDHolder id) {
         super(role, lang, id, true);
@@ -33,258 +43,124 @@ public class BoosterRole extends ConstraintCommand {
 
     @Override
     public void doSomething(@Nonnull CommandLoader loader) {
-        MessageChannel ch = loader.getChannel();
-        Guild g = loader.getGuild();
+        if(holder == null)
+            return;
 
-        if(g.getRoles().size() == 250) {
-            ch.sendMessage(LangID.getStringByID("boosterRole.failed.maxReached", lang)).queue();
+        File temp = new File("./temp");
 
+        if(!temp.exists() && temp.mkdirs()) {
+            System.out.println("Can't create folder : "+temp.getAbsolutePath());
             return;
         }
-
-        IDHolder holder = StaticStore.idHolder.get(g.getIdLong());
 
         if(holder.booster == -1L) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRegisteredRole", lang));
+            replyToMessageSafely(loader.getChannel(), loader.getMessage(), LangID.getStringByID("boosterRole.failed.noRole", lang));
+
             return;
         }
 
-        String id = getUserID(loader.getContent());
-
-        if(id == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noMember", lang));
-            return;
-        }
-
-        String name = getRoleName(loader.getContent());
-
-        if(name == null || name.isBlank()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noRoleName", lang));
-            return;
-        }
-
-        int c = getColor(loader.getContent(), ch);
-
-        if(c == -1)
-            return;
-
-        Member m = g.getMemberById(id);
-
-        if(m != null) {
-            if(!StaticStore.rolesToID(m.getRoles()).contains(holder.booster)) {
-                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notBooster", lang).formatted(holder.booster));
-                return;
-            }
-
-            if(StaticStore.boosterData.containsKey(g.getIdLong())) {
-                BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
-
-                if(bHolder.serverBooster.containsKey(m.getIdLong())) {
-                    BoosterData data = bHolder.serverBooster.get(m.getIdLong());
-
-                    if(data.getRole() != -1L) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.alreadyRegistered", lang));
-                        return;
-                    }
-                }
-            }
-
-            if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-                g.createRole()
-                        .setHoisted(false)
-                        .setColor(c)
-                        .setName(name)
-                        .setMentionable(false)
-                        .setPermissions(Permission.EMPTY_PERMISSIONS)
-                        .queue(r -> {
-                            g.modifyRolePositions().selectPosition(r).moveTo(getPackPackPosition(g) - 1).queue(null, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Failed to move role");
-
-                                ch.sendMessage(LangID.getStringByID("boosterRole.failed.move", lang)).queue();
-                            });
-
-                            if(StaticStore.boosterData.containsKey(g.getIdLong())) {
-                                BoosterHolder bHolder = StaticStore.boosterData.get(g.getIdLong());
-
-                                if(bHolder.serverBooster.containsKey(m.getIdLong())) {
-                                    BoosterData data = bHolder.serverBooster.get(m.getIdLong());
-
-                                    int result = data.setRole(r.getIdLong());
-
-                                    if(result == BoosterData.ERR_ALREADY_ROLE_SET) {
-                                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.alreadyRegistered", lang));
-                                    } else {
-                                        g.addRoleToMember(UserSnowflake.fromId(m.getIdLong()), r).queue(null, e -> {
-                                            StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
-
-                                            createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
-                                        });
-
-                                        createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).formatted(r.getIdLong(), m.getIdLong()));
-                                    }
-                                } else {
-                                    BoosterData data = new BoosterData(r.getIdLong(), BoosterData.INITIAL.ROLE);
-
-                                    g.addRoleToMember(UserSnowflake.fromId(m.getIdLong()), r).queue(null, e -> {
-                                        StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
-
-                                        createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
-                                    });
-
-                                    bHolder.serverBooster.put(m.getIdLong(), data);
-
-                                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).formatted(r.getIdLong(), m.getIdLong()));
-                                }
-                            } else {
-                                BoosterHolder bHolder = new BoosterHolder();
-
-                                BoosterData data = new BoosterData(r.getIdLong(), BoosterData.INITIAL.ROLE);
-
-                                g.addRoleToMember(UserSnowflake.fromId(m.getIdLong()), r).queue(null, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
-
-                                    createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
-                                });
-
-                                bHolder.serverBooster.put(m.getIdLong(), data);
-
-                                StaticStore.boosterData.put(g.getIdLong(), bHolder);
-
-                                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.success", lang).formatted(r.getIdLong(), m.getIdLong()));
-                            }
-                        }, e -> StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to create role"));
-            } else {
-                createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.invalidMember", lang));
-            }
-        }
-
-
+        replyToMessageSafely(loader.getChannel(), loader.getMessage(), msg -> StaticStore.putHolder(loader.getUser().getIdLong(), new BoosterRoleListHolder(loader.getMessage(), loader.getUser().getIdLong(), loader.getChannel().getIdLong(), loader.getGuild(), msg, holder, lang)), getComponents(loader.getGuild()));
     }
 
-    private String getUserID(String message) {
-        String[] content = message.split(" ");
+    private net.dv8tion.jda.api.components.container.Container getComponents(Guild g) {
+        BoosterHolder boosterHolder = StaticStore.boosterData.computeIfAbsent(g.getIdLong(), _ -> new BoosterHolder());
 
-        if(content.length < 2)
-            return null;
+        List<ContainerChildComponent> children = new ArrayList<>();
 
-        String id = content[1].replaceAll("<@!?", "").replace(">", "");
+        children.add(TextDisplay.of(
+                "## " + LangID.getStringByID("boosterRole.title", lang) + "\n" +
+                        LangID.getStringByID("boosterRole.explanation", lang) + "\n\n" +
+                        LangID.getStringByID("boosterRole.select", lang)
+        ));
 
-        if(StaticStore.isNumeric(id))
-            return id;
-        else
-            return null;
-    }
+        List<Map.Entry<Long, BoosterData>> boosterData = boosterHolder.serverBooster.entrySet().stream().filter(e -> e.getValue().getRole() != -1L).toList();
 
-    private int getColor(String message, MessageChannel ch) {
-        String[] content = message.split(" ");
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-        int[] rgb = null;
-        String hex = null;
+        int size = Math.min(boosterData.size(), ConfigHolder.SearchLayout.FANCY_LIST.chunkSize);
 
-        boolean he = false;
-        boolean re = false;
-        boolean gr = false;
-        boolean bl = false;
-
-        for(int i = 0; i < content.length; i++) {
-            if(!he && (content[i].equals("-h") || content[i].equals("-hex")) && i < content.length - 1) {
-                String h = content[i+1];
-
-                if(h.startsWith("#"))
-                    h = h.substring(1);
-
-                if(isHex(h) && h.length() == 6) {
-                    hex = h;
-                    he = true;
-                } else {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.invalidHex", lang).replace("_", h));
-
-                    return -1;
-                }
-            } else if(!re && (content[i].equals("-r") || content[i].equals("-red")) && i < content.length - 1 && StaticStore.isNumeric(content[i+1])) {
-                if(rgb == null)
-                    rgb = new int[3];
-
-                rgb[0] = Math.max(0, Math.min(255, StaticStore.safeParseInt(content[i+1])));
-
-                re = true;
-            } else if(!gr && (content[i].equals("-g") || content[i].equals("-green")) && i < content.length - 1 && StaticStore.isNumeric(content[i + 1])) {
-                if(rgb == null)
-                    rgb = new int[3];
-
-                rgb[1] = Math.max(0, Math.min(255, StaticStore.safeParseInt(content[i + 1])));
-
-                gr = true;
-            } else if(!bl && (content[i].equals("-b") || content[i].equals("-blue")) && i < content.length - 1 && StaticStore.isNumeric(content[i + 1])) {
-                if(rgb == null)
-                    rgb = new int[3];
-
-                rgb[2] = Math.max(0, Math.min(255, StaticStore.safeParseInt(content[i + 1])));
-
-                bl = true;
-            }
-        }
-
-        if(hex == null && rgb == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.noColor", lang));
-
-            return -1;
-        }
-
-        if(hex != null) {
-            return Integer.parseInt(hex, 16);
-        }
-
-        if(re && gr && bl) {
-            return new Color(rgb[0], rgb[1], rgb[2]).getRGB();
+        if (boosterData.isEmpty()) {
+            children.add(TextDisplay.of("### " + LangID.getStringByID("boosterRole.noMember", lang)));
         } else {
-            createMessageWithNoPings(ch, LangID.getStringByID("boosterRole.failed.notRGB", lang));
+            for (int i = 0; i < size; i++) {
+                Map.Entry<Long, BoosterData> entry = boosterData.get(i);
+                Role role = g.getRoleById(entry.getValue().getRole());
 
-            return -1;
-        }
-    }
+                if (role == null)
+                    continue;
 
-    private String getRoleName(String message) {
-        if(StringUtils.countMatches(message, '"') >= 2) {
-            Matcher m = p.matcher(message);
+                children.add(TextDisplay.of(
+                        LangID.getStringByID("boosterRole.list.member.text", lang).formatted(i, entry.getKey(), entry.getKey()) + "\n" +
+                                "  " + LangID.getStringByID("boosterRole.list.role", lang).formatted(role.getName(), role.getIdLong(), role.getIdLong())
+                ));
 
-            boolean f = m.find();
-
-            if(!f)
-                return null;
-            else {
-                String g = m.group();
-
-                return g.substring(1, g.length() - 1);
+                if (i < size - 1) {
+                    children.add(Separator.create(false, Separator.Spacing.SMALL));
+                }
             }
         }
 
-        return null;
-    }
+        children.add(Separator.create(true, Separator.Spacing.LARGE));
 
-    private boolean isHex(String hex) {
-        hex = hex.toLowerCase(Locale.ROOT);
+        List<SelectOption> options = new ArrayList<>();
 
-        for(int i = 0; i < hex.length(); i++) {
-            if (!hexString.contains(Character.toString(hex.charAt(i)))) {
-                return false;
+        if (size == 0) {
+            options.add(SelectOption.of("A", "A"));
+        } else {
+            for (int i = 0; i < size; i++) {
+                Map.Entry<Long, BoosterData> entry = boosterData.get(i);
+                Role role = g.getRoleById(entry.getValue().getRole());
+
+                if (role == null)
+                    continue;
+
+                User u = g.getJDA().getUserById(entry.getKey());
+
+                if (u == null)
+                    continue;
+
+                options.add(SelectOption.of(LangID.getStringByID("boosterRole.list.member.selectMenu", lang).formatted(i + 1, u.getGlobalName(), entry.getKey()), String.valueOf(i)));
             }
         }
 
-        return true;
-    }
+        children.add(ActionRow.of(StringSelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("boosterRole.list.edit", lang)).setRequiredRange(1, 1).setDisabled(boosterData.isEmpty()).build()));
 
-    private int getPackPackPosition(Guild g) {
-        int role = 0;
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
 
-        List<Role> roles = g.getSelfMember().getRoles();
+        if (boosterData.size() > ConfigHolder.SearchLayout.FANCY_LIST.chunkSize) {
+            int totalPage = SearchHolder.getTotalPage(boosterData.size(), ConfigHolder.SearchLayout.FANCY_LIST.chunkSize);
 
-        for(Role r : roles) {
-            int pos = r.getPosition();
+            children.add(TextDisplay.of(LangID.getStringByID("ui.search.page", lang).formatted(1, totalPage)));
 
-            role = Math.max(role, pos);
+            List<net.dv8tion.jda.api.components.buttons.Button> buttons = new ArrayList<>();
+
+            if(totalPage > 10) {
+                buttons.add(net.dv8tion.jda.api.components.buttons.Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("ui.search.10Previous", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+            }
+
+            buttons.add(net.dv8tion.jda.api.components.buttons.Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("ui.search.previous", lang), EmojiStore.PREVIOUS).asDisabled());
+            buttons.add(net.dv8tion.jda.api.components.buttons.Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("ui.search.next", lang), EmojiStore.NEXT));
+
+            if(totalPage > 10) {
+                buttons.add(net.dv8tion.jda.api.components.buttons.Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("ui.search.10Next", lang), EmojiStore.TWO_NEXT));
+            }
+
+            children.add(ActionRow.of(buttons));
+
+            children.add(Separator.create(false, Separator.Spacing.SMALL));
         }
 
-        return role;
+        EntitySelectMenu memberMenu = EntitySelectMenu.create("create", EntitySelectMenu.SelectTarget.USER)
+                .setRequiredRange(1, 1)
+                .setPlaceholder(LangID.getStringByID("boosterRole.list.add", lang))
+                .build();
+
+        children.add(ActionRow.of(memberMenu));
+
+        children.add(Separator.create(false, Separator.Spacing.SMALL));
+
+        children.add(ActionRow.of(Button.danger("close", LangID.getStringByID("ui.button.close", lang)).withEmoji(EmojiStore.CROSS)));
+
+        return Container.of(children);
     }
 }

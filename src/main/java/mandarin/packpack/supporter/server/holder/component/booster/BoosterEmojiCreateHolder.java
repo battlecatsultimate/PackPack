@@ -109,7 +109,9 @@ public class BoosterEmojiCreateHolder extends ComponentHolder {
                 connectTo(new BoosterEmojiModalHolder(getAuthorMessage(), userID, channelID, message, targetMember, g, boosterHolder, lang));
             }
             case "create" -> g.createEmoji(emojiName, Icon.from(emojiFile)).queue(emoji -> {
-                boosterHolder.serverBooster.put(targetMember.getIdLong(), new BoosterData(emoji.getIdLong(), BoosterData.INITIAL.EMOJI));
+                BoosterData boosterData = boosterHolder.serverBooster.computeIfAbsent(targetMember.getIdLong(), _ -> new BoosterData(emoji.getIdLong(), BoosterData.INITIAL.EMOJI));
+
+                boosterData.setEmoji(emoji.getIdLong());
 
                 event.deferReply()
                         .setComponents(TextDisplay.of(LangID.getStringByID("boosterEmoji.create.success", lang).formatted(targetMember.getIdLong(), emoji.getFormatted(), emoji.getIdLong())))
@@ -118,6 +120,10 @@ public class BoosterEmojiCreateHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .setEphemeral(true)
                         .queue();
+
+                if (emojiFile != null) {
+                    StaticStore.deleteFile(emojiFile, true);
+                }
 
                 goBack();
             }, e -> {
@@ -132,6 +138,10 @@ public class BoosterEmojiCreateHolder extends ComponentHolder {
                         .mentionRepliedUser(false)
                         .setEphemeral(true)
                         .queue();
+
+                if (emojiFile != null) {
+                    StaticStore.deleteFile(emojiFile, true);
+                }
 
                 goBack();
             });
@@ -154,7 +164,8 @@ public class BoosterEmojiCreateHolder extends ComponentHolder {
 
     @Override
     public void onExpire() {
-
+        if (emojiFile != null)
+            StaticStore.deleteFile(emojiFile, true);
     }
 
     @Override

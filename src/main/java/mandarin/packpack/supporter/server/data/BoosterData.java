@@ -6,6 +6,9 @@ import com.google.gson.JsonPrimitive;
 import mandarin.packpack.supporter.StaticStore;
 
 public class BoosterData {
+    public void re() {
+    }
+
     public enum INITIAL {
         ROLE, EMOJI
     }

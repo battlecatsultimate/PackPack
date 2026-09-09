@@ -654,6 +654,11 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         fillRect(x, y, w, h)
     }
 
+    fun gradRoundRect(x: Float, y: Float, w: Float, h: Float, x1: Float, y1: Float, c1: IntArray, x2: Float, y2: Float, c2: IntArray, dx: Float, dy: Float) {
+        setGradient(x1, y1, c1[0].toFloat(), c1[1].toFloat(), c1[2].toFloat(), x2, y2, c2[0].toFloat(), c2[1].toFloat(), c2[2].toFloat())
+        fillRoundRect(x, y, w, h, dx, dy)
+    }
+
     override fun gradRectAlpha(x: Float, y: Float, w: Float, h: Float, x1: Float, y1: Float, a1: Int, c1: IntArray, x2: Float, y2: Float, a2: Int, c2: IntArray) {
         setGradient(x1, y1, c1[0].toFloat(), c1[1].toFloat(), c1[2].toFloat(), a1.toFloat(), y1, y2, c2[0].toFloat(), c2[1].toFloat(), c2[2].toFloat(), a2.toFloat())
         fillRect(x, y, w, h)
