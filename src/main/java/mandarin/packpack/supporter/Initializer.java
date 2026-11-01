@@ -87,7 +87,7 @@ public class Initializer {
 
             for(UpdateCheck.Downloader d : asset) {
                 System.out.println("Downloading File : "+d.target.getName());
-                d.run((v) -> {});
+                d.run((_) -> {});
             }
 
             AssetLoader.merge();
@@ -98,7 +98,7 @@ public class Initializer {
 
             for(UpdateCheck.Downloader d : music) {
                 System.out.println("Downloading Music : "+d.target.getName());
-                d.run((v) -> {});
+                d.run((_) -> {});
 
                 StaticStore.musics.put(d.target.getName().replace(".ogg", ""), CommonStatic.getConfig().localMusicMap.get(StaticStore.safeParseInt(d.target.getName().replace(".ogg", ""))));
             }
@@ -116,7 +116,7 @@ public class Initializer {
                     System.out.println("Downloading Language File : "+d.target.getName());
                 }
 
-                d.run((v) -> {});
+                d.run((_) -> {});
             }
 
             for(String key : CommonStatic.getConfig().localLangMap.keySet()) {
@@ -148,9 +148,9 @@ public class Initializer {
         System.out.println("Initializing Profile...");
         CommonStatic.ctx.initProfile();
         System.out.println("Loading Assets...");
-        AssetLoader.load((v) -> {});
+        AssetLoader.load((_) -> {});
         System.out.println("Loading BC Data...");
-        UserProfile.getBCData().load(System.out::println, (v) -> {});
+        UserProfile.getBCData().load(System.out::println, (_) -> {});
         System.out.println("Reading Language Data...");
 
         MultiLangCont.getStatic().FNAME.clear();
