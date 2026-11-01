@@ -58,6 +58,7 @@ public class EventFactor {
 
     public static final Map<Integer, int[]> missionReward = new HashMap<>();
     public static final Map<Integer, int[]> newUnits = new HashMap<>();
+    public static final Map<Integer, Integer> feverDojoPointLimit = new HashMap<>();
 
     public static final GroupHandler CYCLONE = new ContainedGroupHandler(
             Arrays.asList(

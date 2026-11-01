@@ -799,7 +799,7 @@ public class EventHolder extends EventFactor {
                     .append("] ");
         }
 
-        result.append("\u001B[1;38m").append(scheduleName);
+        result.append("\u001B[1;37m").append(scheduleName);
 
         return result.toString();
     }

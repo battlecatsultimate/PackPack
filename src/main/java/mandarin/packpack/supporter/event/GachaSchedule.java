@@ -281,7 +281,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(g == null)
                 g = tryGetGachaName(section, lang);
 
-            result.append("\u001B[1;38m").append(g);
+            result.append("\u001B[1;37m").append(g);
 
             if(newUnits.containsKey(section.gachaID)) {
                 int[] units = newUnits.get(section.gachaID);

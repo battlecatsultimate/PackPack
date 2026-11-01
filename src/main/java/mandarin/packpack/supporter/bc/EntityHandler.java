@@ -1165,7 +1165,7 @@ public class EntityHandler {
         }
 
         if(configData.showMiscellaneous) {
-            List<String> misc = DataToString.getMiscellaneous(st, lang);
+            List<String> misc = DataToString.getMiscellaneous(st, configData.isFrame,lang);
 
             if(!misc.isEmpty()) {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -5280,7 +5280,7 @@ public class EntityHandler {
                 limits.toArray(new String[0])
         ));
 
-        List<String> misc = DataToString.getMiscellaneous(st, lang);
+        List<String> misc = DataToString.getMiscellaneous(st, isFrame, lang);
 
         misc.replaceAll(s -> " - " + s);
 

@@ -166,7 +166,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
 
         result.append("] ");
 
-        result.append("\u001B[1;38m").append(beautifyItem(lang, itemID, itemAmount));
+        result.append("\u001B[1;37m").append(beautifyItem(lang, itemID, itemAmount));
 
         if(1000 <= categoryID && categoryID < 5000 && everyday) {
             result.append("\u001B[1;34m [").append(LangID.getStringByID("event.daily", lang)).append("]");

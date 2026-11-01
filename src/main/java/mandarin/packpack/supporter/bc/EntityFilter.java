@@ -38,7 +38,8 @@ public class EntityFilter {
     };
 
     private static final String spaceRegex = "[\\-☆]";
-    private static final String apostropheRegex = "‘";
+    @SuppressWarnings("RegExpSimplifiable")
+    private static final String apostropheRegex = "[‘]";
 
     public static ArrayList<Form> findUnitWithName(String name, boolean trueForm, CommonStatic.Lang.Locale lang) {
         ArrayList<Form> initialData = new ArrayList<>();

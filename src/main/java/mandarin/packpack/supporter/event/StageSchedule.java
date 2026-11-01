@@ -362,7 +362,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     .append("] ");
         }
 
-        result.append("\u001B[1;38m").append(name);
+        result.append("\u001B[1;37m").append(name);
 
         return result.toString();
     }
@@ -438,7 +438,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         result.append("] ");
 
         if(!isMission) {
-            result.append("\u001B[1;38m");
+            result.append("\u001B[1;37m");
 
             for(int i = 0; i < stages.size(); i++) {
                 StageMap map = stages.get(i);
@@ -511,6 +511,14 @@ public class StageSchedule extends EventFactor implements Schedule {
                         int year = id - 18000 + 7;
 
                         result.append(LangID.getStringByID("event.sale.18xxx", lang).replace("_", (String.valueOf(year)).repeat(3)));
+                    } else if (id >= 40000 && id <= 41000 && feverDojoPointLimit.containsKey(id)) {
+                        int scoreData = feverDojoPointLimit.getOrDefault(id, -1);
+
+                        if (scoreData != -1) {
+                            result.append(LangID.getStringByID("event.feverDojo", lang).formatted(scoreData));
+                        } else {
+                            result.append(id);
+                        }
                     } else {
                         String langID = "event.sale."+id;
 
@@ -536,7 +544,7 @@ public class StageSchedule extends EventFactor implements Schedule {
             if(!isMission)
                 result.append(" ");
 
-            result.append("\u001B[0;38m(");
+            result.append("\u001B[0;37m(");
 
             for (int i = 0; i < sections.size(); i++) {
                 EventSection section = sections.get(i);
@@ -557,7 +565,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                                 .append(set.dateEnd.day)
                                 .append(getNumberWithDayFormat(set.dateEnd.day, lang));
 
-                        result.append("\u001B[0;38m");
+                        result.append("\u001B[0;37m");
 
                         if (j < section.daySets.size() - 1)
                             result.append(", ");
@@ -572,17 +580,17 @@ public class StageSchedule extends EventFactor implements Schedule {
                     if (isEvenDays(i)) {
                         result.append("\u001B[0;33m")
                                 .append(LangID.getStringByID("event.evenDay", lang))
-                                .append("\u001B[0;38m");
+                                .append("\u001B[0;37m");
                     } else if (isOddDays(i)) {
                         result.append("\u001B[0;33m")
                                 .append(LangID.getStringByID("event.oddDay", lang))
-                                .append("\u001B[0;38m");
+                                .append("\u001B[0;37m");
                     } else {
                         for (int j = 0; j < section.days.size(); j++) {
                             result.append("\u001B[0;36m")
                                     .append(section.days.get(j))
                                     .append(getNumberWithDayFormat(section.days.get(j), lang))
-                                    .append("\u001B[0;38m");
+                                    .append("\u001B[0;37m");
 
                             if (j < section.days.size() - 1) {
                                 result.append(", ");
@@ -599,7 +607,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     for (int j = 0; j < section.weekDays.size(); j++) {
                         result.append("\u001B[0;34m")
                                 .append(getWhichDay(section.weekDays.get(j), lang))
-                                .append("\u001B[0;38m");
+                                .append("\u001B[0;37m");
 
                         if (j < section.weekDays.size() - 1) {
                             result.append(", ");
@@ -623,7 +631,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                                 .append(duo(time.end.hour))
                                 .append(":")
                                 .append(duo(time.end.minute))
-                                .append("\u001B[0;38m");
+                                .append("\u001B[0;37m");
 
                         if (j < section.times.size() - 1) {
                             result.append(", ");
@@ -660,10 +668,10 @@ public class StageSchedule extends EventFactor implements Schedule {
                     mission = LangID.getStringByID("event.dummy.mission", lang).replace("_", unknownStages.get(i));
                 }
 
-                result.append("  \u001B[1;38m").append(mission);
+                result.append("  \u001B[1;37m").append(mission);
 
                 if(missionReward.containsKey(id)) {
-                    result.append("\u001B[0;38m -> ");
+                    result.append("\u001B[0;37m -> ");
 
                     int[] data = missionReward.get(id);
 
