@@ -37,8 +37,8 @@ public class DataToString extends Data {
 
     private static final Map<Integer, String> talentText = new HashMap<>();
     private static final Map<Integer, String> talentIcon = new HashMap<>();
-    private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031", "000033", "000034", "000036", "000037");
-    private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L", "ND", "SR", "G"};
+    private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031", "000033", "000034", "000036", "000037","000039");
+    private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L", "ND", "SR", "G", "PR"};
     private static final int maxDifficulty = 11;
     private static final int[] materialDrops = {85, 86, 87, 88, 89, 90, 91, 140, 187, 188, 189, 190, 191, 192, 193, 194};
     private static final String[] rarities = {"basic", "ex", "rare", "superRare", "uberRare", "legendRare"};
@@ -2535,13 +2535,16 @@ public class DataToString extends Data {
         return new int[] {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
     }
 
-    public static List<String> getMiscellaneous(Stage st, CommonStatic.Lang.Locale lang) {
+    public static List<String> getMiscellaneous(Stage st, boolean isFrame, CommonStatic.Lang.Locale lang) {
         List<String> result = new ArrayList<>();
 
         if(st.getCont() == null || st.getCont().info == null)
             return result;
 
         StageMap.StageMapInfo info = st.getCont().info;
+
+        if (!(st.info instanceof DefStageInfo stageInfo))
+            return result;
 
         if(info.resetMode != -1) {
             if(info.resetMode > 0 && info.resetMode < 4)
@@ -2573,8 +2576,29 @@ public class DataToString extends Data {
             result.add(LangID.getStringByID("data.stage.misc.noCPU", lang));
         }
 
-        for(int i = 0; i < result.size(); i++) {
-            result.set(i, result.get(i));
+        if (info.hasFeverBar) {
+            StringBuilder gaugeMultiplierText = new StringBuilder();
+
+            gaugeMultiplierText.append(LangID.getStringByID("data.stage.misc.feverDojo.title", lang)).append("\n");
+            gaugeMultiplierText.append("  - ").append(LangID.getStringByID("data.stage.misc.feverDojo.multiplier", lang)).append("\n");
+
+            for (int i = 0; i < stageInfo.feverBarMultiplier.length; i++) {
+                int[] segment = stageInfo.feverBarMultiplier[i];
+
+                if (segment[0] == -1 && segment[1] == -1) {
+                    gaugeMultiplierText.append("    > ").append(LangID.getStringByID("data.stage.misc.feverDojo.score.default", lang).formatted(segment[2])).append("\n");
+                } else {
+                    gaugeMultiplierText.append("    > ").append(LangID.getStringByID("data.stage.misc.feverDojo.score.cost", lang).formatted(segment[0] + 1, segment[1], segment[2])).append("\n");
+                }
+            }
+
+            if (isFrame) {
+                gaugeMultiplierText.append("  - ").append(LangID.getStringByID("data.stage.misc.feverDojo.activate", lang).formatted(stageInfo.feverMaxScore, stageInfo.feverDuration + "f"));
+            } else {
+                gaugeMultiplierText.append("  - ").append(LangID.getStringByID("data.stage.misc.feverDojo.activate", lang).formatted(stageInfo.feverMaxScore, df.format(stageInfo.feverDuration / 30f) + "s"));
+            }
+
+            result.add(gaugeMultiplierText.toString());
         }
 
         return result;

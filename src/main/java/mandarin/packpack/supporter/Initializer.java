@@ -1,5 +1,8 @@
 package mandarin.packpack.supporter;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import common.CommonStatic;
 import common.io.assets.AssetLoader;
@@ -563,6 +566,8 @@ public class Initializer {
             StaticStore.medalData = JsonParser.parseString(json).getAsJsonObject().get("iconID");
         }
 
+        parseFeverDojoPointData();
+
         for(MapColc mc : MapColc.values()) {
             if(mc == null)
                 continue;
@@ -608,5 +613,71 @@ public class Initializer {
         }
 
         return null;
+    }
+
+    private static void parseFeverDojoPointData() {
+        VFile feverDojoPointJson = VFile.get("./org/data/PointRelease.json");
+
+        if (feverDojoPointJson == null) {
+            StaticStore.logger.uploadLog("W/Initializer::parseFeverDojoPointData - Failed to get PointRelease.json");
+
+            return;
+        }
+
+        JsonObject pointObject = JsonParser.parseString(new String(feverDojoPointJson.getData().getBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+
+        if (!pointObject.has("PointID")) {
+            StaticStore.logger.uploadLog("W/Initializer::parseFeverDojoPointData - Failed to find PointID tag from json file");
+
+            return;
+        }
+
+        JsonElement pointIDElement = pointObject.get("PointID");
+
+        if (!(pointIDElement instanceof JsonObject pointIDObject)) {
+            StaticStore.logger.uploadLog("W/Initializer::parseFeverDojoPointData - PointID element is not json object");
+
+            return;
+        }
+
+        for (String key : pointIDObject.keySet()) {
+            JsonElement pointDataElement = pointIDObject.get(key);
+
+            if (!(pointDataElement instanceof JsonObject pointDataObject)) {
+                StaticStore.logger.uploadLog("W/Initializer::parseFeverDojoPointData - Point ID " + key + " doesn't have json object");
+
+                continue;
+            }
+
+            if (!pointDataObject.has("serverSetting") && !pointDataObject.has("ReleasePoint")) {
+                StaticStore.logger.uploadLog("W/Initializer::parseFeverDojoPointData - Failed to find serverSetting or ReleasePoint tag from point ID " + key +"'s data");
+
+                continue;
+            }
+
+            JsonElement serverSettingElement = pointDataObject.get("serverSetting");
+            JsonElement releasePointElement = pointDataObject.get("ReleasePoint");
+
+            if (!(serverSettingElement instanceof JsonArray serverSettingArray) || !(releasePointElement instanceof JsonArray releasePointArray)) {
+                StaticStore.logger.uploadLog("W/Initializer::parseFeverDojoPointData - serverSetting or ReleasePoint element weren't json array");
+
+                continue;
+            }
+
+            if (serverSettingArray.size() != releasePointArray.size()) {
+                StaticStore.logger.uploadLog("W/Initializer::parseFeverDojoPointData - serverSetting and ReleasePoint have different array size");
+
+                continue;
+            }
+
+            for (int i = 0; i < serverSettingArray.size(); i++) {
+                int serverID = serverSettingArray.get(i).getAsInt();
+                int scoreLimit = releasePointArray.get(i).getAsInt();
+
+                EventFactor.feverDojoPointLimit.put(serverID, scoreLimit);
+            }
+
+
+        }
     }
 }

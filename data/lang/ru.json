@@ -1008,6 +1008,15 @@
                 "numberOfPlay" : "Количество прохождений может быть сделано : _",
                 "title" : "Другое",
                 "waitingTime" : "Этапы на этой карте имеют время восстановления _NNN_ _TTT_ после успешной попытки",
+                "feverDojo" : {
+                    "activate" : "Gather %d score for activating fever for %s",
+                    "multiplier" : "Fever gauge score multiplier",
+                    "title" : "This stage has fever gauge",
+                    "score" : {
+                        "cost" : "Cost from %d to %d: %d%%",
+                        "default" : "When defeating an enemy: %d%%"
+                    }
+                },
                 "resetFlag" : {
                     "1" : "Награда будет сбрасываться при каждом появлении карты",
                     "2" : "Пройденный статус будет сбрасываться при каждом появлении карты",
@@ -1289,6 +1298,7 @@
         "chanceBoost" : "_BBB_x шанс для _UUU_",
         "daily" : "Ежедневно",
         "evenDay" : "Каждый Четный День",
+        "feverDojo" : "Increase fever dojo points to %d",
         "ignoreFull" : "`-f` аргумент игнорируется, поскольку пользователю не доверенное лицо",
         "newVersion" : "## Обнаружена новая версия для **%s**\nВерсия : **%s**",
         "oddDay" : "Каждый Нечетный День",

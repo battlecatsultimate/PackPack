@@ -1008,6 +1008,15 @@
                 "numberOfPlay" : "クリア可能回数 : _",
                 "title" : "その他",
                 "waitingTime" : "このマップに挑戦するには _NNN_ _TTT_ 待たなければいけません",
+                "feverDojo" : {
+                    "activate" : "Gather %d score for activating fever for %s",
+                    "multiplier" : "Fever gauge score multiplier",
+                    "title" : "This stage has fever gauge",
+                    "score" : {
+                        "cost" : "Cost from %d to %d: %d%%",
+                        "default" : "When defeating an enemy: %d%%"
+                    }
+                },
                 "resetFlag" : {
                     "1" : "マップ出現ごとに報酬がリセットされます",
                     "2" : "マップ出現ごとにクリア状況がリセットされます",
@@ -1289,6 +1298,7 @@
         "chanceBoost" : "_UUU_の提供割合_BBB_倍",
         "daily" : "毎日",
         "evenDay" : "偶数日",
+        "feverDojo" : "Increase fever dojo points to %d",
         "ignoreFull" : "ユーザーが信頼されてないため、引数`-f`は無視されます",
         "newVersion" : "## New Version Detected for **%s**\nVersion : **%s**",
         "oddDay" : "奇数日",

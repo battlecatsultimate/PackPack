@@ -1008,6 +1008,15 @@
                 "numberOfPlay" : "Number of plays can be done : _",
                 "title" : "Miscellaneous",
                 "waitingTime" : "Stages in this map have a _NNN_ _TTT_ cooldown after a successful attempt",
+                "feverDojo" : {
+                    "activate" : "Gather %d score for activating fever for %s",
+                    "multiplier" : "Fever gauge score multiplier",
+                    "title" : "This stage has fever gauge",
+                    "score" : {
+                        "cost" : "Cost from %d to %d: %d%%",
+                        "default" : "When defeating an enemy: %d%%"
+                    }
+                },
                 "resetFlag" : {
                     "1" : "Reward will be reset upon each map appearance",
                     "2" : "Clear status will be reset upon each map appearance",
@@ -1289,6 +1298,7 @@
         "chanceBoost" : "_BBB_x rate for _UUU_",
         "daily" : "Daily",
         "evenDay" : "Every Even Day",
+        "feverDojo" : "Increase fever dojo points to %d",
         "ignoreFull" : "`-f` parameter is ignored because user isn't trusted",
         "newVersion" : "## New Version Detected for **%s**\nVersion : **%s**",
         "oddDay" : "Every Odd Day",

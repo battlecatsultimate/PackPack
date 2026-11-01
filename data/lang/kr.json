@@ -1008,6 +1008,15 @@
                 "numberOfPlay" : "_번 스테이지 플레이 가능",
                 "title" : "기타 정보",
                 "waitingTime" : "각 스테이지 플레이 이후 _NNN_ _TTT_ 대기 필요",
+                "feverDojo" : {
+                    "activate" : "%d점을 모아 %s 동안 피버 상태 유지",
+                    "multiplier" : "피버 게이지 점수 배율",
+                    "title" : "피버 게이지 존재 스테이지",
+                    "score" : {
+                        "cost" : "코스트 %d부터 %d까지: %d%%",
+                        "default" : "적 처지 시: %d%%"
+                    }
+                },
                 "resetFlag" : {
                     "1" : "맵 등장마다 보상 획득 상태 초기화",
                     "2" : "맵 등장마다 클리어 상태 초기화",
@@ -1289,6 +1298,7 @@
         "chanceBoost" : "_UUU_ 유닛에게 _BBB_x 확률 업",
         "daily" : "매일 지급",
         "evenDay" : "모든 짝수 날",
+        "feverDojo" : "피버 스테이지 점수의 상한을 %d점으로 증가",
         "ignoreFull" : "유저가 기여자가 아니기 때문에 `-f` 인자는 무시됩니다",
         "newVersion" : "## **%s** 신규 버전 발견\n버전 : **%s**",
         "oddDay" : "모든 홀수 날",
