@@ -480,7 +480,7 @@ public class FormStat extends ConstraintCommand {
 
         for(int i = 0; i < sb.length(); i++) {
             if(sb.charAt(i) == ',') {
-                if(!commaStart && commaAdd <= 8) {
+                if(!commaStart && commaAdd <= 11) {
                     commaStart = true;
                     commaAdd++;
                     fin.append(sb.charAt(i));

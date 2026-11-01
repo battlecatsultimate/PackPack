@@ -1379,5 +1379,42 @@
                 "tooltip": "0 = Apply x% current cooldown. 1 = Apply a direct amount. 2 = Apply x% max cooldown."
             }
         }
+    },
+    "IMUDELAY" : {
+        "abbr_name": "imu. Delay",
+        "full_name": "Immune/Resistant to Delay",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Immune}(mult<100&mult>0){Resistant}(mult<0){Weak}] to Delay",
+            "[(mult<100&mult>0){ (_left)Decreases delay multiplier by (mult)%(_right)}(mult<0){ (_left)Increases delay multiplier by (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Delay [(block==100){blocker}(block<100&block>0){absorber}(block<0){increaser}]",
+            "[(block<100&block>0){ (_left)Decreases delay multiplier by (block)%(_right)}(block<0){ (_left)Increases delay multiplier by (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": "Set negative to make this unit weak to the effect"
+            },
+            "block": {
+                "name": "Blocker",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block slow. Set negative to increase the effect."
+            }
+        }
+    },
+    "CDDEC": {
+        "abbr_name": "shortened cd",
+        "full_name": "Shortened CD",
+        "tooltip": null,
+        "format": [
+            "Every (_ordinal(count)) unit will get cooldown shortened by (mult)%"
+        ],
+        "class": {
+            "mult": {
+                "name": "multiplier",
+                "tooltip": "How much the cooldown will be shortened. Percentage of unit's original cooldown"
+            },
+            "count": {
+                "name": "count",
+                "tooltip": "Unit that will be counted for this ability to be applied. For example, 3 will make ability applies to every 3rd units"
+            }
+        }
     }
 }

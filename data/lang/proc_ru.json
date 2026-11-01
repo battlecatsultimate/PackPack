@@ -1547,5 +1547,23 @@
                 "tooltip": "0 = сопротивление и отсрочиванию, и ускорению, 1 = только отсрочиванию, -1 = только ускорению"
             }
         }
+    },
+    "CDDEC": {
+        "abbr_name": "shortened cd",
+        "full_name": "Shortened CD",
+        "tooltip": null,
+        "format": [
+            "Every (_ordinal(count)) unit will get cooldown shortened by (mult)%"
+        ],
+        "class": {
+            "mult": {
+                "name": "multiplier",
+                "tooltip": "How much the cooldown will be shortened. Percentage of unit's original cooldown"
+            },
+            "count": {
+                "name": "count",
+                "tooltip": "Unit that will be counted for this ability to be applied. For example, 3 will make ability applies to every 3rd units"
+            }
+        }
     }
 }

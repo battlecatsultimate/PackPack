@@ -119,6 +119,10 @@ public class DataToString extends Data {
         addTalentData(66, "data.abilities.sageSlayer", "data.abilities.sageSlayer");
         addTalentData(67, "data.abilities.blastAttack", "data.abilities.blastAttack");
         addTalentData(68, "data.abilities.counterSurge", "data.abilities.counterSurge");
+        addTalentData(69, "data.abilities.immunities.blastAttack", "IMUBLAST");
+        addTalentData(70, "data.damagePlus", "ATKUPPLUS");
+        addTalentData(71, "data.hpPlus", "HPUPPLUS");
+        addTalentData(72, "data.abilities.shortenedCooldown", "CDDEC");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -3061,7 +3065,7 @@ public class DataToString extends Data {
                     Proc.ProcItem p = du.getProc().getArr(type[1]);
 
                     if (!p.exists()) {
-                        Formatter.Context c = new Formatter.Context(false, !isFrame, new double[]{0, 0});
+                        Formatter.Context c = new Formatter.Context(false, !isFrame, new double[]{0, 0}, lang);
 
                         String f = ProcLang.getWithLang(lang).get(type[1]).format;
 
@@ -3130,6 +3134,11 @@ public class DataToString extends Data {
                     max = (int) (max * 1.5);
                 }
 
+                if (type[1] == PC2_ATKP || type[1] == PC2_HPP) {
+                    min += 100;
+                    max += 100;
+                }
+
                 String key = switch (type[1]) {
                     case PC2_HP -> "data.talent.description.health";
                     case PC2_ATK -> "data.talent.description.damage";
@@ -3138,13 +3147,20 @@ public class DataToString extends Data {
                     case PC2_CD -> "data.talent.description.cooldown";
                     case PC2_HB -> "data.talent.description.kb";
                     case PC2_TBA -> "data.talent.description.tba";
+                    case PC2_ATKP -> "data.talent.description.damagePluys";
+                    case PC2_HPP -> "data.talent.description.healthPlus";
                     default -> throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
                 };
 
-                return desc + LangID.getStringByID(key, lang)
-                        .replace("_mmm_", String.valueOf(min))
-                        .replace("_MMM_", String.valueOf(max)) +
-                        fillUpNpCost(data, lang, true);
+                if (type[1] == PC2_HPP || type[1] == PC2_ATKP) {
+                    return desc + LangID.getStringByID(key, lang).formatted(df.format(min / 100.0), df.format(max / 100.0)) +
+                            fillUpNpCost(data, lang, true);
+                } else {
+                    return desc + LangID.getStringByID(key, lang)
+                            .replace("_mmm_", String.valueOf(min))
+                            .replace("_MMM_", String.valueOf(max)) +
+                            fillUpNpCost(data, lang, true);
+                }
             }
             case PC_TRAIT -> {
                 return desc + LangID.getStringByID("data.talent.description.trait.default", lang).replace("_", talentName) + fillUpNpCost(data, lang, true);
@@ -3185,7 +3201,7 @@ public class DataToString extends Data {
                     Proc.ProcItem p = du.getProc().getArr(type[1]).clone();
 
                     if (!p.exists()) {
-                        Formatter.Context c = new Formatter.Context(true, !isFrame, new double[]{0, 0});
+                        Formatter.Context c = new Formatter.Context(true, !isFrame, new double[]{0, 0}, lang);
 
                         String f = ProcLang.getWithLang(lang).get(type[1]).format;
 
